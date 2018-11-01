@@ -64,7 +64,7 @@ Qed.
 Global Instance frame_step_proper : Proper ((≡) ==> (=) ==> (=) ==> iff) frame_step.
 Proof. move=> ?? /collection_equiv_spec [??]; split; by apply frame_step_mono. Qed.
 Instance closed_proper' : Proper ((≡) ==> (≡) ==> impl) closed.
-Proof. destruct 3; constructor; intros until 0; setoid_subst; eauto. Qed.
+Proof. destruct 3; constructor; intros; setoid_subst; eauto. Qed.
 Global Instance closed_proper : Proper ((≡) ==> (≡) ==> iff) closed.
 Proof. by split; apply closed_proper'. Qed.
 Global Instance up_preserving : Proper ((=) ==> flip (⊆) ==> (⊆)) up.
