@@ -474,6 +474,14 @@ Proof.
   apply (delete_local_update_cancelable m _ i (Some x));
     [done|by rewrite lookup_singleton].
 Qed.
+
+Lemma gmap_fmap_mono {B : ucmraT} (f : A → B) m1 m2 :
+  Proper ((≡) ==> (≡)) f →
+  (∀ x y, x ≼ y → f x ≼ f y) → m1 ≼ m2 → fmap f m1 ≼ fmap f m2.
+Proof.
+  intros ??. rewrite !lookup_included=> Hm i.
+  rewrite !lookup_fmap. by apply option_fmap_mono.
+Qed.
 End properties.
 
 Section unital_properties.

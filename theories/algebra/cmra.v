@@ -1430,6 +1430,14 @@ Section option_prod.
   Proof. intros ?%Some_pair_included. by rewrite -(Some_included_total b1). Qed.
 End option_prod.
 
+Lemma option_fmap_mono {A B : cmraT} (f : A → B) ma mb :
+  Proper ((≡) ==> (≡)) f →
+  (∀ a b, a ≼ b → f a ≼ f b) →
+  ma ≼ mb → f <$> ma ≼ f <$> mb.
+Proof.
+  intros ??. rewrite !option_included; intros [->|(a&b&->&->&?)]; naive_solver.
+Qed.
+
 Instance option_fmap_cmra_morphism {A B : cmraT} (f: A → B) `{!CmraMorphism f} :
   CmraMorphism (fmap f : option A → option B).
 Proof.
