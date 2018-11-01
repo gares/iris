@@ -241,6 +241,18 @@ Section gmap.
     ([^o map] k↦y ∈ <[i:=x]> m, <[i:=P]> f k) ≡ (P `o` [^o map] k↦y ∈ m, f k).
   Proof. apply (big_opM_fn_insert (λ _ _, id)). Qed.
 
+  Lemma big_opM_union f m1 m2 :
+    m1 ##ₘ m2 →
+    ([^o map] k↦y ∈ m1 ∪ m2, f k y) ≡ ([^o map] k↦y ∈ m1, f k y) `o` ([^o map] k↦y ∈ m2, f k y).
+  Proof.
+    intros. induction m1 as [|i x m ? IH] using map_ind.
+    { by rewrite big_opM_empty !left_id. }
+    decompose_map_disjoint.
+    rewrite -insert_union_l !big_opM_insert //;
+      last by apply lookup_union_None.
+    rewrite -assoc IH //.
+  Qed.
+
   Lemma big_opM_opM f g m :
     ([^o map] k↦x ∈ m, f k x `o` g k x)
     ≡ ([^o map] k↦x ∈ m, f k x) `o` ([^o map] k↦x ∈ m, g k x).

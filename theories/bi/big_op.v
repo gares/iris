@@ -626,6 +626,12 @@ Section gmap.
     ([∗ map] k↦y ∈ <[i:=x]> m, <[i:=P]> Φ k) ⊣⊢ (P ∗ [∗ map] k↦y ∈ m, Φ k).
   Proof. apply big_opM_fn_insert'. Qed.
 
+  Lemma big_sepM_union Φ m1 m2 :
+    m1 ##ₘ m2 →
+    ([∗ map] k↦y ∈ m1 ∪ m2, Φ k y)
+    ⊣⊢ ([∗ map] k↦y ∈ m1, Φ k y) ∗ ([∗ map] k↦y ∈ m2, Φ k y).
+  Proof. apply big_opM_union. Qed.
+
   Lemma big_sepM_sepM Φ Ψ m :
     ([∗ map] k↦x ∈ m, Φ k x ∗ Ψ k x)
     ⊣⊢ ([∗ map] k↦x ∈ m, Φ k x) ∗ ([∗ map] k↦x ∈ m, Ψ k x).
