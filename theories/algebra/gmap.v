@@ -475,7 +475,7 @@ Proof.
     [done|by rewrite lookup_singleton].
 Qed.
 
-Lemma gmap_fmap_mono {B : ucmraT} (f : A → B) m1 m2 :
+Lemma gmap_fmap_mono {B : cmraT} (f : A → B) m1 m2 :
   Proper ((≡) ==> (≡)) f →
   (∀ x y, x ≼ y → f x ≼ f y) → m1 ≼ m2 → fmap f m1 ≼ fmap f m2.
 Proof.
