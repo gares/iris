@@ -628,7 +628,7 @@ Ltac iSpecializePat_go H1 pats :=
           fail "iSpecialize:" H1 "not found"
          |solve_to_wand H1
          |lazymatch m with
-          | GSpatial => notypeclasses refine (add_modal_id _ _)
+          | GSpatial => class_apply add_modal_id
           | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
           end
          |first
