@@ -7,6 +7,8 @@ for carrying out separation logic proofs in Coq.
 A LaTeX version of the core logic definitions and some derived forms is
 available in [docs/iris.tex](docs/iris.tex).  A compiled PDF version of this
 document is [available online](http://plv.mpi-sws.org/iris/appendix-3.1.pdf).
+An HTML version of the latest sources (with hyperlinks for easier navigation) is
+available at https://plv.mpi-sws.org/coqdoc/iris/.
 
 ## Building Iris
 
