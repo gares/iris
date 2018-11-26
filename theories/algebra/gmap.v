@@ -278,6 +278,13 @@ Proof.
     + by rewrite lookup_op lookup_singleton lookup_partial_alter Hi.
     + by rewrite lookup_op lookup_singleton_ne// lookup_partial_alter_ne// left_id.
 Qed.
+Lemma singleton_included_exclusive m i x :
+  Exclusive x → ✓ m →
+  {[ i := x ]} ≼ m ↔ m !! i ≡ Some x.
+Proof.
+  intros ? Hm. rewrite singleton_included. split; last by eauto.
+  intros (y&?&->%(Some_included_exclusive _)); eauto using lookup_valid_Some.
+Qed.
 
 Global Instance singleton_cancelable i x :
   Cancelable (Some x) → Cancelable {[ i := x ]}.

@@ -121,10 +121,8 @@ Section to_proph_map.
   Lemma proph_map_singleton_included R p v :
     {[p := Excl v]} ≼ to_proph_map R → R !! p = Some v.
   Proof.
-    rewrite singleton_included=> -[v' []].
-    rewrite /to_proph_map lookup_fmap fmap_Some_equiv=> -[v'' [Hp ->]].
-    intros [=->]%Some_included_exclusive%leibniz_equiv_iff; first done; last done.
-    apply excl_exclusive.
+    rewrite singleton_included_exclusive; last by apply to_proph_map_valid.
+    by rewrite leibniz_equiv_iff /to_proph_map lookup_fmap fmap_Some=> -[v' [-> [->]]].
   Qed.
 End to_proph_map.
 
