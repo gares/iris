@@ -78,6 +78,11 @@ Section tests.
   Lemma heap_e6_spec (v : val) : (WP heap_e6 v {{ w, ⌜ w = #true ⌝ }})%I.
   Proof. wp_lam. wp_op. by case_bool_decide. Qed.
 
+  Definition heap_e7 : val := λ: "v", CAS "v" #0 #1.
+
+  Lemma heap_e7_spec l : l ↦ #0 -∗ WP heap_e7 #l [{_,  l ↦ #1 }].
+  Proof. iIntros. wp_lam. wp_cas_suc. auto. Qed.
+
   Definition FindPred : val :=
     rec: "pred" "x" "y" :=
       let: "yp" := "y" + #1 in
