@@ -449,6 +449,10 @@ Proof. rewrite /bi_affinely; apply _. Qed.
 Global Instance absorbingly_timeless P : Timeless P → Timeless (<absorb> P).
 Proof. rewrite /bi_absorbingly; apply _. Qed.
 
+Global Instance intuitionistically_timeless P :
+  Timeless (PROP:=PROP) emp → Timeless P → Timeless (□ P).
+Proof. rewrite /bi_intuitionistically; apply _. Qed.
+
 Global Instance eq_timeless {A : ofeT} (a b : A) :
   Discrete a → Timeless (PROP:=PROP) (a ≡ b).
 Proof. intros. rewrite /Discrete !discrete_eq. apply (timeless _). Qed.
