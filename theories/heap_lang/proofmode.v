@@ -483,7 +483,7 @@ Tactic Notation "wp_cas_fail" :=
     |solve_mapsto ()
     |try congruence
     |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
-    |simpl; try wp_value_head]
+    |wp_expr_simpl; try wp_value_head]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_fail _ _ _ _ K))
@@ -510,7 +510,7 @@ Tactic Notation "wp_cas_suc" :=
     |pm_reflexivity
     |try congruence
     |try fast_done (* vals_cas_compare_safe *)
-    |simpl; try wp_value_head]
+    |wp_expr_simpl; try wp_value_head]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_suc _ _ _ _ _ K))
