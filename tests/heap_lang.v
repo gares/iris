@@ -80,8 +80,12 @@ Section tests.
 
   Definition heap_e7 : val := λ: "v", CAS "v" #0 #1.
 
-  Lemma heap_e7_spec l : l ↦ #0 -∗ WP heap_e7 #l [{_,  l ↦ #1 }].
+  Lemma heap_e7_spec_total l : l ↦ #0 -∗ WP heap_e7 #l [{_,  l ↦ #1 }].
   Proof. iIntros. wp_lam. wp_cas_suc. auto. Qed.
+
+  Check "heap_e7_spec".
+  Lemma heap_e7_spec l : ▷^2 l ↦ #0 -∗ WP heap_e7 #l {{_,  l ↦ #1 }}.
+  Proof. iIntros. wp_lam. Show. wp_cas_suc. Show. auto. Qed.
 
   Definition FindPred : val :=
     rec: "pred" "x" "y" :=

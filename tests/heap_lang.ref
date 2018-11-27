@@ -30,6 +30,28 @@
   WP let: "x" := #l in let: "y" := ref #1 in "x" <- ! "x" + #1;; ! "x"
   @ E [{ v, ⌜v = #2⌝ }]
   
+"heap_e7_spec"
+     : string
+1 subgoal
+  
+  Σ : gFunctors
+  H : heapG Σ
+  l : loc
+  ============================
+  _ : ▷ l ↦ #0
+  --------------------------------------∗
+  WP CAS #l #0 #1 {{ _, l ↦ #1 }}
+  
+1 subgoal
+  
+  Σ : gFunctors
+  H : heapG Σ
+  l : loc
+  ============================
+  _ : l ↦ #1
+  --------------------------------------∗
+  l ↦ #1
+  
 1 subgoal
   
   Σ : gFunctors

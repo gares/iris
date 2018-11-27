@@ -27,8 +27,6 @@ Tactic Notation "wp_expr_eval" tactic(t) :=
   | _ => fail "wp_expr_eval: not a 'wp'"
   end.
 
-Ltac wp_expr_simpl := wp_expr_eval simpl.
-
 Lemma tac_wp_pure `{heapG Σ} Δ Δ' s E e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
@@ -55,8 +53,16 @@ Lemma tac_twp_value `{heapG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
 
+Ltac wp_expr_simpl := wp_expr_eval simpl.
+
 Ltac wp_value_head :=
-  first [eapply tac_wp_value || eapply tac_twp_value]; reduction.pm_prettify.
+  first [eapply tac_wp_value || eapply tac_twp_value].
+
+Ltac wp_finish :=
+  wp_expr_simpl;      (* simplify occurences of subst/fill *)
+  try wp_value_head;  (* in case we have reached a value, get rid of the WP *)
+  pm_prettify.        (* prettify ▷s caused by [MaybeIntoLaterNEnvs] and
+                         λs caused by wp_value *)
 
 Tactic Notation "wp_pure" open_constr(efoc) :=
   iStartProof;
@@ -69,7 +75,7 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
       [iSolveTC                       (* PureExec *)
       |try fast_done                  (* The pure condition for PureExec *)
       |iSolveTC                       (* IntoLaters *)
-      |wp_expr_simpl; try wp_value_head (* new goal *)
+      |wp_finish                      (* new goal *)
       ])
     || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
@@ -79,7 +85,7 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
       eapply (tac_twp_pure _ _ _ (fill K e'));
       [iSolveTC                       (* PureExec *)
       |try fast_done                  (* The pure condition for PureExec *)
-      |wp_expr_simpl; try wp_value_head (* new goal *)
+      |wp_finish                      (* new goal *)
       ])
     || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
   | _ => fail "wp_pure: not a 'wp'"
@@ -373,7 +379,7 @@ Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
     first [intros l | fail 1 "wp_alloc:" l "not fresh"];
       eexists; split;
         [pm_reflexivity || fail "wp_alloc:" H "not fresh"
-        |iDestructHyp Htmp as H; wp_expr_simpl; try wp_value_head] in
+        |iDestructHyp Htmp as H; wp_finish] in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
@@ -405,13 +411,13 @@ Tactic Notation "wp_load" :=
       |fail 1 "wp_load: cannot find 'Load' in" e];
     [iSolveTC
     |solve_mapsto ()
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_load _ _ _ _ K))
       |fail 1 "wp_load: cannot find 'Load' in" e];
     [solve_mapsto ()
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | _ => fail "wp_load: not a 'wp'"
   end.
 
@@ -419,8 +425,6 @@ Tactic Notation "wp_store" :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
     iAssumptionCore || fail "wp_store: cannot find" l "↦ ?" in
-  let finish _ :=
-    wp_expr_simpl; try first [wp_seq|wp_value_head] in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
@@ -430,14 +434,14 @@ Tactic Notation "wp_store" :=
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
-    |finish ()]
+    |first [wp_seq|wp_finish]]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_store _ _ _ _ _ K))
       |fail 1 "wp_store: cannot find 'Store' in" e];
     [solve_mapsto ()
     |pm_reflexivity
-    |finish ()]
+    |first [wp_seq|wp_finish]]
   | _ => fail "wp_store: not a 'wp'"
   end.
 
@@ -455,8 +459,8 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
     |solve_mapsto ()
     |pm_reflexivity
     |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
-    |intros H1; wp_expr_simpl; try wp_value_head
-    |intros H2; wp_expr_simpl; try wp_value_head]
+    |intros H1; wp_finish
+    |intros H2; wp_finish]
   | |- envs_entails _ (twp ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas _ _ _ _ _ K))
@@ -464,8 +468,8 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
     [solve_mapsto ()
     |pm_reflexivity
     |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
-    |intros H1; wp_expr_simpl; try wp_value_head
-    |intros H2; wp_expr_simpl; try wp_value_head]
+    |intros H1; wp_finish
+    |intros H2; wp_finish]
   | _ => fail "wp_cas: not a 'wp'"
   end.
 
@@ -483,7 +487,7 @@ Tactic Notation "wp_cas_fail" :=
     |solve_mapsto ()
     |try congruence
     |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_fail _ _ _ _ K))
@@ -491,7 +495,7 @@ Tactic Notation "wp_cas_fail" :=
     [solve_mapsto ()
     |try congruence
     |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | _ => fail "wp_cas_fail: not a 'wp'"
   end.
 
@@ -510,7 +514,7 @@ Tactic Notation "wp_cas_suc" :=
     |pm_reflexivity
     |try congruence
     |try fast_done (* vals_cas_compare_safe *)
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_suc _ _ _ _ _ K))
@@ -519,7 +523,7 @@ Tactic Notation "wp_cas_suc" :=
     |pm_reflexivity
     |try congruence
     |try fast_done (* vals_cas_compare_safe *)
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | _ => fail "wp_cas_suc: not a 'wp'"
   end.
 
@@ -536,13 +540,13 @@ Tactic Notation "wp_faa" :=
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_faa _ _ _ _ _ K))
       |fail 1 "wp_faa: cannot find 'CAS' in" e];
     [solve_mapsto ()
     |pm_reflexivity
-    |wp_expr_simpl; try wp_value_head]
+    |wp_finish]
   | _ => fail "wp_faa: not a 'wp'"
   end.
