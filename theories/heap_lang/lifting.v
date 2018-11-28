@@ -45,16 +45,16 @@ Ltac inv_head_step :=
      inversion H; subst; clear H
   end.
 
-Local Hint Extern 0 (head_reducible _ _) => eexists _, _, _, _; simpl.
-Local Hint Extern 0 (head_reducible_no_obs _ _) => eexists _, _, _; simpl.
+Local Hint Extern 0 (head_reducible _ _) => eexists _, _, _, _; simpl : core.
+Local Hint Extern 0 (head_reducible_no_obs _ _) => eexists _, _, _; simpl : core.
 
 (* [simpl apply] is too stupid, so we need extern hints here. *)
-Local Hint Extern 1 (head_step _ _ _ _ _ _) => econstructor.
-Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasSucS.
-Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasFailS.
-Local Hint Extern 0 (head_step (Alloc _) _ _ _ _ _) => apply alloc_fresh.
-Local Hint Extern 0 (head_step NewProph _ _ _ _ _) => apply new_proph_id_fresh.
-Local Hint Resolve to_of_val.
+Local Hint Extern 1 (head_step _ _ _ _ _ _) => econstructor : core.
+Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasSucS : core.
+Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasFailS : core.
+Local Hint Extern 0 (head_step (Alloc _) _ _ _ _ _) => apply alloc_fresh : core.
+Local Hint Extern 0 (head_step NewProph _ _ _ _ _) => apply new_proph_id_fresh : core.
+Local Hint Resolve to_of_val : core.
 
 Instance into_val_val v : IntoVal (Val v) v.
 Proof. done. Qed.

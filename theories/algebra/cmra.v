@@ -20,7 +20,7 @@ Notation "(⋅)" := op (only parsing) : stdpp_scope.
 Definition included `{Equiv A, Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
 Infix "≼" := included (at level 70) : stdpp_scope.
 Notation "(≼)" := included (only parsing) : stdpp_scope.
-Hint Extern 0 (_ ≼ _) => reflexivity.
+Hint Extern 0 (_ ≼ _) => reflexivity : core.
 Instance: Params (@included) 3.
 
 Class ValidN (A : Type) := validN : nat → A → Prop.
@@ -38,7 +38,7 @@ Definition includedN `{Dist A, Op A} (n : nat) (x y : A) := ∃ z, y ≡{n}≡ x
 Notation "x ≼{ n } y" := (includedN n x y)
   (at level 70, n at next level, format "x  ≼{ n }  y") : stdpp_scope.
 Instance: Params (@includedN) 4.
-Hint Extern 0 (_ ≼{_} _) => reflexivity.
+Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
 
 Section mixin.
   Local Set Primitive Projections.
@@ -644,7 +644,7 @@ Section ucmra.
   Global Instance cmra_monoid : Monoid (@op A _) := {| monoid_unit := ε |}.
 End ucmra.
 
-Hint Immediate cmra_unit_cmra_total.
+Hint Immediate cmra_unit_cmra_total : core.
 
 (** * Properties about CMRAs with Leibniz equality *)
 Section cmra_leibniz.

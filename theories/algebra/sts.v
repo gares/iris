@@ -48,7 +48,7 @@ Definition up_set (S : states sts) (T : tokens sts) : states sts :=
   S ≫= λ s, up s T.
 
 (** Tactic setup *)
-Hint Resolve Step.
+Hint Resolve Step : core.
 Hint Extern 50 (equiv (A:=set _) _ _) => set_solver : sts.
 Hint Extern 50 (¬equiv (A:=set _) _ _) => set_solver : sts.
 Hint Extern 50 (_ ∈ _) => set_solver : sts.

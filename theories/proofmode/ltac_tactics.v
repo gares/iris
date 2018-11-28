@@ -2263,50 +2263,50 @@ Tactic Notation "iAccu" :=
   iStartProof; eapply tac_accu; [pm_reflexivity || fail "iAccu: not an evar"].
 
 (** Automation *)
-Hint Extern 0 (_ ⊢ _) => iStartProof.
+Hint Extern 0 (_ ⊢ _) => iStartProof : core.
 
 (* Make sure that by and done solve trivial things in proof mode *)
-Hint Extern 0 (envs_entails _ _) => iPureIntro; try done.
+Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.
 Hint Extern 0 (envs_entails _ ?Q) =>
-  first [is_evar Q; fail 1|iAssumption].
-Hint Extern 0 (envs_entails _ emp) => iEmpIntro.
+  first [is_evar Q; fail 1|iAssumption] : core.
+Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
 
 (* TODO: look for a more principled way of adding trivial hints like those
 below; see the discussion in !75 for further details. *)
 Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
-  rewrite envs_entails_eq; apply bi.internal_eq_refl.
+  rewrite envs_entails_eq; apply bi.internal_eq_refl : core.
 Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
-  rewrite envs_entails_eq; apply big_sepL_nil'.
+  rewrite envs_entails_eq; apply big_sepL_nil' : core.
 Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
-  rewrite envs_entails_eq; apply big_sepL2_nil'.
+  rewrite envs_entails_eq; apply big_sepL2_nil' : core.
 Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
-  rewrite envs_entails_eq; apply big_sepM_empty'.
+  rewrite envs_entails_eq; apply big_sepM_empty' : core.
 Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
-  rewrite envs_entails_eq; apply big_sepS_empty'.
+  rewrite envs_entails_eq; apply big_sepS_empty' : core.
 Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>
-  rewrite envs_entails_eq; apply big_sepMS_empty'.
+  rewrite envs_entails_eq; apply big_sepMS_empty' : core.
 
 (* These introduce as much as possible at once, for better performance. *)
-Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros.
-Hint Extern 0 (envs_entails _ (_ → _)) => iIntros.
-Hint Extern 0 (envs_entails _ (_ -∗ _)) => iIntros.
+Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros : core.
+Hint Extern 0 (envs_entails _ (_ → _)) => iIntros : core.
+Hint Extern 0 (envs_entails _ (_ -∗ _)) => iIntros : core.
 (* Multi-intro doesn't work for custom binders. *)
-Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?).
+Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?) : core.
 
-Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit.
-Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit.
-Hint Extern 1 (envs_entails _ (▷ _)) => iNext.
-Hint Extern 1 (envs_entails _ (■ _)) => iAlways.
-Hint Extern 1 (envs_entails _ (<pers> _)) => iAlways.
-Hint Extern 1 (envs_entails _ (<affine> _)) => iAlways.
-Hint Extern 1 (envs_entails _ (□ _)) => iAlways.
-Hint Extern 1 (envs_entails _ (∃ _, _)) => iExists _.
-Hint Extern 1 (envs_entails _ (∃.. _, _)) => iExists _.
-Hint Extern 1 (envs_entails _ (◇ _)) => iModIntro.
-Hint Extern 1 (envs_entails _ (_ ∨ _)) => iLeft.
-Hint Extern 1 (envs_entails _ (_ ∨ _)) => iRight.
-Hint Extern 1 (envs_entails _ (|==> _)) => iModIntro.
-Hint Extern 1 (envs_entails _ (<absorb> _)) => iModIntro.
-Hint Extern 2 (envs_entails _ (|={_}=> _)) => iModIntro.
+Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit : core.
+Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit : core.
+Hint Extern 1 (envs_entails _ (▷ _)) => iNext : core.
+Hint Extern 1 (envs_entails _ (■ _)) => iAlways : core.
+Hint Extern 1 (envs_entails _ (<pers> _)) => iAlways : core.
+Hint Extern 1 (envs_entails _ (<affine> _)) => iAlways : core.
+Hint Extern 1 (envs_entails _ (□ _)) => iAlways : core.
+Hint Extern 1 (envs_entails _ (∃ _, _)) => iExists _ : core.
+Hint Extern 1 (envs_entails _ (∃.. _, _)) => iExists _ : core.
+Hint Extern 1 (envs_entails _ (◇ _)) => iModIntro : core.
+Hint Extern 1 (envs_entails _ (_ ∨ _)) => iLeft : core.
+Hint Extern 1 (envs_entails _ (_ ∨ _)) => iRight : core.
+Hint Extern 1 (envs_entails _ (|==> _)) => iModIntro : core.
+Hint Extern 1 (envs_entails _ (<absorb> _)) => iModIntro : core.
+Hint Extern 2 (envs_entails _ (|={_}=> _)) => iModIntro : core.
 
 Hint Extern 2 (envs_entails _ (_ ∗ _)) => progress iFrame : iFrame.

@@ -17,7 +17,7 @@ Implicit Types P Q R : PROP.
 Implicit Types Ps : list PROP.
 Implicit Types A : Type.
 
-Hint Extern 100 (NonExpansive _) => solve_proper.
+Hint Extern 100 (NonExpansive _) => solve_proper : core.
 
 (* Force implicit argument PROP *)
 Notation "P ⊢ Q" := (P ⊢@{PROP} Q).
@@ -91,9 +91,9 @@ Proof. intros ->; apply exist_intro. Qed.
 Lemma forall_elim' {A} P (Ψ : A → PROP) : (P ⊢ ∀ a, Ψ a) → ∀ a, P ⊢ Ψ a.
 Proof. move=> HP a. by rewrite HP forall_elim. Qed.
 
-Hint Resolve pure_intro forall_intro.
-Hint Resolve or_elim or_intro_l' or_intro_r'.
-Hint Resolve and_intro and_elim_l' and_elim_r'.
+Hint Resolve pure_intro forall_intro : core.
+Hint Resolve or_elim or_intro_l' or_intro_r' : core.
+Hint Resolve and_intro and_elim_l' and_elim_r' : core.
 
 Lemma impl_intro_l P Q R : (Q ∧ P ⊢ R) → P ⊢ Q → R.
 Proof. intros HR; apply impl_intro_r; rewrite -HR; auto. Qed.
@@ -110,7 +110,7 @@ Lemma False_elim P : False ⊢ P.
 Proof. by apply (pure_elim' False). Qed.
 Lemma True_intro P : P ⊢ True.
 Proof. by apply pure_intro. Qed.
-Hint Immediate False_elim.
+Hint Immediate False_elim : core.
 
 Lemma entails_eq_True P Q : (P ⊢ Q) ↔ ((P → Q)%I ≡ True%I).
 Proof.
@@ -303,7 +303,7 @@ Proof. rewrite /bi_iff; apply and_intro; apply impl_intro_l; auto. Qed.
 
 
 (* BI Stuff *)
-Hint Resolve sep_mono.
+Hint Resolve sep_mono : core.
 Lemma sep_mono_l P P' Q : (P ⊢ Q) → P ∗ P' ⊢ Q ∗ P'.
 Proof. by intros; apply sep_mono. Qed.
 Lemma sep_mono_r P P' Q' : (P' ⊢ Q') → P ∗ P' ⊢ P ∗ Q'.
@@ -758,7 +758,7 @@ Section bi_affine.
 End bi_affine.
 
 (* Properties of the persistence modality *)
-Hint Resolve persistently_mono.
+Hint Resolve persistently_mono : core.
 Global Instance persistently_mono' : Proper ((⊢) ==> (⊢)) (@bi_persistently PROP).
 Proof. intros P Q; apply persistently_mono. Qed.
 Global Instance persistently_flip_mono' :
