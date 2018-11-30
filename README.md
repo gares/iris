@@ -1,14 +1,16 @@
-# IRIS COQ DEVELOPMENT
+# IRIS COQ DEVELOPMENT [[coqdoc]](https://plv.mpi-sws.org/coqdoc/iris/)
 
 This is the Coq development of the [Iris Project](http://iris-project.org),
 which includes [MoSeL](http://iris-project.org/mosel/), a general proof mode
 for carrying out separation logic proofs in Coq.
 
-A LaTeX version of the core logic definitions and some derived forms is
-available in [docs/iris.tex](docs/iris.tex).  A compiled PDF version of this
-document is [available online](http://plv.mpi-sws.org/iris/appendix-3.1.pdf).
-An HTML version of the latest sources (with hyperlinks for easier navigation) is
-available at https://plv.mpi-sws.org/coqdoc/iris/.
+For using the Coq library, check out the
+[API documentation](https://plv.mpi-sws.org/coqdoc/iris/).
+
+For understanding the theory of Iris, a LaTeX version of the core logic
+definitions and some derived forms is available in
+[docs/iris.tex](docs/iris.tex).  A compiled PDF version of this document is
+[available online](http://plv.mpi-sws.org/iris/appendix-3.1.pdf).
 
 ## Building Iris
 
