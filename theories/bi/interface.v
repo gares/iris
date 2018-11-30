@@ -255,7 +255,7 @@ Arguments sbi_persistently {PROP} _%I : simpl never, rename.
 Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
 Arguments sbi_later {PROP} _%I : simpl never, rename.
 
-Hint Extern 0 (bi_entails _ _) => reflexivity.
+Hint Extern 0 (bi_entails _ _) => reflexivity : core.
 Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP).
 Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 

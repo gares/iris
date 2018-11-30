@@ -3,9 +3,9 @@ From iris.bi Require Import notation.
 From stdpp Require Import finite.
 From Coq.Init Require Import Nat.
 Set Default Proof Using "Type".
-Local Hint Extern 1 (_ ≼ _) => etrans; [eassumption|].
-Local Hint Extern 1 (_ ≼ _) => etrans; [|eassumption].
-Local Hint Extern 10 (_ ≤ _) => lia.
+Local Hint Extern 1 (_ ≼ _) => etrans; [eassumption|] : core.
+Local Hint Extern 1 (_ ≼ _) => etrans; [|eassumption] : core.
+Local Hint Extern 10 (_ ≤ _) => lia : core.
 
 (** The basic definition of the uPred type, its metric and functor laws.
     You probably do not want to import this file. Instead, import
@@ -358,7 +358,7 @@ Implicit Types φ : Prop.
 Implicit Types P Q : uPred M.
 Implicit Types A : Type.
 Arguments uPred_holds {_} !_ _ _ /.
-Hint Immediate uPred_in_entails.
+Hint Immediate uPred_in_entails : core.
 
 Notation "P ⊢ Q" := (@uPred_entails M P%I Q%I) : stdpp_scope.
 Notation "(⊢)" := (@uPred_entails M) (only parsing) : stdpp_scope.

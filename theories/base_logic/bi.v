@@ -148,7 +148,7 @@ Global Instance uPred_affine M : BiAffine (uPredI M) | 0.
 Proof. intros P. exact: pure_intro. Qed.
 (* Also add this to the global hint database, otherwise [eauto] won't work for
 many lemmas that have [BiAffine] as a premise. *)
-Hint Immediate uPred_affine.
+Hint Immediate uPred_affine : core.
 
 Global Instance uPred_plainly_exist_1 M : BiPlainlyExist (uPredSI M).
 Proof. exact: @plainly_exist_1. Qed.

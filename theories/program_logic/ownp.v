@@ -199,9 +199,9 @@ Section ectx_lifting.
   Implicit Types s : stuckness.
   Implicit Types Φ : val Λ → iProp Σ.
   Implicit Types e : expr Λ.
-  Hint Resolve head_prim_reducible head_reducible_prim_step.
-  Hint Resolve (reducible_not_val _ inhabitant).
-  Hint Resolve head_stuck_stuck.
+  Hint Resolve head_prim_reducible head_reducible_prim_step : core.
+  Hint Resolve (reducible_not_val _ inhabitant) : core.
+  Hint Resolve head_stuck_stuck : core.
 
   Lemma ownP_lift_head_step s E Φ e1 :
     (|={E,∅}=> ∃ σ1, ⌜head_reducible e1 σ1⌝ ∗ ▷ (ownP σ1) ∗

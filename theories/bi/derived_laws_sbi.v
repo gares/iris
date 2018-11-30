@@ -15,8 +15,8 @@ Implicit Types A : Type.
 Notation "P ⊢ Q" := (P ⊢@{PROP} Q).
 Notation "P ⊣⊢ Q" := (P ⊣⊢@{PROP} Q).
 
-Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim.
-Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro.
+Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
+Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
 
 Global Instance internal_eq_proper (A : ofeT) :
   Proper ((≡) ==> (≡) ==> (⊣⊢)) (@sbi_internal_eq PROP A) := ne_proper_2 _.
@@ -24,8 +24,8 @@ Global Instance later_proper :
   Proper ((⊣⊢) ==> (⊣⊢)) (@sbi_later PROP) := ne_proper _.
 
 (* Equality *)
-Hint Resolve internal_eq_refl.
-Hint Extern 100 (NonExpansive _) => solve_proper.
+Hint Resolve internal_eq_refl : core.
+Hint Extern 100 (NonExpansive _) => solve_proper : core.
 
 Lemma equiv_internal_eq {A : ofeT} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
 Proof. intros ->. auto. Qed.
@@ -150,7 +150,7 @@ Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y)
 Proof. apply (anti_symm _); auto using later_eq_1, later_eq_2. Qed.
 
 (* Later derived *)
-Hint Resolve later_mono.
+Hint Resolve later_mono : core.
 Global Instance later_mono' : Proper ((⊢) ==> (⊢)) (@sbi_later PROP).
 Proof. intros P Q; apply later_mono. Qed.
 Global Instance later_flip_mono' :

@@ -16,8 +16,8 @@ Class Dist A := dist : nat → relation A.
 Instance: Params (@dist) 3.
 Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").
-Hint Extern 0 (_ ≡{_}≡ _) => reflexivity.
-Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption.
+Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
+Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
 Notation NonExpansive f := (∀ n, Proper (dist n ==> dist n) f).
 Notation NonExpansive2 f := (∀ n, Proper (dist n ==> dist n ==> dist n) f).
 
@@ -93,7 +93,7 @@ Section ofe_mixin.
   Proof. apply (mixin_dist_S _ (ofe_mixin A)). Qed.
 End ofe_mixin.
 
-Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption.
+Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 
 (** Discrete OFEs and discrete OFE elements *)
 Class Discrete {A : ofeT} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.

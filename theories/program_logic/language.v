@@ -103,7 +103,7 @@ Section language.
        ρ2 = (t1 ++ e2 :: t2 ++ efs, σ2) →
        prim_step e1 σ1 κ e2 σ2 efs →
        step ρ1 κ ρ2.
-  Hint Constructors step.
+  Hint Constructors step : core.
 
   Inductive nsteps : nat → cfg Λ → list (observation Λ) → cfg Λ → Prop :=
     | nsteps_refl ρ :
@@ -112,7 +112,7 @@ Section language.
        step ρ1 κ ρ2 →
        nsteps n ρ2 κs ρ3 →
        nsteps (S n) ρ1 (κ ++ κs) ρ3.
-  Hint Constructors nsteps.
+  Hint Constructors nsteps : core.
 
   Definition erased_step (ρ1 ρ2 : cfg Λ) := ∃ κ, step ρ1 κ ρ2.
 
