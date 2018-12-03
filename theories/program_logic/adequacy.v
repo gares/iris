@@ -158,7 +158,7 @@ Proof.
   - iDestruct "Ht" as "(_ & He2 & _)". by iMod (wp_safe with "Hσ He2").
 Qed.
 
-Lemma wptp_invariance φ s n e1 κs κs' e2 t1 t2 σ1 σ2 Φ :
+Lemma wptp_invariance φ s n e1 κs κs' t1 t2 σ1 σ2 Φ :
   nsteps n (e1 :: t1, σ1) κs (t2, σ2) →
   (state_interp σ2 κs' (pred (length t2)) ={⊤,∅}=∗ ⌜φ⌝) -∗
   state_interp σ1 (κs ++ κs') (length t1) -∗
