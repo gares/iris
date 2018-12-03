@@ -255,6 +255,9 @@ Proof. apply agree_eq. by rewrite /= list_fmap_id. Qed.
 Lemma agree_map_compose {A B C} (f : A → B) (g : B → C) (x : agree A) :
   agree_map (g ∘ f) x = agree_map g (agree_map f x).
 Proof. apply agree_eq. by rewrite /= list_fmap_compose. Qed.
+Lemma agree_map_to_agree {A B} (f : A → B) (x : A) :
+  agree_map f (to_agree x) = to_agree (f x).
+Proof. by apply agree_eq. Qed.
 
 Section agree_map.
   Context {A B : ofeT} (f : A → B) `{Hf: NonExpansive f}.
