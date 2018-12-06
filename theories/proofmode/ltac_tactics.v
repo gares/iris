@@ -119,8 +119,8 @@ Tactic Notation "iEval" tactic(t) "in" constr(H) :=
     |pm_reflexivity
     |].
 
-Tactic Notation "iSimpl" := iEval simpl.
-Tactic Notation "iSimpl" "in" constr(H) := iEval simpl in H.
+Tactic Notation "iSimpl" := iEval (simpl).
+Tactic Notation "iSimpl" "in" constr(H) := iEval (simpl) in H.
 
 (* It would be nice to also have an `iSsrRewrite`, however, for this we need to
 pass arguments to Ssreflect's `rewrite` like `/= foo /bar` in Ltac, see:

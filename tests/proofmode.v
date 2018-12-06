@@ -412,6 +412,10 @@ Proof.
   done.
 Qed.
 
+Check "test_iSimpl_in".
+Lemma test_iSimpl_in x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
+Proof. iIntros "H". iSimpl in "H". Show. done. Qed.
+
 Lemma test_iIntros_pure_neg : (⌜ ¬False ⌝ : PROP)%I.
 Proof. by iIntros (?). Qed.
 

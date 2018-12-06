@@ -74,6 +74,17 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   --------------------------------------∗
   ▷^(S n + S m) emp
   
+"test_iSimpl_in"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  x, y : nat
+  ============================
+  "H" : ⌜S (S (S x)) = y⌝
+  --------------------------------------∗
+  ⌜S (S (S x)) = y⌝
+  
 "test_iFrame_later_1"
      : string
 1 subgoal
