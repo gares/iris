@@ -95,12 +95,12 @@ results in a decent choice for the symbols used in Iris:
 
 CoqIDE does not have support for unicode itself, but you can use the Intelligent
 Input Bus (IBus) framework for multilingual input. First, install `ibus-m17n`
-via your system's package manager. Next, create a file `~/.m17n.d/coq.min` to
+via your system's package manager. Next, create a file `~/.m17n.d/coq.mim` to
 configure an input method based on the math symbol list, and with some custom
 aliases for symbols used a lot in Iris:
 
 ```
-;; Usage: copy to ~/.m17n.d/coq.min
+;; Usage: copy to ~/.m17n.d/coq.mim
 
 (input-method t coq)
 (description "Input method for Coq")
@@ -210,8 +210,9 @@ aliases for symbols used a lot in Iris:
 
 To use this input method, you should:
 
-1. Enable it using the IBus configuration tool (there are different versions of
-   the configuration tool depending on the desktop you are using). The "Coq"
-   input method will typically appear in the category "other".
-2. In CoqIDE, you can now use the input method by performing a right click,
-   and selecting "System (IBus)" under "input method".
+1. Enable the "Coq" input using your system settings or using the IBus
+   configuration tool. The Coq input method typically appears in the category
+   "other".
+2. On some systems: In CoqIDE, you have to enable the input method by performing
+   a right click on the text area, and selecting "System (IBus)" under "input
+   method".
