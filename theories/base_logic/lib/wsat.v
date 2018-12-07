@@ -28,9 +28,8 @@ Module invG.
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.
 
-Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
-Proof. solve_inG. Qed.
-
+  Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
+  Proof. solve_inG. Qed.
 End invG.
 Import invG.
 
