@@ -16,7 +16,8 @@ these sets of fonts covers all the required characters):
 
 First, install `math-symbol-lists` by doing `M-x package-install math-symbol-lists`.
 
-Next, add the following to your `~/.emacs` to configure an input method based on the math symbol list, and with some custom aliases for symbols used a lot in Iris:
+Next, add the following to your `~/.emacs` to configure an input method based
+on the math symbol list, and with some custom aliases for symbols used a lot in Iris:
 ```
 ;; Input of unicode symbols
 (require 'math-symbol-lists)
@@ -89,3 +90,128 @@ results in a decent choice for the symbols used in Iris:
 ; be used. Adding it only to the "t" table makes it Do The Right Thing (TM).
 (set-fontset-font t nil (font-spec :name "Symbola"))
 ```
+
+## CoqIDE
+
+CoqIDE does not have support for unicode itself, but you can use the Intelligent
+Input Bus (IBus) framework for multilingual input. First, install `ibus-m17n`
+via your system's package manager. Next, create a file `~/.m17n.d/coq.min` to
+configure an input method based on the math symbol list, and with some custom
+aliases for symbols used a lot in Iris:
+
+```
+;; Usage: copy to ~/.m17n.d/coq.min
+
+(input-method t coq)
+(description "Input method for Coq")
+(title "Coq")
+
+(map (trans
+
+;; Standard math notations
+  ("\\forall"         "∀")
+  ("\\fun"            "λ")
+  ("\\exists"         "∃")
+  ("\\not"            "¬")
+  ("\\/"              "∨")
+  ("/\\"              "∧")
+  ("->"               "→")
+  ("<->"              "↔")
+  ("\\<-"             "←") ;; we add a backslash because the plain <- is used for the rewrite tactic
+  ("\\=="             "≡")
+  ("\\/=="            "≢")
+  ("/="               "≠")
+  ("<="               "≤")
+  ("\\in"             "∈")
+  ("\\notin"          "∉")
+  ("\\cup"            "∪")
+  ("\\cap"            "∩")
+  ("\\setminus"       "∖")
+  ("\\subset"         "⊂")
+  ("\\subseteq"       "⊆")
+  ("\\sqsubseteq"     "⊑")
+  ("\\sqsubseteq"     "⊑")
+  ("\\notsubseteq"    "⊈")
+  ("\\empty"          "∅")
+  ("\\meet"           "⊓")
+  ("\\join"           "⊔")
+  ("\\top"            "⊤")
+  ("\\bottom"         "⊥")
+  ("\\vdash"          "⊢")
+  ("\\dashv"          "⊣")
+  ("\\Vdash"          "⊨")
+  ("\\infty"          "∞")
+  ("\\comp"           "∘")
+  ("\\prf"            "↾")
+  ("\\bind"           "≫=")
+  ("\\mapsto"         "↦")
+  ("\\hookrightarrow" "↪")
+  ("\\uparrow"        "↑")
+
+;; Iris specific
+  ("\\check"          "✓")
+  ("\\later"          "▷")
+  ("\\latert"         "▶")
+  ("\\diamond"        "◇")
+  ("\\square"         "□")
+  ("\\bsquare"        "■")
+  ("\\*"              "∗")
+  ("\\included"       "≼")
+  ("\\op"             "⋅")
+  ("\\update"         "⇝")
+  ("\\auth"           "●")
+  ("\\frag"           "◯")
+  ("\\lc"             "⌜")
+  ("\\rc"             "⌝")
+  ("\\Lc"             "⎡")
+  ("\\Rc"             "⎤")
+
+;; Commonly used sub- and superscripts
+  ("^^+" ?⁺) ("__+" ?₊) ("^^-" ?⁻)
+  ("__0" ?₀) ("__1" ?₁) ("__2" ?₂) ("__3" ?₃) ("__4" ?₄)
+  ("__5" ?₅) ("__6" ?₆) ("__7" ?₇) ("__8" ?₈) ("__9" ?₉)
+
+  ("__a" ?ₐ) ("__e" ?ₑ) ("__h" ?ₕ) ("__i" ?ᵢ) ("__k" ?ₖ)
+  ("__l" ?ₗ) ("__m" ?ₘ) ("__n" ?ₙ) ("__o" ?ₒ) ("__p" ?ₚ)
+  ("__r" ?ᵣ) ("__s" ?ₛ) ("__t" ?ₜ) ("__u" ?ᵤ) ("__v" ?ᵥ) ("__x" ?ₓ)
+
+;; Commonly used acents
+  ("\\\"o" "ö")
+
+;; Greek alphabet
+  ("\\Alpha"  "Α")   ("\\alpha"  "α")
+  ("\\Beta"   "Β")   ("\\beta"   "β")
+  ("\\Gamma"  "Γ")   ("\\gamma"  "γ")
+  ("\\Delta"  "Δ")   ("\\delta"  "δ")
+  ("\\Epsilon"  "Ε") ("\\epsilon"  "ε")
+  ("\\Zeta"   "Ζ")   ("\\zeta"   "ζ")
+  ("\\Eta"  "Η")     ("\\eta"  "η")
+  ("\\Theta"  "Θ")   ("\\theta"  "θ")
+  ("\\Iota"   "Ι")   ("\\iota"   "ι")
+  ("\\Kappa"  "Κ")   ("\\kappa"  "κ")
+  ("\\Lamda"  "Λ")   ("\\lamda"  "λ")
+  ("\\Lambda"   "Λ") ("\\lambda"   "λ")
+  ("\\Mu"   "Μ")     ("\\mu"   "μ")
+  ("\\Nu"   "Ν")     ("\\nu"   "ν")
+  ("\\Xi"   "Ξ")     ("\\xi"   "ξ")
+  ("\\Omicron"  "Ο") ("\\omicron"  "ο")
+  ("\\Pi"   "Π")     ("\\pi"   "π")
+  ("\\Rho"  "Ρ")     ("\\rho"  "ρ")
+  ("\\Sigma"  "Σ")   ("\\sigma"  "σ")
+  ("\\Tau"  "Τ")     ("\\tau"  "τ")
+  ("\\Upsilon"  "Υ") ("\\upsilon"  "υ")
+  ("\\Phi"  "Φ")     ("\\phi"  "φ")
+  ("\\Chi"  "Χ")     ("\\chi"  "χ")
+  ("\\Psi"  "Ψ")     ("\\psi"  "ψ")
+  ("\\Omega"  "Ω")   ("\\omega"  "ω")
+))
+(state (init (trans)))
+```
+
+To use this input method, you should:
+
+1. Enable it using the IBus configuration tool (there are different versions of
+   the configuration tool depending on the desktop you are using). The "Coq"
+   input method will typically appear in the category "other".
+2. In CoqIDE, you can now use the input method by performing a right click,
+   and selecting "System (IBus)" under "input method".
