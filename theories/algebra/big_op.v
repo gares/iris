@@ -413,7 +413,11 @@ Section homomorphisms.
   Context `{Monoid M1 o1, Monoid M2 o2}.
   Infix "`o1`" := o1 (at level 50, left associativity).
   Infix "`o2`" := o2 (at level 50, left associativity).
-  Instance foo {A} (R : relation A) : RewriteRelation R.
+  (** The ssreflect rewrite tactic only works for relations that have a
+  [RewriteRelation] instance. For the purpose of this section, we want to
+  rewrite with arbitrary relations, so we declare any relation to be a
+  [RewriteRelation]. *)
+  Local Instance: ∀ {A} (R : relation A), RewriteRelation R.
 
   Lemma big_opL_commute {A} (h : M1 → M2) `{!MonoidHomomorphism o1 o2 R h}
       (f : nat → A → M1) l :
