@@ -1022,6 +1022,8 @@ Section later.
   Global Instance Later_inj n : Inj (dist n) (dist (S n)) (@Next A).
   Proof. by intros x y. Qed.
 
+  Lemma Next_uninj x : ∃ a, x ≡ Next a.
+  Proof. by exists (later_car x). Qed.
   Instance later_car_anti_contractive n :
     Proper (dist n ==> dist_later n) later_car.
   Proof. move=> [x] [y] /= Hxy. done. Qed.
