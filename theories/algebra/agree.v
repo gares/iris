@@ -241,6 +241,9 @@ Proof.
 Qed.
 Lemma agree_validI {M} x y : ✓ (x ⋅ y) ⊢@{uPredI M} x ≡ y.
 Proof. uPred.unseal; split=> r n _ ?; by apply: agree_op_invN. Qed.
+
+Lemma to_agree_uninjI {M} x : ✓ x ⊢@{uPredI M} ∃ a, to_agree a ≡ x.
+Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 End agree.
 
 Instance: Params (@to_agree) 1.
