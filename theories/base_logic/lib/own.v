@@ -110,6 +110,36 @@ Proof. rewrite !own_eq /own_def; apply _. Qed.
 Global Instance own_core_persistent γ a : CoreId a → Persistent (own γ a).
 Proof. rewrite !own_eq /own_def; apply _. Qed.
 
+Lemma later_own γ a : ▷ own γ a -∗ ◇ (∃ b, own γ b ∧ ▷ (a ≡ b)).
+Proof.
+  rewrite own_eq /own_def later_ownM. apply exist_elim=> r.
+  assert (NonExpansive (λ r : iResUR Σ, r (inG_id H) !! γ)).
+  { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id _)). }
+  rewrite (f_equiv (λ r : iResUR Σ, r (inG_id H) !! γ) _ r).
+  rewrite {1}/iRes_singleton ofe_fun_lookup_singleton lookup_singleton.
+  rewrite option_equivI. case Hb: (r (inG_id _) !! γ)=> [b|]; last first.
+  { by rewrite and_elim_r /sbi_except_0 -or_intro_l. }
+  rewrite -except_0_intro -(exist_intro (cmra_transport (eq_sym inG_prf) b)).
+  apply and_mono.
+  - rewrite /iRes_singleton. assert (∀ {A A' : cmraT} (Heq : A' = A) (a : A),
+      cmra_transport Heq (cmra_transport (eq_sym Heq) a) = a) as ->
+      by (by intros ?? ->).
+    apply ownM_mono=> /=.
+    exists (ofe_fun_insert (inG_id _) (delete γ (r (inG_id H))) r).
+    intros i'. rewrite ofe_fun_lookup_op.
+    destruct (decide (i' = inG_id _)) as [->|?].
+    + rewrite ofe_fun_lookup_insert ofe_fun_lookup_singleton.
+      intros γ'. rewrite lookup_op. destruct (decide (γ' = γ)) as [->|?].
+      * by rewrite lookup_singleton lookup_delete Hb.
+      * by rewrite lookup_singleton_ne // lookup_delete_ne // left_id.
+    + rewrite ofe_fun_lookup_insert_ne //.
+      by rewrite ofe_fun_lookup_singleton_ne // left_id.
+  - apply later_mono.
+    by assert (∀ {A A' : cmraT} (Heq : A' = A) (a' : A') (a : A),
+      cmra_transport Heq a' ≡ a ⊢@{iPropI Σ}
+        a' ≡ cmra_transport (eq_sym Heq) a) as -> by (by intros ?? ->).
+Qed.
+
 (** ** Allocation *)
 (* TODO: This also holds if we just have ✓ a at the current step-idx, as Iris
    assertion. However, the map_updateP_alloc does not suffice to show this. *)
