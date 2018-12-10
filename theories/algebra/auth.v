@@ -191,15 +191,15 @@ Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
 Proof. do 2 constructor; simpl; auto. by apply core_id_core. Qed.
 
 (** Internalized properties *)
-Lemma auth_equivI {M} (x y : auth A) :
-  x ≡ y ⊣⊢ (authoritative x ≡ authoritative y ∧ auth_own x ≡ auth_own y : uPred M).
+Lemma auth_equivI {M} x y :
+  x ≡ y ⊣⊢@{uPredI M} authoritative x ≡ authoritative y ∧ auth_own x ≡ auth_own y.
 Proof. by uPred.unseal. Qed.
-Lemma auth_validI {M} (x : auth A) :
-  ✓ x ⊣⊢ (match authoritative x with
-          | Excl' a => (∃ b, a ≡ auth_own x ⋅ b) ∧ ✓ a
-          | None => ✓ auth_own x
-          | ExclBot' => False
-          end : uPred M).
+Lemma auth_validI {M} x :
+  ✓ x ⊣⊢@{uPredI M} match authoritative x with
+                    | Excl' a => (∃ b, a ≡ auth_own x ⋅ b) ∧ ✓ a
+                    | None => ✓ auth_own x
+                    | ExclBot' => False
+                    end.
 Proof. uPred.unseal. by destruct x as [[[]|]]. Qed.
 
 Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.

@@ -284,22 +284,22 @@ Proof. intros ? [] ? EQ; inversion_clear EQ. by eapply id_free0_r. Qed.
 
 (** Internalized properties *)
 Lemma csum_equivI {M} (x y : csum A B) :
-  x ≡ y ⊣⊢ (match x, y with
-            | Cinl a, Cinl a' => a ≡ a'
-            | Cinr b, Cinr b' => b ≡ b'
-            | CsumBot, CsumBot => True
-            | _, _ => False
-            end : uPred M).
+  x ≡ y ⊣⊢@{uPredI M} match x, y with
+                      | Cinl a, Cinl a' => a ≡ a'
+                      | Cinr b, Cinr b' => b ≡ b'
+                      | CsumBot, CsumBot => True
+                      | _, _ => False
+                      end.
 Proof.
   uPred.unseal; do 2 split; first by destruct 1.
   by destruct x, y; try destruct 1; try constructor.
 Qed.
 Lemma csum_validI {M} (x : csum A B) :
-  ✓ x ⊣⊢ (match x with
-          | Cinl a => ✓ a
-          | Cinr b => ✓ b
-          | CsumBot => False
-          end : uPred M).
+  ✓ x ⊣⊢@{uPredI M} match x with
+                    | Cinl a => ✓ a
+                    | Cinr b => ✓ b
+                    | CsumBot => False
+                    end.
 Proof. uPred.unseal. by destruct x. Qed.
 
 (** Updates *)

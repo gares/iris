@@ -233,13 +233,13 @@ Lemma agree_op_invL' `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) �
 Proof. by intros ?%agree_op_inv'%leibniz_equiv. Qed.
 
 (** Internalized properties *)
-Lemma agree_equivI {M} a b : to_agree a ≡ to_agree b ⊣⊢ (a ≡ b : uPred M).
+Lemma agree_equivI {M} a b : to_agree a ≡ to_agree b ⊣⊢@{uPredI M} (a ≡ b).
 Proof.
   uPred.unseal. do 2 split.
   - intros Hx. exact: to_agree_injN.
   - intros Hx. exact: to_agree_ne.
 Qed.
-Lemma agree_validI {M} x y : ✓ (x ⋅ y) ⊢ (x ≡ y : uPred M).
+Lemma agree_validI {M} x y : ✓ (x ⋅ y) ⊢@{uPredI M} x ≡ y.
 Proof. uPred.unseal; split=> r n _ ?; by apply: agree_op_invN. Qed.
 End agree.
 

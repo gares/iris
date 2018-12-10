@@ -95,17 +95,17 @@ Global Instance excl_cmra_discrete : OfeDiscrete A → CmraDiscrete exclR.
 Proof. split. apply _. by intros []. Qed.
 
 (** Internalized properties *)
-Lemma excl_equivI {M} (x y : excl A) :
-  x ≡ y ⊣⊢ (match x, y with
-            | Excl a, Excl b => a ≡ b
-            | ExclBot, ExclBot => True
-            | _, _ => False
-            end : uPred M).
+Lemma excl_equivI {M} x y :
+  x ≡ y ⊣⊢@{uPredI M} match x, y with
+                      | Excl a, Excl b => a ≡ b
+                      | ExclBot, ExclBot => True
+                      | _, _ => False
+                      end.
 Proof.
   uPred.unseal. do 2 split. by destruct 1. by destruct x, y; try constructor.
 Qed.
-Lemma excl_validI {M} (x : excl A) :
-  ✓ x ⊣⊢ (if x is ExclBot then False else True : uPred M).
+Lemma excl_validI {M} x :
+  ✓ x ⊣⊢@{uPredI M} if x is ExclBot then False else True.
 Proof. uPred.unseal. by destruct x. Qed.
 
 (** Exclusive *)
