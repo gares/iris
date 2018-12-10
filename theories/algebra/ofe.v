@@ -984,6 +984,10 @@ Proof.
 Qed.
 
 (** Later *)
+(** Note that the projection [later_car] is not non-expansive (see also the
+lemma [later_car_anti_contractive] below), so it cannot be used in the logic.
+If you need to get a witness out, you should use the lemma [Next_uninj]
+instead. *)
 Record later (A : Type) : Type := Next { later_car : A }.
 Add Printing Constructor later.
 Arguments Next {_} _.
