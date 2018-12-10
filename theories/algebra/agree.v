@@ -182,14 +182,14 @@ Qed.
 Global Instance to_agree_inj : Inj (≡) (≡) (to_agree).
 Proof. intros a b ?. apply equiv_dist=>n. by apply to_agree_injN, equiv_dist. Qed.
 
-Lemma to_agree_uninjN n (x : agree A) : ✓{n} x → ∃ a : A, to_agree a ≡{n}≡ x.
+Lemma to_agree_uninjN n x : ✓{n} x → ∃ a, to_agree a ≡{n}≡ x.
 Proof.
   rewrite agree_validN_def=> Hv.
   destruct (elem_of_agree x) as [a ?].
   exists a; split=> b /=; setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.
 
-Lemma to_agree_uninj (x : agree A) : ✓ x → ∃ y : A, to_agree y ≡ x.
+Lemma to_agree_uninj x : ✓ x → ∃ a, to_agree a ≡ x.
 Proof.
   rewrite /valid /agree_valid; setoid_rewrite agree_validN_def.
   destruct (elem_of_agree x) as [a ?].
