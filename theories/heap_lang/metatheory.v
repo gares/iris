@@ -101,3 +101,60 @@ Proof.
   - unfold un_op_eval in *. repeat case_match; naive_solver.
   - unfold bin_op_eval, bin_op_eval_bool in *. repeat case_match; naive_solver.
 Qed.
+
+(* Parallel substitution with maps of values indexed by strings *)
+Definition binder_delete {A} (x : binder) (vs : gmap string A) : gmap string A :=
+  if x is BNamed x' then delete x' vs else vs.
+Definition binder_insert {A} (x : binder) (v : A) (vs : gmap string A) : gmap string A :=
+  if x is BNamed x' then <[x':=v]>vs else vs.
+
+Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
+  match e with
+  | Val _ => e
+  | Var y => if vs !! y is Some v then Val v else Var y
+  | Rec f y e => Rec f y (subst_map (binder_delete y (binder_delete f vs)) e)
+  | App e1 e2 => App (subst_map vs e1) (subst_map vs e2)
+  | UnOp op e => UnOp op (subst_map vs e)
+  | BinOp op e1 e2 => BinOp op (subst_map vs e1) (subst_map vs e2)
+  | If e0 e1 e2 => If (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | Pair e1 e2 => Pair (subst_map vs e1) (subst_map vs e2)
+  | Fst e => Fst (subst_map vs e)
+  | Snd e => Snd (subst_map vs e)
+  | InjL e => InjL (subst_map vs e)
+  | InjR e => InjR (subst_map vs e)
+  | Case e0 e1 e2 => Case (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | Fork e => Fork (subst_map vs e)
+  | Alloc e => Alloc (subst_map vs e)
+  | Load e => Load (subst_map vs e)
+  | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
+  | CAS e0 e1 e2 => CAS (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
+  | NewProph => NewProph
+  | ResolveProph e1 e2 => ResolveProph (subst_map vs e1) (subst_map vs e2)
+  end.
+
+Lemma subst_map_empty e : subst_map ∅ e = e.
+Proof.
+  assert (∀ x, binder_delete x (∅:gmap _ val) = ∅) as Hdel.
+  { intros [|x]; by rewrite /= ?delete_empty. }
+  induction e; simplify_map_eq; rewrite ?Hdel; auto with f_equal.
+Qed.
+Lemma subst_map_insert x v vs e :
+  subst_map (<[x:=v]>vs) e = subst x v (subst_map (delete x vs) e).
+Proof.
+  revert vs. assert (∀ (y : binder) (vs : gmap _ val), y ≠ BNamed x →
+    binder_delete y (<[x:=v]> vs) = <[x:=v]> (binder_delete y vs)) as Hins.
+  { intros [|y] vs ?; rewrite /= ?delete_insert_ne //; congruence. }
+  assert (∀ (y : binder) (vs : gmap _ val),
+    binder_delete y (delete x vs) = delete x (binder_delete y vs)) as Hdel.
+  { by intros [|y] ?; rewrite /= 1?delete_commute. }
+  induction e=> vs; simplify_map_eq; auto with f_equal.
+  - match goal with
+    | |- context [ <[?x:=_]> _ !! ?y ] =>
+       destruct (decide (x = y)); simplify_map_eq=> //
+    end. by case (vs !! _); simplify_option_eq.
+  - destruct (decide _) as [[??]|[<-%dec_stable|[<-%dec_stable ?]]%not_and_l_alt].
+    + rewrite !Hins // !Hdel. eauto with f_equal.
+    + by rewrite /= delete_insert_delete delete_idemp.
+    + by rewrite /= Hins // delete_insert_delete !Hdel delete_idemp.
+Qed.
