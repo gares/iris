@@ -16,6 +16,9 @@ Class Dist A := dist : nat → relation A.
 Instance: Params (@dist) 3.
 Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").
+Notation "x ≡{ n }@{ A }≡ y" := (dist (A:=A) n x y)
+  (at level 70, n at next level, only parsing).
+
 Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
 Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
 Notation NonExpansive f := (∀ n, Proper (dist n ==> dist n) f).
