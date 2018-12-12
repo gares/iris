@@ -568,6 +568,19 @@ Section gmap.
     ([∗ map] k↦y ∈ m, Φ k y) ⊣⊢ Φ i x ∗ [∗ map] k↦y ∈ delete i m, Φ k y.
   Proof. apply big_opM_delete. Qed.
 
+  Lemma big_sepM_insert_2 Φ m i x :
+    TCOr (∀ x, Affine (Φ i x)) (Absorbing (Φ i x)) →
+    Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
+  Proof.
+    intros Ha. apply wand_intro_r. destruct (m !! i) as [y|] eqn:Hi; last first.
+    { by rewrite -big_sepM_insert. }
+    assert (TCOr (Affine (Φ i y)) (Absorbing (Φ i x))).
+    { destruct Ha; try apply _. }
+    rewrite big_sepM_delete // assoc.
+    rewrite (sep_elim_l (Φ i x)) -big_sepM_insert ?lookup_delete //.
+    by rewrite insert_delete.
+  Qed.
+
   Lemma big_sepM_lookup_acc Φ m i x :
     m !! i = Some x →
     ([∗ map] k↦y ∈ m, Φ k y) ⊢ Φ i x ∗ (Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y)).
