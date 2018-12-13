@@ -24,25 +24,25 @@ Inductive intro_pat :=
 
 Module intro_pat.
 Inductive stack_item :=
-  | SPat : intro_pat → stack_item
-  | SList : stack_item
-  | SConjList : stack_item
-  | SBar : stack_item
-  | SAmp : stack_item
-  | SAlwaysElim : stack_item
-  | SModalElim : stack_item.
+  | StPat : intro_pat → stack_item
+  | StList : stack_item
+  | StConjList : stack_item
+  | StBar : stack_item
+  | StAmp : stack_item
+  | StAlwaysElim : stack_item
+  | StModalElim : stack_item.
 Notation stack := (list stack_item).
 
 Fixpoint close_list (k : stack)
     (ps : list intro_pat) (pss : list (list intro_pat)) : option stack :=
   match k with
-  | SList :: k => Some (SPat (IList (ps :: pss)) :: k)
-  | SPat pat :: k => close_list k (pat :: ps) pss
-  | SAlwaysElim :: k =>
+  | StList :: k => Some (StPat (IList (ps :: pss)) :: k)
+  | StPat pat :: k => close_list k (pat :: ps) pss
+  | StAlwaysElim :: k =>
      ''(p,ps) ← maybe2 (::) ps; close_list k (IAlwaysElim p :: ps) pss
-  | SModalElim :: k =>
+  | StModalElim :: k =>
      ''(p,ps) ← maybe2 (::) ps; close_list k (IModalElim p :: ps) pss
-  | SBar :: k => close_list k [] (ps :: pss)
+  | StBar :: k => close_list k [] (ps :: pss)
   | _ => None
   end.
 
@@ -57,55 +57,55 @@ Fixpoint big_conj (ps : list intro_pat) : intro_pat :=
 Fixpoint close_conj_list (k : stack)
     (cur : option intro_pat) (ps : list intro_pat) : option stack :=
   match k with
-  | SConjList :: k =>
+  | StConjList :: k =>
      ps ← match cur with
           | None => guard (ps = []); Some [] | Some p => Some (p :: ps)
           end;
-     Some (SPat (big_conj ps) :: k)
-  | SPat pat :: k => guard (cur = None); close_conj_list k (Some pat) ps
-  | SAlwaysElim :: k => p ← cur; close_conj_list k (Some (IAlwaysElim p)) ps
-  | SModalElim :: k => p ← cur; close_conj_list k (Some (IModalElim p)) ps
-  | SAmp :: k => p ← cur; close_conj_list k None (p :: ps)
+     Some (StPat (big_conj ps) :: k)
+  | StPat pat :: k => guard (cur = None); close_conj_list k (Some pat) ps
+  | StAlwaysElim :: k => p ← cur; close_conj_list k (Some (IAlwaysElim p)) ps
+  | StModalElim :: k => p ← cur; close_conj_list k (Some (IModalElim p)) ps
+  | StAmp :: k => p ← cur; close_conj_list k None (p :: ps)
   | _ => None
   end.
 
 Fixpoint parse_go (ts : list token) (k : stack) : option stack :=
   match ts with
   | [] => Some k
-  | TName "_" :: ts => parse_go ts (SPat IDrop :: k)
-  | TName s :: ts => parse_go ts (SPat (IIdent s) :: k)
-  | TAnom :: ts => parse_go ts (SPat IAnom :: k)
-  | TFrame :: ts => parse_go ts (SPat IFrame :: k)
-  | TBracketL :: ts => parse_go ts (SList :: k)
-  | TBar :: ts => parse_go ts (SBar :: k)
+  | TName "_" :: ts => parse_go ts (StPat IDrop :: k)
+  | TName s :: ts => parse_go ts (StPat (IIdent s) :: k)
+  | TAnom :: ts => parse_go ts (StPat IAnom :: k)
+  | TFrame :: ts => parse_go ts (StPat IFrame :: k)
+  | TBracketL :: ts => parse_go ts (StList :: k)
+  | TBar :: ts => parse_go ts (StBar :: k)
   | TBracketR :: ts => close_list k [] [] ≫= parse_go ts
-  | TParenL :: ts => parse_go ts (SConjList :: k)
-  | TAmp :: ts => parse_go ts (SAmp :: k)
+  | TParenL :: ts => parse_go ts (StConjList :: k)
+  | TAmp :: ts => parse_go ts (StAmp :: k)
   | TParenR :: ts => close_conj_list k None [] ≫= parse_go ts
-  | TPure :: ts => parse_go ts (SPat IPureElim :: k)
-  | TAlways :: ts => parse_go ts (SAlwaysElim :: k)
-  | TModal :: ts => parse_go ts (SModalElim :: k)
-  | TArrow d :: ts => parse_go ts (SPat (IRewrite d) :: k)
-  | TPureIntro :: ts => parse_go ts (SPat IPureIntro :: k)
-  | TAlwaysIntro :: ts => parse_go ts (SPat IAlwaysIntro :: k)
-  | TModalIntro :: ts => parse_go ts (SPat IModalIntro :: k)
-  | TSimpl :: ts => parse_go ts (SPat ISimpl :: k)
-  | TDone :: ts => parse_go ts (SPat IDone :: k)
-  | TAll :: ts => parse_go ts (SPat IAll :: k)
-  | TForall :: ts => parse_go ts (SPat IForall :: k)
+  | TPure :: ts => parse_go ts (StPat IPureElim :: k)
+  | TAlways :: ts => parse_go ts (StAlwaysElim :: k)
+  | TModal :: ts => parse_go ts (StModalElim :: k)
+  | TArrow d :: ts => parse_go ts (StPat (IRewrite d) :: k)
+  | TPureIntro :: ts => parse_go ts (StPat IPureIntro :: k)
+  | TAlwaysIntro :: ts => parse_go ts (StPat IAlwaysIntro :: k)
+  | TModalIntro :: ts => parse_go ts (StPat IModalIntro :: k)
+  | TSimpl :: ts => parse_go ts (StPat ISimpl :: k)
+  | TDone :: ts => parse_go ts (StPat IDone :: k)
+  | TAll :: ts => parse_go ts (StPat IAll :: k)
+  | TForall :: ts => parse_go ts (StPat IForall :: k)
   | TBraceL :: ts => parse_clear ts k
   | _ => None
   end
 with parse_clear (ts : list token) (k : stack) : option stack :=
   match ts with
-  | TFrame :: TName s :: ts => parse_clear ts (SPat (IClearFrame (SelIdent s)) :: k)
-  | TFrame :: TPure :: ts => parse_clear ts (SPat (IClearFrame SelPure) :: k)
-  | TFrame :: TAlways :: ts => parse_clear ts (SPat (IClearFrame SelPersistent) :: k)
-  | TFrame :: TSep :: ts => parse_clear ts (SPat (IClearFrame SelSpatial) :: k)
-  | TName s :: ts => parse_clear ts (SPat (IClear (SelIdent s)) :: k)
-  | TPure :: ts => parse_clear ts (SPat (IClear SelPure) :: k)
-  | TAlways :: ts => parse_clear ts (SPat (IClear SelPersistent) :: k)
-  | TSep :: ts => parse_clear ts (SPat (IClear SelSpatial) :: k)
+  | TFrame :: TName s :: ts => parse_clear ts (StPat (IClearFrame (SelIdent s)) :: k)
+  | TFrame :: TPure :: ts => parse_clear ts (StPat (IClearFrame SelPure) :: k)
+  | TFrame :: TAlways :: ts => parse_clear ts (StPat (IClearFrame SelPersistent) :: k)
+  | TFrame :: TSep :: ts => parse_clear ts (StPat (IClearFrame SelSpatial) :: k)
+  | TName s :: ts => parse_clear ts (StPat (IClear (SelIdent s)) :: k)
+  | TPure :: ts => parse_clear ts (StPat (IClear SelPure) :: k)
+  | TAlways :: ts => parse_clear ts (StPat (IClear SelPersistent) :: k)
+  | TSep :: ts => parse_clear ts (StPat (IClear SelSpatial) :: k)
   | TBraceR :: ts => parse_go ts k
   | _ => None
   end.
@@ -113,9 +113,9 @@ with parse_clear (ts : list token) (k : stack) : option stack :=
 Fixpoint close (k : stack) (ps : list intro_pat) : option (list intro_pat) :=
   match k with
   | [] => Some ps
-  | SPat pat :: k => close k (pat :: ps)
-  | SAlwaysElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IAlwaysElim p :: ps)
-  | SModalElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IModalElim p :: ps)
+  | StPat pat :: k => close k (pat :: ps)
+  | StAlwaysElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IAlwaysElim p :: ps)
+  | StModalElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IModalElim p :: ps)
   | _ => None
   end.
 
