@@ -819,20 +819,50 @@ Tactic Notation "iPoseProofCore" open_constr(lem)
   | false => iPoseProofCore_go Htmp t spec_tac; [..| tac Htmp ]
   end.
 
-(** * Apply *)
-Tactic Notation "iApplyHyp" constr(H) :=
-  let rec go H := first
+(** [iApply lem] takes an argument [lem : P₁ -∗ .. -∗ Pₙ -∗ Q] (after the
+specialization patterns in [lem] have been executed), where [Q] should match
+the goal, and generates new goals [P1] ... [Pₙ]. Depending on the number of
+premises [n], the tactic will have the following behavior:
+
+- If [n = 0], it will immediately solve the goal (i.e. it will not generate any
+  subgoals). When working in a general BI, this means that the tactic can fail
+  in case there are non-affine spatial hypotheses in the context prior to using
+  the [iApply] tactic. Note that if [n = 0], the tactic behaves exactly like
+  [iExact lem].
+- If [n > 0] it will generate a goals [P₁] ... [Pₙ]. All spatial hypotheses
+  will be transferred to the last goal, i.e. [Pₙ]; the other goals will receive
+  no spatial hypotheses. If you want to control more precisely how the spatial
+  hypotheses are subdivided, you should add additional introduction patterns to
+  [lem]. *)
+
+(* The helper [iApplyHypExact] takes care of the [n=0] case. It fails with level
+0 if we should proceed to the [n > 0] case, and with level 1 if there is an
+actual error. *)
+Local Ltac iApplyHypExact H :=
+  first
+    [eapply tac_assumption with _ H _ _; (* (i:=H) *)
+       [pm_reflexivity || fail 1
+       |iSolveTC || fail 1
+       |pm_reduce; iSolveTC]
+    |lazymatch iTypeOf H with
+     | Some (_,?Q) =>
+        fail 2 "iApply:" Q "not absorbing and the remaining hypotheses not affine"
+     end].
+Local Ltac iApplyHypLoop H :=
+  first
     [eapply tac_apply with _ H _ _ _;
       [pm_reflexivity
       |iSolveTC
-      |pm_prettify (* reduce redexes created by instantiation *)
-      ]
-    |iSpecializePat H "[]"; last go H] in
-  iExact H ||
-  go H ||
-  lazymatch iTypeOf H with
-  | Some (_,?Q) => fail "iApply: cannot apply" Q
-  end.
+      |pm_prettify (* reduce redexes created by instantiation *)]
+    |iSpecializePat H "[]"; last iApplyHypLoop H].
+
+Tactic Notation "iApplyHyp" constr(H) :=
+  first
+    [iApplyHypExact H
+    |iApplyHypLoop H
+    |lazymatch iTypeOf H with
+     | Some (_,?Q) => fail 1 "iApply: cannot apply" Q
+     end].
 
 Tactic Notation "iApply" open_constr(lem) :=
   iPoseProofCore lem as false true (fun H => iApplyHyp H).

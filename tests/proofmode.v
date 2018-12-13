@@ -741,4 +741,11 @@ Check "iApply_fail".
 Lemma iApply_fail P Q : P -∗ Q.
 Proof. iIntros "HP". Fail iApply "HP". Abort.
 
+Check "iApply_fail_not_affine_1".
+Lemma iApply_fail_not_affine_1 P Q : P -∗ Q -∗ Q.
+Proof. iIntros "HP HQ". Fail iApply "HQ". Abort.
+
+Check "iApply_fail_not_affine_2".
+Lemma iApply_fail_not_affine_1 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
+Proof. iIntros "HP HR HQ". Fail iApply ("HQ" with "HR"). Abort.
 End error_tests.

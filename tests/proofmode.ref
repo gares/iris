@@ -521,3 +521,29 @@ In nested Ltac calls to "iApply (open_constr)",
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: cannot apply P.
+"iApply_fail_not_affine_1"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iApply (open_constr)",
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>", 
+"goal_tac" (bound to fun _ => spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
+failed.
+Tactic failure: iApply: Q
+not absorbing and the remaining hypotheses not affine.
+"iApply_fail_not_affine_2"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iApply (open_constr)",
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
+"<iris.proofmode.ltac_tactics.iPoseProofCore_go>", 
+"goal_tac" (bound to fun _ => spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
+failed.
+Tactic failure: iApply: Q
+not absorbing and the remaining hypotheses not affine.
