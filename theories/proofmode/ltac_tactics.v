@@ -760,14 +760,6 @@ Local Ltac iIntoEmpValid t :=
           [iSolveTC || fail 1 "iPoseProof: not a BI assertion"
           |exact t]].
 
-(* The tactic [tac] is called with a temporary fresh name [H]. The argument
-[lazy_tc] denotes whether type class inference on the premises of [lem] should
-be performed before (if false) or after (if true) [tac H] is called.
-
-The tactic [iApply] uses lazy type class inference, so that evars can first be
-instantiated by matching with the goal, whereas [iDestruct] does not, because
-eliminations may not be performed when type classes have not been resolved.
-*)
 Local Ltac iPoseProofCore_go Htmp t goal_tac :=
   lazymatch type of t with
   | ident =>
@@ -788,6 +780,29 @@ Local Ltac iPoseProofCore_go Htmp t goal_tac :=
     |goal_tac ()]
   end;
   try iSolveTC.
+
+(** The tactic [iPoseProofCore lem as p lazy_tc tac] inserts the resource
+described by [lem] into the context. The tactic takes a continuation [tac] as
+its argument, which is called with a temporary fresh name [H] that refers to
+the hypothesis containing [lem].
+
+There are a couple of additional arguments:
+
+- The argument [p] is like that of [iSpecialize]. It is a Boolean that denotes
+  whether the conclusion of the specialized term [lem] is persistent.
+- The argument [lazy_tc] denotes whether type class inference on the premises
+  of [lem] should be performed before (if [lazy_tc = false]) or after, i.e.
+  lazily (if [lazy_tc = true]) [tac H] is called.
+
+Both variants of [lazy_tc] are used in other tactics that build on top of
+[iPoseProofCore]:
+
+- The tactic [iApply] uses lazy type class inference (i.e. [lazy_tc = true]),
+  so that evars can first be matched against the goal before being solved by
+  type class inference.
+- The tactic [iDestruct] uses eager type class inference (i.e. [lazy_tc = false])
+  because it may be not possible to eliminate logical connectives before all
+  type class constraints have been resolved. *)
 Tactic Notation "iPoseProofCore" open_constr(lem)
     "as" constr(p) constr(lazy_tc) tactic(tac) :=
   iStartProof;
