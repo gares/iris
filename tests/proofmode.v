@@ -299,7 +299,7 @@ Lemma test_iIntros_let P :
   ∀ Q, let R := emp%I in P -∗ R -∗ Q -∗ P ∗ Q.
 Proof. iIntros (Q R) "$ _ $". Qed.
 
-Lemma test_foo P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
+Lemma test_iNext_iRewrite P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
 Proof.
   iIntros "#HPQ HQ !#". iNext. by iRewrite "HPQ" in "HQ".
 Qed.
