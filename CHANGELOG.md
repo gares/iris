@@ -63,7 +63,7 @@ Changes in Coq:
   - Big-ops are automatically imported, imports of `iris.base_logic.big_op` have
     to be removed.
   - The ⊢ notation can sometimes infer different (but convertible) terms when
-    seraching for the BI to use, which (due to Coq limitations) can lead to
+    searching for the BI to use, which (due to Coq limitations) can lead to
     failing rewrites, in particular when rewriting at function types.
 * The `iInv` tactic can now be used without the second argument (the name for
   the closing update).  It will then instead add the obligation to close the
