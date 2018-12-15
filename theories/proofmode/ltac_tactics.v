@@ -127,8 +127,8 @@ pass arguments to Ssreflect's `rewrite` like `/= foo /bar` in Ltac, see:
 
   https://sympa.inria.fr/sympa/arc/coq-club/2018-01/msg00000.html
 
-PMP told me (= Robbert) in person that this is not possible today, but may be
-possible in Ltac2. *)
+PMP told me (= Robbert) in person that this is not possible with the current
+Ltac, but it may be possible in Ltac2. *)
 
 (** * Context manipulation *)
 Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
