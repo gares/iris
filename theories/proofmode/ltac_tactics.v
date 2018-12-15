@@ -1464,9 +1464,10 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
     | ESelIdent ?p ?H :: ?Hs =>
        iRevert H; go Hs;
-       let H' :=
-         match p with true => constr:([IAlwaysElim (IIdent H)]) | false => H end in
-       iIntros H'
+       match p with
+       | true => iIntro #H
+       | false => iIntro H
+       end
     end in
   try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 
