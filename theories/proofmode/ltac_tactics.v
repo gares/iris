@@ -515,6 +515,13 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   | _ => revert x; first [apply tac_forall_revert|err x]
   end.
 
+Tactic Notation "iRevertHyp" constr(H) :=
+  eapply tac_revert with _ H _ _; (* (i:=H2) *)
+    [pm_reflexivity ||
+     let H := pretty_ident H in
+     fail "iRevert:" H "not found"
+    |pm_reduce].
+
 Tactic Notation "iRevert" constr(Hs) :=
   let rec go Hs :=
     lazymatch Hs with
@@ -522,12 +529,7 @@ Tactic Notation "iRevert" constr(Hs) :=
     | ESelPure :: ?Hs =>
        repeat match goal with x : _ |- _ => revert x end;
        go Hs
-    | ESelIdent _ ?H :: ?Hs =>
-       eapply tac_revert with _ H _ _; (* (i:=H2) *)
-         [pm_reflexivity ||
-          let H := pretty_ident H in
-          fail "iRevert:" H "not found"
-         |pm_reduce; go Hs]
+    | ESelIdent _ ?H :: ?Hs => iRevertHyp H; go Hs
     end in
   iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 
@@ -1463,7 +1465,7 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     | [] => tac
     | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
     | ESelIdent ?p ?H :: ?Hs =>
-       iRevert H; go Hs;
+       iRevertHyp H; go Hs;
        match p with
        | true => iIntro #H
        | false => iIntro H
