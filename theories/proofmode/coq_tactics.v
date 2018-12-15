@@ -210,18 +210,6 @@ Proof.
     by rewrite -{1}absorbingly_intuitionistically_into_persistently
       absorbingly_sep_l wand_elim_r HQ.
 Qed.
-Lemma tac_wand_intro_pure Δ P φ Q R :
-  FromWand R P Q →
-  IntoPure P φ →
-  TCOr (Affine P) (Absorbing Q) →
-  (φ → envs_entails Δ Q) → envs_entails Δ R.
-Proof.
-  rewrite /FromWand envs_entails_eq. intros <- ? HPQ HQ. apply wand_intro_l. destruct HPQ.
-  - rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_l.
-    by apply pure_elim_l.
-  - rewrite (into_pure P) -(persistent_absorbingly_affinely ⌜ _ ⌝%I) absorbingly_sep_lr.
-    rewrite -persistent_and_affinely_sep_l. apply pure_elim_l=> ?. by rewrite HQ.
-Qed.
 Lemma tac_wand_intro_drop Δ P Q R :
   FromWand R P Q →
   TCOr (Affine P) (Absorbing Q) →
