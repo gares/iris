@@ -500,6 +500,80 @@ Local Tactic Notation "iIntro" :=
     end
   end.
 
+(** * Revert *)
+Local Tactic Notation "iForallRevert" ident(x) :=
+  let err x :=
+    intros x;
+    iMatchHyp (fun H P =>
+      lazymatch P with
+      | context [x] => fail 2 "iRevert:" x "is used in hypothesis" H
+      end) in
+  iStartProof;
+  let A := type of x in
+  lazymatch type of A with
+  | Prop => revert x; first [apply tac_pure_revert|err x]
+  | _ => revert x; first [apply tac_forall_revert|err x]
+  end.
+
+Tactic Notation "iRevert" constr(Hs) :=
+  let rec go Hs :=
+    lazymatch Hs with
+    | [] => idtac
+    | ESelPure :: ?Hs =>
+       repeat match goal with x : _ |- _ => revert x end;
+       go Hs
+    | ESelIdent _ ?H :: ?Hs =>
+       eapply tac_revert with _ H _ _; (* (i:=H2) *)
+         [pm_reflexivity ||
+          let H := pretty_ident H in
+          fail "iRevert:" H "not found"
+         |pm_reduce; go Hs]
+    end in
+  iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
+
+Tactic Notation "iRevert" "(" ident(x1) ")" :=
+  iForallRevert x1.
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ")" :=
+  iForallRevert x2; iRevert ( x1 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ")" :=
+  iForallRevert x3; iRevert ( x1 x2 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")" :=
+  iForallRevert x4; iRevert ( x1 x2 x3 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ")" :=
+  iForallRevert x5; iRevert ( x1 x2 x3 x4 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ")" :=
+  iForallRevert x6; iRevert ( x1 x2 x3 x4 x5 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ident(x7) ")" :=
+  iForallRevert x7; iRevert ( x1 x2 x3 x4 x5 x6 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" :=
+  iForallRevert x8; iRevert ( x1 x2 x3 x4 x5 x6 x7 ).
+
+Tactic Notation "iRevert" "(" ident(x1) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
+    constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 x4 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ident(x7) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 x7 ).
+Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) :=
+  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 x7 x8 ).
+
 (** * Specialize *)
 Record iTrm {X As S} :=
   ITrm { itrm : X ; itrm_vars : hlist As ; itrm_hyps : S }.
@@ -866,80 +940,6 @@ Tactic Notation "iApplyHyp" constr(H) :=
 
 Tactic Notation "iApply" open_constr(lem) :=
   iPoseProofCore lem as false true (fun H => iApplyHyp H).
-
-(** * Revert *)
-Local Tactic Notation "iForallRevert" ident(x) :=
-  let err x :=
-    intros x;
-    iMatchHyp (fun H P =>
-      lazymatch P with
-      | context [x] => fail 2 "iRevert:" x "is used in hypothesis" H
-      end) in
-  iStartProof;
-  let A := type of x in
-  lazymatch type of A with
-  | Prop => revert x; first [apply tac_pure_revert|err x]
-  | _ => revert x; first [apply tac_forall_revert|err x]
-  end.
-
-Tactic Notation "iRevert" constr(Hs) :=
-  let rec go Hs :=
-    lazymatch Hs with
-    | [] => idtac
-    | ESelPure :: ?Hs =>
-       repeat match goal with x : _ |- _ => revert x end;
-       go Hs
-    | ESelIdent _ ?H :: ?Hs =>
-       eapply tac_revert with _ H _ _; (* (i:=H2) *)
-         [pm_reflexivity ||
-          let H := pretty_ident H in
-          fail "iRevert:" H "not found"
-         |pm_reduce; go Hs]
-    end in
-  iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
-
-Tactic Notation "iRevert" "(" ident(x1) ")" :=
-  iForallRevert x1.
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ")" :=
-  iForallRevert x2; iRevert ( x1 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ")" :=
-  iForallRevert x3; iRevert ( x1 x2 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")" :=
-  iForallRevert x4; iRevert ( x1 x2 x3 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" :=
-  iForallRevert x5; iRevert ( x1 x2 x3 x4 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" :=
-  iForallRevert x6; iRevert ( x1 x2 x3 x4 x5 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" :=
-  iForallRevert x7; iRevert ( x1 x2 x3 x4 x5 x6 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" :=
-  iForallRevert x8; iRevert ( x1 x2 x3 x4 x5 x6 x7 ).
-
-Tactic Notation "iRevert" "(" ident(x1) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
-    constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 x4 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 x7 ).
-Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) :=
-  iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 x7 x8 ).
 
 (** * Disjunction *)
 Tactic Notation "iLeft" :=
