@@ -108,6 +108,10 @@ Definition binder_delete {A} (x : binder) (vs : gmap string A) : gmap string A :
 Definition binder_insert {A} (x : binder) (v : A) (vs : gmap string A) : gmap string A :=
   if x is BNamed x' then <[x':=v]>vs else vs.
 
+Lemma binder_insert_fmap {A B : Type} (f : A → B) (x : A) b vs :
+  f <$> binder_insert b x vs = binder_insert b (f x) (f <$> vs).
+Proof. destruct b; rewrite ?fmap_insert //. Qed.
+
 Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   match e with
   | Val _ => e
@@ -158,3 +162,7 @@ Proof.
     + by rewrite /= delete_insert_delete delete_idemp.
     + by rewrite /= Hins // delete_insert_delete !Hdel delete_idemp.
 Qed.
+Lemma subst_map_binder_insert b v vs e :
+  subst_map (binder_insert b v vs) e =
+  subst' b v (subst_map (binder_delete b vs) e).
+Proof. destruct b; rewrite ?subst_map_insert //. Qed.
