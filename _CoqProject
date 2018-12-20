@@ -26,6 +26,7 @@ theories/algebra/gmultiset.v
 theories/algebra/coPset.v
 theories/algebra/deprecated.v
 theories/algebra/proofmode_classes.v
+theories/algebra/ufrac.v
 theories/bi/notation.v
 theories/bi/interface.v
 theories/bi/derived_connectives.v
