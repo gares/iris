@@ -593,21 +593,21 @@ like `apply`, `split` and `eexists` wrongly trigger type class search to resolve
 these holes. To avoid TC being triggered too eagerly, this tactic uses `refine`
 at most places instead of `apply`. *)
 Local Ltac iSpecializeArgs_go H xs :=
-    lazymatch xs with
-    | hnil => idtac
-    | hcons ?x ?xs =>
-       notypeclasses refine (tac_forall_specialize _ _ H _ _ _ _ _ _ _);
-         [pm_reflexivity ||
-          let H := pretty_ident H in
-          fail "iSpecialize:" H "not found"
-         |iSolveTC ||
-          let P := match goal with |- IntoForall ?P _ => P end in
-          fail "iSpecialize: cannot instantiate" P "with" x
-         |lazymatch goal with (* Force [A] in [ex_intro] to deal with coercions. *)
-          | |- ∃ _ : ?A, _ =>
-            notypeclasses refine (@ex_intro A _ x (conj _ _))
-          end; [shelve..|pm_reflexivity|iSpecializeArgs_go H xs]]
-    end.
+  lazymatch xs with
+  | hnil => idtac
+  | hcons ?x ?xs =>
+     notypeclasses refine (tac_forall_specialize _ _ H _ _ _ _ _ _ _);
+       [pm_reflexivity ||
+        let H := pretty_ident H in
+        fail "iSpecialize:" H "not found"
+       |iSolveTC ||
+        let P := match goal with |- IntoForall ?P _ => P end in
+        fail "iSpecialize: cannot instantiate" P "with" x
+       |lazymatch goal with (* Force [A] in [ex_intro] to deal with coercions. *)
+        | |- ∃ _ : ?A, _ =>
+          notypeclasses refine (@ex_intro A _ x (conj _ _))
+        end; [shelve..|pm_reflexivity|iSpecializeArgs_go H xs]]
+  end.
 Local Tactic Notation "iSpecializeArgs" constr(H) open_constr(xs) :=
   iSpecializeArgs_go H xs.
 
@@ -1127,44 +1127,44 @@ Tactic Notation "iModCore" constr(H) :=
 
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
-    lazymatch pat with
-    | IAnom =>
-       lazymatch Hz with
-       | IAnon _ => idtac
-       | INamed ?Hz => let Hz' := iFresh in iRename Hz into Hz'
-       end
-    | IDrop => iClearHyp Hz
-    | IFrame => iFrameHyp Hz
-    | IIdent ?y => iRename Hz into y
-    | IList [[]] => iExFalso; iExact Hz
-    | IList [[?pat1; IDrop]] => iAndDestructChoice Hz as Left Hz; iDestructHypGo Hz pat1
-    | IList [[IDrop; ?pat2]] => iAndDestructChoice Hz as Right Hz; iDestructHypGo Hz pat2
-    | IList [[?pat1; ?pat2]] =>
-       let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat1; iDestructHypGo Hy pat2
-    | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat1|iDestructHypGo Hz pat2]
-    | IPureElim => iPure Hz as ?
-    | IRewrite Right => iPure Hz as ->
-    | IRewrite Left => iPure Hz as <-
-    | IAlwaysElim ?pat => iPersistent Hz; iDestructHypGo Hz pat
-    | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
-    | _ => fail "iDestruct:" pat "invalid"
-    end.
+  lazymatch pat with
+  | IAnom =>
+     lazymatch Hz with
+     | IAnon _ => idtac
+     | INamed ?Hz => let Hz' := iFresh in iRename Hz into Hz'
+     end
+  | IDrop => iClearHyp Hz
+  | IFrame => iFrameHyp Hz
+  | IIdent ?y => iRename Hz into y
+  | IList [[]] => iExFalso; iExact Hz
+  | IList [[?pat1; IDrop]] => iAndDestructChoice Hz as Left Hz; iDestructHypGo Hz pat1
+  | IList [[IDrop; ?pat2]] => iAndDestructChoice Hz as Right Hz; iDestructHypGo Hz pat2
+  | IList [[?pat1; ?pat2]] =>
+     let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat1; iDestructHypGo Hy pat2
+  | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat1|iDestructHypGo Hz pat2]
+  | IPureElim => iPure Hz as ?
+  | IRewrite Right => iPure Hz as ->
+  | IRewrite Left => iPure Hz as <-
+  | IAlwaysElim ?pat => iPersistent Hz; iDestructHypGo Hz pat
+  | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
+  | _ => fail "iDestruct:" pat "invalid"
+  end.
 Local Ltac iDestructHypFindPat Hgo pat found pats :=
-    lazymatch pats with
-    | [] =>
-      lazymatch found with
-      | true => pm_prettify (* post-tactic prettification *)
-      | false => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
-      end
-    | ISimpl :: ?pats => simpl; iDestructHypFindPat Hgo pat found pats
-    | IClear ?H :: ?pats => iClear H; iDestructHypFindPat Hgo pat found pats
-    | IClearFrame ?H :: ?pats => iFrame H; iDestructHypFindPat Hgo pat found pats
-    | ?pat :: ?pats =>
-       lazymatch found with
-       | false => iDestructHypGo Hgo pat; iDestructHypFindPat Hgo pat true pats
-       | true => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
-       end
-    end.
+  lazymatch pats with
+  | [] =>
+    lazymatch found with
+    | true => pm_prettify (* post-tactic prettification *)
+    | false => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
+    end
+  | ISimpl :: ?pats => simpl; iDestructHypFindPat Hgo pat found pats
+  | IClear ?H :: ?pats => iClear H; iDestructHypFindPat Hgo pat found pats
+  | IClearFrame ?H :: ?pats => iFrame H; iDestructHypFindPat Hgo pat found pats
+  | ?pat :: ?pats =>
+     lazymatch found with
+     | false => iDestructHypGo Hgo pat; iDestructHypFindPat Hgo pat true pats
+     | true => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
+     end
+  end.
 Tactic Notation "iDestructHyp" constr(H) "as" constr(pat) :=
   let pats := intro_pat.parse pat in
   iDestructHypFindPat H pat false pats.
@@ -1221,34 +1221,34 @@ Tactic Notation "iCombine" constr(H1) constr(H2) "as" constr(pat) :=
 
 (** * Introduction tactic *)
 Ltac iIntros_go pats startproof :=
-    lazymatch pats with
-    | [] =>
-      lazymatch startproof with
-      | true => iStartProof
-      | false => idtac
-      end
-    (* Optimizations to avoid generating fresh names *)
-    | IPureElim :: ?pats => iIntro (?); iIntros_go pats startproof
-    | IAlwaysElim (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
-    | IDrop :: ?pats => iIntro _; iIntros_go pats startproof
-    | IIdent ?H :: ?pats => iIntro H; iIntros_go pats startproof
-    (* Introduction patterns that can only occur at the top-level *)
-    | IPureIntro :: ?pats => iPureIntro; iIntros_go pats false
-    | IAlwaysIntro :: ?pats => iAlways; iIntros_go pats false
-    | IModalIntro :: ?pats => iModIntro; iIntros_go pats false
-    | IForall :: ?pats => repeat iIntroForall; iIntros_go pats startproof
-    | IAll :: ?pats => repeat (iIntroForall || iIntro); iIntros_go pats startproof
-    (* Clearing and simplifying introduction patterns *)
-    | ISimpl :: ?pats => simpl; iIntros_go pats startproof
-    | IClear ?H :: ?pats => iClear H; iIntros_go pats false
-    | IClearFrame ?H :: ?pats => iFrame H; iIntros_go pats false
-    | IDone :: ?pats => try done; iIntros_go pats startproof
-    (* Introduction + destruct *)
-    | IAlwaysElim ?pat :: ?pats =>
-       let H := iFresh in iIntro #H; iDestructHyp H as pat; iIntros_go pats false
-    | ?pat :: ?pats =>
-       let H := iFresh in iIntro H; iDestructHyp H as pat; iIntros_go pats false
-    end.
+  lazymatch pats with
+  | [] =>
+    lazymatch startproof with
+    | true => iStartProof
+    | false => idtac
+    end
+  (* Optimizations to avoid generating fresh names *)
+  | IPureElim :: ?pats => iIntro (?); iIntros_go pats startproof
+  | IAlwaysElim (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
+  | IDrop :: ?pats => iIntro _; iIntros_go pats startproof
+  | IIdent ?H :: ?pats => iIntro H; iIntros_go pats startproof
+  (* Introduction patterns that can only occur at the top-level *)
+  | IPureIntro :: ?pats => iPureIntro; iIntros_go pats false
+  | IAlwaysIntro :: ?pats => iAlways; iIntros_go pats false
+  | IModalIntro :: ?pats => iModIntro; iIntros_go pats false
+  | IForall :: ?pats => repeat iIntroForall; iIntros_go pats startproof
+  | IAll :: ?pats => repeat (iIntroForall || iIntro); iIntros_go pats startproof
+  (* Clearing and simplifying introduction patterns *)
+  | ISimpl :: ?pats => simpl; iIntros_go pats startproof
+  | IClear ?H :: ?pats => iClear H; iIntros_go pats false
+  | IClearFrame ?H :: ?pats => iFrame H; iIntros_go pats false
+  | IDone :: ?pats => try done; iIntros_go pats startproof
+  (* Introduction + destruct *)
+  | IAlwaysElim ?pat :: ?pats =>
+     let H := iFresh in iIntro #H; iDestructHyp H as pat; iIntros_go pats false
+  | ?pat :: ?pats =>
+     let H := iFresh in iIntro H; iDestructHyp H as pat; iIntros_go pats false
+  end.
 Tactic Notation "iIntros" constr(pat) :=
   let pats := intro_pat.parse pat in iIntros_go pats true.
 Tactic Notation "iIntros" := iIntros [IAll].
