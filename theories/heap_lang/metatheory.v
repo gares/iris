@@ -111,6 +111,9 @@ Definition binder_insert {A} (x : binder) (v : A) (vs : gmap string A) : gmap st
 Lemma binder_insert_fmap {A B : Type} (f : A → B) (x : A) b vs :
   f <$> binder_insert b x vs = binder_insert b (f x) (f <$> vs).
 Proof. destruct b; rewrite ?fmap_insert //. Qed.
+Lemma lookup_binder_delete_None {A : Type} (vs : gmap string A) x y :
+  binder_delete x vs !! y = None ↔ x = BNamed y ∨ vs !! y = None.
+Proof. destruct x; rewrite /= ?lookup_delete_None; naive_solver. Qed.
 
 Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   match e with
@@ -166,3 +169,20 @@ Lemma subst_map_binder_insert b v vs e :
   subst_map (binder_insert b v vs) e =
   subst' b v (subst_map (binder_delete b vs) e).
 Proof. destruct b; rewrite ?subst_map_insert //. Qed.
+
+(* subst_map on closed expressions *)
+Lemma subst_map_is_closed X e vs :
+  is_closed_expr X e →
+  (∀ x, x ∈ X → vs !! x = None) →
+  subst_map vs e = e.
+Proof.
+  revert X vs. assert (∀ x x1 x2 X (vs : gmap string val),
+    (∀ x, x ∈ X → vs !! x = None) →
+    x ∈ x2 :b: x1 :b: X →
+    binder_delete x1 (binder_delete x2 vs) !! x = None).
+  { intros x x1 x2 X vs ??. rewrite !lookup_binder_delete_None. set_solver. }
+  induction e=> X vs /= ? HX; repeat case_match; naive_solver eauto with f_equal.
+Qed.
+
+Lemma subst_map_is_closed_nil e vs : is_closed_expr [] e → subst_map vs e = e.
+Proof. intros. apply subst_map_is_closed with []; set_solver. Qed.
