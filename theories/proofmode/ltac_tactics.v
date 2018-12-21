@@ -950,14 +950,14 @@ Tactic Notation "iLeft" :=
     [iSolveTC ||
      let P := match goal with |- FromOr ?P _ _ => P end in
      fail "iLeft:" P "not a disjunction"
-    |].
+    |(* subgoal *)].
 Tactic Notation "iRight" :=
   iStartProof;
   eapply tac_or_r;
     [iSolveTC ||
      let P := match goal with |- FromOr ?P _ _ => P end in
      fail "iRight:" P "not a disjunction"
-    |].
+    |(* subgoal *)].
 
 Local Tactic Notation "iOrDestruct" constr(H) "as" constr(H1) constr(H2) :=
   eapply tac_or_destruct with _ _ H _ H1 H2 _ _ _; (* (i:=H) (j1:=H1) (j2:=H2) *)
@@ -973,7 +973,8 @@ Local Tactic Notation "iOrDestruct" constr(H) "as" constr(H1) constr(H2) :=
     |pm_reflexivity ||
      let H2 := pretty_ident H2 in
      fail "iOrDestruct:" H2 "not fresh"
-    | |].
+    |(* subgoal 1 *)
+    |(* subgoal 2 *)].
 
 (** * Conjunction and separating conjunction *)
 Tactic Notation "iSplit" :=
@@ -981,7 +982,9 @@ Tactic Notation "iSplit" :=
   eapply tac_and_split;
     [iSolveTC ||
      let P := match goal with |- FromAnd ?P _ _ => P end in
-     fail "iSplit:" P "not a conjunction"| |].
+     fail "iSplit:" P "not a conjunction"
+    |(* subgoal 1 *)
+    |(* subgoal 2 *)].
 
 Tactic Notation "iSplitL" constr(Hs) :=
   iStartProof;
@@ -994,7 +997,8 @@ Tactic Notation "iSplitL" constr(Hs) :=
     |pm_reflexivity ||
      let Hs := iMissingHyps Hs in
      fail "iSplitL: hypotheses" Hs "not found"
-    | |].
+    |(* subgoal 1 *)
+    |(* subgoal 2 *)].
 
 Tactic Notation "iSplitR" constr(Hs) :=
   iStartProof;
@@ -1007,7 +1011,8 @@ Tactic Notation "iSplitR" constr(Hs) :=
     |pm_reflexivity ||
      let Hs := iMissingHyps Hs in
      fail "iSplitR: hypotheses" Hs "not found"
-    | |].
+    |(* subgoal 1 *)
+    |(* subgoal 2 *)].
 
 Tactic Notation "iSplitL" := iSplitR "".
 Tactic Notation "iSplitR" := iSplitL "".
@@ -1027,7 +1032,8 @@ Local Tactic Notation "iAndDestruct" constr(H) "as" constr(H1) constr(H2) :=
     |pm_reflexivity ||
      let H1 := pretty_ident H1 in
      let H2 := pretty_ident H2 in
-     fail "iAndDestruct:" H1 "or" H2 " not fresh"|].
+     fail "iAndDestruct:" H1 "or" H2 " not fresh"
+    |(* subgoal *)].
 
 Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :=
   eapply tac_and_destruct_choice with _ H _ d H' _ _ _;
@@ -1037,7 +1043,8 @@ Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :
      fail "iAndDestructChoice: cannot destruct" P
     |pm_reflexivity ||
      let H' := pretty_ident H' in
-     fail "iAndDestructChoice:" H' " not fresh"|].
+     fail "iAndDestructChoice:" H' " not fresh"
+    |(* subgoal *)].
 
 (** * Existential *)
 Tactic Notation "iExists" uconstr(x1) :=
@@ -1046,7 +1053,8 @@ Tactic Notation "iExists" uconstr(x1) :=
     [iSolveTC ||
      let P := match goal with |- FromExist ?P _ => P end in
      fail "iExists:" P "not an existential"
-    |pm_prettify; eexists x1].
+    |pm_prettify; eexists x1
+     (* subgoal *) ].
 
 Tactic Notation "iExists" uconstr(x1) "," uconstr(x2) :=
   iExists x1; iExists x2.
@@ -1083,7 +1091,8 @@ Local Tactic Notation "iExistDestruct" constr(H)
     [pm_reflexivity ||
      let Hx := pretty_ident Hx in
      fail "iExistDestruct:" Hx "not fresh"
-    |revert y; intros x].
+    |revert y; intros x
+     (* subgoal *)].
 
 (** * Modality introduction *)
 Tactic Notation "iModIntro" uconstr(sel) :=
@@ -1106,7 +1115,7 @@ Tactic Notation "iModIntro" uconstr(sel) :=
     |pm_reduce; iSolveTC ||
      fail "iModIntro: cannot filter spatial context when goal is not absorbing"
     |pm_prettify (* reduce redexes created by instantiation *)
-    ].
+     (* subgoal *) ].
 Tactic Notation "iModIntro" := iModIntro _.
 Tactic Notation "iAlways" := iModIntro.
 
@@ -1123,7 +1132,8 @@ Tactic Notation "iModCore" constr(H) :=
      let Q := match goal with |- ElimModal _ _ _ _ _ ?Q _ => Q end in
      fail "iMod: cannot eliminate modality " P "in" Q
     |iSolveSideCondition
-    |pm_reflexivity|].
+    |pm_reflexivity
+    |(* subgoal *)].
 
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
