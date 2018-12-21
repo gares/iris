@@ -400,21 +400,28 @@ Local Tactic Notation "iIntro" "(" simple_intropattern(x) ")" :=
      want to unfold x and start the proof mode. Instead, we want to
      use intros. So [iStartProof] has to be called only if [intros]
      fails *)
-  intros x ||
-    (iStartProof;
-     lazymatch goal with
-     | |- envs_entails _ _ =>
-       eapply tac_forall_intro;
-       [iSolveTC ||
-              let P := match goal with |- FromForall ?P _ => P end in
-              fail "iIntro: cannot turn" P "into a universal quantifier"
-       |pm_prettify; intros x]
-     end).
+  (* We use [_ || _] instead of [first [..|..]] so that the error in the second
+  branch propagates upwards. *)
+  (
+    (* introduction at the meta level *)
+    intros x
+  ) || (
+    (* introduction in the logic *)
+    iStartProof;
+    lazymatch goal with
+    | |- envs_entails _ _ =>
+      eapply tac_forall_intro;
+        [iSolveTC ||
+         let P := match goal with |- FromForall ?P _ => P end in
+         fail "iIntro: cannot turn" P "into a universal quantifier"
+        |pm_prettify; intros x
+         (* subgoal *)]
+    end).
 
 Local Tactic Notation "iIntro" constr(H) :=
   iStartProof;
   first
-  [ (* (?Q → _) *)
+  [(* (?Q → _) *)
     eapply tac_impl_intro with _ H _ _ _; (* (i:=H) *)
       [iSolveTC
       |pm_reduce; iSolveTC ||
@@ -425,58 +432,62 @@ Local Tactic Notation "iIntro" constr(H) :=
        let H := pretty_ident H in
        fail 1 "iIntro:" H "not fresh"
       |iSolveTC
-      |]
-  | (* (_ -∗ _) *)
+      |(* subgoal *)]
+  |(* (_ -∗ _) *)
     eapply tac_wand_intro with _ H _ _; (* (i:=H) *)
       [iSolveTC
       | pm_reflexivity ||
         let H := pretty_ident H in
         fail 1 "iIntro:" H "not fresh"
-      |]
-  | fail "iIntro: nothing to introduce" ].
+      |(* subgoal *)]
+  | fail 1 "iIntro: nothing to introduce" ].
 
 Local Tactic Notation "iIntro" "#" constr(H) :=
   iStartProof;
   first
-  [ (* (?P → _) *)
-    eapply tac_impl_intro_persistent with _ H _ _ _; (* (i:=H) *)
-      [iSolveTC
-      |iSolveTC ||
-       let P := match goal with |- IntoPersistent _ ?P _ => P end in
-       fail 1 "iIntro:" P "not persistent"
-      |pm_reflexivity ||
-       let H := pretty_ident H in
-       fail 1 "iIntro:" H "not fresh"
-      |]
-  | (* (?P -∗ _) *)
-    eapply tac_wand_intro_persistent with _ H _ _ _; (* (i:=H) *)
-      [ iSolveTC
-      | iSolveTC ||
-       let P := match goal with |- IntoPersistent _ ?P _ => P end in
-       fail 1 "iIntro:" P "not persistent"
-      |iSolveTC ||
-       let P := match goal with |- TCOr (Affine ?P) _ => P end in
-       fail 1 "iIntro:" P "not affine and the goal not absorbing"
-      |pm_reflexivity ||
-       let H := pretty_ident H in
-       fail 1 "iIntro:" H "not fresh"
-      |]
-  | fail "iIntro: nothing to introduce" ].
+  [(* (?P → _) *)
+   eapply tac_impl_intro_persistent with _ H _ _ _; (* (i:=H) *)
+     [iSolveTC
+     |iSolveTC ||
+      let P := match goal with |- IntoPersistent _ ?P _ => P end in
+      fail 1 "iIntro:" P "not persistent"
+     |pm_reflexivity ||
+      let H := pretty_ident H in
+      fail 1 "iIntro:" H "not fresh"
+     |(* subgoal *)]
+  |(* (?P -∗ _) *)
+   eapply tac_wand_intro_persistent with _ H _ _ _; (* (i:=H) *)
+     [iSolveTC
+     |iSolveTC ||
+      let P := match goal with |- IntoPersistent _ ?P _ => P end in
+      fail 1 "iIntro:" P "not persistent"
+     |iSolveTC ||
+      let P := match goal with |- TCOr (Affine ?P) _ => P end in
+      fail 1 "iIntro:" P "not affine and the goal not absorbing"
+     |pm_reflexivity ||
+      let H := pretty_ident H in
+      fail 1 "iIntro:" H "not fresh"
+     |(* subgoal *)]
+  |fail 1 "iIntro: nothing to introduce"].
 
 Local Tactic Notation "iIntro" "_" :=
+  iStartProof;
   first
-  [ (* (?Q → _) *)
-    iStartProof; eapply tac_impl_intro_drop;
-    [ iSolveTC | ]
-  | (* (_ -∗ _) *)
-    iStartProof; eapply tac_wand_intro_drop;
-      [ iSolveTC
-      | iSolveTC ||
-       let P := match goal with |- TCOr (Affine ?P) _ => P end in
-       fail 1 "iIntro:" P "not affine and the goal not absorbing"
-      |]
-  | (* (∀ _, _) *) iIntro (_)
-  | fail 1 "iIntro: nothing to introduce" ].
+  [(* (?Q → _) *)
+   eapply tac_impl_intro_drop;
+     [iSolveTC
+     |(* subgoal *)]
+  |(* (_ -∗ _) *)
+   eapply tac_wand_intro_drop;
+     [iSolveTC
+     |iSolveTC ||
+      let P := match goal with |- TCOr (Affine ?P) _ => P end in
+      fail 1 "iIntro:" P "not affine and the goal not absorbing"
+     |(* subgoal *)]
+  |(* (∀ _, _) *)
+   iIntro (_)
+   (* subgoal *)
+  |fail 1 "iIntro: nothing to introduce"].
 
 Local Tactic Notation "iIntroForall" :=
   lazymatch goal with
