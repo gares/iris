@@ -1,8 +1,16 @@
+(** This file provides a version of the fractional camera whose elements are
+in the internal (0,1] of the rational numbers.
+
+Notice that this camera could in principle be obtained by restricting the
+validity of the unbounded fractional camera [ufrac]. *)
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import proofmode_classes.
 Set Default Proof Using "Type".
 
+(** Since the standard (0,1] fractional camera is used more often, we define
+[frac] through a [Notation] instead of a [Definition]. That way, Coq infers the
+[frac] camera by default when using the [Qp] type. *)
 Notation frac := Qp (only parsing).
 
 Section frac.
