@@ -1043,7 +1043,7 @@ Local Tactic Notation "iAndDestruct" constr(H) "as" constr(H1) constr(H2) :=
     |pm_reflexivity ||
      let H1 := pretty_ident H1 in
      let H2 := pretty_ident H2 in
-     fail "iAndDestruct:" H1 "or" H2 " not fresh"
+     fail "iAndDestruct:" H1 "or" H2 "not fresh"
     |(* subgoal *)].
 
 Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :=
@@ -1054,7 +1054,7 @@ Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :
      fail "iAndDestructChoice: cannot destruct" P
     |pm_reflexivity ||
      let H' := pretty_ident H' in
-     fail "iAndDestructChoice:" H' " not fresh"
+     fail "iAndDestructChoice:" H' "not fresh"
     |(* subgoal *)].
 
 (** * Existential *)
@@ -1141,7 +1141,7 @@ Tactic Notation "iModCore" constr(H) :=
     |iSolveTC ||
      let P := match goal with |- ElimModal _ _ _ ?P _ _ _ => P end in
      let Q := match goal with |- ElimModal _ _ _ _ _ ?Q _ => Q end in
-     fail "iMod: cannot eliminate modality " P "in" Q
+     fail "iMod: cannot eliminate modality" P "in" Q
     |iSolveSideCondition
     |pm_reflexivity
     |(* subgoal *)].
@@ -2166,7 +2166,7 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
   end;
     [iSolveTC ||
      let I := match goal with |- ElimInv _ ?I  _ _ _ _ _ => I end in
-     fail "iInv: cannot eliminate invariant " I
+     fail "iInv: cannot eliminate invariant" I
     |iSolveSideCondition
     |let R := fresh in intros R; eexists; split; [pm_reflexivity|];
      (* Now we are left proving [envs_entails Δ'' R]. *)
