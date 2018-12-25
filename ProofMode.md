@@ -30,15 +30,15 @@ Context management
   pattern `selpat` and the Coq level hypotheses/variables `x1 ... xn`.
 - `iRevert (x1 ... xn) "selpat"` : revert the hypotheses given by the selection
   pattern `selpat` into wands, and the Coq level hypotheses/variables
-  `x1 ... xn` into universal quantifiers. Persistent hypotheses are wrapped into
-  the persistence modality.
+  `x1 ... xn` into universal quantifiers. Intuitionistic hypotheses are wrapped
+  into the intuitionistic modality.
 - `iRename "H1" into "H2"` : rename the hypothesis `H1` into `H2`.
 - `iSpecialize pm_trm` : instantiate universal quantifiers and eliminate
   implications/wands of a hypothesis `pm_trm`. See proof mode terms below.
 - `iSpecialize pm_trm as #` : instantiate universal quantifiers and eliminate
-  implications/wands of a hypothesis whose conclusion is persistent. In this
-  case, all hypotheses can be used for proving the premises, as well as for
-  the resulting goal.
+  implications/wands of a hypothesis `pm_trm` whose conclusion is persistent.
+  All hypotheses can be used for proving the premises of `pm_trm`, as well as
+  for the resulting main goal.
 - `iPoseProof pm_trm as (x1 ... xn) "ipat"` : put `pm_trm` into the context and
   eliminates it. This tactic is essentially the same as `iDestruct` with the
   difference that when `pm_trm` is a non-universally quantified intuitionistic
@@ -48,9 +48,9 @@ Context management
   specifies which hypotheses will be consumed by proving `P`. The introduction
   pattern `ipat` specifies how to eliminate `P`.
   In case all branches of `ipat` start with a `#` (which causes `P` to be moved
-  to the persistent context) or with an `%` (which causes `P` to be moved to the
-  pure Coq context), then one can use all hypotheses for proving `P` as well as
-  for proving the current goal.
+  to the intuitionistic context) or with an `%` (which causes `P` to be moved to
+  the pure Coq context), then one can use all hypotheses for proving `P` as well
+  as for proving the current goal.
 - `iAssert P as %cpat` : assert `P` and eliminate it using the Coq introduction
   pattern `cpat`. All hypotheses can be used for proving `P` as well as for
   proving the current goal.
@@ -68,8 +68,8 @@ Introduction of logical connectives
   one of the operands is persistent.
 - `iSplitL "H1 ... Hn"` : introduction of a separating conjunction. The
   hypotheses `H1 ... Hn` are used for the left conjunct, and the remaining ones
-  for the right conjunct. Persistent hypotheses are ignored, since these do not
-  need to be split.
+  for the right conjunct. Intuitionistic hypotheses are ignored, since these do
+  not need to be split.
 - `iSplitR "H0 ... Hn"` : symmetric version of the above.
 - `iExist t1, .., tn` : introduction of an existential quantifier.
 
@@ -82,7 +82,7 @@ Elimination of logical connectives
   elimination of an object level connective using the proof mode introduction
   pattern `ipat`.
   In case all branches of `ipat` start with a `#` (which causes the hypothesis
-  to be moved to the persistent context) or with an `%` (which causes the
+  to be moved to the intuitionistic context) or with an `%` (which causes the
   hypothesis to be moved to the pure Coq context), then one can use all
   hypotheses for proving the premises of `pm_trm`, as well as for proving the
   resulting goal. Note that in this case the hypotheses still need to be
@@ -100,11 +100,11 @@ Separating logic specific tactics
   of the selection pattern have the following meaning:
 
   + `%` : repeatedly frame hypotheses from the Coq context.
-  + `#` : repeatedly frame hypotheses from the persistent context.
+  + `#` : repeatedly frame hypotheses from the intuitionistic context.
   + `∗` : frame as much of the spatial context as possible.
 
   Notice that framing spatial hypotheses makes them disappear, but framing Coq
-  or persistent hypotheses does not make them disappear.
+  or intuitionistic hypotheses does not make them disappear.
 
   This tactic finishes the goal in case everything in the conclusion has been
   framed.
@@ -117,9 +117,9 @@ Modalities
 - `iModIntro mod` : introduction of a modality. The type class `FromModal` is
   used to specify which modalities this tactic should introduce. Instances of
   that type class include: later, except 0, basic update and fancy update,
-  persistently, affinely, plainly, absorbingly, objectively, and subjectively.
-  The optional argument `mod` can be used to specify what modality to introduce
-  in case of ambiguity, e.g. `⎡|==> P⎤`.
+  intuitionistically, persistently, affinely, plainly, absorbingly, objectively,
+  and subjectively. The optional argument `mod` can be used to specify what
+  modality to introduce in case of ambiguity, e.g. `⎡|==> P⎤`.
 - `iAlways` : a deprecated alias of `iModIntro`.
 - `iNext n` : an alias of `iModIntro (▷^n P)`.
 - `iNext` : an alias of `iModIntro (▷^1 P)`.
@@ -136,10 +136,10 @@ Induction
   `selpat`, and the spatial context.
 - `iInduction x as cpat "IH" forall (x1 ... xn) "selpat"` : perform induction on
   the Coq term `x`. The Coq introduction pattern is used to name the introduced
-  variables. The induction hypotheses are inserted into the persistent context
-  and given fresh names prefixed `IH`. The tactic generalizes over the Coq level
-  variables `x1 ... xn`, the hypotheses given by the selection pattern `selpat`,
-  and the spatial context.
+  variables. The induction hypotheses are inserted into the intuitionistic
+  context and given fresh names prefixed `IH`. The tactic generalizes over the
+  Coq level variables `x1 ... xn`, the hypotheses given by the selection pattern
+  `selpat`, and the spatial context.
 
 Rewriting / simplification
 --------------------------
@@ -186,7 +186,7 @@ following _selection patterns_:
 
 - `H` : select the hypothesis named `H`.
 - `%` : select the entire pure/Coq context.
-- `#` : select the entire persistent context.
+- `#` : select the entire intuitionistic context.
 - `∗` : select the entire spatial context.
 
 Introduction patterns
@@ -210,7 +210,7 @@ _introduction patterns_:
 - `[]` : false elimination.
 - `%` : move the hypothesis to the pure Coq context (anonymously).
 - `->` and `<-` : rewrite using a pure Coq equality
-- `# ipat` : move the hypothesis to the persistent context.
+- `# ipat` : move the hypothesis into the intuitionistic context.
 - `> ipat` : eliminate a modality (if the goal permits).
 
 Apart from this, there are the following introduction patterns that can only
@@ -259,11 +259,11 @@ _specification patterns_ to express splitting of hypotheses:
   spatial, it will be consumed.
 
 - `[H1 .. Hn]` and `[H1 .. Hn //]` : generate a goal for the premise with the
-  (spatial) hypotheses `H1 ... Hn` and all persistent hypotheses. The spatial
-  hypotheses among `H1 ... Hn` will be consumed, and will not be available for
-  subsequent goals. Hypotheses prefixed with a `$` will be framed in the
-  goal for the premise. The pattern can be terminated with a `//`, which causes
-  `done` to be called to close the goal (after framing).
+  (spatial) hypotheses `H1 ... Hn` and all intuitionistic hypotheses. The
+  spatial hypotheses among `H1 ... Hn` will be consumed, and will not be
+  available for subsequent goals. Hypotheses prefixed with a `$` will be framed
+  in the goal for the premise. The pattern can be terminated with a `//`, which
+  causes `done` to be called to close the goal (after framing).
 - `[-H1 ... Hn]` and `[-H1 ... Hn //]` : the negated forms of the above
   patterns, where the goal for the premise will have all spatial premises except
   `H1 .. Hn`.
@@ -285,14 +285,14 @@ _specification patterns_ to express splitting of hypotheses:
   which causes `done` to be called to close the goal.
 
 - `[$]` : solve the premise by framing. It will first repeatedly frame the
-  spatial hypotheses, and then repeatedly frame the persistent hypotheses.
+  spatial hypotheses, and then repeatedly frame the intuitionistic hypotheses.
   Spatial hypothesis that are not framed are carried over to the subsequent
   goal.
 - `[> $]` : like the above pattern, but this pattern can only be used if the
   goal is a modality `M`, in which case the goal for the premise will be wrapped
   in the modality `M` before framing.
 - `[# $]` : solve the persistent premise by framing. It will first repeatedly
-  frame the spatial hypotheses, and then repeatedly frame the persistent
+  frame the spatial hypotheses, and then repeatedly frame the intuitionistic
   hypotheses. This pattern does not consume any hypotheses.
 
 For example, given:
