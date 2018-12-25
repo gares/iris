@@ -526,12 +526,20 @@ Local Tactic Notation "iForallRevert" ident(x) :=
   | _ => revert x; first [apply tac_forall_revert|err x]
   end.
 
-Tactic Notation "iRevertHyp" constr(H) :=
-  eapply tac_revert with _ H _ _; (* (i:=H2) *)
+(** The tactic [iRevertHyp H with tac] reverts the hypothesis [H] and calls
+[tac] with a Boolean that is [true] iff [H] was in the intuitionistic context. *)
+Tactic Notation "iRevertHyp" constr(H) "with" tactic1(tac) :=
+  (* Create a Boolean evar [p] to keep track of whether the hypothesis [H] was
+  in the intuitionistic context. *)
+  let p := fresh in evar (p : bool);
+  let p' := eval unfold p in p in clear p;
+  eapply tac_revert with _ H p' _;
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iRevert:" H "not found"
-    |pm_reduce].
+    |pm_reduce; tac p'].
+
+Tactic Notation "iRevertHyp" constr(H) := iRevertHyp H with (fun _ => idtac).
 
 Tactic Notation "iRevert" constr(Hs) :=
   let rec go Hs :=
