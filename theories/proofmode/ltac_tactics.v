@@ -470,6 +470,12 @@ Local Tactic Notation "iIntro" "#" constr(H) :=
      |(* subgoal *)]
   |fail 1 "iIntro: nothing to introduce"].
 
+Local Tactic Notation "iIntro" constr(H) "as" constr(p) :=
+  lazymatch p with
+  | true => iIntro #H
+  | _ =>  iIntro H
+  end.
+
 Local Tactic Notation "iIntro" "_" :=
   iStartProof;
   first
@@ -741,10 +747,7 @@ Ltac iSpecializePat_go H1 pats :=
        iRevertHyp H1 with (fun p =>
          iSpecializePat_go H2tmp pats1;
            [.. (* side-conditions of [iSpecialize] *)
-           |lazymatch p with
-            | true => iIntro #H1
-            | _ => iIntro H1
-            end]);
+           |iIntro H1 as p]);
          (* We put the stuff below outside of the closure to get less verbose
          Ltac backtraces (which would otherwise include the whole closure). *)
          [.. (* side-conditions of [iSpecialize] *)
@@ -1531,12 +1534,7 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     lazymatch Hs with
     | [] => tac
     | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
-    | ESelIdent ?p ?H :: ?Hs =>
-       iRevertHyp H; go Hs;
-       match p with
-       | true => iIntro #H
-       | false => iIntro H
-       end
+    | ESelIdent ?p ?H :: ?Hs => iRevertHyp H; go Hs; iIntro H as p
     end in
   try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 
