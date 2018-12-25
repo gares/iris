@@ -405,6 +405,45 @@ Lemma test_assert_pure (φ : Prop) P :
   φ → P ⊢ P ∗ ⌜φ⌝.
 Proof. iIntros (Hφ). iAssert ⌜φ⌝%I with "[%]" as "$"; auto with iFrame. Qed.
 
+Lemma test_specialize_very_nested (φ : Prop) P P2 Q R1 R2 :
+  φ →
+  P -∗ P2 -∗
+  (<affine> ⌜ φ ⌝ -∗ P2 -∗ Q) -∗
+  (P -∗ Q -∗ R1) -∗
+  (R1 -∗ True -∗ R2) -∗
+  R2.
+Proof.
+  iIntros (?) "HP HP2 HQ H1 H2".
+  by iApply ("H2" with "(H1 HP (HQ [% //] [-])) [//]").
+Qed.
+
+Lemma test_specialize_very_very_nested P1 P2 P3 P4 P5 :
+  □ P1 -∗
+  □ (P1 -∗ P2) -∗
+  (P2 -∗ P2 -∗ P3) -∗
+  (P3 -∗ P4) -∗
+  (P4 -∗ P5) -∗
+  P5.
+Proof.
+  iIntros "#H #H1 H2 H3 H4".
+  by iSpecialize ("H4" with "(H3 (H2 (H1 H) (H1 H)))").
+Qed.
+
+Check "test_specialize_nested_intuitionistic".
+Lemma test_specialize_nested_intuitionistic (φ : Prop) P P2 Q R1 R2 :
+  φ →
+  □ P -∗ □ (P -∗ Q) -∗ (Q -∗ Q -∗ R2) -∗ R2.
+Proof.
+  iIntros (?) "#HP #HQ HR".
+  iSpecialize ("HR" with "(HQ HP) (HQ HP)").
+  Show.
+  done.
+Qed.
+
+Lemma test_specialize_intuitionistic P Q :
+  □ P -∗ □ (P -∗ Q) -∗ □ Q.
+Proof. iIntros "#HP #HQ". iSpecialize ("HQ" with "HP"). done. Qed.
+
 Lemma test_iEval x y : ⌜ (y + x)%nat = 1 ⌝ -∗ ⌜ S (x + y) = 2%nat ⌝ : PROP.
 Proof.
   iIntros (H).
@@ -435,7 +474,7 @@ Lemma test_with_ident P Q R : P -∗ Q -∗ (P -∗ Q -∗ R) -∗ R.
 Proof.
   iIntros "? HQ H".
   iMatchHyp (fun H _ =>
-    iApply ("H" with [spec_patterns.SIdent H; spec_patterns.SIdent "HQ"])).
+    iApply ("H" with [spec_patterns.SIdent H []; spec_patterns.SIdent "HQ" []])).
 Qed.
 
 Lemma iFrame_with_evar_r P Q :

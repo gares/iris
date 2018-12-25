@@ -14,7 +14,7 @@ Record spec_goal := SpecGoal {
 
 Inductive spec_pat :=
   | SForall : spec_pat
-  | SIdent : ident → spec_pat
+  | SIdent : ident → list spec_pat → spec_pat
   | SPureGoal (perform_done : bool) : spec_pat
   | SGoal : spec_goal → spec_pat
   | SAutoFrame : goal_kind → spec_pat.
@@ -29,31 +29,50 @@ Definition spec_pat_modal (p : spec_pat) : bool :=
   end.
 
 Module spec_pat.
-Inductive state :=
-  | StTop : state
-  | StAssert : spec_goal → state.
+Inductive stack_item :=
+  | StPat : spec_pat → stack_item
+  | StIdent : string → stack_item.
+Notation stack := (list stack_item).
 
-Fixpoint parse_go (ts : list token) (k : list spec_pat) : option (list spec_pat) :=
+Fixpoint close (k : stack) (ps : list spec_pat) : option (list spec_pat) :=
+  match k with
+  | [] => Some ps
+  | StPat p :: k => close k (p :: ps)
+  | StIdent _ :: _ => None
+  end.
+
+Fixpoint close_ident (k : stack) (ps : list spec_pat) : option stack :=
+  match k with
+  | [] => None
+  | StPat p :: k => close_ident k (p :: ps)
+  | StIdent s :: k => Some (StPat (SIdent s ps) :: k)
+  end.
+
+Fixpoint parse_go (ts : list token) (k : stack) : option (list spec_pat) :=
   match ts with
-  | [] => Some (reverse k)
-  | TName s :: ts => parse_go ts (SIdent s :: k)
+  | [] => close k []
+  | TParenL :: TName s :: ts => parse_go ts (StIdent s :: k)
+  | TParenR :: ts => k ← close_ident k []; parse_go ts k
+  | TName s :: ts => parse_go ts (StPat (SIdent s []) :: k)
   | TBracketL :: TAlways :: TFrame :: TBracketR :: ts =>
-     parse_go ts (SAutoFrame GIntuitionistic :: k)
+     parse_go ts (StPat (SAutoFrame GIntuitionistic) :: k)
   | TBracketL :: TFrame :: TBracketR :: ts =>
-     parse_go ts (SAutoFrame GSpatial :: k)
+     parse_go ts (StPat (SAutoFrame GSpatial) :: k)
   | TBracketL :: TModal :: TFrame :: TBracketR :: ts =>
-     parse_go ts (SAutoFrame GModal :: k)
-  | TBracketL :: TPure :: TBracketR :: ts => parse_go ts (SPureGoal false :: k)
-  | TBracketL :: TPure :: TDone :: TBracketR :: ts => parse_go ts (SPureGoal true :: k)
+     parse_go ts (StPat (SAutoFrame GModal) :: k)
+  | TBracketL :: TPure :: TBracketR :: ts =>
+     parse_go ts (StPat (SPureGoal false) :: k)
+  | TBracketL :: TPure :: TDone :: TBracketR :: ts =>
+     parse_go ts (StPat (SPureGoal true) :: k)
   | TBracketL :: TAlways :: ts => parse_goal ts GIntuitionistic false [] [] k
   | TBracketL :: TModal :: ts => parse_goal ts GModal false [] [] k
   | TBracketL :: ts => parse_goal ts GSpatial false [] [] k
-  | TForall :: ts => parse_go ts (SForall :: k)
+  | TForall :: ts => parse_go ts (StPat SForall :: k)
   | _ => None
   end
 with parse_goal (ts : list token)
     (ki : goal_kind) (neg : bool) (frame hyps : list ident)
-    (k : list spec_pat) : option (list spec_pat) :=
+    (k : stack) : option (list spec_pat) :=
   match ts with
   | TMinus :: ts =>
      guard (¬neg ∧ frame = [] ∧ hyps = []);
@@ -61,9 +80,9 @@ with parse_goal (ts : list token)
   | TName s :: ts => parse_goal ts ki neg frame (INamed s :: hyps) k
   | TFrame :: TName s :: ts => parse_goal ts ki neg (INamed s :: frame) hyps k
   | TDone :: TBracketR :: ts =>
-     parse_go ts (SGoal (SpecGoal ki neg (reverse frame) (reverse hyps) true) :: k)
+     parse_go ts (StPat (SGoal (SpecGoal ki neg (reverse frame) (reverse hyps) true)) :: k)
   | TBracketR :: ts =>
-     parse_go ts (SGoal (SpecGoal ki neg (reverse frame) (reverse hyps) false) :: k)
+     parse_go ts (StPat (SGoal (SpecGoal ki neg (reverse frame) (reverse hyps) false)) :: k)
   | _ => None
   end.
 Definition parse (s : string) : option (list spec_pat) :=

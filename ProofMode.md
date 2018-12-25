@@ -260,6 +260,11 @@ _specification patterns_ to express splitting of hypotheses:
 - `H` : use the hypothesis `H` (it should match the premise exactly). If `H` is
   spatial, it will be consumed.
 
+- `(H spat1 .. spatn)` : first recursively specialize the hypothesis `H` using
+  the specialization patterns `spat1 .. spatn`, and finally use the result of
+  the specialization of `H` (it should match the premise exactly). If `H` is
+  spatial, it will be consumed.
+
 - `[H1 .. Hn]` and `[H1 .. Hn //]` : generate a goal for the premise with the
   (spatial) hypotheses `H1 ... Hn` and all intuitionistic hypotheses. The
   spatial hypotheses among `H1 ... Hn` will be consumed, and will not be
