@@ -292,7 +292,7 @@ Section proofmode_classes.
   Proof.
     intros ?. rewrite /ElimAcc.
     iIntros "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
-    iApply (wp_wand with "[Hinner Hα]"); first by iApply "Hinner".
+    iApply (wp_wand with "(Hinner Hα)").
     iIntros (v) ">[Hβ HΦ]". iApply "HΦ". by iApply "Hclose".
   Qed.
 
@@ -304,7 +304,7 @@ Section proofmode_classes.
     rewrite /ElimAcc.
     iIntros "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
     iApply wp_fupd.
-    iApply (wp_wand with "[Hinner Hα]"); first by iApply "Hinner".
+    iApply (wp_wand with "(Hinner Hα)").
     iIntros (v) ">[Hβ HΦ]". iApply "HΦ". by iApply "Hclose".
   Qed.
 End proofmode_classes.
