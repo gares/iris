@@ -467,12 +467,14 @@ Tactic failure: iStartProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>" and
+"iPoseProofCoreLem (constr) as (constr) before_tc (tactic)" and
 "<iris.proofmode.ltac_tactics.iIntoEmpValid>", last call failed.
 Tactic failure: iPoseProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic)", 
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
+"iPoseProofCoreLem (constr) as (constr) before_tc (tactic)", 
+"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
 "tac" (bound to fun H => iDestructHyp H as pat),
 "iDestructHyp (constr) as (constr)",
 "<iris.proofmode.ltac_tactics.iDestructHypFindPat>",
@@ -513,11 +515,7 @@ invalid.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>", 
-"goal_tac" (bound to fun _ => spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: cannot apply P.
@@ -525,11 +523,7 @@ Tactic failure: iApply: cannot apply P.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>", 
-"goal_tac" (bound to fun _ => spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: Q
@@ -538,11 +532,7 @@ not absorbing and the remaining hypotheses not affine.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>",
-"<iris.proofmode.ltac_tactics.iPoseProofCore_go>", 
-"goal_tac" (bound to fun _ => spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: Q
