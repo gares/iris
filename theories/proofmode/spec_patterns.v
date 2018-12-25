@@ -2,7 +2,7 @@ From stdpp Require Export strings.
 From iris.proofmode Require Import base tokens.
 Set Default Proof Using "Type".
 
-Inductive goal_kind := GSpatial | GModal | GPersistent.
+Inductive goal_kind := GSpatial | GModal | GIntuitionistic.
 
 Record spec_goal := SpecGoal {
   spec_goal_kind : goal_kind;
@@ -38,14 +38,14 @@ Fixpoint parse_go (ts : list token) (k : list spec_pat) : option (list spec_pat)
   | [] => Some (reverse k)
   | TName s :: ts => parse_go ts (SIdent s :: k)
   | TBracketL :: TAlways :: TFrame :: TBracketR :: ts =>
-     parse_go ts (SAutoFrame GPersistent :: k)
+     parse_go ts (SAutoFrame GIntuitionistic :: k)
   | TBracketL :: TFrame :: TBracketR :: ts =>
      parse_go ts (SAutoFrame GSpatial :: k)
   | TBracketL :: TModal :: TFrame :: TBracketR :: ts =>
      parse_go ts (SAutoFrame GModal :: k)
   | TBracketL :: TPure :: TBracketR :: ts => parse_go ts (SPureGoal false :: k)
   | TBracketL :: TPure :: TDone :: TBracketR :: ts => parse_go ts (SPureGoal true :: k)
-  | TBracketL :: TAlways :: ts => parse_goal ts GPersistent false [] [] k
+  | TBracketL :: TAlways :: ts => parse_goal ts GIntuitionistic false [] [] k
   | TBracketL :: TModal :: ts => parse_goal ts GModal false [] [] k
   | TBracketL :: ts => parse_goal ts GSpatial false [] [] k
   | TForall :: ts => parse_go ts (SForall :: k)

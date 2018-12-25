@@ -601,7 +601,7 @@ with the exception of:
 - [FromAssumption] used by [iAssumption]
 - [Frame] and [MaybeFrame] used by [iFrame]
 - [MaybeIntoLaterN] and [FromLaterN] used by [iNext]
-- [IntoPersistent] used by [iPersistent]
+- [IntoPersistent] used by [iIntuitionistic]
 *)
 Instance into_pure_tc_opaque {PROP : bi} (P : PROP) φ :
   IntoPure P φ → IntoPure (tc_opaque P) φ := id.

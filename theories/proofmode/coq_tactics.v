@@ -135,8 +135,8 @@ Qed.
 Lemma tac_pure_revert Δ φ Q : envs_entails Δ (⌜φ⌝ → Q) → (φ → envs_entails Δ Q).
 Proof. rewrite envs_entails_eq. intros HΔ ?. by rewrite HΔ pure_True // left_id. Qed.
 
-(** * Persistence *)
-Lemma tac_persistent Δ Δ' i p P P' Q :
+(** * Intuitionistic *)
+Lemma tac_intuitionistic Δ Δ' i p P P' Q :
   envs_lookup i Δ = Some (p, P) →
   IntoPersistent p P P' →
   (if p then TCTrue else TCOr (Affine P) (Absorbing Q)) →
@@ -170,7 +170,7 @@ Proof.
   - apply impl_intro_l. rewrite envs_app_singleton_sound //; simpl.
     by rewrite -(from_affinely P') persistent_and_affinely_sep_l_1 wand_elim_r.
 Qed.
-Lemma tac_impl_intro_persistent Δ Δ' i P P' Q R :
+Lemma tac_impl_intro_intuitionistic Δ Δ' i P P' Q R :
   FromImpl R P Q →
   IntoPersistent false P P' →
   envs_app true (Esnoc Enil i P') Δ = Some Δ' →
@@ -195,7 +195,7 @@ Proof.
   rewrite /FromWand envs_entails_eq => <- ? HQ.
   rewrite envs_app_sound //; simpl. by rewrite right_id HQ.
 Qed.
-Lemma tac_wand_intro_persistent Δ Δ' i P P' Q R :
+Lemma tac_wand_intro_intuitionistic Δ Δ' i P P' Q R :
   FromWand R P Q →
   IntoPersistent false P P' →
   TCOr (Affine P) (Absorbing Q) →
@@ -234,7 +234,7 @@ Lemma tac_specialize Δ Δ' Δ'' i p j q P1 P2 R Q :
 Proof.
   rewrite envs_entails_eq. intros [? ->]%envs_lookup_delete_Some Hj ? Hj' <-.
   rewrite (envs_lookup_sound' _ false) //; simpl. destruct p; simpl.
-  - move: Hj; rewrite envs_delete_persistent=> Hj.
+  - move: Hj; rewrite envs_delete_intuitionistic=> Hj.
     rewrite envs_simple_replace_singleton_sound //; simpl.
     rewrite -intuitionistically_if_idemp -intuitionistically_idemp into_wand /=.
     rewrite assoc (intuitionistically_intuitionistically_if q).
@@ -296,7 +296,7 @@ Proof.
   by rewrite emp_wand wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert_persistent Δ Δ' Δ'' j q P1 P1' P2 R Q :
+Lemma tac_specialize_assert_intuitionistic Δ Δ' Δ'' j q P1 P1' P2 R Q :
   envs_lookup_delete true j Δ = Some (q, R, Δ') →
   IntoWand q true R P1 P2 →
   Persistent P1 →
@@ -315,7 +315,7 @@ Proof.
   by rewrite intuitionistically_if_sep_2 into_wand wand_elim_l wand_elim_r.
 Qed.
 
-Lemma tac_specialize_persistent_helper Δ Δ'' j q P R R' Q :
+Lemma tac_specialize_intuitionistic_helper Δ Δ'' j q P R R' Q :
   envs_lookup j Δ = Some (q,P) →
   envs_entails Δ (<absorb> R) →
   IntoPersistent false R R' →
@@ -333,7 +333,7 @@ Qed.
 
 (* A special version of [tac_assumption] that does not do any of the
 [FromAssumption] magic. *)
-Lemma tac_specialize_persistent_helper_done Δ i q P :
+Lemma tac_specialize_intuitionistic_helper_done Δ i q P :
   envs_lookup i Δ = Some (q,P) →
   envs_entails Δ (<absorb> P).
 Proof.
@@ -631,8 +631,8 @@ End bi_tactics.
 (** The following _private_ classes are used internally by [tac_modal_intro] /
 [iModIntro] to transform the proofmode environments when introducing a modality.
 
-The class [TransformPersistentEnv M C Γin Γout] is used to transform the
-persistent environment using a type class [C].
+The class [TransformIntuitionisticEnv M C Γin Γout] is used to transform the
+intuitionistic environment using a type class [C].
 
 Inputs:
 - [Γin] : the original environment.
@@ -643,18 +643,18 @@ Inputs:
 
 Outputs:
 - [Γout] : the resulting environment. *)
-Class TransformPersistentEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
+Class TransformIntuitionisticEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
     (C : PROP2 → PROP1 → Prop) (Γin : env PROP2) (Γout : env PROP1) := {
-  transform_persistent_env :
+  transform_intuitionistic_env :
     (∀ P Q, C P Q → □ P ⊢ M (□ Q)) →
     (∀ P Q, M P ∧ M Q ⊢ M (P ∧ Q)) →
     □ ([∧] Γin) ⊢ M (□ ([∧] Γout));
-  transform_persistent_env_wf : env_wf Γin → env_wf Γout;
-  transform_persistent_env_dom i : Γin !! i = None → Γout !! i = None;
+  transform_intuitionistic_env_wf : env_wf Γin → env_wf Γout;
+  transform_intuitionistic_env_dom i : Γin !! i = None → Γout !! i = None;
 }.
 
-(* The class [TransformPersistentEnv M C Γin Γout filtered] is used to transform
-the persistent environment using a type class [C].
+(* The class [TransformIntuitionisticEnv M C Γin Γout filtered] is used to transform
+the intuitionistic environment using a type class [C].
 
 Inputs:
 - [Γin] : the original environment.
@@ -676,8 +676,8 @@ Class TransformSpatialEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
   transform_spatial_env_dom i : Γin !! i = None → Γout !! i = None;
 }.
 
-(* The class [IntoModalPersistentEnv M Γin Γout s] is used to transform the
-persistent environment with respect to the behavior needed to introduce [M] as
+(* The class [IntoModalIntuitionisticEnv M Γin Γout s] is used to transform the
+intuitionistic environment with respect to the behavior needed to introduce [M] as
 given by [s : modality_intro_spec PROP1 PROP2].
 
 Inputs:
@@ -688,24 +688,24 @@ Inputs:
 
 Outputs:
 - [Γout] : the resulting environment. *)
-Inductive IntoModalPersistentEnv {PROP2} : ∀ {PROP1} (M : modality PROP1 PROP2)
+Inductive IntoModalIntuitionisticEnv {PROP2} : ∀ {PROP1} (M : modality PROP1 PROP2)
     (Γin : env PROP2) (Γout : env PROP1), modality_action PROP1 PROP2 → Prop :=
-  | MIEnvIsEmpty_persistent {PROP1} (M : modality PROP1 PROP2) :
-     IntoModalPersistentEnv M Enil Enil MIEnvIsEmpty
-  | MIEnvForall_persistent (M : modality PROP2 PROP2) (C : PROP2 → Prop) Γ :
+  | MIEnvIsEmpty_intuitionistic {PROP1} (M : modality PROP1 PROP2) :
+     IntoModalIntuitionisticEnv M Enil Enil MIEnvIsEmpty
+  | MIEnvForall_intuitionistic (M : modality PROP2 PROP2) (C : PROP2 → Prop) Γ :
      TCForall C (env_to_list Γ) →
-     IntoModalPersistentEnv M Γ Γ (MIEnvForall C)
-  | MIEnvTransform_persistent {PROP1}
+     IntoModalIntuitionisticEnv M Γ Γ (MIEnvForall C)
+  | MIEnvTransform_intuitionistic {PROP1}
        (M : modality PROP1 PROP2) (C : PROP2 → PROP1 → Prop) Γin Γout :
-     TransformPersistentEnv M C Γin Γout →
-     IntoModalPersistentEnv M Γin Γout (MIEnvTransform C)
-  | MIEnvClear_persistent {PROP1 : bi} (M : modality PROP1 PROP2) Γ :
-     IntoModalPersistentEnv M Γ Enil MIEnvClear
-  | MIEnvId_persistent (M : modality PROP2 PROP2) Γ :
-     IntoModalPersistentEnv M Γ Γ MIEnvId.
-Existing Class IntoModalPersistentEnv.
-Existing Instances MIEnvIsEmpty_persistent MIEnvForall_persistent
-  MIEnvTransform_persistent MIEnvClear_persistent MIEnvId_persistent.
+     TransformIntuitionisticEnv M C Γin Γout →
+     IntoModalIntuitionisticEnv M Γin Γout (MIEnvTransform C)
+  | MIEnvClear_intuitionistic {PROP1 : bi} (M : modality PROP1 PROP2) Γ :
+     IntoModalIntuitionisticEnv M Γ Enil MIEnvClear
+  | MIEnvId_intuitionistic (M : modality PROP2 PROP2) Γ :
+     IntoModalIntuitionisticEnv M Γ Γ MIEnvId.
+Existing Class IntoModalIntuitionisticEnv.
+Existing Instances MIEnvIsEmpty_intuitionistic MIEnvForall_intuitionistic
+  MIEnvTransform_intuitionistic MIEnvClear_intuitionistic MIEnvId_intuitionistic.
 
 (* The class [IntoModalSpatialEnv M Γin Γout s] is used to transform the spatial
 environment with respect to the behavior needed to introduce [M] as given by
@@ -742,15 +742,15 @@ Existing Instances MIEnvIsEmpty_spatial MIEnvForall_spatial
 Section tac_modal_intro.
   Context {PROP1 PROP2 : bi} (M : modality PROP1 PROP2).
 
-  Global Instance transform_persistent_env_nil C : TransformPersistentEnv M C Enil Enil.
+  Global Instance transform_intuitionistic_env_nil C : TransformIntuitionisticEnv M C Enil Enil.
   Proof.
     split; [|eauto using Enil_wf|done]=> /= ??.
     rewrite !intuitionistically_True_emp -modality_emp //.
   Qed.
-  Global Instance transform_persistent_env_snoc (C : PROP2 → PROP1 → Prop) Γ Γ' i P Q :
+  Global Instance transform_intuitionistic_env_snoc (C : PROP2 → PROP1 → Prop) Γ Γ' i P Q :
     C P Q →
-    TransformPersistentEnv M C Γ Γ' →
-    TransformPersistentEnv M C (Esnoc Γ i P) (Esnoc Γ' i Q).
+    TransformIntuitionisticEnv M C Γ Γ' →
+    TransformIntuitionisticEnv M C (Esnoc Γ i P) (Esnoc Γ' i Q).
   Proof.
     intros ? [HΓ Hwf Hdom]; split; simpl.
     - intros HC Hand. rewrite intuitionistically_and HC // HΓ //.
@@ -758,9 +758,9 @@ Section tac_modal_intro.
     - inversion 1; constructor; auto.
     - intros j. destruct (ident_beq _ _); naive_solver.
   Qed.
-  Global Instance transform_persistent_env_snoc_not (C : PROP2 → PROP1 → Prop) Γ Γ' i P :
-    TransformPersistentEnv M C Γ Γ' →
-    TransformPersistentEnv M C (Esnoc Γ i P) Γ' | 100.
+  Global Instance transform_intuitionistic_env_snoc_not (C : PROP2 → PROP1 → Prop) Γ Γ' i P :
+    TransformIntuitionisticEnv M C Γ Γ' →
+    TransformIntuitionisticEnv M C (Esnoc Γ i P) Γ' | 100.
   Proof.
     intros [HΓ Hwf Hdom]; split; simpl.
     - intros HC Hand. by rewrite and_elim_r HΓ.
@@ -804,7 +804,7 @@ Section tac_modal_intro.
   (** The actual introduction tactic *)
   Lemma tac_modal_intro {A} (sel : A) Γp Γs n Γp' Γs' Q Q' fi :
     FromModal M sel Q' Q →
-    IntoModalPersistentEnv M Γp Γp' (modality_intuitionistic_action M) →
+    IntoModalIntuitionisticEnv M Γp Γp' (modality_intuitionistic_action M) →
     IntoModalSpatialEnv M Γs Γs' (modality_spatial_action M) fi →
     (if fi then Absorbing Q' else TCTrue) →
     envs_entails (Envs Γp' Γs' n) Q → envs_entails (Envs Γp Γs n) Q'.
@@ -897,8 +897,8 @@ Qed.
 (** The class [MaybeIntoLaterNEnvs] is used by tactics that need to introduce
 laters, e.g. the symbolic execution tactics. *)
 Class MaybeIntoLaterNEnvs (n : nat) (Δ1 Δ2 : envs PROP) := {
-  into_later_persistent :
-    TransformPersistentEnv (modality_laterN n) (MaybeIntoLaterN false n)
+  into_later_intuitionistic :
+    TransformIntuitionisticEnv (modality_laterN n) (MaybeIntoLaterN false n)
       (env_intuitionistic Δ1) (env_intuitionistic Δ2);
   into_later_spatial :
     TransformSpatialEnv (modality_laterN n)
@@ -906,7 +906,7 @@ Class MaybeIntoLaterNEnvs (n : nat) (Δ1 Δ2 : envs PROP) := {
 }.
 
 Global Instance into_laterN_envs n Γp1 Γp2 Γs1 Γs2 m :
-  TransformPersistentEnv (modality_laterN n) (MaybeIntoLaterN false n) Γp1 Γp2 →
+  TransformIntuitionisticEnv (modality_laterN n) (MaybeIntoLaterN false n) Γp1 Γp2 →
   TransformSpatialEnv (modality_laterN n) (MaybeIntoLaterN false n) Γs1 Γs2 false →
   MaybeIntoLaterNEnvs n (Envs Γp1 Γs1 m) (Envs Γp2 Γs2 m).
 Proof. by split. Qed.

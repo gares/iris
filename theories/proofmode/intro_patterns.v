@@ -100,11 +100,11 @@ with parse_clear (ts : list token) (k : stack) : option stack :=
   match ts with
   | TFrame :: TName s :: ts => parse_clear ts (StPat (IClearFrame (SelIdent s)) :: k)
   | TFrame :: TPure :: ts => parse_clear ts (StPat (IClearFrame SelPure) :: k)
-  | TFrame :: TAlways :: ts => parse_clear ts (StPat (IClearFrame SelPersistent) :: k)
+  | TFrame :: TAlways :: ts => parse_clear ts (StPat (IClearFrame SelIntuitionistic) :: k)
   | TFrame :: TSep :: ts => parse_clear ts (StPat (IClearFrame SelSpatial) :: k)
   | TName s :: ts => parse_clear ts (StPat (IClear (SelIdent s)) :: k)
   | TPure :: ts => parse_clear ts (StPat (IClear SelPure) :: k)
-  | TAlways :: ts => parse_clear ts (StPat (IClear SelPersistent) :: k)
+  | TAlways :: ts => parse_clear ts (StPat (IClear SelIntuitionistic) :: k)
   | TSep :: ts => parse_clear ts (StPat (IClear SelSpatial) :: k)
   | TBraceR :: ts => parse_go ts k
   | _ => None
@@ -148,25 +148,25 @@ Ltac parse_one s :=
   end.
 End intro_pat.
 
-Fixpoint intro_pat_persistent (p : intro_pat) :=
+Fixpoint intro_pat_intuitionistic (p : intro_pat) :=
   match p with
   | IPureElim => true
   | IAlwaysElim _ => true
-  | IList pps => forallb (forallb intro_pat_persistent) pps
+  | IList pps => forallb (forallb intro_pat_intuitionistic) pps
   | ISimpl => true
   | IClear _ => true
   | IClearFrame _ => true
   | _ => false
   end.
 
-Ltac intro_pat_persistent p :=
+Ltac intro_pat_intuitionistic p :=
   lazymatch type of p with
-  | intro_pat => eval cbv in (intro_pat_persistent p)
-  | list intro_pat => eval cbv in (forallb intro_pat_persistent p)
+  | intro_pat => eval cbv in (intro_pat_intuitionistic p)
+  | list intro_pat => eval cbv in (forallb intro_pat_intuitionistic p)
   | string =>
      let pat := intro_pat.parse p in
-     eval cbv in (forallb intro_pat_persistent pat)
+     eval cbv in (forallb intro_pat_intuitionistic pat)
   | ident => false
   | bool => p
-  | ?X => fail "intro_pat_persistent:" p "has unexpected type" X
+  | ?X => fail "intro_pat_intuitionistic:" p "has unexpected type" X
   end.

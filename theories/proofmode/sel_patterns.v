@@ -4,7 +4,7 @@ Set Default Proof Using "Type".
 
 Inductive sel_pat :=
   | SelPure
-  | SelPersistent
+  | SelIntuitionistic
   | SelSpatial
   | SelIdent : ident → sel_pat.
 
@@ -21,7 +21,7 @@ Fixpoint parse_go (ts : list token) (k : list sel_pat) : option (list sel_pat) :
   | [] => Some (reverse k)
   | TName s :: ts => parse_go ts (SelIdent s :: k)
   | TPure :: ts => parse_go ts (SelPure :: k)
-  | TAlways :: ts => parse_go ts (SelPersistent :: k)
+  | TAlways :: ts => parse_go ts (SelIntuitionistic :: k)
   | TSep :: ts => parse_go ts (SelSpatial :: k)
   | _ => None
   end.

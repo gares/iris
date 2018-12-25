@@ -148,9 +148,9 @@ Local Ltac iElaborateSelPat_go pat Δ Hs :=
   lazymatch pat with
   | [] => eval cbv in Hs
   | SelPure :: ?pat =>  iElaborateSelPat_go pat Δ (ESelPure :: Hs)
-  | SelPersistent :: ?pat =>
+  | SelIntuitionistic :: ?pat =>
     let Hs' := pm_eval (env_dom (env_intuitionistic Δ)) in
-    let Δ' := pm_eval (envs_clear_persistent Δ) in
+    let Δ' := pm_eval (envs_clear_intuitionistic Δ) in
     iElaborateSelPat_go pat Δ' ((ESelIdent true <$> Hs') ++ Hs)
   | SelSpatial :: ?pat =>
     let Hs' := pm_eval (env_dom (env_spatial Δ)) in
@@ -249,18 +249,18 @@ Tactic Notation "iAssumption" :=
 (** * False *)
 Tactic Notation "iExFalso" := apply tac_ex_falso.
 
-(** * Making hypotheses persistent or pure *)
-Local Tactic Notation "iPersistent" constr(H) :=
-  eapply tac_persistent with _ H _ _ _; (* (i:=H) *)
+(** * Making hypotheses intuitionistic or pure *)
+Local Tactic Notation "iIntuitionistic" constr(H) :=
+  eapply tac_intuitionistic with _ H _ _ _; (* (i:=H) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
-     fail "iPersistent:" H "not found"
+     fail "iIntuitionistic:" H "not found"
     |iSolveTC ||
      let P := match goal with |- IntoPersistent _ ?P _ => P end in
-     fail "iPersistent:" P "not persistent"
+     fail "iIntuitionistic:" P "not persistent"
     |pm_reduce; iSolveTC ||
      let P := match goal with |- TCOr (Affine ?P) _ => P end in
-     fail "iPersistent:" P "not affine and the goal not absorbing"
+     fail "iIntuitionistic:" P "not affine and the goal not absorbing"
     |pm_reflexivity|].
 
 Local Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
@@ -320,7 +320,7 @@ Local Ltac iFrameHyp H :=
 Local Ltac iFrameAnyPure :=
   repeat match goal with H : _ |- _ => iFramePure H end.
 
-Local Ltac iFrameAnyPersistent :=
+Local Ltac iFrameAnyIntuitionistic :=
   iStartProof;
   let rec go Hs :=
     match Hs with [] => idtac | ?H :: ?Hs => repeat iFrameHyp H; go Hs end in
@@ -365,7 +365,7 @@ Local Ltac iFrame_go Hs :=
   lazymatch Hs with
   | [] => idtac
   | SelPure :: ?Hs => iFrameAnyPure; iFrame_go Hs
-  | SelPersistent :: ?Hs => iFrameAnyPersistent; iFrame_go Hs
+  | SelIntuitionistic :: ?Hs => iFrameAnyIntuitionistic; iFrame_go Hs
   | SelSpatial :: ?Hs => iFrameAnySpatial; iFrame_go Hs
   | SelIdent ?H :: ?Hs => iFrameHyp H; iFrame_go Hs
   end.
@@ -446,7 +446,7 @@ Local Tactic Notation "iIntro" "#" constr(H) :=
   iStartProof;
   first
   [(* (?P → _) *)
-   eapply tac_impl_intro_persistent with _ H _ _ _; (* (i:=H) *)
+   eapply tac_impl_intro_intuitionistic with _ H _ _ _; (* (i:=H) *)
      [iSolveTC
      |iSolveTC ||
       let P := match goal with |- IntoPersistent _ ?P _ => P end in
@@ -456,11 +456,11 @@ Local Tactic Notation "iIntro" "#" constr(H) :=
       fail 1 "iIntro:" H "not fresh"
      |(* subgoal *)]
   |(* (?P -∗ _) *)
-   eapply tac_wand_intro_persistent with _ H _ _ _; (* (i:=H) *)
+   eapply tac_wand_intro_intuitionistic with _ H _ _ _; (* (i:=H) *)
      [iSolveTC
      |iSolveTC ||
       let P := match goal with |- IntoPersistent _ ?P _ => P end in
-      fail 1 "iIntro:" P "not persistent"
+      fail 1 "iIntro:" P "not intuitionistic"
      |iSolveTC ||
       let P := match goal with |- TCOr (Affine ?P) _ => P end in
       fail 1 "iIntro:" P "not affine and the goal not absorbing"
@@ -665,8 +665,8 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reflexivity
          |solve_done d (*goal*)
          |iSpecializePat_go H1 pats]
-    | SGoal (SpecGoal GPersistent false ?Hs_frame [] ?d) :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_persistent _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
+    | SGoal (SpecGoal GIntuitionistic false ?Hs_frame [] ?d) :: ?pats =>
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -678,8 +678,8 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reflexivity
          |iFrame Hs_frame; solve_done d (*goal*)
          |iSpecializePat_go H1 pats]
-    | SGoal (SpecGoal GPersistent _ _ _ _) :: ?pats =>
-       fail "iSpecialize: cannot select hypotheses for persistent premise"
+    | SGoal (SpecGoal GIntuitionistic _ _ _ _) :: ?pats =>
+       fail "iSpecialize: cannot select hypotheses for intuitionistic premise"
     | SGoal (SpecGoal ?m ?lr ?Hs_frame ?Hs ?d) :: ?pats =>
        let Hs' := eval cbv in (if lr then Hs else Hs_frame ++ Hs) in
        notypeclasses refine (tac_specialize_assert _ _ _ _ H1 _ lr Hs' _ _ _ _ _ _ _ _ _ _ _);
@@ -696,8 +696,8 @@ Ltac iSpecializePat_go H1 pats :=
           fail "iSpecialize: hypotheses" Hs' "not found"
          |iFrame Hs_frame; solve_done d (*goal*)
          |iSpecializePat_go H1 pats]
-    | SAutoFrame GPersistent :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_persistent _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
+    | SAutoFrame GIntuitionistic :: ?pats =>
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -730,7 +730,7 @@ Local Tactic Notation "iSpecializePat" open_constr(H) constr(pat) :=
   let pats := spec_pat.parse pat in iSpecializePat_go H pats.
 
 (* The argument [p] denotes whether the conclusion of the specialized term is
-persistent. If so, one can use all spatial hypotheses for both proving the
+intuitionistic. If so, one can use all spatial hypotheses for both proving the
 premises and the remaning goal. The argument [p] can either be a Boolean or an
 introduction pattern, which will be coerced into [true] when it solely contains
 `#` or `%` patterns at the top-level.
@@ -740,7 +740,7 @@ should be kept for one of the premises (i.e. [>[H1 .. Hn]] is used) then [p]
 defaults to [false] (i.e. spatial hypotheses are not preserved). *)
 Tactic Notation "iSpecializeCore" open_constr(H)
     "with" open_constr(xs) open_constr(pat) "as" constr(p) :=
-  let p := intro_pat_persistent p in
+  let p := intro_pat_intuitionistic p in
   let pat := spec_pat.parse pat in
   let H :=
     lazymatch type of H with
@@ -750,11 +750,11 @@ Tactic Notation "iSpecializeCore" open_constr(H)
   iSpecializeArgs H xs; [..|
   lazymatch type of H with
   | ident =>
-    (* The lemma [tac_specialize_persistent_helper] allows one to use all
+    (* The lemma [tac_specialize_intuitionistic_helper] allows one to use all
     spatial hypotheses for both proving the premises of the lemma we
     specialize as well as those of the remaining goal. We can only use it when
-    the result of the specialization is persistent, and no modality is
-    eliminated. We do not use [tac_specialize_persistent_helper] in the case
+    the result of the specialization is intuitionistic, and no modality is
+    eliminated. We do not use [tac_specialize_intuitionistic_helper] in the case
     only universal quantifiers and no implications or wands are instantiated
     (i.e [pat = []]) because it is a.) not needed, and b.) more efficient. *)
     let pat := spec_pat.parse pat in
@@ -762,13 +762,13 @@ Tactic Notation "iSpecializeCore" open_constr(H)
       (p && bool_decide (pat ≠ []) && negb (existsb spec_pat_modal pat)) with
     | true =>
        (* FIXME: do something reasonable when the BI is not affine *)
-       notypeclasses refine (tac_specialize_persistent_helper _ _ H _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_intuitionistic_helper _ _ H _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H := pretty_ident H in
           fail "iSpecialize:" H "not found"
          |iSpecializePat H pat;
            [..
-           |notypeclasses refine (tac_specialize_persistent_helper_done _ H _ _ _);
+           |notypeclasses refine (tac_specialize_intuitionistic_helper_done _ H _ _ _);
             pm_reflexivity]
          |iSolveTC ||
           let Q := match goal with |- IntoPersistent _ ?Q _ => Q end in
@@ -1112,10 +1112,10 @@ Tactic Notation "iModIntro" uconstr(sel) :=
     [iSolveTC ||
      fail "iModIntro: the goal is not a modality"
     |iSolveTC ||
-     let s := lazymatch goal with |- IntoModalPersistentEnv _ _ _ ?s => s end in
+     let s := lazymatch goal with |- IntoModalIntuitionisticEnv _ _ _ ?s => s end in
      lazymatch eval hnf in s with
-     | MIEnvForall ?C => fail "iModIntro: persistent context does not satisfy" C
-     | MIEnvIsEmpty => fail "iModIntro: persistent context is non-empty"
+     | MIEnvForall ?C => fail "iModIntro: intuitionistic context does not satisfy" C
+     | MIEnvIsEmpty => fail "iModIntro: intuitionistic context is non-empty"
      end
     |iSolveTC ||
      let s := lazymatch goal with |- IntoModalSpatialEnv _ _ _ ?s _ => s end in
@@ -1166,7 +1166,7 @@ Local Ltac iDestructHypGo Hz pat :=
   | IPureElim => iPure Hz as ?
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
-  | IAlwaysElim ?pat => iPersistent Hz; iDestructHypGo Hz pat
+  | IAlwaysElim ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat
   | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
   | _ => fail "iDestruct:" pat "invalid"
   end.
@@ -1590,7 +1590,7 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic(tac) :=
   | _ =>
      (* Only copy the hypothesis in case there is a [CopyDestruct] instance.
      Also, rule out cases in which it does not make sense to copy, namely when
-     destructing a lemma (instead of a hypothesis) or a spatial hyopthesis
+     destructing a lemma (instead of a hypothesis) or a spatial hypothesis
      (which cannot be kept). *)
      iStartProof;
      lazymatch ident with
@@ -1601,7 +1601,7 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic(tac) :=
           let H := pretty_ident H in
           fail "iDestruct:" H "not found"
         | Some (true, ?P) =>
-           (* persistent hypothesis, check for a CopyDestruct instance *)
+           (* intuitionistic hypothesis, check for a CopyDestruct instance *)
            tryif (let dummy := constr:(_ : CopyDestruct P) in idtac)
            then (iPoseProofCore lem as p false tac)
            else (iSpecializeCore lem as p; [..| tac H])
@@ -1688,14 +1688,14 @@ Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
 result in the following actions:
 
 - Revert the proofmode hypotheses [Hs]
-- Revert all remaining spatial hypotheses and the remaining persistent
+- Revert all remaining spatial hypotheses and the remaining intuitionistic
   hypotheses containing the induction variable [x]
 - Revert the pure hypotheses [x1..xn]
 
 - Actuall perform induction
 
 - Introduce thee pure hypotheses [x1..xn]
-- Introduce the spatial hypotheses and persistent hypotheses involving [x]
+- Introduce the spatial hypotheses and intuitionistic hypotheses involving [x]
 - Introduce the proofmode hypotheses [Hs]
 *)
 Tactic Notation "iInductionCore" tactic(tac) "as" constr(IH) :=
@@ -1982,7 +1982,7 @@ Tactic Notation "iAssertCore" open_constr(Q)
     |iSpecializeCore H with hnil pats as p; [..|tac H]].
 
 Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic(tac) :=
-  let p := intro_pat_persistent p in
+  let p := intro_pat_intuitionistic p in
   lazymatch p with
   | true => iAssertCore Q with "[#]" as p tac
   | false => iAssertCore Q with "[]" as p tac

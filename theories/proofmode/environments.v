@@ -255,29 +255,29 @@ Definition envs_lookup {PROP} (i : ident) (Δ : envs PROP) : option (bool * PROP
   | None => P ← env_lookup i Γs; Some (false, P)
   end.
 
-Definition envs_delete {PROP} (remove_persistent : bool)
+Definition envs_delete {PROP} (remove_intuitionistic : bool)
     (i : ident) (p : bool) (Δ : envs PROP) : envs PROP :=
   let (Γp,Γs,n) := Δ in
   match p with
-  | true => Envs (if remove_persistent then env_delete i Γp else Γp) Γs n
+  | true => Envs (if remove_intuitionistic then env_delete i Γp else Γp) Γs n
   | false => Envs Γp (env_delete i Γs) n
   end.
 
-Definition envs_lookup_delete {PROP} (remove_persistent : bool)
+Definition envs_lookup_delete {PROP} (remove_intuitionistic : bool)
     (i : ident) (Δ : envs PROP) : option (bool * PROP * envs PROP) :=
   let (Γp,Γs,n) := Δ in
   match env_lookup_delete i Γp with
-  | Some (P,Γp') => Some (true, P, Envs (if remove_persistent then Γp' else Γp) Γs n)
+  | Some (P,Γp') => Some (true, P, Envs (if remove_intuitionistic then Γp' else Γp) Γs n)
   | None => ''(P,Γs') ← env_lookup_delete i Γs; Some (false, P, Envs Γp Γs' n)
   end.
 
-Fixpoint envs_lookup_delete_list {PROP} (remove_persistent : bool)
+Fixpoint envs_lookup_delete_list {PROP} (remove_intuitionistic : bool)
     (js : list ident) (Δ : envs PROP) : option (bool * list PROP * envs PROP) :=
   match js with
   | [] => Some (true, [], Δ)
   | j :: js =>
-     ''(p,P,Δ') ← envs_lookup_delete remove_persistent j Δ;
-     ''(q,Ps,Δ'') ← envs_lookup_delete_list remove_persistent js Δ';
+     ''(p,P,Δ') ← envs_lookup_delete remove_intuitionistic j Δ;
+     ''(q,Ps,Δ'') ← envs_lookup_delete_list remove_intuitionistic js Δ';
      Some ((p:bool) && q, P :: Ps, Δ'')
   end.
 
@@ -313,7 +313,7 @@ Definition env_spatial_is_nil {PROP} (Δ : envs PROP) : bool :=
 Definition envs_clear_spatial {PROP} (Δ : envs PROP) : envs PROP :=
   Envs (env_intuitionistic Δ) Enil (env_counter Δ).
 
-Definition envs_clear_persistent {PROP} (Δ : envs PROP) : envs PROP :=
+Definition envs_clear_intuitionistic {PROP} (Δ : envs PROP) : envs PROP :=
   Envs Enil (env_spatial Δ) (env_counter Δ).
 
 Definition envs_incr_counter {PROP} (Δ : envs PROP) : envs PROP :=
@@ -396,7 +396,7 @@ Global Instance envs_entails_flip_mono :
   Proper (envs_Forall2 (⊢) ==> flip (⊢) ==> flip impl) (@envs_entails PROP).
 Proof. rewrite envs_entails_eq=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
 
-Lemma envs_delete_persistent Δ i : envs_delete false i true Δ = Δ.
+Lemma envs_delete_intuitionistic Δ i : envs_delete false i true Δ = Δ.
 Proof. by destruct Δ. Qed.
 Lemma envs_delete_spatial Δ i :
   envs_delete false i false Δ = envs_delete true i false Δ.
@@ -433,7 +433,7 @@ Lemma envs_lookup_sound Δ i p P :
   envs_lookup i Δ = Some (p,P) →
   of_envs Δ ⊢ □?p P ∗ of_envs (envs_delete true i p Δ).
 Proof. apply envs_lookup_sound'. Qed.
-Lemma envs_lookup_persistent_sound Δ i P :
+Lemma envs_lookup_intuitionistic_sound Δ i P :
   envs_lookup i Δ = Some (true,P) → of_envs Δ ⊢ □ P ∗ of_envs Δ.
 Proof. intros ?%(envs_lookup_sound' _ false). by destruct Δ. Qed.
 Lemma envs_lookup_sound_2 Δ i p P :
