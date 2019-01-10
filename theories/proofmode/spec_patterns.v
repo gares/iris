@@ -15,7 +15,7 @@ Record spec_goal := SpecGoal {
 Inductive spec_pat :=
   | SForall : spec_pat
   | SIdent : ident → spec_pat
-  | SPureGoal : bool → spec_pat
+  | SPureGoal (perform_done : bool) : spec_pat
   | SGoal : spec_goal → spec_pat
   | SAutoFrame : goal_kind → spec_pat.
 
