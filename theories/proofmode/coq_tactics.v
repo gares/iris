@@ -221,27 +221,21 @@ Qed.
 
 (* This is pretty much [tac_specialize_assert] with [js:=[j]] and [tac_exact],
 but it is doing some work to keep the order of hypotheses preserved. *)
-Lemma tac_specialize Δ Δ' Δ'' i p j q P1 P2 R Q :
-  envs_lookup_delete false i Δ = Some (p, P1, Δ') →
+Lemma tac_specialize remove_intuitionistic Δ Δ' Δ'' i p j q P1 P2 R Q :
+  envs_lookup_delete remove_intuitionistic i Δ = Some (p, P1, Δ') →
   envs_lookup j Δ' = Some (q, R) →
   IntoWand q p R P1 P2 →
-  match p with
-  | true  => envs_simple_replace j q (Esnoc Enil j P2) Δ
-  | false => envs_replace j q false (Esnoc Enil j P2) Δ'
-             (* remove [i] and make [j] spatial *)
-  end = Some Δ'' →
+  envs_replace j q (p && q) (Esnoc Enil j P2) Δ' = Some Δ'' →
   envs_entails Δ'' Q → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros [? ->]%envs_lookup_delete_Some Hj ? Hj' <-.
-  rewrite (envs_lookup_sound' _ false) //; simpl. destruct p; simpl.
-  - move: Hj; rewrite envs_delete_intuitionistic=> Hj.
-    rewrite envs_simple_replace_singleton_sound //; simpl.
-    rewrite -intuitionistically_if_idemp -intuitionistically_idemp into_wand /=.
-    rewrite assoc (intuitionistically_intuitionistically_if q).
-    by rewrite intuitionistically_if_sep_2 wand_elim_r wand_elim_r.
-  - move: Hj Hj'; rewrite envs_delete_spatial=> Hj Hj'.
-    rewrite envs_lookup_sound // (envs_replace_singleton_sound' _ Δ'') //; simpl.
-    by rewrite into_wand /= assoc wand_elim_r wand_elim_r.
+  rewrite envs_entails_eq /IntoWand.
+  intros [? ->]%envs_lookup_delete_Some ? HR ? <-.
+  rewrite (envs_lookup_sound' _ remove_intuitionistic) //.
+  rewrite envs_replace_singleton_sound //. destruct p; simpl in *.
+  - rewrite -{1}intuitionistically_idemp -{1}intuitionistically_if_idemp.
+    rewrite {1}(intuitionistically_intuitionistically_if q).
+    by rewrite HR assoc intuitionistically_if_sep_2 !wand_elim_r.
+  - by rewrite HR assoc !wand_elim_r.
 Qed.
 
 Lemma tac_specialize_assert Δ Δ' Δ1 Δ2' j q neg js R P1 P2 P1' Q :

@@ -102,8 +102,8 @@ Proof.
   rewrite difference_diag_L.
   iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
   rewrite left_id_L -union_difference_L //. iMod "H" as "[$ H]"; iModIntro.
-  iIntros (E') "HP". iSpecialize ("H" with "HP").
-  iPoseProof (fupd_mask_frame_r _ _ E' with "H") as "H"; first set_solver.
+  iIntros (E') "HP".
+  iPoseProof (fupd_mask_frame_r _ _ E' with "(H HP)") as "H"; first set_solver.
   by rewrite left_id_L.
 Qed.
 

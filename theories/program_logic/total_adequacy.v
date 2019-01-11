@@ -94,12 +94,12 @@ Proof.
   iMod ("IH" with "Hσ1") as "[_ IH]".
   iMod ("IH" with "[% //]") as "($ & Hσ & [IH _] & IHfork)".
   iModIntro. iExists (length efs + n). iFrame "Hσ".
-  iApply (twptp_app [_] with "[IH]"); first by iApply "IH".
+  iApply (twptp_app [_] with "(IH [//])").
   clear. iInduction efs as [|e efs] "IH"; simpl.
   { rewrite twptp_unfold /twptp_pre. iIntros (t2 σ1 κ κs σ2 n1 Hstep).
     destruct Hstep; simplify_eq/=; discriminate_list. }
   iDestruct "IHfork" as "[[IH' _] IHfork]".
-  iApply (twptp_app [_] with "[IH']"). by iApply "IH'". by iApply "IH".
+  iApply (twptp_app [_] with "(IH' [//])"). by iApply "IH".
 Qed.
 
 Lemma twptp_total n σ t :

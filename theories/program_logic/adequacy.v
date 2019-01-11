@@ -168,8 +168,7 @@ Proof.
   iIntros (?) "Hφ Hσ He Ht". rewrite Nat_iter_S_r.
   iDestruct (wptp_steps _ n with "Hσ He Ht") as "H"; first done.
   iApply (step_fupdN_wand with "H"). iDestruct 1 as (e2' t2' ->) "[Hσ _]".
-  iSpecialize ("Hφ" with "Hσ").
-  iMod (fupd_plain_mask_empty _ ⌜φ⌝%I with "Hφ") as %?.
+  iMod (fupd_plain_mask_empty _ ⌜φ⌝%I with "(Hφ Hσ)") as %?.
   by iApply step_fupd_intro.
 Qed.
 End adequacy.

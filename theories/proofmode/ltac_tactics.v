@@ -470,6 +470,12 @@ Local Tactic Notation "iIntro" "#" constr(H) :=
      |(* subgoal *)]
   |fail 1 "iIntro: nothing to introduce"].
 
+Local Tactic Notation "iIntro" constr(H) "as" constr(p) :=
+  lazymatch p with
+  | true => iIntro #H
+  | _ =>  iIntro H
+  end.
+
 Local Tactic Notation "iIntro" "_" :=
   iStartProof;
   first
@@ -716,8 +722,10 @@ Ltac iSpecializePat_go H1 pats :=
     | SForall :: ?pats =>
        idtac "[IPM] The * specialization pattern is deprecated because it is applied implicitly.";
        iSpecializePat_go H1 pats
-    | SIdent ?H2 :: ?pats =>
-       notypeclasses refine (tac_specialize _ _ _ H2 _ H1 _ _ _ _ _ _ _ _ _ _);
+    | SIdent ?H2 [] :: ?pats =>
+       (* If we not need to specialize [H2] we can avoid a lot of unncessary
+       context manipulation. *)
+       notypeclasses refine (tac_specialize false _ _ _ H2 _ H1 _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H2 := pretty_ident H2 in
           fail "iSpecialize:" H2 "not found"
@@ -729,6 +737,33 @@ Ltac iSpecializePat_go H1 pats :=
           let Q := match goal with |- IntoWand _ _ ?P ?Q _ => Q end in
           fail "iSpecialize: cannot instantiate" P "with" Q
          |pm_reflexivity|iSpecializePat_go H1 pats]
+    | SIdent ?H2 ?pats1 :: ?pats =>
+       (* If [H2] is in the intuitionistic context, we copy it into a new
+       hypothesis [Htmp], so that it can be used multiple times. *)
+       let H2tmp := iFresh in
+       iPoseProofCoreHyp H2 as H2tmp;
+       (* Revert [H1] and re-introduce it later so that it will not be consumsed
+       by [pats1]. *)
+       iRevertHyp H1 with (fun p =>
+         iSpecializePat_go H2tmp pats1;
+           [.. (* side-conditions of [iSpecialize] *)
+           |iIntro H1 as p]);
+         (* We put the stuff below outside of the closure to get less verbose
+         Ltac backtraces (which would otherwise include the whole closure). *)
+         [.. (* side-conditions of [iSpecialize] *)
+         |(* Use [remove_intuitionistic = true] to remove the copy [Htmp]. *)
+          notypeclasses refine (tac_specialize true _ _ _ H2tmp _ H1 _ _ _ _ _ _ _ _ _ _);
+            [pm_reflexivity ||
+             let H2tmp := pretty_ident H2tmp in
+             fail "iSpecialize:" H2tmp "not found"
+            |pm_reflexivity ||
+             let H1 := pretty_ident H1 in
+             fail "iSpecialize:" H1 "not found"
+            |iSolveTC ||
+             let P := match goal with |- IntoWand _ _ ?P ?Q _ => P end in
+             let Q := match goal with |- IntoWand _ _ ?P ?Q _ => Q end in
+             fail "iSpecialize: cannot instantiate" P "with" Q
+            |pm_reflexivity|iSpecializePat_go H1 pats]]
     | SPureGoal ?d :: ?pats =>
        notypeclasses refine (tac_specialize_assert_pure _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
@@ -1499,12 +1534,7 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     lazymatch Hs with
     | [] => tac
     | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
-    | ESelIdent ?p ?H :: ?Hs =>
-       iRevertHyp H; go Hs;
-       match p with
-       | true => iIntro #H
-       | false => iIntro H
-       end
+    | ESelIdent ?p ?H :: ?Hs => iRevertHyp H; go Hs; iIntro H as p
     end in
   try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 

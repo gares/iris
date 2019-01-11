@@ -75,7 +75,7 @@ Lemma ht_vs s E P P' Φ Φ' e :
   ⊢ {{ P }} e @ s; E {{ Φ }}.
 Proof.
   iIntros "(#Hvs & #Hwp & #HΦ) !# HP". iMod ("Hvs" with "HP") as "HP".
-  iApply wp_fupd. iApply (wp_wand with "[HP]"); [by iApply "Hwp"|].
+  iApply wp_fupd. iApply (wp_wand with "(Hwp HP)").
   iIntros (v) "Hv". by iApply "HΦ".
 Qed.
 
@@ -85,7 +85,7 @@ Lemma ht_atomic s E1 E2 P P' Φ Φ' e `{!Atomic (stuckness_to_atomicity s) e} :
 Proof.
   iIntros "(#Hvs & #Hwp & #HΦ) !# HP". iApply (wp_atomic _ _ E2); auto.
   iMod ("Hvs" with "HP") as "HP". iModIntro.
-  iApply (wp_wand with "[HP]"); [by iApply "Hwp"|].
+  iApply (wp_wand with "(Hwp HP)").
   iIntros (v) "Hv". by iApply "HΦ".
 Qed.
 
@@ -94,7 +94,7 @@ Lemma ht_bind `{LanguageCtx Λ K} s E P Φ Φ' e :
   ⊢ {{ P }} K e @ s; E {{ Φ' }}.
 Proof.
   iIntros "[#Hwpe #HwpK] !# HP". iApply wp_bind.
-  iApply (wp_wand with "[HP]"); [by iApply "Hwpe"|].
+  iApply (wp_wand with "(Hwpe HP)").
   iIntros (v) "Hv". by iApply "HwpK".
 Qed.
 

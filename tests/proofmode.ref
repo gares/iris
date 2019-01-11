@@ -74,6 +74,22 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   --------------------------------------∗
   ▷^(S n + S m) emp
   
+"test_specialize_nested_intuitionistic"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  φ : Prop
+  P, P2, Q, R1, R2 : PROP
+  H : φ
+  ============================
+  "HP" : P
+  "HQ" : P -∗ Q
+  --------------------------------------□
+  "HR" : R2
+  --------------------------------------∗
+  R2
+  
 "test_iSimpl_in"
      : string
 1 subgoal
