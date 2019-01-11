@@ -146,6 +146,8 @@ Rewriting / simplification
 
 - `iRewrite pm_trm` / `iRewrite pm_trm in "H"` : rewrite using an internal
   equality in the proof mode goal / hypothesis `H`.
+- `iRewrite -pm_trm` / `iRewrite -pm_trm in "H"` : rewrite in reverse direction
+  using an internal equality in the proof mode goal / hypothesis `H`.
 - `iEval (tac)` / `iEval (tac) in H` : performs a tactic `tac` on the proof mode
   goal / hypothesis `H`. The tactic `tac` should be a reduction or rewriting
   tactic like `simpl`, `cbv`, `lazy`, `rewrite` or `setoid_rewrite`. The `iEval`
