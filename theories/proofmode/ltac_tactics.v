@@ -52,6 +52,9 @@ Ltac iTypeOf H :=
   let Δ := match goal with |- envs_entails ?Δ _ => Δ end in
   pm_eval (envs_lookup H Δ).
 
+Ltac iBiOfGoal :=
+  match goal with |- @envs_entails ?PROP _ _ => PROP end.
+
 Tactic Notation "iMatchHyp" tactic1(tac) :=
   match goal with
   | |- context[ environments.Esnoc _ ?x ?P ] => tac x P
