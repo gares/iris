@@ -60,6 +60,18 @@ Proof. iIntros "[#? _] [_ #?]". Show. auto. Qed.
 Lemma test_iIntros_persistent P Q `{!Persistent Q} : (P → Q → P ∧ Q)%I.
 Proof. iIntros "H1 #H2". by iFrame "∗#". Qed.
 
+Lemma test_iDestruct_intuitionistic_1 P Q `{!Persistent P}:
+  Q ∗ □ (Q -∗ P) -∗ P ∗ Q.
+Proof. iIntros "[HQ #HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.
+
+Lemma test_iDestruct_intuitionistic_2 P Q `{!Persistent P, !Affine P}:
+  Q ∗ (Q -∗ P) -∗ P.
+Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". done. Qed.
+
+Lemma test_iDestruct_intuitionistic_affine_bi `{BiAffine PROP} P Q `{!Persistent P}:
+  Q ∗ (Q -∗ P) -∗ P ∗ Q.
+Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.
+
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → (⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P)%I.
 Proof. iIntros (??) "H". auto. Qed.
 
