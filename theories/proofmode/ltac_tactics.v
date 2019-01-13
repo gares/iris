@@ -52,6 +52,9 @@ Ltac iTypeOf H :=
   let Δ := match goal with |- envs_entails ?Δ _ => Δ end in
   pm_eval (envs_lookup H Δ).
 
+Ltac iBiOfGoal :=
+  match goal with |- @envs_entails ?PROP _ _ => PROP end.
+
 Tactic Notation "iMatchHyp" tactic1(tac) :=
   match goal with
   | |- context[ environments.Esnoc _ ?x ?P ] => tac x P
@@ -859,40 +862,58 @@ Tactic Notation "iSpecializeCore" open_constr(H)
     | _ => H
     end in
   iSpecializeArgs H xs; [..|
-  lazymatch type of H with
-  | ident =>
-    (* The lemma [tac_specialize_intuitionistic_helper] allows one to use all
-    spatial hypotheses for both proving the premises of the lemma we
-    specialize as well as those of the remaining goal. We can only use it when
-    the result of the specialization is intuitionistic, and no modality is
-    eliminated. We do not use [tac_specialize_intuitionistic_helper] in the case
-    only universal quantifiers and no implications or wands are instantiated
-    (i.e [pat = []]) because it is a.) not needed, and b.) more efficient. *)
-    let pat := spec_pat.parse pat in
-    lazymatch eval compute in
-      (p && bool_decide (pat ≠ []) && negb (existsb spec_pat_modal pat)) with
-    | true =>
-       (* FIXME: do something reasonable when the BI is not affine *)
-       notypeclasses refine (tac_specialize_intuitionistic_helper _ _ H _ _ _ _ _ _ _ _ _ _ _);
-         [pm_reflexivity ||
-          let H := pretty_ident H in
-          fail "iSpecialize:" H "not found"
-         |iSpecializePat H pat;
-           [..
-           |notypeclasses refine (tac_specialize_intuitionistic_helper_done _ H _ _ _);
-            pm_reflexivity]
-         |iSolveTC ||
-          let Q := match goal with |- IntoPersistent _ ?Q _ => Q end in
-          fail "iSpecialize:" Q "not persistent"
-         |pm_reduce; iSolveTC ||
-          let Q := match goal with |- TCAnd _ (Affine ?Q) => Q end in
-          fail "iSpecialize:" Q "not affine"
-         |pm_reflexivity
-         |(* goal *)]
-    | false => iSpecializePat H pat
-    end
-  | _ => fail "iSpecialize:" H "should be a hypothesis, use iPoseProof instead"
-  end].
+    lazymatch type of H with
+    | ident =>
+       (* The lemma [tac_specialize_intuitionistic_helper] allows one to use the
+       whole spatial context for:
+       - proving the premises of the lemma we specialize, and,
+       - the remaining goal.
+
+       We can only use if all of the following properties hold:
+       - The result of the specialization is persistent.
+       - No modality is eliminated.
+       - If the BI is not affine, the hypothesis should be in the intuitionistic
+         context.
+
+       As an optimization, we do only use [tac_specialize_intuitionistic_helper]
+       if no implications nor wands are eliminated, i.e. [pat ≠ []]. *)
+       let pat := spec_pat.parse pat in
+       lazymatch eval compute in
+         (p && bool_decide (pat ≠ []) && negb (existsb spec_pat_modal pat)) with
+       | true =>
+          (* Check that if the BI is not affine, the hypothesis is in the
+          intuitionistic context. *)
+          lazymatch iTypeOf H with
+          | Some (?q, _) =>
+             let PROP := iBiOfGoal in
+             lazymatch eval compute in (q || tc_to_bool (BiAffine PROP)) with
+             | true =>
+                notypeclasses refine (tac_specialize_intuitionistic_helper _ _ H _ _ _ _ _ _ _ _ _ _ _);
+                  [pm_reflexivity
+                   (* This premise, [envs_lookup j Δ = Some (q,P)],
+                   holds because [iTypeOf] succeeded *)
+                  |pm_reduce; iSolveTC
+                   (* This premise, [if q then TCTrue else BiAffine PROP],
+                   holds because [q || TC_to_bool (BiAffine PROP)] is true *)
+                  |iSpecializePat H pat;
+                    [..
+                    |notypeclasses refine (tac_specialize_intuitionistic_helper_done _ H _ _ _);
+                     pm_reflexivity]
+                  |iSolveTC ||
+                   let Q := match goal with |- IntoPersistent _ ?Q _ => Q end in
+                   fail "iSpecialize:" Q "not persistent"
+                  |pm_reflexivity
+                  |(* goal *)]
+             | false => iSpecializePat H pat
+             end
+          | None =>
+             let H := pretty_ident H in
+             fail "iSpecialize:" H "not found"
+          end
+       | false => iSpecializePat H pat
+       end
+    | _ => fail "iSpecialize:" H "should be a hypothesis, use iPoseProof instead"
+    end].
 
 Tactic Notation "iSpecializeCore" open_constr(t) "as" constr(p) :=
   lazymatch type of t with

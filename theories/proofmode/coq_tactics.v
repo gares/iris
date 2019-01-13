@@ -311,18 +311,20 @@ Qed.
 
 Lemma tac_specialize_intuitionistic_helper Δ Δ'' j q P R R' Q :
   envs_lookup j Δ = Some (q,P) →
+  (if q then TCTrue else BiAffine PROP) →
   envs_entails Δ (<absorb> R) →
   IntoPersistent false R R' →
-  (if q then TCTrue else BiAffine PROP) →
   envs_replace j q true (Esnoc Enil j R') Δ = Some Δ'' →
   envs_entails Δ'' Q → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq => ? HR ? Hpos ? <-. rewrite -(idemp bi_and (of_envs Δ)) {1}HR.
+  rewrite envs_entails_eq => ?? HR ?? <-. rewrite -(idemp bi_and (of_envs Δ)) {1}HR.
   rewrite envs_replace_singleton_sound //; destruct q; simpl.
   - by rewrite (_ : R = <pers>?false R)%I // (into_persistent _ R)
-      absorbingly_elim_persistently sep_elim_r persistently_and_intuitionistically_sep_l wand_elim_r.
+      absorbingly_elim_persistently sep_elim_r
+      persistently_and_intuitionistically_sep_l wand_elim_r.
   - by rewrite (absorbing_absorbingly R) (_ : R = <pers>?false R)%I //
-       (into_persistent _ R) sep_elim_r persistently_and_intuitionistically_sep_l wand_elim_r.
+      (into_persistent _ R) sep_elim_r
+      persistently_and_intuitionistically_sep_l wand_elim_r.
 Qed.
 
 (* A special version of [tac_assumption] that does not do any of the
