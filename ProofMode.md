@@ -3,9 +3,9 @@ Tactic overview
 
 Many of the tactics below apply to more goals than described in this document
 since the behavior of these tactics can be tuned via instances of the type
-classes in the file [proofmode/classes](proofmode/classes.v). Most notable, many
-of the tactics can be applied when the to be introduced or to be eliminated
-connective appears under a later, an update modality, or in the conclusion of a
+classes in the file [proofmode/classes](proofmode/classes.v). Most notably, many
+of the tactics can be applied when the connective to be introduced or to be eliminated
+appears under a later, an update modality, or in the conclusion of a
 weakest precondition.
 
 Applying hypotheses and lemmas
@@ -92,7 +92,7 @@ Elimination of logical connectives
   used for proving the premises of `pm_trm`, as well as for proving the
   resulting goal.
 
-Separating logic specific tactics
+Separation logic-specific tactics
 ---------------------------------
 
 - `iFrame (t1 .. tn) "selpat"` : cancel the Coq terms (or Coq hypotheses)
@@ -106,10 +106,10 @@ Separating logic specific tactics
   Notice that framing spatial hypotheses makes them disappear, but framing Coq
   or intuitionistic hypotheses does not make them disappear.
 
-  This tactic finishes the goal in case everything in the conclusion has been
+  This tactic solves the goal if everything in the conclusion has been
   framed.
-- `iCombine "H1" "H2" as "pat"` : turns `H1 : P1` and `H2 : P2` into
-  `P1 ∗ P2`, on which `iDetruct ... as pat` is called.
+- `iCombine "H1" "H2" as "pat"` : combines `H1 : P1` and `H2 : P2` into
+  `H: P1 ∗ P2`, then calls `iDestruct H as pat` on the combined hypothesis.
 
 Modalities
 ----------
@@ -322,12 +322,12 @@ The syntax for the arguments of these tactics, called _proof mode terms_, is:
 
         (H $! t1 ... tn with "spat1 .. spatn")
 
-Here, `H` can be both a hypothesis, as well as a Coq lemma whose conclusion is
+Here, `H` can be either a hypothesis or a Coq lemma whose conclusion is
 of the shape `P ⊢ Q`. In the above, `t1 ... tn` are arbitrary Coq terms used
 for instantiation of universal quantifiers, and `spat1 .. spatn` are
 specialization patterns to eliminate implications and wands.
 
-Proof mode terms can be written down using the following short hands too:
+Proof mode terms can be written down using the following shorthand syntaxes, too:
 
         (H with "spat1 .. spatn")
         (H $! t1 ... tn)
