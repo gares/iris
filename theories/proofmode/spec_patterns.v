@@ -95,7 +95,7 @@ Ltac parse s :=
   | string => lazymatch eval vm_compute in (parse s) with
               | Some ?pats => pats | _ => fail "spec_pat.parse: cannot parse" s
               end
-  | ident => constr:([SIdent s])
+  | ident => constr:([SIdent s []])
   | ?X => fail "spec_pat.parse:" s "has unexpected type" X
   end.
 End spec_pat.
