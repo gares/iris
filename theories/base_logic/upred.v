@@ -47,7 +47,7 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
    connective.
  *)
 
-Record uPred (M : ucmraT) : Type := IProp {
+Record uPred (M : ucmraT) : Type := UPred {
   uPred_holds :> nat → M → Prop;
 
   uPred_mono n1 n2 x1 x2 :
