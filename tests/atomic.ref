@@ -338,3 +338,34 @@
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
+"Prettification"
+     : string
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  P : val → iProp Σ
+  ============================
+  --------------------------------------∗
+  ∀ Φ : language.val heap_lang → iProp Σ, AU << ∀ 
+                                             x : val, 
+                                             P x >> @ ⊤, ∅
+                                             << ∃ y : val, P y, COMM Φ #() >>
+                                          -∗ WP ! #0 {{ v, Φ v }}
+  
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  P : val → iProp Σ
+  Φ : language.val heap_lang → iProp Σ
+  ============================
+  "AU" : ∃ x : val, P x
+                    ∗ (P x
+                       ={∅,⊤}=∗ AU << ∀ x0 : val, 
+                                   P x0 >> @ ⊤, ∅
+                                   << ∃ y : val, P y, COMM Φ #() >>)
+                      ∧ (∀ x0 : val, P x0 ={∅,⊤}=∗ Φ #())
+  --------------------------------------∗
+  WP ! #0 @ ∅ {{ v, |={∅,⊤}=> Φ v }}
+  

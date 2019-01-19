@@ -88,4 +88,13 @@ Section printing.
     Show. iIntros (Q Φ) "? AU". Show.
   Abort.
 
+  Check "Prettification".
+
+  Lemma iMod_prettify (P : val → iProp Σ) :
+    <<< ∀ x, P x >>> !#0 @ ⊤ <<< ∃ y, P y, RET #() >>>.
+  Proof.
+    iApply wp_atomic_intro. Show.
+    iIntros (Φ) "AU". iMod "AU". Show.
+  Abort.
+
 End printing.
