@@ -8,6 +8,7 @@ test: $(TESTFILES:.v=.vo)
 .PHONY: test
 
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
+COQ_OLD=$(shell echo "$(COQ_VERSION)" | egrep "^8\.7\b" > /dev/null && echo 1)
 COQ_MINOR_VERSION=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+' -o)
 
 # Can't use pipes because that discards error codes and dash provides no way to control that.
@@ -27,13 +28,13 @@ $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref)
 	  else \
 	    REF="tests/$$TEST.ref"; \
 	  fi && \
-	  echo $(if $(MAKE_REF),"COQTEST [ref] `basename "$$REF"`","COQTEST `basename "$$REF"`") && \
+	  echo $(if $(MAKE_REF),"COQTEST [ref] `basename "$$REF"`","COQTEST$(if $(COQ_OLD), [ignored],) `basename "$$REF"`") && \
 	  TMPFILE="$$(mktemp)" && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
 	  ($(REF_FILTER) < "$$TMPFILE" > "$$TMPFILE.filtered" || true) && \
 	  $(if $(MAKE_REF), \
 	    mv "$$TMPFILE.filtered" "$$REF", \
-	    diff -u "$$REF" "$$TMPFILE.filtered" \
+	    $(if $(COQ_OLD),true,diff -u "$$REF" "$$TMPFILE.filtered") \
 	  ) && \
 	  rm -f "$$TMPFILE" "$$TMPFILE.filtered" && \
 	  touch $@
