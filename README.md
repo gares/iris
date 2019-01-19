@@ -135,6 +135,6 @@ we expect it to.  You can run `MAKE_REF=1 make` to re-generate all the `.ref` fi
 this is useful after adding or removing `Show.` from a test.  If you do this,
 make sure to check the diff for any unexpected changes in the output!
 
-Some test cases have per-Coq-version `.ref` files (e.g., `atomic.8.9.ref` is a
-Coq-8.9-specific `.ref` file).  If you change one of these, remember to update
+Some test cases have per-Coq-version `.ref` files (e.g., `atomic.8.8.ref` is a
+Coq-8.8-specific `.ref` file).  If you change one of these, remember to update
 *all* the `.ref` files.
