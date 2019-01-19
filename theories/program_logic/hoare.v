@@ -154,4 +154,9 @@ Proof.
   iIntros (?) "#Hwp !# [HP HR]".
   iApply wp_frame_step_r'; try done. iFrame "HR". by iApply "Hwp".
 Qed.
+
+Lemma ht_exists (T : Type) s E (P : T → iProp Σ) Φ e :
+  (∀ x, {{ P x }} e @ s; E {{ Φ }}) ⊢ {{ ∃ x, P x }} e @ s; E {{ Φ }}.
+Proof. iIntros "#HT !# HP". iDestruct "HP" as (x) "HP". by iApply "HT". Qed.
+
 End hoare.
