@@ -1214,7 +1214,7 @@ Tactic Notation "iModCore" constr(H) :=
      fail "iMod: cannot eliminate modality" P "in" Q
     |iSolveSideCondition
     |pm_reflexivity
-    |(* subgoal *)].
+    |pm_prettify(* subgoal *)].
 
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
