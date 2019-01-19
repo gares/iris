@@ -8,12 +8,41 @@ Set Default Proof Using "Type".
 (** Show that implementing fetch-and-add on top of CAS preserves logical
 atomicity. *)
 
+(** First: logically atomic increment directly on top of the physical heap. *)
+
+Section increment_physical.
+  Context `{!heapG Σ}.
+
+  Definition incr_phy : val :=
+    rec: "incr" "l" :=
+       let: "oldv" := !"l" in
+       if: CAS "l" "oldv" ("oldv" + #1)
+         then "oldv" (* return old value if success *)
+         else "incr" "l".
+
+  Lemma incr_phy_spec (l: loc) :
+    <<< ∀ (v : Z), l ↦ #v >>> incr_phy #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
+  Proof.
+    iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
+    wp_load. iMod ("Hclose" with "Hl") as "AU". iModIntro.
+    wp_pures. wp_bind (CAS _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
+    destruct (decide (#v = #w)) as [[= ->]|Hx].
+    - wp_cas_suc. iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
+      iModIntro. wp_if. done.
+    - wp_cas_fail. iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
+      iModIntro. wp_if. iApply "IH". done.
+  Qed.
+End increment_physical.
+
+(** Next: logically atomic increment on top of an arbitrary logically atomic heap *)
+
 Section increment.
   Context `{!heapG Σ} {aheap: atomic_heap Σ}.
 
   Import atomic_heap.notation.
 
-  Definition incr: val :=
+  Definition incr : val :=
     rec: "incr" "l" :=
        let: "oldv" := !"l" in
        if: CAS "l" "oldv" ("oldv" + #1)
@@ -42,12 +71,15 @@ Section increment.
       wp_if. iApply "IH". done.
   Qed.
 
+  (** A "weak increment": assumes that there is no race *)
   Definition weak_incr: val :=
     rec: "weak_incr" "l" :=
        let: "oldv" := !"l" in
        "l" <- ("oldv" + #1);;
        "oldv" (* return old value *).
 
+  (** Logically atomic spec for weak increment. Also an example for what TaDA
+      calls "private precondition". *)
   (* TODO: Generalize to q and 1-q, based on some theory for a "maybe-mapsto"
      connective that works on [option Qp] (the type of 1-q). *)
   Lemma weak_incr_spec (l: loc) (v : Z) :
