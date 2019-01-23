@@ -101,7 +101,8 @@ Separation logic-specific tactics
 
   + `%` : repeatedly frame hypotheses from the Coq context.
   + `#` : repeatedly frame hypotheses from the intuitionistic context.
-  + `∗` : frame as much of the spatial context as possible.
+  + `∗` : frame as much of the spatial context as possible. (N.B: this
+          is the unicode symbol `∗`, not the regular asterisk `*`.)
 
   Notice that framing spatial hypotheses makes them disappear, but framing Coq
   or intuitionistic hypotheses does not make them disappear.
@@ -189,7 +190,8 @@ following _selection patterns_:
 - `H` : select the hypothesis named `H`.
 - `%` : select the entire pure/Coq context.
 - `#` : select the entire intuitionistic context.
-- `∗` : select the entire spatial context.
+- `∗` : select the entire spatial context. (N.B: this
+        is the unicode symbol `∗`, not the regular asterisk `*`.)
 
 Introduction patterns
 =====================
