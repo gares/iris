@@ -12,8 +12,6 @@ Definition par : val :=
     let: "v1" := join "handle" in
     ("v1", "v2").
 Notation "e1 ||| e2" := (par (λ: <>, e1)%E (λ: <>, e2)%E) : expr_scope.
-(* Not a value itself, but with *unlocked* value lambdas. *)
-Local Notation "e1 ||| e2" := (par (LamV BAnon e1%E) (LamV BAnon e2%E)) : val_scope.
 
 Section proof.
 Local Set Default Proof Using "Type*".
@@ -39,7 +37,7 @@ Qed.
 Lemma wp_par (Ψ1 Ψ2 : val → iProp Σ) (e1 e2 : expr) (Φ : val → iProp Σ) :
   WP e1 {{ Ψ1 }} -∗ WP e2 {{ Ψ2 }} -∗
   (∀ v1 v2, Ψ1 v1 ∗ Ψ2 v2 -∗ ▷ Φ (v1,v2)%V) -∗
-  WP (e1 ||| e2)%V {{ Φ }}.
+  WP par (LamV BAnon e1) (LamV BAnon e2) {{ Φ }}.
 Proof.
   iIntros "H1 H2 H".
   wp_apply (par_spec Ψ1 Ψ2 with "[H1] [H2] [H]"); [by wp_lam..|auto].
