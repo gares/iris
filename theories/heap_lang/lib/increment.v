@@ -49,6 +49,34 @@ Section increment.
          then "oldv" (* return old value if success *)
          else "incr" "l".
 
+  (** A proof of the incr specification that unfolds the definition
+      of atomic accessors.  Useful for introducing them as a concept,
+      but see below for a shorter proof. *)
+  Lemma incr_spec_direct (l: loc) :
+    <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
+  Proof.
+    iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    wp_apply load_spec; first by iAccu.
+    (* Prove the atomic update for load *)
+    iAuIntro. rewrite /atomic_acc. iMod "AU" as (v) "[Hl [Hclose _]]".
+    iModIntro. iExists _, _. iFrame "Hl". iSplit.
+    { (* proving abort case *) done. }
+    iIntros "Hl". iMod ("Hclose" with "Hl") as "AU". iIntros "!> _".
+    (* Now go on *)
+    wp_apply cas_spec; [done|iAccu|].
+    (* Prove the atomic update for CAS *)
+    iAuIntro. rewrite /atomic_acc. iMod "AU" as (w) "[Hl Hclose]".
+    iModIntro. iExists _. iFrame "Hl". iSplit.
+    { iDestruct "Hclose" as "[? _]". done. }
+    iIntros "Hl". destruct (decide (#w = #v)) as [[= ->]|Hx].
+    - iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
+      iIntros "!> _". wp_if. by iApply "HΦ".
+    - iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
+      iIntros "!> _". wp_if. iApply "IH". done.
+  Qed.
+
+  (** A proof of the incr specification that uses lemmas to avoid reasining
+      with the definition of atomic accessors. *)
   Lemma incr_spec (l: loc) :
     <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
