@@ -30,7 +30,13 @@ build-dep: build-dep/opam phony
 	@# To achieve this, we create a fake opam package that has our build-dependencies as
 	@# dependencies, but does not actually install anything itself.
 	@echo "# Pinning build-dep package." && \
-	  opam install $(OPAMFLAGS) build-dep/
+	  if opam --version | grep "^1\." -q; then \
+	    BUILD_DEP_PACKAGE="$$(egrep "^name:" build-dep/opam | sed 's/^name: *"\(.*\)" */\1/')" && \
+	    opam pin add -k path $(OPAMFLAGS) "$$BUILD_DEP_PACKAGE".dev build-dep && \
+	    opam reinstall $(OPAMFLAGS) "$$BUILD_DEP_PACKAGE"; \
+	  else \
+	    opam install $(OPAMFLAGS) build-dep/; \
+	  fi
 
 # Some files that do *not* need to be forwarded to Makefile.coq
 Makefile: ;
