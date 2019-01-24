@@ -16,15 +16,16 @@ Below, you can find some useful resources and an FAQ.
 * The Iris Proof Mode (IPM) / MoSeL is documented at [ProofMode.md](ProofMode.md).
 * Naming conventions are documented at [Naming.md](Naming.md).
 
-## How to submit a pull request
+## How to submit a merge request
 
 To contribute code, please send your MPI-SWS GitLab username to
 [Ralf Jung](https://gitlab.mpi-sws.org/jung) to enable personal projects for
 your account.  Then you can fork the
 [Iris git repository](https://gitlab.mpi-sws.org/FP/iris-coq/), make your
-changes in your fork, and create a merge request.  Please do *not* use the
-master branch of your fork, that might confuse CI.  Use a feature branch
-instead.
+changes in your fork, and create a merge request.
+
+Please do *not* use the master branch of your fork, that might confuse CI.  Use
+a feature branch instead.
 
 ## How to update the std++ dependency
 
