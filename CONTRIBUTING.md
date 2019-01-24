@@ -9,13 +9,6 @@ tab).  If you want to report a bug, please use the
 [issue tracker](https://gitlab.mpi-sws.org/FP/iris-coq/issues), which also
 requires an MPI-SWS GitLab account.
 
-Below, you can find some useful resources and an FAQ.
-
-* Information on how to set up your editor for unicode input and output is
-  collected in [Editor.md](Editor.md).
-* The Iris Proof Mode (IPM) / MoSeL is documented at [ProofMode.md](ProofMode.md).
-* Naming conventions are documented at [Naming.md](Naming.md).
-
 ## How to submit a merge request
 
 To contribute code, please send your MPI-SWS GitLab username to

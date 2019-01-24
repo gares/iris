@@ -108,6 +108,12 @@ that should be compatible with this version:
 * [Iris Atomic](https://gitlab.mpi-sws.org/FP/iris-atomic/) is an experimental
   formalization of logically atomic triples in Iris.
 
-## Notes for Iris Contributors
+## Notes for Iris Developers
 
-See the [contribution guide](CONTRIBUTING.md).
+* Information on how to set up your editor for unicode input and output is
+  collected in [Editor.md](Editor.md).
+* The Iris Proof Mode (IPM) / MoSeL is documented at [ProofMode.md](ProofMode.md).
+* Naming conventions are documented at [Naming.md](Naming.md).
+* The generated coqdoc is [available online](https://plv.mpi-sws.org/coqdoc/iris/).
+
+To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
