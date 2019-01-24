@@ -108,33 +108,6 @@ that should be compatible with this version:
 * [Iris Atomic](https://gitlab.mpi-sws.org/FP/iris-atomic/) is an experimental
   formalization of logically atomic triples in Iris.
 
-## Notes for Iris Developers
+## Notes for Iris Contributors
 
-* Information on how to set up your editor for unicode input and output is
-  collected in [Editor.md](Editor.md).
-* The Iris Proof Mode (IPM) / MoSeL is documented at [ProofMode.md](ProofMode.md).
-* Naming conventions are documented at [Naming.md](Naming.md).
-
-### How to update the std++ dependency
-
-* Do the change in std++, push it.
-* Wait for CI to publish a new std++ version on the opam archive, then run
-  `opam update iris-dev`.
-* In Iris, change the `opam` file to depend on the new version.
-* Run `make build-dep` (in Iris) to install the new version of std++.
-  You may have to do `make clean` as Coq will likely complain about .vo file
-  mismatches.
-
-### How to write/update test cases
-
-The files in `tests/` are test cases.  Each of the `.v` files comes with a
-matching `.ref` file containing the expected output of `coqc`.  Adding `Show.`
-in selected places in the proofs makes `coqc` print the current goal state.
-This is used to make sure the proof mode prints goals and reduces terms the way
-we expect it to.  You can run `MAKE_REF=1 make` to re-generate all the `.ref` files;
-this is useful after adding or removing `Show.` from a test.  If you do this,
-make sure to check the diff for any unexpected changes in the output!
-
-Some test cases have per-Coq-version `.ref` files (e.g., `atomic.8.8.ref` is a
-Coq-8.8-specific `.ref` file).  If you change one of these, remember to update
-*all* the `.ref` files.
+See the [contribution guide](CONTRIBUTING.md).
