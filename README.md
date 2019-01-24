@@ -107,6 +107,9 @@ that should be compatible with this version:
   logic for release-acquire memory.
 * [Iris Atomic](https://gitlab.mpi-sws.org/iris/atomic) is an experimental
   formalization of logically atomic triples in Iris.
+* [Iron](https://gitlab.mpi-sws.org/iris/iron) is a linear separation logic
+  build on top of Iris for precise reasoning about resources (such as making
+  sure there are no memory leaks).
 
 ## Further Resources
 
