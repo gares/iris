@@ -2,7 +2,9 @@
 
 ## How to submit a merge request
 
-To contribute code, please send your MPI-SWS GitLab username to
+To contribute code, you need an
+[MPI-SWS GitLab account](https://gitlab.mpi-sws.org/users/sign_in) (use the
+"Register" tab).  Please send your MPI-SWS GitLab username to
 [Ralf Jung](https://gitlab.mpi-sws.org/jung) to enable personal projects for
 your account.  Then you can fork the
 [Iris git repository](https://gitlab.mpi-sws.org/FP/iris-coq/), make your
