@@ -284,9 +284,9 @@ Section sts_definitions.
   Definition sts_frag_up (s : sts.state sts) (T : sts.tokens sts) : stsR sts :=
     sts_frag (sts.up s T) T.
 End sts_definitions.
-Instance: Params (@sts_auth) 2.
-Instance: Params (@sts_frag) 1.
-Instance: Params (@sts_frag_up) 2.
+Instance: Params (@sts_auth) 2 := {}.
+Instance: Params (@sts_frag) 1 := {}.
+Instance: Params (@sts_frag_up) 2 := {}.
 
 Section stsRA.
 Import sts.

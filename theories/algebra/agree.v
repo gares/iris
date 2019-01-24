@@ -249,7 +249,7 @@ Lemma to_agree_uninjI {M} x : ✓ x ⊢@{uPredI M} ∃ a, to_agree a ≡ x.
 Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 End agree.
 
-Instance: Params (@to_agree) 1.
+Instance: Params (@to_agree) 1 := {}.
 Arguments agreeC : clear implicits.
 Arguments agreeR : clear implicits.
 

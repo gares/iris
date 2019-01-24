@@ -118,17 +118,17 @@ Module bi_reflection. Section bi_reflection.
   Proof. intros. rewrite /= comm. by apply split_l. Qed.
 
   Class Quote (Σ1 Σ2 : list PROP) (P : PROP) (e : expr) := {}.
-  Global Instance quote_True Σ : Quote Σ Σ emp%I EEmp.
+  Global Instance quote_True Σ : Quote Σ Σ emp%I EEmp := {}.
   Global Instance quote_var Σ1 Σ2 P i:
-    rlist.QuoteLookup Σ1 Σ2 P i → Quote Σ1 Σ2 P (EVar i) | 1000.
+    rlist.QuoteLookup Σ1 Σ2 P i → Quote Σ1 Σ2 P (EVar i) | 1000 := {}.
   Global Instance quote_sep Σ1 Σ2 Σ3 P1 P2 e1 e2 :
-    Quote Σ1 Σ2 P1 e1 → Quote Σ2 Σ3 P2 e2 → Quote Σ1 Σ3 (P1 ∗ P2)%I (ESep e1 e2).
+    Quote Σ1 Σ2 P1 e1 → Quote Σ2 Σ3 P2 e2 → Quote Σ1 Σ3 (P1 ∗ P2)%I (ESep e1 e2) := {}.
 
   Class QuoteArgs (Σ : list PROP) (Ps : list PROP) (ns : list nat) := {}.
-  Global Instance quote_args_nil Σ : QuoteArgs Σ nil nil.
+  Global Instance quote_args_nil Σ : QuoteArgs Σ nil nil := {}.
   Global Instance quote_args_cons Σ Ps P ns n :
     rlist.QuoteLookup Σ Σ P n →
-    QuoteArgs Σ Ps ns → QuoteArgs Σ (P :: Ps) (n :: ns).
+    QuoteArgs Σ Ps ns → QuoteArgs Σ (P :: Ps) (n :: ns) := {}.
   End bi_reflection.
 
   Ltac quote :=

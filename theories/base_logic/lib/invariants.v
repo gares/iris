@@ -12,7 +12,7 @@ Definition inv_def `{invG Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
 Definition inv_aux : seal (@inv_def). by eexists. Qed.
 Definition inv {Σ i} := inv_aux.(unseal) Σ i.
 Definition inv_eq : @inv = @inv_def := inv_aux.(seal_eq).
-Instance: Params (@inv) 3.
+Instance: Params (@inv) 3 := {}.
 Typeclasses Opaque inv.
 
 Section inv.
@@ -107,7 +107,7 @@ Proof.
   by rewrite left_id_L.
 Qed.
 
-Global Instance into_inv_inv N P : IntoInv (inv N P) N.
+Global Instance into_inv_inv N P : IntoInv (inv N P) N := {}.
 
 Global Instance into_acc_inv E N P :
   IntoAcc (X:=unit) (inv N P) 

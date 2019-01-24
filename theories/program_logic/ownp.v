@@ -35,7 +35,7 @@ Definition ownP `{ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
   own ownP_name (◯ (Excl' σ)).
 
 Typeclasses Opaque ownP.
-Instance: Params (@ownP) 3.
+Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)
 Theorem ownP_adequacy Σ `{ownPPreG Λ Σ} s e σ φ :

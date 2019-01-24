@@ -26,7 +26,7 @@ Section defs.
           inv N (P ∗ own p (CoPset ∅, GSet {[i]}) ∨ na_own p {[i]}))%I.
 End defs.
 
-Instance: Params (@na_inv) 3.
+Instance: Params (@na_inv) 3 := {}.
 Typeclasses Opaque na_own na_inv.
 
 Section proofs.
@@ -111,7 +111,7 @@ Section proofs.
     - iDestruct (na_own_disjoint with "Htoki Htoki2") as %?. set_solver.
   Qed.
 
-  Global Instance into_inv_na p N P : IntoInv (na_inv p N P) N.
+  Global Instance into_inv_na p N P : IntoInv (na_inv p N P) N := {}.
 
   Global Instance into_acc_na p F E N P :
     IntoAcc (X:=unit) (na_inv p N P)

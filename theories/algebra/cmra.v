@@ -4,11 +4,11 @@ Set Default Proof Using "Type".
 
 Class PCore (A : Type) := pcore : A → option A.
 Hint Mode PCore ! : typeclass_instances.
-Instance: Params (@pcore) 2.
+Instance: Params (@pcore) 2 := {}.
 
 Class Op (A : Type) := op : A → A → A.
 Hint Mode Op ! : typeclass_instances.
-Instance: Params (@op) 2.
+Instance: Params (@op) 2 := {}.
 Infix "⋅" := op (at level 50, left associativity) : stdpp_scope.
 Notation "(⋅)" := op (only parsing) : stdpp_scope.
 
@@ -21,23 +21,23 @@ Definition included `{Equiv A, Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
 Infix "≼" := included (at level 70) : stdpp_scope.
 Notation "(≼)" := included (only parsing) : stdpp_scope.
 Hint Extern 0 (_ ≼ _) => reflexivity : core.
-Instance: Params (@included) 3.
+Instance: Params (@included) 3 := {}.
 
 Class ValidN (A : Type) := validN : nat → A → Prop.
 Hint Mode ValidN ! : typeclass_instances.
-Instance: Params (@validN) 3.
+Instance: Params (@validN) 3 := {}.
 Notation "✓{ n } x" := (validN n x)
   (at level 20, n at next level, format "✓{ n }  x").
 
 Class Valid (A : Type) := valid : A → Prop.
 Hint Mode Valid ! : typeclass_instances.
-Instance: Params (@valid) 2.
+Instance: Params (@valid) 2 := {}.
 Notation "✓ x" := (valid x) (at level 20) : stdpp_scope.
 
 Definition includedN `{Dist A, Op A} (n : nat) (x y : A) := ∃ z, y ≡{n}≡ x ⋅ z.
 Notation "x ≼{ n } y" := (includedN n x y)
   (at level 70, n at next level, format "x  ≼{ n }  y") : stdpp_scope.
-Instance: Params (@includedN) 4.
+Instance: Params (@includedN) 4 := {}.
 Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
 
 Section mixin.
@@ -147,27 +147,27 @@ Infix "⋅?" := opM (at level 50, left associativity) : stdpp_scope.
 Class CoreId {A : cmraT} (x : A) := core_id : pcore x ≡ Some x.
 Arguments core_id {_} _ {_}.
 Hint Mode CoreId + ! : typeclass_instances.
-Instance: Params (@CoreId) 1.
+Instance: Params (@CoreId) 1 := {}.
 
 (** * Exclusive elements (i.e., elements that cannot have a frame). *)
 Class Exclusive {A : cmraT} (x : A) := exclusive0_l y : ✓{0} (x ⋅ y) → False.
 Arguments exclusive0_l {_} _ {_} _ _.
 Hint Mode Exclusive + ! : typeclass_instances.
-Instance: Params (@Exclusive) 1.
+Instance: Params (@Exclusive) 1 := {}.
 
 (** * Cancelable elements. *)
 Class Cancelable {A : cmraT} (x : A) :=
   cancelableN n y z : ✓{n}(x ⋅ y) → x ⋅ y ≡{n}≡ x ⋅ z → y ≡{n}≡ z.
 Arguments cancelableN {_} _ {_} _ _ _ _.
 Hint Mode Cancelable + ! : typeclass_instances.
-Instance: Params (@Cancelable) 1.
+Instance: Params (@Cancelable) 1 := {}.
 
 (** * Identity-free elements. *)
 Class IdFree {A : cmraT} (x : A) :=
   id_free0_r y : ✓{0}x → x ⋅ y ≡{0}≡ x → False.
 Arguments id_free0_r {_} _ {_} _ _.
 Hint Mode IdFree + ! : typeclass_instances.
-Instance: Params (@IdFree) 1.
+Instance: Params (@IdFree) 1 := {}.
 
 (** * CMRAs whose core is total *)
 Class CmraTotal (A : cmraT) := cmra_total (x : A) : is_Some (pcore x).
@@ -177,7 +177,7 @@ Hint Mode CmraTotal ! : typeclass_instances.
 core. *)
 Class Core (A : Type) := core : A → A.
 Hint Mode Core ! : typeclass_instances.
-Instance: Params (@core) 2.
+Instance: Params (@core) 2 := {}.
 
 Instance core' `{PCore A} : Core A := λ x, default x (pcore x).
 Arguments core' _ _ _ /.
@@ -779,7 +779,7 @@ Structure rFunctor := RFunctor {
     CmraMorphism (rFunctor_map fg)
 }.
 Existing Instances rFunctor_ne rFunctor_mor.
-Instance: Params (@rFunctor_map) 5.
+Instance: Params (@rFunctor_map) 5 := {}.
 
 Delimit Scope rFunctor_scope with RF.
 Bind Scope rFunctor_scope with rFunctor.
@@ -812,7 +812,7 @@ Structure urFunctor := URFunctor {
     CmraMorphism (urFunctor_map fg)
 }.
 Existing Instances urFunctor_ne urFunctor_mor.
-Instance: Params (@urFunctor_map) 5.
+Instance: Params (@urFunctor_map) 5 := {}.
 
 Delimit Scope urFunctor_scope with URF.
 Bind Scope urFunctor_scope with urFunctor.

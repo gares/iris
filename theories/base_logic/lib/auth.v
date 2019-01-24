@@ -55,9 +55,9 @@ Section definitions.
 End definitions.
 
 Typeclasses Opaque auth_own auth_inv auth_ctx.
-Instance: Params (@auth_own) 4.
-Instance: Params (@auth_inv) 5.
-Instance: Params (@auth_ctx) 7.
+Instance: Params (@auth_own) 4 := {}.
+Instance: Params (@auth_inv) 5 := {}.
+Instance: Params (@auth_ctx) 7 := {}.
 
 Section auth.
   Context `{invG Σ, authG Σ A}.

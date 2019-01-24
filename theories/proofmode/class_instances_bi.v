@@ -998,7 +998,7 @@ Proof. by rewrite /FromForall -embed_forall => <-. Qed.
 
 (** IntoInv *)
 Global Instance into_inv_embed {PROP' : bi} `{BiEmbed PROP PROP'} P N :
-  IntoInv P N → IntoInv ⎡P⎤ N.
+  IntoInv P N → IntoInv ⎡P⎤ N := {}.
 
 (** ElimModal *)
 Global Instance elim_modal_wand φ p p' P P' Q Q' R :

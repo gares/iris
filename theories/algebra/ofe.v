@@ -13,7 +13,7 @@ Set Primitive Projections.
 
 (** Unbundeled version *)
 Class Dist A := dist : nat → relation A.
-Instance: Params (@dist) 3.
+Instance: Params (@dist) 3 := {}.
 Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").
 Notation "x ≡{ n }@{ A }≡ y" := (dist (A:=A) n x y)
@@ -102,7 +102,7 @@ Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 Class Discrete {A : ofeT} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.
 Arguments discrete {_} _ {_} _ _.
 Hint Mode Discrete + ! : typeclass_instances.
-Instance: Params (@Discrete) 1.
+Instance: Params (@Discrete) 1 := {}.
 
 Class OfeDiscrete (A : ofeT) := ofe_discrete_discrete (x : A) :> Discrete x.
 
@@ -573,13 +573,13 @@ Instance ofe_mor_inhabited {A B : ofeT} `{Inhabited B} :
 
 (** Identity and composition and constant function *)
 Definition cid {A} : A -n> A := CofeMor id.
-Instance: Params (@cid) 1.
+Instance: Params (@cid) 1 := {}.
 Definition cconst {A B : ofeT} (x : B) : A -n> B := CofeMor (const x).
-Instance: Params (@cconst) 2.
+Instance: Params (@cconst) 2 := {}.
 
 Definition ccompose {A B C}
   (f : B -n> C) (g : A -n> B) : A -n> C := CofeMor (f ∘ g).
-Instance: Params (@ccompose) 3.
+Instance: Params (@ccompose) 3 := {}.
 Infix "◎" := ccompose (at level 40, left associativity).
 Global Instance ccompose_ne {A B C} :
   NonExpansive2 (@ccompose A B C).
@@ -676,7 +676,7 @@ Structure cFunctor := CFunctor {
     cFunctor_map (f◎g, g'◎f') x ≡ cFunctor_map (g,g') (cFunctor_map (f,f') x)
 }.
 Existing Instance cFunctor_ne.
-Instance: Params (@cFunctor_map) 5.
+Instance: Params (@cFunctor_map) 5 := {}.
 
 Delimit Scope cFunctor_scope with CF.
 Bind Scope cFunctor_scope with cFunctor.
@@ -995,7 +995,7 @@ Record later (A : Type) : Type := Next { later_car : A }.
 Add Printing Constructor later.
 Arguments Next {_} _.
 Arguments later_car {_} _.
-Instance: Params (@Next) 1.
+Instance: Params (@Next) 1 := {}.
 
 Section later.
   Context {A : ofeT}.

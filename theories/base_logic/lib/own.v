@@ -49,14 +49,14 @@ Ltac solve_inG :=
 (** * Definition of the connective [own] *)
 Definition iRes_singleton `{i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
   ofe_fun_singleton (inG_id i) {[ γ := cmra_transport inG_prf a ]}.
-Instance: Params (@iRes_singleton) 4.
+Instance: Params (@iRes_singleton) 4 := {}.
 
 Definition own_def `{inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
 Definition own_aux : seal (@own_def). by eexists. Qed.
 Definition own {Σ A i} := own_aux.(unseal) Σ A i.
 Definition own_eq : @own = @own_def := own_aux.(seal_eq).
-Instance: Params (@own) 4.
+Instance: Params (@own) 4 := {}.
 Typeclasses Opaque own.
 
 (** * Properties about ghost ownership *)

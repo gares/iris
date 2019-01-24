@@ -25,7 +25,7 @@ Fixpoint big_opL `{Monoid M o} {A} (f : nat → A → M) (xs : list A) : M :=
   | [] => monoid_unit
   | x :: xs => o (f 0 x) (big_opL (λ n, f (S n)) xs)
   end.
-Instance: Params (@big_opL) 4.
+Instance: Params (@big_opL) 4 := {}.
 Arguments big_opL {M} o {_ A} _ !_ /.
 Typeclasses Opaque big_opL.
 Notation "'[^' o 'list]' k ↦ x ∈ l , P" := (big_opL o (λ k x, P) l)
@@ -37,7 +37,7 @@ Notation "'[^' o 'list]' x ∈ l , P" := (big_opL o (λ _ x, P) l)
 
 Definition big_opM `{Monoid M o} `{Countable K} {A} (f : K → A → M)
     (m : gmap K A) : M := big_opL o (λ _, curry f) (map_to_list m).
-Instance: Params (@big_opM) 7.
+Instance: Params (@big_opM) 7 := {}.
 Arguments big_opM {M} o {_ K _ _ A} _ _ : simpl never.
 Typeclasses Opaque big_opM.
 Notation "'[^' o 'map]' k ↦ x ∈ m , P" := (big_opM o (λ k x, P) m)
@@ -49,7 +49,7 @@ Notation "'[^' o 'map]' x ∈ m , P" := (big_opM o (λ _ x, P) m)
 
 Definition big_opS `{Monoid M o} `{Countable A} (f : A → M)
   (X : gset A) : M := big_opL o (λ _, f) (elements X).
-Instance: Params (@big_opS) 6.
+Instance: Params (@big_opS) 6 := {}.
 Arguments big_opS {M} o {_ A _ _} _ _ : simpl never.
 Typeclasses Opaque big_opS.
 Notation "'[^' o 'set]' x ∈ X , P" := (big_opS o (λ x, P) X)
@@ -58,7 +58,7 @@ Notation "'[^' o 'set]' x ∈ X , P" := (big_opS o (λ x, P) X)
 
 Definition big_opMS `{Monoid M o} `{Countable A} (f : A → M)
   (X : gmultiset A) : M := big_opL o (λ _, f) (elements X).
-Instance: Params (@big_opMS) 7.
+Instance: Params (@big_opMS) 7 := {}.
 Arguments big_opMS {M} o {_ A _ _} _ _ : simpl never.
 Typeclasses Opaque big_opMS.
 Notation "'[^' o 'mset]' x ∈ X , P" := (big_opMS o (λ x, P) X)
@@ -417,7 +417,7 @@ Section homomorphisms.
   [RewriteRelation] instance. For the purpose of this section, we want to
   rewrite with arbitrary relations, so we declare any relation to be a
   [RewriteRelation]. *)
-  Local Instance: ∀ {A} (R : relation A), RewriteRelation R.
+  Local Instance: ∀ {A} (R : relation A), RewriteRelation R := {}.
 
   Lemma big_opL_commute {A} (h : M1 → M2) `{!MonoidHomomorphism o1 o2 R h}
       (f : nat → A → M1) l :

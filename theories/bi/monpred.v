@@ -357,7 +357,7 @@ Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
 Arguments Objective {_ _} _%I.
 Arguments objective_at {_ _} _%I {_}.
 Hint Mode Objective + + ! : typeclass_instances.
-Instance: Params (@Objective) 2.
+Instance: Params (@Objective) 2 := {}.
 
 (** Primitive facts that cannot be deduced from the BI structure. *)
 
