@@ -357,7 +357,8 @@ End heap.
 
 (** Evaluate [lem] to a hypothesis [H] that can be applied, and then run
 [wp_bind K; tac H] for every possible evaluation context.  [tac] can do
-[iApplyHyp H] to actually apply the hypothesis. *)
+[iApplyHyp H] to actually apply the hypothesis.  TC resolution of [lem] premises
+happens *after* [tac H] got executed. *)
 Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
   wp_pures;
   iPoseProofCore lem as false true (fun H =>
