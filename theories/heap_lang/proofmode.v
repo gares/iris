@@ -375,11 +375,16 @@ Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
     end).
 Tactic Notation "wp_apply" open_constr(lem) :=
   wp_apply_core lem (fun H => iApplyHyp H; try iNext; try wp_expr_simpl).
-(* Tactic tailored for atomic triples *)
+(** Tactic tailored for atomic triples: the first, simple one just runs iAuIntro
+on the goal, as atomic triples always have an atomic update as their premise.
+The second one additionaly does some framing: it gets rid of `Hs` from the
+context, which is intended to be the non-laterable assertions that iAuIntro
+would choke on.  You get them all back in the continuation of the atomic
+operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
-  wp_apply_core lem (fun H => iApplyHyp H; iAuIntro).
+  wp_apply_core lem (fun H => iApplyHyp H; last iAuIntro).
 Tactic Notation "awp_apply" open_constr(lem) "without" constr(Hs) :=
-  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H; iAuIntro]).
+  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H; last iAuIntro]).
 
 Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
   let Htmp := iFresh in
