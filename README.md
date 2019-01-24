@@ -99,13 +99,13 @@ followed by `make build-dep`.
 The following is a (probably incomplete) list of case studies that use Iris, and
 that should be compatible with this version:
 
-* [Iris Examples](https://gitlab.mpi-sws.org/FP/iris-examples) is where we
+* [Iris Examples](https://gitlab.mpi-sws.org/iris/examples) is where we
   collect miscellaneous case studies that do not have their own repository.
 * [LambdaRust](https://gitlab.mpi-sws.org/FP/LambdaRust-coq/) is a Coq
   formalization of the core Rust type system.
 * [iGPS](https://gitlab.mpi-sws.org/FP/sra-gps/tree/gen_proofmode_WIP) is a
   logic for release-acquire memory.
-* [Iris Atomic](https://gitlab.mpi-sws.org/FP/iris-atomic/) is an experimental
+* [Iris Atomic](https://gitlab.mpi-sws.org/iris/atomic) is an experimental
   formalization of logically atomic triples in Iris.
 
 ## Further Resources
