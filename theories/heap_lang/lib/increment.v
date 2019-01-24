@@ -58,16 +58,16 @@ Section increment.
     iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     wp_apply load_spec; first by iAccu.
     (* Prove the atomic update for load *)
-    iAuIntro. rewrite /atomic_acc. iMod "AU" as (v) "[Hl [Hclose _]]".
+    iAuIntro. rewrite /atomic_acc /=. iMod "AU" as (v) "[Hl [Hclose _]]".
     iModIntro. iExists _, _. iFrame "Hl". iSplit.
-    { (* proving abort case *) done. }
+    { (* abort case *) done. }
     iIntros "Hl". iMod ("Hclose" with "Hl") as "AU". iIntros "!> _".
     (* Now go on *)
     wp_apply cas_spec; [done|iAccu|].
     (* Prove the atomic update for CAS *)
-    iAuIntro. rewrite /atomic_acc. iMod "AU" as (w) "[Hl Hclose]".
+    iAuIntro. rewrite /atomic_acc /=. iMod "AU" as (w) "[Hl Hclose]".
     iModIntro. iExists _. iFrame "Hl". iSplit.
-    { iDestruct "Hclose" as "[? _]". done. }
+    { (* abort case *) iDestruct "Hclose" as "[? _]". done. }
     iIntros "Hl". destruct (decide (#w = #v)) as [[= ->]|Hx].
     - iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
       iIntros "!> _". wp_if. by iApply "HΦ".
