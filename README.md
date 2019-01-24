@@ -116,4 +116,13 @@ that should be compatible with this version:
 * Naming conventions are documented at [Naming.md](Naming.md).
 * The generated coqdoc is [available online](https://plv.mpi-sws.org/coqdoc/iris/).
 
+Discussion about the Iris Coq development happens on the mailing list
+[iris-club@lists.mpi-sws.org](https://lists.mpi-sws.org/listinfo/iris-club) and
+in the [Iris Chat](https://mattermost.mpi-sws.org/iris).  This is also the right
+place to ask questions.  The chat requires an account at the
+[MPI-SWS GitLab](https://gitlab.mpi-sws.org/users/sign_in) (use the "Register"
+tab).  If you want to report a bug, please use the
+[issue tracker](https://gitlab.mpi-sws.org/FP/iris-coq/issues), which also
+requires an MPI-SWS GitLab account.
+
 To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
