@@ -29,8 +29,7 @@ build-dep: build-dep/opam phony
 	@# that are incompatible with our build requirements.
 	@# To achieve this, we create a fake opam package that has our build-dependencies as
 	@# dependencies, but does not actually install anything itself.
-	@BUILD_DEP_PACKAGE="$$(egrep "^name:" build-dep/opam | sed 's/^name: *"\(.*\)" */\1/')" && \
-	  echo "# Pinning build-dep package." && \
+	@echo "# Pinning build-dep package." && \
 	  opam install $(OPAMFLAGS) build-dep/
 
 # Some files that do *not* need to be forwarded to Makefile.coq
