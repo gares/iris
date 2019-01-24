@@ -355,6 +355,9 @@ Proof.
 Qed.
 End heap.
 
+(** Evaluate [lem] to a hypothesis [H] that can be applied, and then run
+[wp_bind K; tac H] for every possible evaluation context.  [tac] can do
+[iApplyHyp H] to actually apply the hypothesis. *)
 Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
   wp_pures;
   iPoseProofCore lem as false true (fun H =>
@@ -375,10 +378,10 @@ Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
     end).
 Tactic Notation "wp_apply" open_constr(lem) :=
   wp_apply_core lem (fun H => iApplyHyp H; try iNext; try wp_expr_simpl).
-(** Tactic tailored for atomic triples: the first, simple one just runs iAuIntro
-on the goal, as atomic triples always have an atomic update as their premise.
-The second one additionaly does some framing: it gets rid of `Hs` from the
-context, which is intended to be the non-laterable assertions that iAuIntro
+(** Tactic tailored for atomic triples: the first, simple one just runs
+[iAuIntro] on the goal, as atomic triples always have an atomic update as their
+premise.  The second one additionaly does some framing: it gets rid of [Hs] from
+the context, which is intended to be the non-laterable assertions that iAuIntro
 would choke on.  You get them all back in the continuation of the atomic
 operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
