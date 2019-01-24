@@ -171,17 +171,17 @@ Structure bi := Bi {
 Coercion bi_ofeC (PROP : bi) : ofeT := OfeT PROP (bi_ofe_mixin PROP).
 Canonical Structure bi_ofeC.
 
-Instance: Params (@bi_entails) 1.
-Instance: Params (@bi_emp) 1.
-Instance: Params (@bi_pure) 1.
-Instance: Params (@bi_and) 1.
-Instance: Params (@bi_or) 1.
-Instance: Params (@bi_impl) 1.
-Instance: Params (@bi_forall) 2.
-Instance: Params (@bi_exist) 2.
-Instance: Params (@bi_sep) 1.
-Instance: Params (@bi_wand) 1.
-Instance: Params (@bi_persistently) 1.
+Instance: Params (@bi_entails) 1 := {}.
+Instance: Params (@bi_emp) 1 := {}.
+Instance: Params (@bi_pure) 1 := {}.
+Instance: Params (@bi_and) 1 := {}.
+Instance: Params (@bi_or) 1 := {}.
+Instance: Params (@bi_impl) 1 := {}.
+Instance: Params (@bi_forall) 2 := {}.
+Instance: Params (@bi_exist) 2 := {}.
+Instance: Params (@bi_sep) 1 := {}.
+Instance: Params (@bi_wand) 1 := {}.
+Instance: Params (@bi_persistently) 1 := {}.
 
 Arguments bi_car : simpl never.
 Arguments bi_dist : simpl never.
@@ -224,8 +224,8 @@ Structure sbi := Sbi {
                            sbi_persistently sbi_internal_eq sbi_later;
 }.
 
-Instance: Params (@sbi_later) 1.
-Instance: Params (@sbi_internal_eq) 1.
+Instance: Params (@sbi_later) 1  := {}.
+Instance: Params (@sbi_internal_eq) 1 := {}.
 
 Arguments sbi_later {PROP} _%I : simpl never, rename.
 Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
@@ -256,7 +256,7 @@ Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
 Arguments sbi_later {PROP} _%I : simpl never, rename.
 
 Hint Extern 0 (bi_entails _ _) => reflexivity : core.
-Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP).
+Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
 Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 
 Notation "P ⊢ Q" := (bi_entails P%I Q%I) : stdpp_scope.

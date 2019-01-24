@@ -151,7 +151,7 @@ Qed.
 Program Definition embed (k : nat) (x : A k) : T :=
   {| tower_car n := embed_coerce n x |}.
 Next Obligation. intros k x i. apply g_embed_coerce. Qed.
-Instance: Params (@embed) 1.
+Instance: Params (@embed) 1 := {}.
 Instance embed_ne k : NonExpansive (embed k).
 Proof. by intros n x y Hxy i; rewrite /= Hxy. Qed.
 Definition embed' (k : nat) : A k -n> T := CofeMor (embed k).

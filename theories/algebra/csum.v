@@ -17,9 +17,9 @@ Arguments Cinl {_ _} _.
 Arguments Cinr {_ _} _.
 Arguments CsumBot {_ _}.
 
-Instance: Params (@Cinl) 2.
-Instance: Params (@Cinr) 2.
-Instance: Params (@CsumBot) 2.
+Instance: Params (@Cinl) 2 := {}.
+Instance: Params (@Cinr) 2 := {}.
+Instance: Params (@CsumBot) 2 := {}.
 
 Instance maybe_Cinl {A B} : Maybe (@Cinl A B) := λ x,
   match x with Cinl a => Some a | _ => None end.
@@ -119,7 +119,7 @@ Definition csum_map {A A' B B'} (fA : A → A') (fB : B → B')
   | Cinr b => Cinr (fB b)
   | CsumBot => CsumBot
   end.
-Instance: Params (@csum_map) 4.
+Instance: Params (@csum_map) 4 := {}.
 
 Lemma csum_map_id {A B} (x : csum A B) : csum_map id id x = x.
 Proof. by destruct x. Qed.

@@ -5,7 +5,7 @@ Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
 (* We first define operational type classes for the notations, and then later
 bundle these operational type classes with the laws. *)
 Class BUpd (PROP : Type) : Type := bupd : PROP → PROP.
-Instance : Params (@bupd) 2.
+Instance : Params (@bupd) 2 := {}.
 Hint Mode BUpd ! : typeclass_instances.
 
 Notation "|==> Q" := (bupd Q) : bi_scope.
@@ -13,7 +13,7 @@ Notation "P ==∗ Q" := (P ⊢ |==> Q) (only parsing) : stdpp_scope.
 Notation "P ==∗ Q" := (P -∗ |==> Q)%I : bi_scope.
 
 Class FUpd (PROP : Type) : Type := fupd : coPset → coPset → PROP → PROP.
-Instance: Params (@fupd) 4.
+Instance: Params (@fupd) 4 := {}.
 Hint Mode FUpd ! : typeclass_instances.
 
 Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q) : bi_scope.

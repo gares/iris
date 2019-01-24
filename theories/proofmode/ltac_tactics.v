@@ -1616,15 +1616,15 @@ Class CopyDestruct {PROP : bi} (P : PROP).
 Arguments CopyDestruct {_} _%I.
 Hint Mode CopyDestruct + ! : typeclass_instances.
 
-Instance copy_destruct_forall {PROP : bi} {A} (Φ : A → PROP) : CopyDestruct (∀ x, Φ x).
+Instance copy_destruct_forall {PROP : bi} {A} (Φ : A → PROP) : CopyDestruct (∀ x, Φ x) := {}.
 Instance copy_destruct_impl {PROP : bi} (P Q : PROP) :
-  CopyDestruct Q → CopyDestruct (P → Q).
+  CopyDestruct Q → CopyDestruct (P → Q) := {}.
 Instance copy_destruct_wand {PROP : bi} (P Q : PROP) :
-  CopyDestruct Q → CopyDestruct (P -∗ Q).
+  CopyDestruct Q → CopyDestruct (P -∗ Q) := {}.
 Instance copy_destruct_affinely {PROP : bi} (P : PROP) :
-  CopyDestruct P → CopyDestruct (<affine> P).
+  CopyDestruct P → CopyDestruct (<affine> P) := {}.
 Instance copy_destruct_persistently {PROP : bi} (P : PROP) :
-  CopyDestruct P → CopyDestruct (<pers> P).
+  CopyDestruct P → CopyDestruct (<pers> P) := {}.
 
 Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic(tac) :=
   let ident :=

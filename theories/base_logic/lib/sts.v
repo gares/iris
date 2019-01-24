@@ -51,10 +51,10 @@ Section definitions.
   Proof. apply _. Qed.
 End definitions.
 
-Instance: Params (@sts_inv) 4.
-Instance: Params (@sts_ownS) 4.
-Instance: Params (@sts_own) 5.
-Instance: Params (@sts_ctx) 6.
+Instance: Params (@sts_inv) 4 := {}.
+Instance: Params (@sts_ownS) 4 := {}.
+Instance: Params (@sts_own) 5 := {}.
+Instance: Params (@sts_ctx) 6 := {}.
 
 Section sts.
   Context `{invG Σ, stsG Σ sts}.

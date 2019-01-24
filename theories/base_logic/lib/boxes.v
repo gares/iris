@@ -40,10 +40,10 @@ Section box_defs.
                          inv N (slice_inv γ (Φ γ)))%I.
 End box_defs.
 
-Instance: Params (@box_own_prop) 3.
-Instance: Params (@slice_inv) 3.
-Instance: Params (@slice) 5.
-Instance: Params (@box) 5.
+Instance: Params (@box_own_prop) 3 := {}.
+Instance: Params (@slice_inv) 3 := {}.
+Instance: Params (@slice) 5 := {}.
+Instance: Params (@box) 5 := {}.
 
 Section box.
 Context `{invG Σ, boxG Σ} (N : namespace).

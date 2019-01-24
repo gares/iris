@@ -39,18 +39,18 @@ Definition ownI `{invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (◯ {[ i := invariant_unfold P ]}).
 Arguments ownI {_ _} _ _%I.
 Typeclasses Opaque ownI.
-Instance: Params (@invariant_unfold) 1.
-Instance: Params (@ownI) 3.
+Instance: Params (@invariant_unfold) 1 := {}.
+Instance: Params (@ownI) 3 := {}.
 
 Definition ownE `{invG Σ} (E : coPset) : iProp Σ :=
   own enabled_name (CoPset E).
 Typeclasses Opaque ownE.
-Instance: Params (@ownE) 3.
+Instance: Params (@ownE) 3 := {}.
 
 Definition ownD `{invG Σ} (E : gset positive) : iProp Σ :=
   own disabled_name (GSet E).
 Typeclasses Opaque ownD.
-Instance: Params (@ownD) 3.
+Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{invG Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),

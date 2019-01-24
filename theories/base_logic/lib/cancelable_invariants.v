@@ -20,7 +20,7 @@ Section defs.
     (∃ P', □ ▷ (P ↔ P') ∗ inv N (P' ∨ cinv_own γ 1%Qp))%I.
 End defs.
 
-Instance: Params (@cinv) 5.
+Instance: Params (@cinv) 5 := {}.
 
 Section proofs.
   Context `{invG Σ, cinvG Σ}.
@@ -108,7 +108,7 @@ Section proofs.
     iIntros "!> HP". iApply "H"; auto.
   Qed.
 
-  Global Instance into_inv_cinv N γ P : IntoInv (cinv N γ P) N.
+  Global Instance into_inv_cinv N γ P : IntoInv (cinv N γ P) N := {}.
 
   Global Instance into_acc_cinv E N γ P p :
     IntoAcc (X:=unit) (cinv N γ P)

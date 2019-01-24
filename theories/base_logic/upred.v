@@ -56,7 +56,7 @@ Record uPred (M : ucmraT) : Type := UPred {
 Bind Scope bi_scope with uPred.
 Arguments uPred_holds {_} _%I _ _ : simpl never.
 Add Printing Constructor uPred.
-Instance: Params (@uPred_holds) 3.
+Instance: Params (@uPred_holds) 3 := {}.
 
 Section cofe.
   Context {M : ucmraT}.

@@ -30,12 +30,12 @@ to pick a default value depending on [A]. *)
 Class Wp (Λ : language) (PROP A : Type) :=
   wp : A → coPset → expr Λ → (val Λ → PROP) → PROP.
 Arguments wp {_ _ _ _} _ _ _%E _%I.
-Instance: Params (@wp) 7.
+Instance: Params (@wp) 7 := {}.
 
 Class Twp (Λ : language) (PROP A : Type) :=
   twp : A → coPset → expr Λ → (val Λ → PROP) → PROP.
 Arguments twp {_ _ _ _} _ _ _%E _%I.
-Instance: Params (@twp) 7.
+Instance: Params (@twp) 7 := {}.
 
 (** Notations for partial weakest preconditions *)
 (** Notations without binder -- only parsing because they overlap with the

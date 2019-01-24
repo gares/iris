@@ -15,7 +15,7 @@ Fixpoint big_sepL2 {PROP : bi} {A B}
   | x1 :: l1, x2 :: l2 => Φ 0 x1 x2 ∗ big_sepL2 (λ n, Φ (S n)) l1 l2
   | _, _ => False
   end%I.
-Instance: Params (@big_sepL2) 3.
+Instance: Params (@big_sepL2) 3 := {}.
 Arguments big_sepL2 {PROP A B} _ !_ !_ /.
 Typeclasses Opaque big_sepL2.
 

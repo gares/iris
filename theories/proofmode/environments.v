@@ -10,8 +10,8 @@ Inductive env (A : Type) : Type :=
   | Esnoc : env A → ident → A → env A.
 Arguments Enil {_}.
 Arguments Esnoc {_} _ _ _.
-Instance: Params (@Enil) 1.
-Instance: Params (@Esnoc) 1.
+Instance: Params (@Enil) 1 := {}.
+Instance: Params (@Esnoc) 1 := {}.
 
 Fixpoint env_lookup {A} (i : ident) (Γ : env A) : option A :=
   match Γ with
@@ -37,7 +37,7 @@ Inductive env_wf {A} : env A → Prop :=
 Fixpoint env_to_list {A} (E : env A) : list A :=
   match E with Enil => [] | Esnoc Γ _ x => x :: env_to_list Γ end.
 Coercion env_to_list : env >-> list.
-Instance: Params (@env_to_list) 1.
+Instance: Params (@env_to_list) 1 := {}.
 
 Fixpoint env_dom {A} (Γ : env A) : list ident :=
   match Γ with Enil => [] | Esnoc Γ i _ => i :: env_dom Γ end.
@@ -228,7 +228,7 @@ Record envs_wf {PROP} (Δ : envs PROP) := {
 
 Definition of_envs {PROP} (Δ : envs PROP) : PROP :=
   (⌜envs_wf Δ⌝ ∧ □ [∧] env_intuitionistic Δ ∗ [∗] env_spatial Δ)%I.
-Instance: Params (@of_envs) 1.
+Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
 (* We seal [envs_entails], so that it does not get unfolded by the
@@ -238,7 +238,7 @@ Proof. by eexists. Qed.
 Definition envs_entails := envs_entails_aux.(unseal).
 Definition envs_entails_eq : envs_entails = _ := envs_entails_aux.(seal_eq).
 Arguments envs_entails {PROP} Δ Q%I : rename.
-Instance: Params (@envs_entails) 1.
+Instance: Params (@envs_entails) 1 := {}.
 
 Record envs_Forall2 {PROP : bi} (R : relation PROP) (Δ1 Δ2 : envs PROP) := {
   env_intuitionistic_Forall2 : env_Forall2 R (env_intuitionistic Δ1) (env_intuitionistic Δ2);
