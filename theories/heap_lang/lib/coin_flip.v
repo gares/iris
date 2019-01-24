@@ -50,7 +50,7 @@ Section coinflip.
         @ ⊤
     <<< ∃ (b: bool), x ↦ #0, RET #b >>>.
   Proof.
-    iApply wp_atomic_intro. iIntros (Φ) "AU". wp_lam.
+    iIntros (Φ) "AU". wp_lam.
     wp_apply rand_spec; first done.
     iIntros (b) "_". wp_let.
     wp_bind (_ <- _)%E.
@@ -73,7 +73,7 @@ Section coinflip.
         @ ⊤
     <<< ∃ (b: bool), x ↦ #0, RET #b >>>.
   Proof.
-    iApply wp_atomic_intro. iIntros (Φ) "AU". wp_lam.
+    iIntros (Φ) "AU". wp_lam.
     wp_apply wp_new_proph; first done.
     iIntros (v p) "Hp".
     wp_let.

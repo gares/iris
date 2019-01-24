@@ -13,28 +13,28 @@ Section printing.
   Lemma print_both_quant (P : val → iProp Σ) :
     <<< ∀ x, P x >>> code @ ⊤ <<< ∃ y, P y, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
     iPoseProof (aupd_aacc with "AU") as "?". Show.
   Abort.
 
   Lemma print_first_quant l :
     <<< ∀ x, l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
     iPoseProof (aupd_aacc with "AU") as "?". Show.
   Abort.
 
   Lemma print_second_quant l :
     <<< l ↦ #() >>> code @ ⊤ <<< ∃ y, l ↦ y, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
     iPoseProof (aupd_aacc with "AU") as "?". Show.
   Abort.
 
   Lemma print_no_quant l :
     <<< l ↦ #() >>> code @ ⊤ <<< l ↦ #(), RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
     iPoseProof (aupd_aacc with "AU") as "?". Show.
   Abort.
 
@@ -43,49 +43,49 @@ Section printing.
   Lemma print_both_quant_long l :
     <<< ∀ x, l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< ∃ y, l ↦ y, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_both_quant_longpre l :
     <<< ∀ x, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< ∃ y, l ↦ y, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_both_quant_longpost l :
     <<< ∀ xx, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>> code @ ⊤ <<< ∃ yyyy, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? ?". Show.
+    Show. iIntros (Φ) "?". Show.
   Abort.
 
   Lemma print_first_quant_long l :
     <<< ∀ x, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_second_quant_long l x :
     <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< ∃ y, l ↦ y, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_no_quant_long l x :
     <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< l ↦ #(), RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_no_quant_longpre l xx yyyy :
     <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>> code @ ⊤ <<< l ↦ yyyy, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Lemma print_no_quant_longpost l xx yyyy :
     <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>> code @ ⊤ <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx, RET #() >>>.
   Proof.
-    Show. iIntros (Q Φ) "? AU". Show.
+    Show. iIntros (Φ) "AU". Show.
   Abort.
 
   Check "Prettification".
@@ -93,7 +93,6 @@ Section printing.
   Lemma iMod_prettify (P : val → iProp Σ) :
     <<< ∀ x, P x >>> !#0 @ ⊤ <<< ∃ y, P y, RET #() >>>.
   Proof.
-    iApply wp_atomic_intro. Show.
     iIntros (Φ) "AU". iMod "AU". Show.
   Abort.
 
