@@ -2,6 +2,20 @@
   
   Σ : gFunctors
   heapG0 : heapG Σ
+  aheap : atomic_heap Σ
+  Q : iProp Σ
+  l : loc
+  v : val
+  ============================
+  "Hl" : l ↦ v
+  --------------------------------------∗
+  AACC << ∀ (v0 : val) (q : Qp), l ↦{q} v0 ABORT l ↦ v >> @ ⊤, ∅
+       << l ↦{q} v0, COMM Q -∗ Q >>
+  
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
   P : val → iProp Σ
   ============================
   <<< ∀ x : val, P x >>> code @ ⊤ <<< ∃ y : val, P y, RET #() >>>

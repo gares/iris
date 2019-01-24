@@ -246,7 +246,7 @@ Lemma wp_frame_wand_l s E e Q Φ :
 Proof.
   iIntros "[HQ HWP]". iApply (wp_wand with "HWP").
   iIntros (v) "HΦ". by iApply "HΦ".
-Qed. 
+Qed.
 
 End wp.
 

@@ -1,8 +1,21 @@
 From iris.heap_lang Require Export lifting notation.
 From iris.program_logic Require Export atomic.
 From iris.proofmode Require Import tactics.
-From iris.heap_lang Require Import proofmode notation.
+From iris.heap_lang Require Import proofmode notation atomic_heap.
 Set Default Proof Using "Type".
+
+Section tests.
+  Context `{!heapG Σ} {aheap: atomic_heap Σ}.
+  Import atomic_heap.notation.
+
+  (* FIXME: removing the `val` type annotation breaks printing. *)
+  Lemma test_awp_apply_without (Q : iProp Σ) (l : loc) v :
+    Q -∗ l ↦ v -∗ WP !#l {{ _, Q }}.
+  Proof.
+    iIntros "HQ Hl". awp_apply load_spec without "HQ". Show.
+    iAaccIntro with "Hl"; eauto with iFrame.
+  Qed.
+End tests.
 
 (* Test if AWP and the AU obtained from AWP print. *)
 Section printing.
