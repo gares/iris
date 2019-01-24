@@ -33,6 +33,15 @@ Proof.
   iModIntro. iExists x'. iFrame. iIntros "Hβ".
   iMod ("Hclose" with "Hβ") as "Hγ". iApply "Hγ12". auto.
 Qed.
+
+Lemma acc_mono_disj E1 E2 α β γ1 γ2 :
+  accessor E1 E2 α β γ1 -∗ accessor E1 E2 α β (λ.. x, γ1 x ∨ γ2 x).
+Proof.
+  Show.
+  iApply acc_mono. iIntros (x) "Hγ1". Show.
+  rewrite ->tele_app_bind. Show.
+  iLeft. done.
+Qed.
 End tests.
 
 Section printing_tests.

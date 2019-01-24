@@ -17,6 +17,41 @@
   
   PROP : sbi
   BiFUpd0 : BiFUpd PROP
+  X : tele
+  E1, E2 : coPset
+  α, β, γ1, γ2 : X → PROP
+  ============================
+  accessor E1 E2 α β γ1 -∗ accessor E1 E2 α β (λ.. x : X, γ1 x ∨ γ2 x)
+1 subgoal
+  
+  PROP : sbi
+  BiFUpd0 : BiFUpd PROP
+  X : tele
+  E1, E2 : coPset
+  α, β, γ1, γ2 : X → PROP
+  x : X
+  ============================
+  "Hγ1" : γ1 x
+  --------------------------------------∗
+  (λ.. x0 : X, γ1 x0 ∨ γ2 x0) x
+  
+1 subgoal
+  
+  PROP : sbi
+  BiFUpd0 : BiFUpd PROP
+  X : tele
+  E1, E2 : coPset
+  α, β, γ1, γ2 : X → PROP
+  x : X
+  ============================
+  "Hγ1" : γ1 x
+  --------------------------------------∗
+  γ1 x ∨ γ2 x
+  
+1 subgoal
+  
+  PROP : sbi
+  BiFUpd0 : BiFUpd PROP
   E1, E2 : coPset
   ============================
   "H" : ∃ x x0 : nat, <affine> ⌜x = x0⌝ ∗ (True ={E2,E1}=∗ <affine> ⌜x ≠ x0⌝)
