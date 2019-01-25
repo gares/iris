@@ -105,8 +105,6 @@ that should be compatible with this version:
   formalization of the core Rust type system.
 * [iGPS](https://gitlab.mpi-sws.org/FP/sra-gps/tree/gen_proofmode_WIP) is a
   logic for release-acquire memory.
-* [Iris Atomic](https://gitlab.mpi-sws.org/iris/atomic) is an experimental
-  formalization of logically atomic triples in Iris.
 * [Iron](https://gitlab.mpi-sws.org/iris/iron) is a linear separation logic
   built on top of Iris for precise reasoning about resources (such as making
   sure there are no memory leaks).
