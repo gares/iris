@@ -105,6 +105,11 @@ Global Instance frame_big_sepL2_app {A B} p (Φ : nat → A → B → PROP)
   Frame p R ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2) Q.
 Proof. rewrite /IsApp /Frame=>-> -> ->. apply wand_elim_l', big_sepL2_app. Qed.
 
+Global Instance frame_big_sepMS_union `{Countable A} p (Φ : A → PROP) R Q X1 X2 :
+  Frame p R (([∗ mset] y ∈ X1, Φ y) ∗ [∗ mset] y ∈ X2, Φ y) Q →
+  Frame p R ([∗ mset] y ∈ X1 ∪ X2, Φ y) Q.
+Proof. by rewrite /Frame big_sepMS_union. Qed.
+
 Global Instance make_and_true_l P : KnownLMakeAnd True P P.
 Proof. apply left_id, _. Qed.
 Global Instance make_and_true_r P : KnownRMakeAnd P True P.
