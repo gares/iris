@@ -11,11 +11,6 @@ COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
 COQ_OLD=$(shell echo "$(COQ_VERSION)" | egrep "^8\.7\b" -q && echo 1)
 COQ_MINOR_VERSION=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+\b' -o)
 
-# Can't use pipes because that discards error codes and dash provides no way to control that.
-# Also egrep errors if it doesn't match anything, we have to ignore that.
-# Oh Unix...
-REF_FILTER=egrep -v '(^Welcome to Coq|^Skipping rcfile loading.$$)'
-
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
 	$(HIDE)$(COQDEP) -dyndep var $(COQMF_COQLIBS_NOML) $^ $(redir_if_ok)
@@ -28,13 +23,12 @@ $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref)
 	  else \
 	    REF="tests/$$TEST.ref"; \
 	  fi && \
-	  echo $(if $(MAKE_REF),"COQTEST [ref] `basename "$$REF"`","COQTEST$(if $(COQ_OLD), [ignored],) `basename "$$REF"`") && \
+	  echo $(if $(MAKE_REF),"COQTEST [make ref] `basename "$$REF"`","COQTEST$(if $(COQ_OLD), [ignored],) `basename "$$REF"`") && \
 	  TMPFILE="$$(mktemp)" && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
-	  ($(REF_FILTER) < "$$TMPFILE" > "$$TMPFILE.filtered" || true) && \
 	  $(if $(MAKE_REF), \
-	    mv "$$TMPFILE.filtered" "$$REF", \
-	    $(if $(COQ_OLD),true,diff -u "$$REF" "$$TMPFILE.filtered") \
+	    mv "$$TMPFILE" "$$REF", \
+	    $(if $(COQ_OLD),true,diff -u "$$REF" "$$TMPFILE") \
 	  ) && \
-	  rm -f "$$TMPFILE" "$$TMPFILE.filtered" && \
+	  rm -f "$$TMPFILE" && \
 	  touch $@

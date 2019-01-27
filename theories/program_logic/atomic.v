@@ -14,8 +14,8 @@ Definition atomic_wp `{irisG Λ Σ} {TA TB : tele}
   (β: TA → TB → iProp Σ) (* atomic post-condition *)
   (f: TA → TB → val Λ) (* Turn the return data into the return value *)
   : iProp Σ :=
-    (∀ Q (Φ : val Λ → iProp Σ), Q -∗
-             atomic_update Eo ∅ α β (λ.. x y, Q -∗ Φ (f x y)) -∗
+    (∀ (Φ : val Λ → iProp Σ),
+             atomic_update Eo ∅ α β (λ.. x y, Φ (f x y)) -∗
              WP e {{ Φ }})%I.
 (* Note: To add a private postcondition, use
    atomic_update α β Eo Ei (λ x y, POST x y -∗ Φ (f x y)) *)
@@ -102,8 +102,8 @@ Section lemmas.
     atomic_wp e Eo α β f -∗
     ∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
   Proof.
-    rewrite ->tforall_forall in HL.
-    iIntros "Hwp" (Φ x) "Hα HΦ". iApply ("Hwp" with "[HΦ]"); first iAccu.
+    rewrite ->tforall_forall in HL. iIntros "Hwp" (Φ x) "Hα HΦ".
+    iApply wp_frame_wand_l. iSplitL "HΦ"; first iAccu. iApply "Hwp".
     iAuIntro. iAaccIntro with "Hα"; first by eauto. iIntros (y) "Hβ !>".
     (* FIXME: Using ssreflect rewrite does not work, see Coq bug #7773. *)
     rewrite ->!tele_app_bind. iIntros "HΦ". iApply "HΦ". done.
@@ -116,23 +116,12 @@ Section lemmas.
     (∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}) -∗
     atomic_wp e Eo α β f.
   Proof.
-    simpl in HP. iIntros "Hwp" (Q Φ) "HQ HΦ". iApply fupd_wp.
+    simpl in HP. iIntros "Hwp" (Φ) "HΦ". iApply fupd_wp.
     iMod ("HΦ") as "[#Hα [Hclose _]]". iMod ("Hclose" with "Hα") as "HΦ".
     iApply wp_fupd. iApply ("Hwp" with "Hα"). iIntros "!>" (y) "Hβ".
     iMod ("HΦ") as "[_ [_ Hclose]]". iMod ("Hclose" with "Hβ") as "HΦ".
     (* FIXME: Using ssreflect rewrite does not work, see Coq bug #7773. *)
-    rewrite ->!tele_app_bind. iApply "HΦ". done.
+    rewrite ->!tele_app_bind. done.
   Qed.
 
-  (* Way to prove an atomic triple without seeing the Q *)
-  Lemma wp_atomic_intro e Eo α β f :
-    (∀ (Φ : val Λ → iProp),
-             atomic_update Eo ∅ α β (λ.. x y, Φ (f x y)) -∗
-             WP e {{ Φ }}) -∗
-    atomic_wp e Eo α β f.
-  Proof.
-    iIntros "Hwp" (Q Φ) "HQ AU". iApply (wp_wand with "[-HQ]").
-    { iApply ("Hwp" $! (λ v, Q -∗ Φ v)%I). done. }
-    iIntros (v) "HΦ". iApply "HΦ". done.
-  Qed.
 End lemmas.

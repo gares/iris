@@ -23,7 +23,7 @@ Section increment_physical.
   Lemma incr_phy_spec (l: loc) :
     <<< ∀ (v : Z), l ↦ #v >>> incr_phy #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
-    iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
     wp_load. iMod ("Hclose" with "Hl") as "AU". iModIntro.
     wp_pures. wp_bind (CAS _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
@@ -55,24 +55,24 @@ Section increment.
   Lemma incr_spec_direct (l: loc) :
     <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
-    iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
-    wp_apply load_spec; first by iAccu.
+    iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    awp_apply load_spec.
     (* Prove the atomic update for load *)
-    iAuIntro. rewrite /atomic_acc /=. iMod "AU" as (v) "[Hl [Hclose _]]".
+    rewrite /atomic_acc /=. iMod "AU" as (v) "[Hl [Hclose _]]".
     iModIntro. iExists _, _. iFrame "Hl". iSplit.
     { (* abort case *) done. }
-    iIntros "Hl". iMod ("Hclose" with "Hl") as "AU". iIntros "!> _".
+    iIntros "Hl". iMod ("Hclose" with "Hl") as "AU". iModIntro.
     (* Now go on *)
-    wp_apply cas_spec; [done|iAccu|].
+    awp_apply cas_spec; first done.
     (* Prove the atomic update for CAS *)
-    iAuIntro. rewrite /atomic_acc /=. iMod "AU" as (w) "[Hl Hclose]".
+    rewrite /atomic_acc /=. iMod "AU" as (w) "[Hl Hclose]".
     iModIntro. iExists _. iFrame "Hl". iSplit.
     { (* abort case *) iDestruct "Hclose" as "[? _]". done. }
     iIntros "Hl". destruct (decide (#w = #v)) as [[= ->]|Hx].
     - iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
-      iIntros "!> _". wp_if. by iApply "HΦ".
+      iIntros "!>". wp_if. by iApply "HΦ".
     - iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
-      iIntros "!> _". wp_if. iApply "IH". done.
+      iIntros "!>". wp_if. iApply "IH". done.
   Qed.
 
   (** A proof of the incr specification that uses lemmas to avoid reasining
@@ -80,22 +80,22 @@ Section increment.
   Lemma incr_spec (l: loc) :
     <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
-    iApply wp_atomic_intro. iIntros (Φ) "AU". iLöb as "IH". wp_lam.
-    wp_apply load_spec; first by iAccu.
+    iIntros (Φ) "AU". iLöb as "IH". wp_lam.
+    awp_apply load_spec.
     (* Prove the atomic update for load *)
-    iAuIntro. iApply (aacc_aupd_abort with "AU"); first done.
+    iApply (aacc_aupd_abort with "AU"); first done.
     iIntros (x) "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
-    iIntros "$ !> AU !> _".
+    iIntros "$ !> AU !>".
     (* Now go on *)
-    wp_apply cas_spec; [done|iAccu|].
+    awp_apply cas_spec; first done.
     (* Prove the atomic update for CAS *)
-    iAuIntro. iApply (aacc_aupd with "AU"); first done.
+    iApply (aacc_aupd with "AU"); first done.
     iIntros (x') "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
     iIntros "H↦ !>".
     destruct (decide (#x' = #x)) as [[= ->]|Hx].
-    - iRight. iFrame. iIntros "HΦ !> _".
+    - iRight. iFrame. iIntros "HΦ !>".
       wp_if. by iApply "HΦ".
-    - iLeft. iFrame. iIntros "AU !> _".
+    - iLeft. iFrame. iIntros "AU !>".
       wp_if. iApply "IH". done.
   Qed.
 
@@ -116,17 +116,17 @@ Section increment.
       weak_incr #l @ ⊤
     <<< ⌜v = v'⌝ ∗ l ↦ #(v + 1), RET #v >>>.
   Proof.
-    iIntros "Hl". iApply wp_atomic_intro. iIntros (Φ) "AU". wp_lam.
+    iIntros "Hl" (Φ) "AU". wp_lam.
     wp_apply (atomic_wp_seq $! (load_spec _) with "Hl").
-    iIntros "Hl". wp_apply store_spec; first by iAccu.
+    iIntros "Hl". awp_apply store_spec.
     (* Prove the atomic update for store *)
-    iAuIntro. iApply (aacc_aupd_commit with "AU"); first done.
+    iApply (aacc_aupd_commit with "AU"); first done.
     iIntros (x) "H↦".
     iDestruct (mapsto_agree with "Hl H↦") as %[= <-].
     iCombine "Hl" "H↦" as "Hl". iAaccIntro with "Hl".
     { iIntros "[$ $]"; eauto. }
     iIntros "$ !>". iSplit; first done.
-    iIntros "HΦ !> _". wp_seq. done.
+    iIntros "HΦ !>". wp_seq. done.
   Qed.
 
 End increment.
@@ -149,8 +149,8 @@ Section increment_client.
     (* FIXME: I am only using persistent stuff, so I should be allowed
        to move this to the persisten context even without the additional □. *)
     iAssert (□ WP incr #l {{ _, True }})%I as "#Aupd".
-    { iAlways. wp_apply incr_spec; first by iAccu. clear x.
-      iAuIntro. iInv nroot as (x) ">H↦". iAaccIntro with "H↦"; first by eauto 10.
+    { iAlways. awp_apply incr_spec. clear x.
+      iInv nroot as (x) ">H↦". iAaccIntro with "H↦"; first by eauto 10.
       iIntros "H↦ !>". iSplitL "H↦"; first by eauto 10.
       (* The continuation: From after the atomic triple to the postcondition of the WP *)
       done.

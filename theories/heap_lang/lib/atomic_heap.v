@@ -81,18 +81,18 @@ Section proof.
     <<< ∀ (v : val) q, l ↦{q} v >>> primitive_load #l @ ⊤
     <<< l ↦{q} v, RET v >>>.
   Proof.
-    iIntros (Q Φ) "? AU". wp_lam.
+    iIntros (Φ) "AU". wp_lam.
     iMod "AU" as (v q) "[H↦ [_ Hclose]]".
-    wp_load. iMod ("Hclose" with "H↦") as "HΦ". by iApply "HΦ".
+    wp_load. iMod ("Hclose" with "H↦") as "HΦ". done.
   Qed.
 
   Lemma primitive_store_spec (l : loc) (w : val) :
     <<< ∀ v, l ↦ v >>> primitive_store #l w @ ⊤
     <<< l ↦ w, RET #() >>>.
   Proof.
-    iIntros (Q Φ) "? AU". wp_lam. wp_let.
+    iIntros (Φ) "AU". wp_lam. wp_let.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
-    wp_store. iMod ("Hclose" with "H↦") as "HΦ". by iApply "HΦ".
+    wp_store. iMod ("Hclose" with "H↦") as "HΦ". done.
   Qed.
 
   Lemma primitive_cas_spec (l : loc) (w1 w2 : val) :
@@ -102,10 +102,10 @@ Section proof.
     <<< if decide (v = w1) then l ↦ w2 else l ↦ v,
         RET #(if decide (v = w1) then true else false) >>>.
   Proof.
-    iIntros (? Q Φ) "? AU". wp_lam. wp_let. wp_let.
+    iIntros (? Φ) "AU". wp_lam. wp_let. wp_let.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
     destruct (decide (v = w1)) as [<-|Hv]; [wp_cas_suc|wp_cas_fail];
-    iMod ("Hclose" with "H↦") as "HΦ"; by iApply "HΦ".
+    iMod ("Hclose" with "H↦") as "HΦ"; done.
   Qed.
 End proof.
 
