@@ -33,12 +33,14 @@ build-coq.dev:
     OPAM_PINS: "coq version dev"
     VALIDATE: "1"
 
-build-coq.8.9.dev:
+build-coq.8.9.0:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.9.dev"
+    OPAM_PINS: "coq version 8.9.0"
+    OPAM_PKG: "coq-iris"
+    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
     TIMING_PROJECT: "iris"
-    TIMING_CONF: "coq-8.9.dev"
+    TIMING_CONF: "coq-8.9.0"
   tags:
   - fp-timing
 
@@ -56,8 +58,6 @@ build-coq.8.8.0:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.8.0"
-    OPAM_PKG: "coq-iris"
-    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
     TIMING_PROJECT: "iris"
     TIMING_CONF: "coq-8.8.0"
   tags:
