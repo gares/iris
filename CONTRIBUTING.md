@@ -7,7 +7,7 @@ To contribute code, you need an
 "Register" tab).  Please send your MPI-SWS GitLab username to
 [Ralf Jung](https://gitlab.mpi-sws.org/jung) to enable personal projects for
 your account.  Then you can fork the
-[Iris git repository](https://gitlab.mpi-sws.org/FP/iris-coq/), make your
+[Iris git repository](https://gitlab.mpi-sws.org/iris/iris/), make your
 changes in your fork, and create a merge request.
 
 Please do *not* use the master branch of your fork, that might confuse CI.  Use

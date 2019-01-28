@@ -3,9 +3,9 @@ name: "coq-iris"
 maintainer: "Ralf Jung <jung@mpi-sws.org>"
 authors: "The Iris Team"
 homepage: "http://iris-project.org/"
-bug-reports: "https://gitlab.mpi-sws.org/FP/iris-coq/issues"
+bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 license: "BSD"
-dev-repo: "https://gitlab.mpi-sws.org/FP/iris-coq.git"
+dev-repo: "https://gitlab.mpi-sws.org/iris/iris.git"
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 remove: ["rm" "-rf" "%{lib}%/coq/user-contrib/iris"]

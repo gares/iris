@@ -22,9 +22,9 @@ This version is known to compile with:
  - A development version of [std++](https://gitlab.mpi-sws.org/iris/stdpp)
 
 For a version compatible with Coq 8.6, have a look at the
-[iris-3.1 branch](https://gitlab.mpi-sws.org/FP/iris-coq/tree/iris-3.1).
+[iris-3.1 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.1).
 If you need to work with Coq 8.5, please check out the
-[iris-3.0 branch](https://gitlab.mpi-sws.org/FP/iris-coq/tree/iris-3.0).
+[iris-3.0 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.0).
 
 ### Working *with* Iris
 
@@ -123,6 +123,6 @@ that should be compatible with this version:
   [MPI-SWS GitLab](https://gitlab.mpi-sws.org/users/sign_in) (use the "Register"
   tab).
 * If you want to report a bug, please use the
-  [issue tracker](https://gitlab.mpi-sws.org/FP/iris-coq/issues), which also
+  [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which also
   requires an MPI-SWS GitLab account.
 * To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
