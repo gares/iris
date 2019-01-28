@@ -11,5 +11,5 @@ install: [make "install"]
 remove: ["rm" "-rf" "%{lib}%/coq/user-contrib/iris"]
 depends: [
   "coq" { (>= "8.7.1" & < "8.10~") | (= "dev") }
-  "coq-stdpp" { (= "dev.2019-01-25.1.26088f98") | (= "dev") }
+  "coq-stdpp" { (= "dev.2019-01-28.0.57e8f9ba") | (= "dev") }
 ]
