@@ -126,3 +126,6 @@ that should be compatible with this version:
   [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which also
   requires an MPI-SWS GitLab account.
 * To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
+* If you are writing a paper that uses Iris in one way or another, you could use
+  the [Iris LaTeX macros](docs/iris.sty) for typesetting the various Iris
+  connectives.
