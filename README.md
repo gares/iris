@@ -36,7 +36,7 @@ repository:
 
 To obtain a development version, also add the Iris opam repository:
 
-    opam repo add iris-dev https://gitlab.mpi-sws.org/FP/opam-dev.git
+    opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 
 Either way, you can now do `opam install coq-iris`.  To fetch updates later, run
 `opam update && opam upgrade`.  However, notice that we do not guarnatee
@@ -50,7 +50,7 @@ recommend you do that with opam (1.2.2 or newer).  This requires the following
 two repositories:
 
     opam repo add coq-released https://coq.inria.fr/opam/released
-    opam repo add iris-dev https://gitlab.mpi-sws.org/FP/opam-dev.git
+    opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 
 Once you got opam set up, run `make build-dep` to install the right versions
 of the dependencies.
@@ -89,7 +89,7 @@ followed by `make build-dep`.
   * The subfolder [lib](theories/heap_lang/lib) contains a few derived
     constructions within this language, e.g., parallel composition.
     For more examples of using Iris and heap_lang, have a look at the
-    [Iris Examples](https://gitlab.mpi-sws.org/FP/iris-examples).
+    [Iris Examples](https://gitlab.mpi-sws.org/iris/examples).
 * The folder [tests](theories/tests) contains modules we use to test our
   infrastructure. Users of the Iris Coq library should *not* depend on these
   modules; they may change or disappear without any notice.
@@ -101,10 +101,10 @@ that should be compatible with this version:
 
 * [Iris Examples](https://gitlab.mpi-sws.org/iris/examples) is where we
   collect miscellaneous case studies that do not have their own repository.
-* [LambdaRust](https://gitlab.mpi-sws.org/FP/LambdaRust-coq/) is a Coq
+* [LambdaRust](https://gitlab.mpi-sws.org/iris/lambda-rust) is a Coq
   formalization of the core Rust type system.
-* [iGPS](https://gitlab.mpi-sws.org/FP/sra-gps/tree/gen_proofmode_WIP) is a
-  logic for release-acquire memory.
+* [GPFSL](https://gitlab.mpi-sws.org/iris/gpfsl) is a logic for release-acquire
+  and relaxed memory.
 * [Iron](https://gitlab.mpi-sws.org/iris/iron) is a linear separation logic
   built on top of Iris for precise reasoning about resources (such as making
   sure there are no memory leaks).
