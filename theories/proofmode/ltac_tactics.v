@@ -143,7 +143,7 @@ Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
      let H2 := pretty_ident H2 in
      fail "iRename:" H2 "not fresh"|].
 
-Local Inductive esel_pat :=
+Inductive esel_pat :=
   | ESelPure
   | ESelIdent : bool → ident → esel_pat.
 
