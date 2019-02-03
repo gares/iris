@@ -99,6 +99,7 @@ Changes in Coq:
 * A new tactic, `wp_pures`, executes as many pure steps as possible, excluding
   steps that would require unlocking subterms. Every impure wp_ tactic executes
   this tactic before doing anything else.
+* Add `big_sepM_insert_acc`.
 
 ## Iris 3.1.0 (released 2017-12-19)
 

@@ -628,6 +628,17 @@ Section gmap.
     rewrite -insert_delete big_sepM_insert ?lookup_delete //.
   Qed.
 
+  Lemma big_sepM_insert_acc Φ m i x :
+    m !! i = Some x →
+    ([∗ map] k↦y ∈ m, Φ k y) ⊢
+      Φ i x ∗ (∀ x', Φ i x' -∗ ([∗ map] k↦y ∈ <[i:=x']> m, Φ k y)).
+  Proof.
+    intros ?. rewrite {1}big_sepM_delete //. apply sep_mono; [done|].
+    apply forall_intro=> x'.
+    rewrite -insert_delete big_sepM_insert ?lookup_delete //.
+    by apply wand_intro_l.
+  Qed.
+
   Lemma big_sepM_fn_insert {B} (Ψ : K → A → B → PROP) (f : K → B) m i x b :
     m !! i = None →
        ([∗ map] k↦y ∈ <[i:=x]> m, Ψ k y (<[i:=b]> f k))
