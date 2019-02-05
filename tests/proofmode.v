@@ -1,4 +1,5 @@
 From iris.proofmode Require Import tactics intro_patterns.
+Set Ltac Backtrace.
 Set Default Proof Using "Type".
 
 Section tests.
