@@ -1,4 +1,5 @@
 From iris.proofmode Require Import tactics monpred.
+Set Ltac Backtrace.
 
 Section tests.
   Context {I : biIndex} {PROP : sbi}.
