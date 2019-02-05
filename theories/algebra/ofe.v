@@ -959,6 +959,13 @@ Arguments optionC : clear implicits.
 Instance option_fmap_ne {A B : ofeT} n:
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@fmap option _ A B).
 Proof. intros f f' Hf ?? []; constructor; auto. Qed.
+Instance option_mbind_ne {A B : ofeT} n:
+  Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@mbind option _ A B).
+Proof. destruct 2; simpl; auto. Qed.
+Instance option_mjoin_ne {A : ofeT} n:
+  Proper (dist n ==> dist n) (@mjoin option _ A).
+Proof. destruct 1 as [?? []|]; simpl; by constructor. Qed.
+
 Definition optionC_map {A B} (f : A -n> B) : optionC A -n> optionC B :=
   CofeMor (fmap f : optionC A → optionC B).
 Instance optionC_map_ne A B : NonExpansive (@optionC_map A B).
