@@ -143,11 +143,12 @@ Qed.
 (** ** Allocation *)
 (* TODO: This also holds if we just have ✓ a at the current step-idx, as Iris
    assertion. However, the map_updateP_alloc does not suffice to show this. *)
-Lemma own_alloc_strong a (G : gset gname) :
-  ✓ a → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a)%I.
+Lemma own_alloc_strong a (P : gname → Prop) :
+  pred_infinite P →
+  ✓ a → (|==> ∃ γ, ⌜P γ⌝ ∧ own γ a)%I.
 Proof.
-  intros Ha.
-  rewrite -(bupd_mono (∃ m, ⌜∃ γ, γ ∉ G ∧ m = iRes_singleton γ a⌝ ∧ uPred_ownM m)%I).
+  intros HP Ha.
+  rewrite -(bupd_mono (∃ m, ⌜∃ γ, P γ ∧ m = iRes_singleton γ a⌝ ∧ uPred_ownM m)%I).
   - rewrite /uPred_valid /bi_emp_valid (ownM_unit emp).
     eapply bupd_ownM_updateP, (ofe_fun_singleton_updateP_empty (inG_id _));
       first (eapply alloc_updateP_strong', cmra_transport_valid, Ha);
@@ -155,9 +156,18 @@ Proof.
   - apply exist_elim=>m; apply pure_elim_l=>-[γ [Hfresh ->]].
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
 Qed.
+Lemma own_alloc_cofinite a (G : gset gname) :
+  ✓ a → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a)%I.
+Proof.
+  intros Ha.
+  apply (own_alloc_strong a (λ γ, γ ∉ G))=> //.
+  apply (pred_infinite_set (C:=gset gname)).
+  intros E. set (i := fresh (G ∪ E)).
+  exists i. apply not_elem_of_union, is_fresh.
+Qed.
 Lemma own_alloc a : ✓ a → (|==> ∃ γ, own γ a)%I.
 Proof.
-  intros Ha. rewrite /uPred_valid /bi_emp_valid (own_alloc_strong a ∅) //; [].
+  intros Ha. rewrite /uPred_valid /bi_emp_valid (own_alloc_cofinite a ∅) //; [].
   apply bupd_mono, exist_mono=>?. eauto using and_elim_r.
 Qed.
 

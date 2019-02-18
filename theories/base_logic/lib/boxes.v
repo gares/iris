@@ -108,7 +108,7 @@ Lemma slice_insert_empty E q f Q P :
     slice N γ Q ∗ ▷?q box N (<[γ:=false]> f) (Q ∗ P).
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
-  iMod (own_alloc_strong (● Excl' false ⋅ ◯ Excl' false,
+  iMod (own_alloc_cofinite (● Excl' false ⋅ ◯ Excl' false,
     Some (to_agree (Next (iProp_unfold Q)))) (dom _ f))
     as (γ) "[Hdom Hγ]"; first done.
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".

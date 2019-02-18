@@ -102,22 +102,31 @@ Section auth.
   Global Instance own_mono' γ : Proper (flip (≼) ==> (⊢)) (auth_own γ).
   Proof. intros a1 a2. apply auth_own_mono. Qed.
 
-  Lemma auth_alloc_strong N E t (G : gset gname) :
-    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜γ ∉ G⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
+  Lemma auth_alloc_strong N E t (I : gname → Prop) :
+    pred_infinite I →
+    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜I γ⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
   Proof.
-    iIntros (?) "Hφ". rewrite /auth_own /auth_ctx.
-    iMod (own_alloc_strong (Auth (Excl' (f t)) (f t)) G) as (γ) "[% Hγ]"; first done.
+    iIntros (??) "Hφ". rewrite /auth_own /auth_ctx.
+    iMod (own_alloc_strong (Auth (Excl' (f t)) (f t)) I) as (γ) "[% Hγ]"; [done|done|].
     iRevert "Hγ"; rewrite auth_both_op; iIntros "[Hγ Hγ']".
     iMod (inv_alloc N _ (auth_inv γ f φ) with "[-Hγ']") as "#?".
     { iNext. rewrite /auth_inv. iExists t. by iFrame. }
     eauto.
   Qed.
 
+  Lemma auth_alloc_cofinite N E t (G : gset gname) :
+    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜γ ∉ G⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
+  Proof.
+    intros ?. apply auth_alloc_strong=>//.
+    apply (pred_infinite_set (C:=gset gname)) => E'.
+    exists (fresh (G ∪ E')). apply not_elem_of_union, is_fresh.
+  Qed.
+
   Lemma auth_alloc N E t :
     ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, auth_ctx γ N f φ ∧ auth_own γ (f t).
   Proof.
     iIntros (?) "Hφ".
-    iMod (auth_alloc_strong N E t ∅ with "Hφ") as (γ) "[_ ?]"; eauto.
+    iMod (auth_alloc_cofinite N E t ∅ with "Hφ") as (γ) "[_ ?]"; eauto.
   Qed.
 
   Lemma auth_empty γ : (|==> auth_own γ ε)%I.
