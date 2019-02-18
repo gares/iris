@@ -117,11 +117,11 @@ The normal `e1 ||| e2` notation uses expression lambdas, because clearly we want
 value lambda).  However, the *specification* for parallel composition should use
 value lambdas, because prior to applying it the term will be reduced as much as
 possible to achieve a normal form.  To facilitate this, we define a copy of the
-`e1 ||| e2` notation in the value scope that uses value lambdas.  This is not
-actually a value, but we still but it in the value scope to differentiate from
-the other notation that uses expression lambdas.  (In the future, we might
-decide to add a separate scope for this.)  Then, we write the canonical
-specification using the notation in the value scope.
+`e1 ||| e2` notation in the value scope that uses *unlocked* value lambdas.
+This is not actually a value, but we still but it in the value scope to
+differentiate from the other notation that uses expression lambdas.  (In the
+future, we might decide to add a separate scope for this.)  Then, we write the
+canonical specification using the notation in the value scope.
 
 This works very well for non-recursive notions.  For `while` loops, the
 situation is unfortunately more complex and proving the desired specification
