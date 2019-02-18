@@ -9,10 +9,11 @@ language for simple examples.
 HeapLang is a lambda-calculus with operations to allocate individual locations,
 `load`, `store`, `CAS` (compare-and-swap) and `FAA` (fetch-and-add). Moreover,
 it has a `fork` construct to spawn new threads.  In terms of values, we have
-integers, booleans, unit, heap locations as well as (binary) sums and products.
+integers, booleans, unit, heap locations, as well as (binary) sums and products.
 
-Functions are the only binders, so the sum elimination (`Case`) expects both
-branches to be of function type and passes them the data component of the sum.
+Recursive functions are the only binders, so the sum elimination (`Case`)
+expects both branches to be of function type and passes them the data component
+of the sum.
 
 For technical reasons, the only terms that are considered values are those that
 begin with the `Val` expression former.  This means that, for example, `Pair
@@ -20,8 +21,8 @@ begin with the `Val` expression former.  This means that, for example, `Pair
 This leads to some administrative redexes, and to a distinction between "value
 pairs", "value sums", "value closures" and their "expression" counterparts.
 
-However, this also makes values very syntactically uniform, which we exploit in
-the definition of substitution which just skips over `Val` terms, because values
+However, this also makes values syntactically uniform, which we exploit in the
+definition of substitution which just skips over `Val` terms, because values
 should be closed and hence not affected by substitution.  As a consequence, we
 can entirely avoid even talking about "closed terms", that notion just does not
 have to come up anywhere.  We also exploit this when writing specifications,
@@ -47,7 +48,7 @@ eagerly.
 
 ## Tactics
 
-HeapLang coms with a bunch of tactics that facilitate stepping through HeaLang
+HeapLang comes with a bunch of tactics that facilitate stepping through HeapLang
 programs as part of proving a weakest precondition.  All of these tactics assume
 that the current goal is of the shape `WP e @ E {{ Q }}`.
 
@@ -72,22 +73,22 @@ Tactics to take one or more pure program steps:
 Tactics for the heap:
 
 - `wp_alloc l as "H"`: Reduce an allocation instruction and call the new
-  location `l` (in the Coq context) and the assertion that we own it `H` (in the
+  location `l` (in the Coq context) and the points-to assertion `H` (in the
   spatial context).  You can leave away the `as "H"` to introduce it as an
   anonymous assertion, i.e., that is equivalent to `as "?"`.
-- `wp_load`: Reduce a load operation.  This automatically finds the necessary
-  ownership in the spatial context, and fails if it cannot be found.
-- `wp_store`: Reduce a store operation.  This automatically finds the necessary
-  ownership in the spatial context, and fails if it cannot be found.
+- `wp_load`: Reduce a load operation.  This automatically finds the points-to
+  assertion in the spatial context, and fails if it cannot be found.
+- `wp_store`: Reduce a store operation.  This automatically finds the points-to
+  assertion in the spatial context, and fails if it cannot be found.
 - `wp_cas_suc`, `wp_cas_fail`: Reduce a succeeding/failing CAS.  This
-  automatically finds the necessary ownership.  It also automatically tries to
+  automatically finds the points-to assertion.  It also automatically tries to
   solve the (in)equality to show that the CAS succeeds/fails, and opens a new
   goal if it cannot prove this goal.
 - `wp_cas as H1 | H2`: Reduce a CAS, performing a case distinction over whether
-  it succeeds or fails.  This automatically finds the necessary ownership.  The
+  it succeeds or fails.  This automatically finds the points-to assertion.  The
   proof of equality in the first new subgoal will be called `H1`, and the proof
   of the inequality in the second new subgoal will be called `H2`.
-- `wp_faa`: Reduce a FAA.  This automatically finds the necessary ownership.
+- `wp_faa`: Reduce a FAA.  This automatically finds the points-to assertion.
 
 Further tactics:
 
