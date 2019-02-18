@@ -155,7 +155,7 @@ Section increment_client.
       (* The continuation: From after the atomic triple to the postcondition of the WP *)
       done.
     }
-    wp_apply par_spec; wp_pures.
+    wp_apply wp_par.
     - iAssumption.
     - iAssumption.
     - iIntros (??) "_ !>". done.

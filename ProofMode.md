@@ -335,3 +335,8 @@ Proof mode terms can be written down using the following shorthand syntaxes, too
         (H $! t1 ... tn)
         H
 
+HeapLang tactics
+================
+
+If you came here looking for the `wp_` tactics, those are described in the
+[HeapLang documentation](HeapLang.md).
