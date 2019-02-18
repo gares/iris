@@ -306,7 +306,9 @@ Lemma insert_op m1 m2 i x y :
 Proof. by rewrite (insert_merge (⋅) m1 m2 i (x ⋅ y) x y). Qed.
 
 Lemma insert_updateP (P : A → Prop) (Q : gmap K A → Prop) m i x :
-  x ~~>: P → (∀ y, P y → Q (<[i:=y]>m)) → <[i:=x]>m ~~>: Q.
+  x ~~>: P →
+  (∀ y, P y → Q (<[i:=y]>m)) →
+  <[i:=x]>m ~~>: Q.
 Proof.
   intros Hx%option_updateP' HP; apply cmra_total_updateP=> n mf Hm.
   destruct (Hx n (Some (mf !! i))) as ([y|]&?&?); try done.

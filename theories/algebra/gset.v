@@ -134,7 +134,8 @@ Section gset_disj.
 
   Lemma gset_disj_alloc_updateP_strong P (Q : gset_disj K → Prop) X :
     (∀ Y, X ⊆ Y → ∃ j, j ∉ Y ∧ P j) →
-    (∀ i, i ∉ X → P i → Q (GSet ({[i]} ∪ X))) → GSet X ~~>: Q.
+    (∀ i, i ∉ X → P i → Q (GSet ({[i]} ∪ X))) →
+    GSet X ~~>: Q.
   Proof.
     intros Hfresh HQ.
     apply cmra_discrete_updateP=> ? /gset_disj_valid_inv_l [Y [->?]].
