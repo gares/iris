@@ -23,7 +23,7 @@ Qed.
 Lemma big_opS_None {M : cmraT} `{Countable A} (f : A → option M) X :
   ([^op set] x ∈ X, f x) = None ↔ ∀ x, x ∈ X → f x = None.
 Proof.
-  induction X as [|x X ? IH] using collection_ind_L; [done|].
+  induction X as [|x X ? IH] using set_ind_L; [done|].
   rewrite -equiv_None big_opS_insert // equiv_None op_None IH. set_solver.
 Qed.
 Lemma big_opMS_None {M : cmraT} `{Countable A} (f : A → option M) X :

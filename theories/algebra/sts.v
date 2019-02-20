@@ -1,4 +1,4 @@
-From stdpp Require Export set.
+From stdpp Require Export propset.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import dra.
 Set Default Proof Using "Type".
@@ -12,13 +12,13 @@ Structure stsT := Sts {
   state : Type;
   token : Type;
   prim_step : relation state;
-  tok : state → set token;
+  tok : state → propset token;
 }.
 Arguments Sts {_ _} _ _.
 Arguments prim_step {_} _ _.
 Arguments tok {_} _.
-Notation states sts := (set (state sts)).
-Notation tokens sts := (set (token sts)).
+Notation states sts := (propset (state sts)).
+Notation tokens sts := (propset (token sts)).
 
 (** * Theory and definitions *)
 Section sts.
@@ -49,8 +49,8 @@ Definition up_set (S : states sts) (T : tokens sts) : states sts :=
 
 (** Tactic setup *)
 Hint Resolve Step : core.
-Hint Extern 50 (equiv (A:=set _) _ _) => set_solver : sts.
-Hint Extern 50 (¬equiv (A:=set _) _ _) => set_solver : sts.
+Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
+Hint Extern 50 (¬equiv (A:=propset _) _ _) => set_solver : sts.
 Hint Extern 50 (_ ∈ _) => set_solver : sts.
 Hint Extern 50 (_ ⊆ _) => set_solver : sts.
 Hint Extern 50 (_ ## _) => set_solver : sts.
@@ -62,7 +62,7 @@ Proof.
     eauto with sts; set_solver.
 Qed.
 Global Instance frame_step_proper : Proper ((≡) ==> (=) ==> (=) ==> iff) frame_step.
-Proof. move=> ?? /collection_equiv_spec [??]; split; by apply frame_step_mono. Qed.
+Proof. move=> ?? /set_equiv_spec [??]; split; by apply frame_step_mono. Qed.
 Instance closed_proper' : Proper ((≡) ==> (≡) ==> impl) closed.
 Proof. destruct 3; constructor; intros; setoid_subst; eauto. Qed.
 Global Instance closed_proper : Proper ((≡) ==> (≡) ==> iff) closed.
@@ -71,11 +71,11 @@ Global Instance up_preserving : Proper ((=) ==> flip (⊆) ==> (⊆)) up.
 Proof.
   intros s ? <- T T' HT ; apply elem_of_subseteq.
   induction 1 as [|s1 s2 s3 [T1 T2]]; [constructor|].
-  eapply elem_of_mkSet, rtc_l; [eapply Frame_step with T1 T2|]; eauto with sts.
+  eapply elem_of_PropSet, rtc_l; [eapply Frame_step with T1 T2|]; eauto with sts.
 Qed.
 Global Instance up_proper : Proper ((=) ==> (≡) ==> (≡)) up.
 Proof.
-  by move=> ??? ?? /collection_equiv_spec [??]; split; apply up_preserving.
+  by move=> ??? ?? /set_equiv_spec [??]; split; apply up_preserving.
 Qed.
 Global Instance up_set_preserving : Proper ((⊆) ==> flip (⊆) ==> (⊆)) up_set.
 Proof.
@@ -84,7 +84,7 @@ Proof.
 Qed.
 Global Instance up_set_proper : Proper ((≡) ==> (≡) ==> (≡)) up_set.
 Proof.
-  move=> S1 S2 /collection_equiv_spec [??] T1 T2 /collection_equiv_spec [??];
+  move=> S1 S2 /set_equiv_spec [??] T1 T2 /set_equiv_spec [??];
     split; by apply up_set_preserving.
 Qed.
 
@@ -127,7 +127,7 @@ Proof. intros s ?; apply elem_of_bind; eauto using elem_of_up. Qed.
 Lemma elem_of_up_set S T s : s ∈ S → s ∈ up_set S T.
 Proof. apply subseteq_up_set. Qed.
 Lemma up_up_set s T : up s T ≡ up_set {[ s ]} T.
-Proof. by rewrite /up_set collection_bind_singleton. Qed.
+Proof. by rewrite /up_set set_bind_singleton. Qed.
 Lemma closed_up_set S T : (∀ s, s ∈ S → tok s ## T) → closed (up_set S T) T.
 Proof.
   intros HS; unfold up_set; split.
@@ -140,7 +140,7 @@ Proof.
 Qed.
 Lemma closed_up s T : tok s ## T → closed (up s T) T.
 Proof.
-  intros; rewrite -(collection_bind_singleton (λ s, up s T) s).
+  intros; rewrite -(set_bind_singleton (λ s, up s T) s).
   apply closed_up_set; set_solver.
 Qed.
 Lemma closed_up_set_empty S : closed (up_set S ∅) ∅.
@@ -149,7 +149,7 @@ Lemma closed_up_empty s : closed (up s ∅) ∅.
 Proof. eauto using closed_up with sts. Qed.
 Lemma up_closed S T : closed S T → up_set S T ≡ S.
 Proof.
-  intros ?; apply collection_equiv_spec; split; auto using subseteq_up_set.
+  intros ?; apply set_equiv_spec; split; auto using subseteq_up_set.
   intros s; unfold up_set; rewrite elem_of_bind; intros (s'&Hstep&?).
   induction Hstep; eauto using closed_step.
 Qed.
@@ -159,7 +159,7 @@ Lemma up_set_subseteq S1 T S2 : closed S2 T → S1 ⊆ S2 → sts.up_set S1 T �
 Proof. move=> ?? s [s' [? ?]]. eauto using closed_steps. Qed.
 Lemma up_op s T1 T2 : up s (T1 ∪ T2) ⊆ up s T1 ∩ up s T2.
 Proof. (* Notice that the other direction does not hold. *)
-  intros x Hx. split; eapply elem_of_mkSet, rtc_subrel; try exact Hx.
+  intros x Hx. split; eapply elem_of_PropSet, rtc_subrel; try exact Hx.
   - intros; eapply frame_step_mono; last first; try done. set_solver+.
   - intros; eapply frame_step_mono; last first; try done. set_solver+.
 Qed.
@@ -171,8 +171,8 @@ Notation frame_steps T := (rtc (frame_step T)).
 (* The type of bounds we can give to the state of an STS. This is the type
    that we equip with an RA structure. *)
 Inductive car (sts : stsT) :=
-  | auth : state sts → set (token sts) → car sts
-  | frag : set (state sts) → set (token sts ) → car sts.
+  | auth : state sts → propset (token sts) → car sts
+  | frag : propset (state sts) → propset (token sts) → car sts.
 Arguments auth {_} _ _.
 Arguments frag {_} _ _.
 End sts.
@@ -215,7 +215,7 @@ Instance sts_op : Op (car sts) := λ x1 x2,
   | auth s T1, auth _ T2 => auth s (T1 ∪ T2)(* never happens *)
   end.
 
-Hint Extern 50 (equiv (A:=set _) _ _) => set_solver : sts.
+Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
 Hint Extern 50 (∃ s : state sts, _) => set_solver : sts.
 Hint Extern 50 (_ ∈ _) => set_solver : sts.
 Hint Extern 50 (_ ⊆ _) => set_solver : sts.
@@ -388,7 +388,7 @@ Lemma sts_up_set_intersection S1 Sf Tf :
 Proof.
   intros Hclf. apply (anti_symm (⊆)).
   - move=>s [HS1 HSf]. split. by apply HS1. by apply subseteq_up_set.
-  - move=>s [HS1 [s' [/elem_of_mkSet Hsup Hs']]]. split; first done.
+  - move=>s [HS1 [s' [/elem_of_PropSet Hsup Hs']]]. split; first done.
     eapply closed_steps, Hsup; first done. set_solver +Hs'.
 Qed.
 
@@ -449,10 +449,10 @@ Structure stsT := Sts {
 }.
 Arguments Sts {_} _.
 Arguments prim_step {_} _ _.
-Notation states sts := (set (state sts)).
+Notation states sts := (propset (state sts)).
 
 Definition stsT_token := Empty_set.
-Definition stsT_tok {sts : stsT} (_ : state sts) : set stsT_token := ∅.
+Definition stsT_tok {sts : stsT} (_ : state sts) : propset stsT_token := ∅.
 
 Canonical Structure sts_notok (sts : stsT) : sts.stsT :=
   sts.Sts (@prim_step sts) stsT_tok.

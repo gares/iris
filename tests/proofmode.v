@@ -152,7 +152,7 @@ Qed.
 Lemma test_iExist_coercion (P : Z → PROP) : (∀ x, P x) -∗ ∃ x, P x.
 Proof. iIntros "HP". iExists (0:nat). iApply ("HP" $! (0:nat)). Qed.
 
-Lemma test_iExist_tc `{Collection A C} P : (∃ x1 x2 : gset positive, P -∗ P)%I.
+Lemma test_iExist_tc `{Set_ A C} P : (∃ x1 x2 : gset positive, P -∗ P)%I.
 Proof. iExists {[ 1%positive ]}, ∅. auto. Qed.
 
 Lemma test_iSpecialize_tc P : (∀ x y z : gset positive, P) -∗ P.

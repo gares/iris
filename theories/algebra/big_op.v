@@ -314,7 +314,7 @@ Section gset.
     X ## Y →
     ([^o set] y ∈ X ∪ Y, f y) ≡ ([^o set] y ∈ X, f y) `o` ([^o set] y ∈ Y, f y).
   Proof.
-    intros. induction X as [|x X ? IH] using collection_ind_L.
+    intros. induction X as [|x X ? IH] using set_ind_L.
     { by rewrite left_id_L big_opS_empty left_id. }
     rewrite -assoc_L !big_opS_insert; [|set_solver..].
     by rewrite -assoc IH; last set_solver.
@@ -332,7 +332,7 @@ Section gset.
 
   Lemma big_opS_unit X : ([^o set] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
-    induction X using collection_ind_L; rewrite /= ?big_opS_insert ?left_id //.
+    induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id //.
   Qed.
 
   Lemma big_opS_opS f g X :
@@ -458,7 +458,7 @@ Section homomorphisms.
       `{!MonoidHomomorphism o1 o2 R h} (f : A → M1) X :
     R (h ([^o1 set] x ∈ X, f x)) ([^o2 set] x ∈ X, h (f x)).
   Proof.
-    intros. induction X as [|x X ? IH] using collection_ind_L.
+    intros. induction X as [|x X ? IH] using set_ind_L.
     - by rewrite !big_opS_empty monoid_homomorphism_unit.
     - by rewrite !big_opS_insert // monoid_homomorphism -IH.
   Qed.
@@ -466,7 +466,7 @@ Section homomorphisms.
       `{!WeakMonoidHomomorphism o1 o2 R h} (f : A → M1) X :
     X ≠ ∅ → R (h ([^o1 set] x ∈ X, f x)) ([^o2 set] x ∈ X, h (f x)).
   Proof.
-    intros. induction X as [|x X ? IH] using collection_ind_L; [done|].
+    intros. induction X as [|x X ? IH] using set_ind_L; [done|].
     destruct (decide (X = ∅)) as [->|].
     - by rewrite !big_opS_insert // !big_opS_empty !right_id.
     - by rewrite !big_opS_insert // monoid_homomorphism -IH //.

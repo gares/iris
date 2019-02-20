@@ -1,6 +1,6 @@
 From iris.algebra Require Export big_op.
 From iris.bi Require Import derived_laws_sbi plainly.
-From stdpp Require Import countable fin_collections functions.
+From stdpp Require Import countable fin_sets functions.
 Set Default Proof Using "Type".
 Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
 
@@ -788,7 +788,7 @@ Section gset.
     ([∗ set] y ∈ filter P X, Φ y)
     ⊣⊢ ([∗ set] y ∈ X, if decide (P y) then Φ y else emp).
   Proof.
-    induction X as [|x X ? IH] using collection_ind_L.
+    induction X as [|x X ? IH] using set_ind_L.
     { by rewrite filter_empty_L !big_sepS_empty. }
     destruct (decide (P x)).
     - rewrite filter_union_L filter_singleton_L //.
@@ -841,7 +841,7 @@ Section gset.
     intros. apply (anti_symm _).
     { apply forall_intro=> x.
       apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepS_elem_of. }
-    induction X as [|x X ? IH] using collection_ind_L; auto using big_sepS_empty'.
+    induction X as [|x X ? IH] using set_ind_L; auto using big_sepS_empty'.
     rewrite big_sepS_insert // -persistent_and_sep. apply and_intro.
     - by rewrite (forall_elim x) pure_True ?True_impl; last set_solver.
     - rewrite -IH. apply forall_mono=> y. apply impl_intro_l, pure_elim_l=> ?.
@@ -853,7 +853,7 @@ Section gset.
     □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
     [∗ set] x ∈ X, Ψ x.
   Proof.
-    apply wand_intro_l. induction X as [|x X ? IH] using collection_ind_L.
+    apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
     { by rewrite sep_elim_r. }
     rewrite !big_sepS_insert // intuitionistically_sep_dup.
     rewrite -assoc [(□ _ ∗ _)%I]comm -!assoc assoc. apply sep_mono.

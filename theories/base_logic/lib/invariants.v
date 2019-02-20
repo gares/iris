@@ -43,11 +43,11 @@ Qed.
 
 Lemma fresh_inv_name (E : gset positive) N : ∃ i, i ∉ E ∧ i ∈ (↑N:coPset).
 Proof.
-  exists (coPpick (↑ N ∖ coPset.of_gset E)).
-  rewrite -coPset.elem_of_of_gset (comm and) -elem_of_difference.
+  exists (coPpick (↑ N ∖ gset_to_coPset E)).
+  rewrite -elem_of_gset_to_coPset (comm and) -elem_of_difference.
   apply coPpick_elem_of=> Hfin.
   eapply nclose_infinite, (difference_finite_inv _ _), Hfin.
-  apply of_gset_finite.
+  apply gset_to_coPset_finite.
 Qed.
 
 Lemma inv_alloc N E P : ▷ P ={E}=∗ inv N P.

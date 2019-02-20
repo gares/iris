@@ -42,7 +42,7 @@ Section proof.
   Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
     (∃ o n : nat,
       lo ↦ #o ∗ ln ↦ #n ∗
-      own γ (● (Excl' o, GSet (seq_set 0 n))) ∗
+      own γ (● (Excl' o, GSet (set_seq 0 n))) ∗
       ((own γ (◯ (Excl' o, GSet ∅)) ∗ R) ∨ own γ (◯ (ε, GSet {[ o ]}))))%I.
 
   Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
@@ -117,8 +117,8 @@ Section proof.
     - iMod (own_update with "Hauth") as "[Hauth Hofull]".
       { eapply auth_update_alloc, prod_local_update_2.
         eapply (gset_disj_alloc_empty_local_update _ {[ n ]}).
-        apply (seq_set_S_disjoint 0). }
-      rewrite -(seq_set_S_union_L 0).
+        apply (set_seq_S_end_disjoint 0). }
+      rewrite -(set_seq_S_end_union_L 0).
       wp_cas_suc. iModIntro. iSplitL "Hlo' Hln' Haown Hauth".
       { iNext. iExists o', (S n).
         rewrite Nat2Z.inj_succ -Z.add_1_r. by iFrame. }
