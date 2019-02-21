@@ -909,9 +909,9 @@ Section gmultiset.
   Lemma big_sepMS_empty' `{!BiAffine PROP} P Φ : P ⊢ [∗ mset] x ∈ ∅, Φ x.
   Proof. rewrite big_sepMS_empty. apply: affine. Qed.
 
-  Lemma big_sepMS_union Φ X Y :
-    ([∗ mset] y ∈ X ∪ Y, Φ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ [∗ mset] y ∈ Y, Φ y.
-  Proof. apply big_opMS_union. Qed.
+  Lemma big_sepMS_disj_union Φ X Y :
+    ([∗ mset] y ∈ X ⊎ Y, Φ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ [∗ mset] y ∈ Y, Φ y.
+  Proof. apply big_opMS_disj_union. Qed.
 
   Lemma big_sepMS_delete Φ X x :
     x ∈ X → ([∗ mset] y ∈ X, Φ y) ⊣⊢ Φ x ∗ [∗ mset] y ∈ X ∖ {[ x ]}, Φ y.

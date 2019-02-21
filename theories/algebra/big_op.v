@@ -381,9 +381,9 @@ Section gmultiset.
   Lemma big_opMS_empty f : ([^o mset] x ∈ ∅, f x) = monoid_unit.
   Proof. by rewrite /big_opMS gmultiset_elements_empty. Qed.
 
-  Lemma big_opMS_union f X Y :
-    ([^o mset] y ∈ X ∪ Y, f y) ≡ ([^o mset] y ∈ X, f y) `o` [^o mset] y ∈ Y, f y.
-  Proof. by rewrite /big_opMS gmultiset_elements_union big_opL_app. Qed.
+  Lemma big_opMS_disj_union f X Y :
+    ([^o mset] y ∈ X ⊎ Y, f y) ≡ ([^o mset] y ∈ X, f y) `o` [^o mset] y ∈ Y, f y.
+  Proof. by rewrite /big_opMS gmultiset_elements_disj_union big_opL_app. Qed.
 
   Lemma big_opMS_singleton f x : ([^o mset] y ∈ {[ x ]}, f y) ≡ f x.
   Proof.
@@ -393,14 +393,14 @@ Section gmultiset.
   Lemma big_opMS_delete f X x :
     x ∈ X → ([^o mset] y ∈ X, f y) ≡ f x `o` [^o mset] y ∈ X ∖ {[ x ]}, f y.
   Proof.
-    intros. rewrite -big_opMS_singleton -big_opMS_union.
-    by rewrite -gmultiset_union_difference'.
+    intros. rewrite -big_opMS_singleton -big_opMS_disj_union.
+    by rewrite -gmultiset_disj_union_difference'.
   Qed.
 
   Lemma big_opMS_unit X : ([^o mset] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
     induction X using gmultiset_ind;
-      rewrite /= ?big_opMS_union ?big_opMS_singleton ?left_id //.
+      rewrite /= ?big_opMS_disj_union ?big_opMS_singleton ?left_id //.
   Qed.
 
   Lemma big_opMS_opMS f g X :
@@ -478,7 +478,7 @@ Section homomorphisms.
   Proof.
     intros. induction X as [|x X IH] using gmultiset_ind.
     - by rewrite !big_opMS_empty monoid_homomorphism_unit.
-    - by rewrite !big_opMS_union !big_opMS_singleton monoid_homomorphism -IH.
+    - by rewrite !big_opMS_disj_union !big_opMS_singleton monoid_homomorphism -IH.
   Qed.
   Lemma big_opMS_commute1 `{Countable A} (h : M1 → M2)
       `{!WeakMonoidHomomorphism o1 o2 R h} (f : A → M1) X :
@@ -486,8 +486,8 @@ Section homomorphisms.
   Proof.
     intros. induction X as [|x X IH] using gmultiset_ind; [done|].
     destruct (decide (X = ∅)) as [->|].
-    - by rewrite !big_opMS_union !big_opMS_singleton !big_opMS_empty !right_id.
-    - by rewrite !big_opMS_union !big_opMS_singleton monoid_homomorphism -IH //.
+    - by rewrite !big_opMS_disj_union !big_opMS_singleton !big_opMS_empty !right_id.
+    - by rewrite !big_opMS_disj_union !big_opMS_singleton monoid_homomorphism -IH //.
   Qed.
 
   Context `{!LeibnizEquiv M2}.

@@ -591,10 +591,11 @@ Proof.
   apply wand_elim_l', big_sepL2_app.
 Qed.
 
-Global Instance from_and_big_sepMS_union_persistent `{Countable A} (Φ : A → PROP) X1 X2 :
+Global Instance from_and_big_sepMS_disj_union_persistent
+    `{Countable A} (Φ : A → PROP) X1 X2 :
   (∀ y, Persistent (Φ y)) →
-  FromAnd ([∗ mset] y ∈ X1 ∪ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
-Proof. intros. by rewrite /FromAnd big_sepMS_union persistent_and_sep_1. Qed.
+  FromAnd ([∗ mset] y ∈ X1 ⊎ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
+Proof. intros. by rewrite /FromAnd big_sepMS_disj_union persistent_and_sep_1. Qed.
 
 (** FromSep *)
 Global Instance from_sep_sep P1 P2 : FromSep (P1 ∗ P2) P1 P2 | 100.
@@ -649,9 +650,9 @@ Global Instance from_sep_big_sepL2_app {A B} (Φ : nat → A → B → PROP)
     ([∗ list] k ↦ y1;y2 ∈ l1'';l2'', Φ (length l1' + k) y1 y2).
 Proof. rewrite /IsApp=>-> ->. apply wand_elim_l', big_sepL2_app. Qed.
 
-Global Instance from_sep_big_sepMS_union `{Countable A} (Φ : A → PROP) X1 X2 :
-  FromSep ([∗ mset] y ∈ X1 ∪ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
-Proof. by rewrite /FromSep big_sepMS_union. Qed.
+Global Instance from_sep_big_sepMS_disj_union `{Countable A} (Φ : A → PROP) X1 X2 :
+  FromSep ([∗ mset] y ∈ X1 ⊎ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
+Proof. by rewrite /FromSep big_sepMS_disj_union. Qed.
 
 Global Instance from_sep_bupd `{BiBUpd PROP} P Q1 Q2 :
   FromSep P Q1 Q2 → FromSep (|==> P) (|==> Q1) (|==> Q2).
@@ -802,9 +803,9 @@ Global Instance into_sep_big_sepL2_cons {A B}
     (Φ 0 x1 x2) ([∗ list] k ↦ y1;y2 ∈ l1';l2', Φ (S k) y1 y2).
 Proof. rewrite /IsCons=>-> ->. by rewrite /IntoSep big_sepL2_cons. Qed.
 
-Global Instance into_sep_big_sepMS_union `{Countable A} (Φ : A → PROP) X1 X2 :
-  IntoSep ([∗ mset] y ∈ X1 ∪ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
-Proof. by rewrite /IntoSep big_sepMS_union. Qed.
+Global Instance into_sep_big_sepMS_disj_union `{Countable A} (Φ : A → PROP) X1 X2 :
+  IntoSep ([∗ mset] y ∈ X1 ⊎ X2, Φ y) ([∗ mset] y ∈ X1, Φ y) ([∗ mset] y ∈ X2, Φ y).
+Proof. by rewrite /IntoSep big_sepMS_disj_union. Qed.
 
 (** FromOr *)
 Global Instance from_or_or P1 P2 : FromOr (P1 ∨ P2) P1 P2.

@@ -31,6 +31,6 @@ Lemma big_opMS_None {M : cmraT} `{Countable A} (f : A → option M) X :
 Proof.
   induction X as [|x X IH] using gmultiset_ind.
   { rewrite big_opMS_empty. set_solver. }
-  rewrite -equiv_None big_opMS_union big_opMS_singleton equiv_None op_None IH.
+  rewrite -equiv_None big_opMS_disj_union big_opMS_singleton equiv_None op_None IH.
   set_solver.
 Qed.
