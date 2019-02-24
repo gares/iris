@@ -6,8 +6,21 @@ Import bi.
 (** The `iModIntro` tactic is not tied the Iris modalities, but can be
 instantiated with a variety of modalities.
 
-In order to plug in a modality, one has to decide for both the intuitionistic and
-spatial context what action should be performed upon introducing the modality:
+For the purpose of MoSeL, a modality is a mapping of propositions
+`M : PROP → PROP` (where `PROP` is a type of bi-assertions) that is
+monotone and distributes over finite products. Specifically, the following
+rules have to be satisfied.
+
+      P ⊢ Q        emp ⊢ M emp
+    ----------
+    M P ⊢ M Q      M P ∗ M Q ⊢ M (P ∗ Q)
+
+Together those conditions allow one to introduce the modality in the
+goal, while stripping away the modalities in the context.
+
+Additionally, upon introducing a modality one can perform a number of
+associated actions on the intuitionistic and spatial contexts.
+Such an action can be one of the following:
 
 - Introduction is only allowed when the context is empty.
 - Introduction is only allowed when all hypotheses satisfy some predicate
@@ -19,7 +32,19 @@ spatial context what action should be performed upon introducing the modality:
 - Introduction will clear the context.
 - Introduction will keep the context as-if.
 
-Formally, these actions correspond to the following inductive type: *)
+Formally, these actions correspond to the inductive type [modality_action].
+For each of those actions you have to prove that the transformation is valid.
+
+To instantiate the modality you have to define: 1) a mixin `modality_mixin`,
+2) a record `modality`, 3) a `FromModal` type class instance from `classes.v`.
+
+For examples consult `modality_id` at the end of this file, or the instances
+in the `modality_instances.v` file.
+
+Note that in MoSeL modality can map the propositions between two different BI-algebras.
+For instance, the <affine> modality maps propositions of an arbitrary BI-algebra into
+the sub-BI-algebra of affine propositions.
+*)
 
 Inductive modality_action (PROP1 : bi) : bi → Type :=
   | MIEnvIsEmpty {PROP2 : bi} : modality_action PROP1 PROP2
