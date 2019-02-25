@@ -7,9 +7,9 @@ Import bi.
 instantiated with a variety of modalities.
 
 For the purpose of MoSeL, a modality is a mapping of propositions
-`M : PROP1 → PROP2` (where `PROP1` and `PROP2` are BI-algebras)
-that is monotone and distributes over finite products. Specifically,
-the following rules have to be satisfied:
+`M : PROP1 → PROP2` (where `PROP1` and `PROP2` are BI-algebras, although usually
+it is the same algebra) that is monotone and distributes over finite products.
+Specifically, the following rules have to be satisfied:
 
       P ⊢ Q        emp ⊢ M emp
     ----------
@@ -41,9 +41,12 @@ To instantiate the modality you have to define: 1) a mixin `modality_mixin`,
 For examples consult `modality_id` at the end of this file, or the instances
 in the `modality_instances.v` file.
 
-Note that in MoSeL modality can map the propositions between two different BI-algebras.
-For instance, the <affine> modality maps propositions of an arbitrary BI-algebra into
-the sub-BI-algebra of affine propositions.
+Note that in MoSeL modalities can map the propositions between two different
+BI-algebras. Most of the modalities in Iris operate on the same type of
+assertions. For example, the <affine> modality can potentially maps propositions
+of an arbitrary BI-algebra into the sub-BI-algebra of affine propositions, but
+it is implemented as an endomapping. On the other hand, the embedding modality
+⎡-⎤ is a mapping between propositions of different BI-algebras.
 *)
 
 Inductive modality_action (PROP1 : bi) : bi → Type :=
