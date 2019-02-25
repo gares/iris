@@ -8,8 +8,8 @@ instantiated with a variety of modalities.
 
 For the purpose of MoSeL, a modality is a mapping of propositions
 `M : PROP1 → PROP2` (where `PROP1` and `PROP2` are BI-algebras, although usually
-it is the same algebra) that is monotone and distributes over finite products.
-Specifically, the following rules have to be satisfied:
+it is the same algebra) that is monotone and distributes over separating
+conjunction. Specifically, the following rules have to be satisfied:
 
       P ⊢ Q        emp ⊢ M emp
     ----------
