@@ -7,9 +7,9 @@ Import bi.
 instantiated with a variety of modalities.
 
 For the purpose of MoSeL, a modality is a mapping of propositions
-`M : PROP → PROP` (where `PROP` is a type of bi-assertions) that is
-monotone and distributes over finite products. Specifically, the following
-rules have to be satisfied.
+`M : PROP1 → PROP2` (where `PROP1` and `PROP2` are BI-algebras)
+that is monotone and distributes over finite products. Specifically,
+the following rules have to be satisfied:
 
       P ⊢ Q        emp ⊢ M emp
     ----------
