@@ -46,6 +46,11 @@ Noteworthy is the fact that functions (`rec:`, `λ:`) in the value scope (`%V`)
 are *locked*.  This is to prevent them from being unfolded and reduced too
 eagerly.
 
+The widely used `#` is a short-hand to turn a basic literal (an integer, a
+location, a boolean literal or a unit value) into a value.  Since values coerce
+to expressions, `#` is widely used whenever a Coq value needs to be placed into
+a HeapLang term.
+
 ## Tactics
 
 HeapLang comes with a bunch of tactics that facilitate stepping through HeapLang
