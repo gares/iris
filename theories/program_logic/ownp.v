@@ -5,6 +5,15 @@ From iris.algebra Require Import auth.
 From iris.proofmode Require Import tactics classes.
 Set Default Proof Using "Type".
 
+(**
+This module provides an interface to handling ownership of the global state that
+works more like Iris 2.0 did.  The state interpretation (in WP) is fixed to be
+authoritative ownership of the entire state (using the [excl] RA).  Users can
+then put the corresponding fragment into an invariant on their own to establish
+a more interesting notion of ownership, such as the standard heap with disjoint
+union.
+*)
+
 Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
   ownP_invG : invG Σ;
   ownP_inG :> inG Σ (authR (optionUR (exclR (stateC Λ))));
