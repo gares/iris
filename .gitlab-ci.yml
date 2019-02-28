@@ -39,7 +39,6 @@ build-coq.8.9.0:
     OPAM_PINS: "coq version 8.9.0"
     OPAM_PKG: "coq-iris"
     DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
-    TIMING_PROJECT: "iris"
     TIMING_CONF: "coq-8.9.0"
   tags:
   - fp-timing
