@@ -65,6 +65,13 @@ Ltac wp_finish :=
   pm_prettify.        (* prettify ▷s caused by [MaybeIntoLaterNEnvs] and
                          λs caused by wp_value *)
 
+(** The argument [efoc] can be used to specify the construct that should be
+reduced. For example, you can write [wp_pure (EIf _ _ _)], which will search
+for an [EIf _ _ _] in the expression, and reduce it.
+
+The use of [open_constr] in this tactic is essential. It will convert all holes
+(i.e. [_]s) into evars, that later get unified when an occurences is found
+(see [unify e' efoc] in the code below). *)
 Tactic Notation "wp_pure" open_constr(efoc) :=
   iStartProof;
   lazymatch goal with
