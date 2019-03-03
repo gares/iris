@@ -62,8 +62,8 @@ Module gFunctors.
 
   Definition app (Σ1 Σ2 : gFunctors) : gFunctors :=
     existT (projT1 Σ1 + projT1 Σ2) (fin_plus_inv _ (projT2 Σ1) (projT2 Σ2)).
-  Global Typeclasses Opaque singleton app.
 End gFunctors.
+Typeclasses Opaque gFunctors.singleton gFunctors.app.
 
 Coercion gFunctors.singleton : gFunctor >-> gFunctors.
 Notation "#[ ]" := gFunctors.nil (format "#[ ]").
