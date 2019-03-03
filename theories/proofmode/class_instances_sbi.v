@@ -301,6 +301,11 @@ Proof. rewrite /IntoExist=> HP. by rewrite HP plainly_exist. Qed.
 Global Instance into_forall_later {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (▷ P) (λ a, ▷ (Φ a))%I.
 Proof. rewrite /IntoForall=> HP. by rewrite HP later_forall. Qed.
+
+Global Instance into_forall_laterN {A} P (Φ : A → PROP) n :
+  IntoForall P Φ → IntoForall (▷^n P) (λ a, ▷^n (Φ a))%I.
+Proof. rewrite /IntoForall=> HP. by rewrite HP laterN_forall. Qed.
+
 Global Instance into_forall_except_0 {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (◇ P) (λ a, ◇ (Φ a))%I.
 Proof. rewrite /IntoForall=> HP. by rewrite HP except_0_forall. Qed.
@@ -313,6 +318,11 @@ Proof. rewrite /IntoForall=> HP. by rewrite HP plainly_forall. Qed.
 Global Instance from_forall_later {A} P (Φ : A → PROP) :
   FromForall P Φ → FromForall (▷ P)%I (λ a, ▷ (Φ a))%I.
 Proof. rewrite /FromForall=> <-. by rewrite later_forall. Qed.
+
+Global Instance from_forall_laterN {A} P (Φ : A → PROP) n :
+      FromForall P Φ → FromForall (▷^n P)%I (λ a, ▷^n (Φ a))%I.
+Proof. rewrite /FromForall => <-. by rewrite laterN_forall. Qed.
+
 Global Instance from_forall_except_0 {A} P (Φ : A → PROP) :
   FromForall P Φ → FromForall (◇ P)%I (λ a, ◇ (Φ a))%I.
 Proof. rewrite /FromForall=> <-. by rewrite except_0_forall. Qed.
