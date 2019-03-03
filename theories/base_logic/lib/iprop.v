@@ -30,6 +30,7 @@ Structure gFunctor := GFunctor {
 }.
 Arguments GFunctor _ {_}.
 Existing Instance gFunctor_contractive.
+Add Printing Constructor gFunctor.
 
 (** The type [gFunctors] describes the parameters [Σ] of the Iris logic: lists
 of [gFunctor]s.
@@ -61,6 +62,7 @@ Module gFunctors.
 
   Definition app (Σ1 Σ2 : gFunctors) : gFunctors :=
     existT (projT1 Σ1 + projT1 Σ2) (fin_plus_inv _ (projT2 Σ1) (projT2 Σ2)).
+  Global Typeclasses Opaque singleton app.
 End gFunctors.
 
 Coercion gFunctors.singleton : gFunctor >-> gFunctors.
