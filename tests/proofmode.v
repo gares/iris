@@ -380,6 +380,11 @@ Proof.
   iSpecialize ("Hφ" with "[% //] HP"). done.
 Qed.
 
+Lemma demo_laterN_forall {A} (Φ Ψ: A → PROP) n: (∀ x, ▷^n Φ x) -∗ ▷^n (∀ x, Φ x).
+Proof.
+  iIntros "H" (w). iApply ("H" $! w).
+Qed.
+
 Lemma test_iNext_laterN_later P n : ▷ ▷^n P -∗ ▷^n ▷ P.
 Proof. iIntros "H". iNext. by iNext. Qed.
 Lemma test_iNext_later_laterN P n : ▷^n ▷ P -∗ ▷ ▷^n P.
