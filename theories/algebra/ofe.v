@@ -683,6 +683,7 @@ Bind Scope cFunctor_scope with cFunctor.
 
 Class cFunctorContractive (F : cFunctor) :=
   cFunctor_contractive A1 A2 B1 B2 :> Contractive (@cFunctor_map F A1 A2 B1 B2).
+Hint Mode cFunctorContractive ! : typeclass_instances.
 
 Definition cFunctor_diag (F: cFunctor) (A: ofeT) : ofeT := cFunctor_car F A A.
 Coercion cFunctor_diag : cFunctor >-> Funclass.

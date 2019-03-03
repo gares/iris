@@ -1,8 +1,9 @@
 From iris.program_logic Require Export weakestpre hoare.
 From iris.heap_lang Require Export lang.
 From iris.algebra Require Import excl agree csum.
-From iris.heap_lang Require Import assert proofmode notation.
+From iris.heap_lang Require Import assert proofmode notation adequacy.
 From iris.proofmode Require Import tactics.
+From iris.heap_lang.lib Require Import par.
 Set Default Proof Using "Type".
 
 Definition one_shot_example : val := λ: <>,
@@ -95,3 +96,35 @@ Proof.
   - iIntros "!# _". wp_apply (wp_wand with "Hf2"). by iIntros (v) "#? !# _".
 Qed.
 End proof.
+
+(* Have a client with a closed proof. *)
+Definition client : expr :=
+  let: "ff" := one_shot_example #() in
+  (Fst "ff" #5 ||| let: "check" := Snd "ff" #() in "check" #()).
+
+Section client.
+  Local Set Default Proof Using "Type*".
+  Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
+
+  Lemma client_safe : WP client {{ _, True }}%I.
+  Proof.
+    rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]".
+    wp_let. wp_apply wp_par.
+    - wp_apply "Hf1".
+    - wp_proj. wp_bind (f2 _)%E. iApply wp_wand; first by iExact "Hf2".
+      iIntros (check) "Hcheck". wp_pures. iApply "Hcheck".
+    - auto.
+  Qed.
+End client.
+
+(** Put together all library functors. *)
+Definition clientΣ : gFunctors := #[ heapΣ; one_shotΣ; spawnΣ ].
+(** This lemma implicitly shows that these functors are enough to meet
+all library assumptions. *)
+Lemma client_adequate σ : adequate NotStuck client σ (λ _ _, True).
+Proof. apply (heap_adequacy clientΣ)=> ?. apply client_safe. Qed.
+
+(* Since we check the output of the test files, this means
+our test suite will fail if we ever accidentally add an axiom
+to anything used by this proof. *)
+Print Assumptions client_adequate.

@@ -40,3 +40,4 @@
                     | InjR "m" => assert: #m = "m"
                     end {{ _, True }}
   
+Closed under the global context
