@@ -353,7 +353,7 @@ Qed.
 
 Section freshness.
   Local Set Default Proof Using "Type*".
-  Context `{Fresh K (gset K), !FreshSpec K (gset K)}.
+  Context `{Infinite K}.
   Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : gset K) m x :
     ✓ x → (∀ i, m !! i = None → i ∉ I → Q (<[i:=x]>m)) → m ~~>: Q.
   Proof.

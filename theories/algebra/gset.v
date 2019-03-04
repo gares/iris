@@ -163,13 +163,13 @@ Section gset_disj.
 
   Section fresh_updates.
     Local Set Default Proof Using "Type*".
-    Context `{Fresh K (gset K), !FreshSpec K (gset K)}.
+    Context `{Infinite K}.
 
     Lemma gset_disj_alloc_updateP (Q : gset_disj K → Prop) X :
       (∀ i, i ∉ X → Q (GSet ({[i]} ∪ X))) → GSet X ~~>: Q.
     Proof.
       intro; eapply gset_disj_alloc_updateP_strong with (λ _, True); eauto.
-      intros Y ?; exists (fresh Y); eauto using is_fresh.
+      intros Y ?; exists (fresh Y). split. apply is_fresh. done.
     Qed.
     Lemma gset_disj_alloc_updateP' X :
       GSet X ~~>: λ Y, ∃ i, Y = GSet ({[ i ]} ∪ X) ∧ i ∉ X.
