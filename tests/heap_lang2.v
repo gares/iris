@@ -6,7 +6,7 @@ From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".
 
 Section printing_tests.
-  Context `{heapG Σ}.
+  Context `{!heapG Σ}.
 
   Lemma wp_print_long_expr (fun1 fun2 fun3 : expr) :
     True -∗ WP let: "val1" := fun1 #() in

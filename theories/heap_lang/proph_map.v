@@ -31,7 +31,7 @@ Instance subG_proph_mapPreG {Σ P V} `{Countable P} :
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{pG : proph_mapG P V Σ}.
+  Context `{Countable P, pG : !proph_mapG P V Σ}.
 
   (** The first resolve for [p] in [pvs] *)
   Definition first_resolve (pvs : proph_val_list P V) (p : P) : option V :=
@@ -127,7 +127,7 @@ Section to_proph_map.
 End to_proph_map.
 
 
-Lemma proph_map_init `{proph_mapPreG P V PVS} pvs ps :
+Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
   (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
@@ -137,7 +137,7 @@ Proof.
 Qed.
 
 Section proph_map.
-  Context `{proph_mapG P V Σ}.
+  Context `{Countable P, !proph_mapG P V Σ}.
   Implicit Types p : P.
   Implicit Types v : option V.
   Implicit Types R : proph_map P V.

@@ -3,7 +3,7 @@ From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
 Section lifting.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types v : val Λ.
 Implicit Types e : expr Λ.
@@ -53,7 +53,7 @@ Proof.
   iMod ("H" with "Hσ") as "[$ H]". iIntros "!> * % !> !>". by iApply "H".
 Qed.
 
-Lemma wp_lift_pure_step_no_fork `{Inhabited (state Λ)} s E E' Φ e1 :
+Lemma wp_lift_pure_step_no_fork `{!Inhabited (state Λ)} s E E' Φ e1 :
   (∀ σ1, if s is NotStuck then reducible e1 σ1 else to_val e1 = None) →
   (∀ κ σ1 e2 σ2 efs, prim_step e1 σ1 κ e2 σ2 efs → κ = [] ∧ σ2 = σ1 ∧ efs = []) →
   (|={E,E'}▷=> ∀ κ e2 efs σ, ⌜prim_step e1 σ κ e2 σ efs⌝ → WP e2 @ s; E {{ Φ }})
@@ -70,7 +70,7 @@ Proof.
   iDestruct ("H" with "[//]") as "H". simpl. iFrame.
 Qed.
 
-Lemma wp_lift_pure_stuck `{Inhabited (state Λ)} E Φ e :
+Lemma wp_lift_pure_stuck `{!Inhabited (state Λ)} E Φ e :
   (∀ σ, stuck e σ) →
   True ⊢ WP e @ E ?{{ Φ }}.
 Proof.
@@ -120,7 +120,7 @@ Proof.
   by iApply "H".
 Qed.
 
-Lemma wp_lift_pure_det_step_no_fork `{Inhabited (state Λ)} {s E E' Φ} e1 e2 :
+Lemma wp_lift_pure_det_step_no_fork `{!Inhabited (state Λ)} {s E E' Φ} e1 e2 :
   (∀ σ1, if s is NotStuck then reducible e1 σ1 else to_val e1 = None) →
   (∀ σ1 κ e2' σ2 efs', prim_step e1 σ1 κ e2' σ2 efs' →
     κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs' = []) →
@@ -132,7 +132,7 @@ Proof.
   iIntros (κ e' efs' σ (_&?&->&?)%Hpuredet); auto.
 Qed.
 
-Lemma wp_pure_step_fupd `{Inhabited (state Λ)} s E E' e1 e2 φ n Φ :
+Lemma wp_pure_step_fupd `{!Inhabited (state Λ)} s E E' e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   (|={E,E'}▷=>^n WP e2 @ s; E {{ Φ }}) ⊢ WP e1 @ s; E {{ Φ }}.
@@ -145,7 +145,7 @@ Proof.
   - by iApply (step_fupd_wand with "Hwp").
 Qed.
 
-Lemma wp_pure_step_later `{Inhabited (state Λ)} s E e1 e2 φ n Φ :
+Lemma wp_pure_step_later `{!Inhabited (state Λ)} s E e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
   φ →
   ▷^n WP e2 @ s; E {{ Φ }} ⊢ WP e1 @ s; E {{ Φ }}.

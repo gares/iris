@@ -69,7 +69,7 @@ Lemma test_iDestruct_intuitionistic_2 P Q `{!Persistent P, !Affine P}:
   Q ∗ (Q -∗ P) -∗ P.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". done. Qed.
 
-Lemma test_iDestruct_intuitionistic_affine_bi `{BiAffine PROP} P Q `{!Persistent P}:
+Lemma test_iDestruct_intuitionistic_affine_bi `{!BiAffine PROP} P Q `{!Persistent P}:
   Q ∗ (Q -∗ P) -∗ P ∗ Q.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.
 
@@ -180,7 +180,7 @@ Lemma test_iFrame_conjunction_2 P Q :
   P -∗ Q -∗ (P ∧ P) ∗ (Q ∧ Q).
 Proof. iIntros "HP HQ". iFrame "HP HQ". Qed.
 
-Lemma test_iFrame_later `{BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.
+Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.
 Proof. iIntros "H1 H2". by iFrame "H1". Qed.
 
 Lemma test_iAssert_modality P : ◇ False -∗ ▷ P.
@@ -555,7 +555,7 @@ Proof.
 Qed.
 
 Check "test_and_sep_affine_bi".
-Lemma test_and_sep_affine_bi `{BiAffine PROP} P Q : □ P ∧ Q ⊢ □ P ∗ Q.
+Lemma test_and_sep_affine_bi `{!BiAffine PROP} P Q : □ P ∧ Q ⊢ □ P ∗ Q.
 Proof.
   iIntros "[??]". iSplit; last done. Show. done.
 Qed.

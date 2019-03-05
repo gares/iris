@@ -1,7 +1,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   E : coPset
   ============================
   --------------------------------------∗
@@ -10,7 +10,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   E : coPset
   l : loc
   ============================
@@ -21,7 +21,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   E : coPset
   l : loc
   ============================
@@ -35,7 +35,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   l : loc
   ============================
   _ : ▷ l ↦ #0
@@ -45,7 +45,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   l : loc
   ============================
   _ : l ↦ #1
@@ -55,7 +55,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   l : loc
   ============================
   "Hl1" : l ↦{1 / 2} #0
@@ -66,7 +66,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   l : loc
   ============================
   --------------------------------------∗
@@ -81,7 +81,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   ============================
   --------------------------------------∗
   WP "x" {{ _, True }}
@@ -89,7 +89,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   fun1, fun2, fun3 : expr
   ============================
   --------------------------------------∗
@@ -101,7 +101,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   fun1, fun2, fun3 : expr
   Φ : language.val heap_lang → iPropI Σ
   ============================
@@ -114,7 +114,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   fun1, fun2, fun3 : expr
   Φ : language.val heap_lang → iPropI Σ
   E : coPset
@@ -128,7 +128,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   fun1, fun2, fun3 : expr
   ============================
   {{{ True }}}

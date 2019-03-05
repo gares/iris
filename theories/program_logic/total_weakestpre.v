@@ -4,7 +4,7 @@ From iris.bi Require Import fixpoint big_op.
 Set Default Proof Using "Type".
 Import uPred.
 
-Definition twp_pre `{irisG Λ Σ} (s : stuckness)
+Definition twp_pre `{!irisG Λ Σ} (s : stuckness)
       (wp : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
     coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ := λ E e1 Φ,
   match to_val e1 with
@@ -19,7 +19,7 @@ Definition twp_pre `{irisG Λ Σ} (s : stuckness)
          [∗ list] ef ∈ efs, wp ⊤ ef fork_post
   end%I.
 
-Lemma twp_pre_mono `{irisG Λ Σ} s
+Lemma twp_pre_mono `{!irisG Λ Σ} s
     (wp1 wp2 : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
   ((□ ∀ E e Φ, wp1 E e Φ -∗ wp2 E e Φ) →
   ∀ E e Φ, twp_pre s wp1 E e Φ -∗ twp_pre s wp2 E e Φ)%I.
@@ -36,12 +36,12 @@ Proof.
 Qed.
 
 (* Uncurry [twp_pre] and equip its type with an OFE structure *)
-Definition twp_pre' `{irisG Λ Σ} (s : stuckness) :
+Definition twp_pre' `{!irisG Λ Σ} (s : stuckness) :
   (prodC (prodC (leibnizC coPset) (exprC Λ)) (val Λ -c> iProp Σ) → iProp Σ) →
   prodC (prodC (leibnizC coPset) (exprC Λ)) (val Λ -c> iProp Σ) → iProp Σ :=
     curry3 ∘ twp_pre s ∘ uncurry3.
 
-Local Instance twp_pre_mono' `{irisG Λ Σ} s : BiMonoPred (twp_pre' s).
+Local Instance twp_pre_mono' `{!irisG Λ Σ} s : BiMonoPred (twp_pre' s).
 Proof.
   constructor.
   - iIntros (wp1 wp2) "#H"; iIntros ([[E e1] Φ]); iRevert (E e1 Φ).
@@ -51,15 +51,15 @@ Proof.
     rewrite /uncurry3 /twp_pre. do 24 (f_equiv || done). by apply pair_ne.
 Qed.
 
-Definition twp_def `{irisG Λ Σ} (s : stuckness) (E : coPset)
+Definition twp_def `{!irisG Λ Σ} (s : stuckness) (E : coPset)
     (e : expr Λ) (Φ : val Λ → iProp Σ) :
   iProp Σ := bi_least_fixpoint (twp_pre' s) (E,e,Φ).
-Definition twp_aux `{irisG Λ Σ} : seal (@twp_def Λ Σ _). by eexists. Qed.
-Instance twp' `{irisG Λ Σ} : Twp Λ (iProp Σ) stuckness := twp_aux.(unseal).
-Definition twp_eq `{irisG Λ Σ} : twp = @twp_def Λ Σ _ := twp_aux.(seal_eq).
+Definition twp_aux `{!irisG Λ Σ} : seal (@twp_def Λ Σ _). by eexists. Qed.
+Instance twp' `{!irisG Λ Σ} : Twp Λ (iProp Σ) stuckness := twp_aux.(unseal).
+Definition twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _ := twp_aux.(seal_eq).
 
 Section twp.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -147,7 +147,7 @@ Proof.
     iModIntro. iSplit; first done. iFrame "Hσ Hefs". by iApply twp_value'.
 Qed.
 
-Lemma twp_bind K `{!LanguageCtx K} s E e Φ :
+Lemma twp_bind K `{!LanguageCtx Λ K} s E e Φ :
   WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }] -∗ WP K e @ s; E [{ Φ }].
 Proof.
   revert Φ. cut (∀ Φ', WP e @ s; E [{ Φ' }] -∗ ∀ Φ,
@@ -169,7 +169,7 @@ Proof.
   - by setoid_rewrite and_elim_r.
 Qed.
 
-Lemma twp_bind_inv K `{!LanguageCtx K} s E e Φ :
+Lemma twp_bind_inv K `{!LanguageCtx Λ K} s E e Φ :
   WP K e @ s; E [{ Φ }] -∗ WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }].
 Proof.
   iIntros "H". remember (K e) as e' eqn:He'.
@@ -251,7 +251,7 @@ End twp.
 
 (** Proofmode class instances *)
 Section proofmode_classes.
-  Context `{irisG Λ Σ}.
+  Context `{!irisG Λ Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val Λ → iProp Σ.
 

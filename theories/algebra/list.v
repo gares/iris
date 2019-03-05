@@ -58,12 +58,12 @@ Program Definition list_chain
     (c : chain listC) (x : A) (k : nat) : chain A :=
   {| chain_car n := default x (c n !! k) |}.
 Next Obligation. intros c x k n i ?. by rewrite /= (chain_cauchy c n i). Qed.
-Definition list_compl `{Cofe A} : Compl listC := λ c,
+Definition list_compl `{!Cofe A} : Compl listC := λ c,
   match c 0 with
   | [] => []
   | x :: _ => compl ∘ list_chain c x <$> seq 0 (length (c 0))
   end.
-Global Program Instance list_cofe `{Cofe A} : Cofe listC :=
+Global Program Instance list_cofe `{!Cofe A} : Cofe listC :=
   {| compl := list_compl |}.
 Next Obligation.
   intros ? n c; rewrite /compl /list_compl.

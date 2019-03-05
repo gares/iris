@@ -53,8 +53,9 @@ Class LanguageCtx {Λ : language} (K : expr Λ → expr Λ) := {
     to_val e1' = None → prim_step (K e1') σ1 κ e2 σ2 efs →
     ∃ e2', e2 = K e2' ∧ prim_step e1' σ1 κ e2' σ2 efs
 }.
+Arguments LanguageCtx : clear implicits.
 
-Instance language_ctx_id Λ : LanguageCtx (@id (expr Λ)).
+Instance language_ctx_id Λ : LanguageCtx Λ (@id (expr Λ)).
 Proof. constructor; naive_solver. Qed.
 
 Inductive atomicity := StronglyAtomic | WeaklyAtomic.
@@ -141,19 +142,19 @@ Section language.
     Atomic StronglyAtomic e → Atomic a e.
   Proof. unfold Atomic. destruct a; eauto using val_irreducible. Qed.
 
-  Lemma reducible_fill `{LanguageCtx Λ K} e σ :
+  Lemma reducible_fill `{!LanguageCtx Λ K} e σ :
     to_val e = None → reducible (K e) σ → reducible e σ.
   Proof.
     intros ? (e'&σ'&k&efs&Hstep); unfold reducible.
     apply fill_step_inv in Hstep as (e2' & _ & Hstep); eauto.
   Qed.
-  Lemma reducible_no_obs_fill `{LanguageCtx Λ K} e σ :
+  Lemma reducible_no_obs_fill `{!LanguageCtx Λ K} e σ :
     to_val e = None → reducible_no_obs (K e) σ → reducible_no_obs e σ.
   Proof.
     intros ? (e'&σ'&efs&Hstep); unfold reducible_no_obs.
     apply fill_step_inv in Hstep as (e2' & _ & Hstep); eauto.
   Qed.
-  Lemma irreducible_fill `{LanguageCtx Λ K} e σ :
+  Lemma irreducible_fill `{!LanguageCtx Λ K} e σ :
     to_val e = None → irreducible e σ → irreducible (K e) σ.
   Proof. rewrite -!not_reducible. naive_solver eauto using reducible_fill. Qed.
 
@@ -185,7 +186,7 @@ Section language.
   Class PureExec (φ : Prop) (n : nat) (e1 e2 : expr Λ) :=
     pure_exec : φ → relations.nsteps pure_step n e1 e2.
 
-  Lemma pure_step_ctx K `{LanguageCtx Λ K} e1 e2 :
+  Lemma pure_step_ctx K `{!LanguageCtx Λ K} e1 e2 :
     pure_step e1 e2 →
     pure_step (K e1) (K e2).
   Proof.
@@ -197,13 +198,13 @@ Section language.
       + edestruct (Hstep σ1 κ e2'' σ2 efs) as (? & -> & -> & ->); auto.
   Qed.
 
-  Lemma pure_step_nsteps_ctx K `{LanguageCtx Λ K} n e1 e2 :
+  Lemma pure_step_nsteps_ctx K `{!LanguageCtx Λ K} n e1 e2 :
     relations.nsteps pure_step n e1 e2 →
     relations.nsteps pure_step n (K e1) (K e2).
   Proof. induction 1; econstructor; eauto using pure_step_ctx. Qed.
 
   (* We do not make this an instance because it is awfully general. *)
-  Lemma pure_exec_ctx K `{LanguageCtx Λ K} φ n e1 e2 :
+  Lemma pure_exec_ctx K `{!LanguageCtx Λ K} φ n e1 e2 :
     PureExec φ n e1 e2 →
     PureExec φ n (K e1) (K e2).
   Proof. rewrite /PureExec; eauto using pure_step_nsteps_ctx. Qed.

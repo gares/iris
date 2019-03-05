@@ -7,7 +7,7 @@ Set Default Proof Using "Type".
 Import uPred.
 
 (** Derived forms and lemmas about them. *)
-Definition inv_def `{invG Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
+Definition inv_def `{!invG Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
   (∃ i P', ⌜i ∈ (↑N:coPset)⌝ ∧ ▷ □ (P' ↔ P) ∧ ownI i P')%I.
 Definition inv_aux : seal (@inv_def). by eexists. Qed.
 Definition inv {Σ i} := inv_aux.(unseal) Σ i.
@@ -16,7 +16,7 @@ Instance: Params (@inv) 3 := {}.
 Typeclasses Opaque inv.
 
 Section inv.
-Context `{invG Σ}.
+Context `{!invG Σ}.
 Implicit Types i : positive.
 Implicit Types N : namespace.
 Implicit Types P Q R : iProp Σ.

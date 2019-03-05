@@ -4,8 +4,8 @@ From iris.heap_lang Require Import proofmode notation.
 From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
-Definition heap_total Σ `{heapPreG Σ} s e σ φ :
-  (∀ `{heapG Σ}, WP e @ s; ⊤ [{ v, ⌜φ v⌝ }]%I) →
+Definition heap_total Σ `{!heapPreG Σ} s e σ φ :
+  (∀ `{!heapG Σ}, WP e @ s; ⊤ [{ v, ⌜φ v⌝ }]%I) →
   sn erased_step ([e], σ).
 Proof.
   intros Hwp; eapply (twp_total _ _); iIntros (?) "".

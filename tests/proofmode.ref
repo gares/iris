@@ -131,7 +131,7 @@ Tactic failure: iFrame: cannot frame Q.
 1 subgoal
   
   PROP : sbi
-  H : BiAffine PROP
+  BiAffine0 : BiAffine PROP
   P, Q : PROP
   ============================
   _ : □ P

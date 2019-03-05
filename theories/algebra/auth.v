@@ -43,7 +43,7 @@ Definition auth_ofe_mixin : OfeMixin (auth A).
 Proof. by apply (iso_ofe_mixin (λ x, (authoritative x, auth_own x))). Qed.
 Canonical Structure authC := OfeT (auth A) auth_ofe_mixin.
 
-Global Instance auth_cofe `{Cofe A} : Cofe authC.
+Global Instance auth_cofe `{!Cofe A} : Cofe authC.
 Proof.
   apply (iso_cofe (λ y : _ * _, Auth (y.1) (y.2))
     (λ x, (authoritative x, auth_own x))); by repeat intro.
@@ -113,7 +113,7 @@ Proof.
   destruct x as [[[]|]]; naive_solver eauto using cmra_validN_includedN.
 Qed.
 
-Lemma auth_valid_discrete `{CmraDiscrete A} x :
+Lemma auth_valid_discrete `{!CmraDiscrete A} x :
   ✓ x ↔ match authoritative x with
         | Excl' a => auth_own x ≼ a ∧ ✓ a
         | None => ✓ auth_own x
@@ -125,12 +125,12 @@ Proof.
 Qed.
 Lemma auth_validN_2 n a b : ✓{n} (● a ⋅ ◯ b) ↔ b ≼{n} a ∧ ✓{n} a.
 Proof. by rewrite auth_validN_eq /= left_id. Qed.
-Lemma auth_valid_discrete_2 `{CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
+Lemma auth_valid_discrete_2 `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
 Proof. by rewrite auth_valid_discrete /= left_id. Qed.
 
 Lemma authoritative_valid  x : ✓ x → ✓ authoritative x.
 Proof. by destruct x as [[[]|]]. Qed.
-Lemma auth_own_valid `{CmraDiscrete A} x : ✓ x → ✓ auth_own x.
+Lemma auth_own_valid `{!CmraDiscrete A} x : ✓ x → ✓ auth_own x.
 Proof.
   rewrite auth_valid_discrete.
   destruct x as [[[]|]]; naive_solver eauto using cmra_valid_included.

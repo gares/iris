@@ -9,7 +9,7 @@ Definition assert : val :=
 (* just below ;; *)
 Notation "'assert:' e" := (assert (λ: <>, e))%E (at level 99) : expr_scope.
 
-Lemma twp_assert `{heapG Σ} E (Φ : val → iProp Σ) e :
+Lemma twp_assert `{!heapG Σ} E (Φ : val → iProp Σ) e :
   WP e @ E [{ v, ⌜v = #true⌝ ∧ Φ #() }] -∗
   WP assert (LamV BAnon e)%V @ E [{ Φ }].
 Proof.
@@ -17,7 +17,7 @@ Proof.
   wp_apply (twp_wand with "HΦ"). iIntros (v) "[% ?]"; subst. by wp_if.
 Qed.
 
-Lemma wp_assert `{heapG Σ} E (Φ : val → iProp Σ) e :
+Lemma wp_assert `{!heapG Σ} E (Φ : val → iProp Σ) e :
   WP e @ E {{ v, ⌜v = #true⌝ ∧ ▷ Φ #() }} -∗
   WP assert (LamV BAnon e)%V @ E {{ Φ }}.
 Proof.

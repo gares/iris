@@ -20,7 +20,7 @@ Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
   ownP_name : gname;
 }.
 
-Instance ownPG_irisG `{ownPG Λ Σ} : irisG Λ Σ := {
+Instance ownPG_irisG `{!ownPG Λ Σ} : irisG Λ Σ := {
   iris_invG := ownP_invG;
   state_interp σ κs _ := own ownP_name (● (Excl' σ))%I;
   fork_post _ := True%I;
@@ -40,15 +40,15 @@ Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.
 Proof. solve_inG. Qed.
 
 (** Ownership *)
-Definition ownP `{ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
+Definition ownP `{!ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
   own ownP_name (◯ (Excl' σ)).
 
 Typeclasses Opaque ownP.
 Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)
-Theorem ownP_adequacy Σ `{ownPPreG Λ Σ} s e σ φ :
-  (∀ `{ownPG Λ Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
+Theorem ownP_adequacy Σ `{!ownPPreG Λ Σ} s e σ φ :
+  (∀ `{!ownPG Λ Σ}, ownP σ ⊢ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
   intros Hwp. apply (wp_adequacy Σ _).
@@ -59,8 +59,8 @@ Proof.
   iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
 Qed.
 
-Theorem ownP_invariance Σ `{ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
-  (∀ `{ownPG Λ Σ},
+Theorem ownP_invariance Σ `{!ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
+  (∀ `{!ownPG Λ Σ},
       ownP σ1 ={⊤}=∗ WP e @ s; ⊤ {{ _, True }} ∗
       |={⊤,∅}=> ∃ σ', ownP σ' ∧ ⌜φ σ'⌝) →
   rtc erased_step ([e], σ1) (t2, σ2) →
@@ -81,7 +81,7 @@ Qed.
 
 (** Lifting *)
 Section lifting.
-  Context `{ownPG Λ Σ}.
+  Context `{!ownPG Λ Σ}.
   Implicit Types s : stuckness.
   Implicit Types e : expr Λ.
   Implicit Types Φ : val Λ → iProp Σ.
@@ -134,7 +134,7 @@ Section lifting.
       by iDestruct (ownP_eq with "Hσ Hσf") as %->.
   Qed.
 
-  Lemma ownP_lift_pure_step `{Inhabited (state Λ)} s E Φ e1 :
+  Lemma ownP_lift_pure_step `{!Inhabited (state Λ)} s E Φ e1 :
     (∀ σ1, if s is NotStuck then reducible e1 σ1 else to_val e1 = None) →
     (∀ σ1 κ e2 σ2 efs, prim_step e1 σ1 κ e2 σ2 efs → κ = [] ∧ σ2 = σ1) →
     (▷ ∀ κ e2 efs σ, ⌜prim_step e1 σ κ e2 σ efs⌝ →
@@ -193,7 +193,7 @@ Section lifting.
     iSplitL "Hs"; first by iFrame. iModIntro. iIntros "Hσ2". iApply "Hs'". iFrame.
   Qed.
 
-  Lemma ownP_lift_pure_det_step_no_fork `{Inhabited (state Λ)} {s E Φ} e1 e2 :
+  Lemma ownP_lift_pure_det_step_no_fork `{!Inhabited (state Λ)} {s E Φ} e1 e2 :
     (∀ σ1, if s is NotStuck then reducible e1 σ1 else to_val e1 = None) →
     (∀ σ1 κ e2' σ2 efs', prim_step e1 σ1 κ e2' σ2 efs' → κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs' = []) →
     ▷ WP e2 @ s; E {{ Φ }} ⊢ WP e1 @ s; E {{ Φ }}.
@@ -204,7 +204,7 @@ End lifting.
 
 Section ectx_lifting.
   Import ectx_language.
-  Context {Λ : ectxLanguage} `{ownPG Λ Σ} {Hinh : Inhabited (state Λ)}.
+  Context {Λ : ectxLanguage} `{!ownPG Λ Σ} {Hinh : Inhabited (state Λ)}.
   Implicit Types s : stuckness.
   Implicit Types Φ : val Λ → iProp Σ.
   Implicit Types e : expr Λ.

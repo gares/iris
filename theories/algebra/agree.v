@@ -266,7 +266,7 @@ Lemma agree_map_to_agree {A B} (f : A → B) (x : A) :
 Proof. by apply agree_eq. Qed.
 
 Section agree_map.
-  Context {A B : ofeT} (f : A → B) `{Hf: NonExpansive f}.
+  Context {A B : ofeT} (f : A → B) {Hf: NonExpansive f}.
 
   Instance agree_map_ne : NonExpansive (agree_map f).
   Proof.

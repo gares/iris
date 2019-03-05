@@ -163,7 +163,7 @@ Section gset_disj.
 
   Section fresh_updates.
     Local Set Default Proof Using "Type*".
-    Context `{Infinite K}.
+    Context `{!Infinite K}.
 
     Lemma gset_disj_alloc_updateP (Q : gset_disj K → Prop) X :
       (∀ i, i ∉ X → Q (GSet ({[i]} ∪ X))) → GSet X ~~>: Q.

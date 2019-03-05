@@ -52,7 +52,7 @@ Proof.
 Qed.
 Canonical Structure exclC : ofeT := OfeT (excl A) excl_ofe_mixin.
 
-Global Instance excl_cofe `{Cofe A} : Cofe exclC.
+Global Instance excl_cofe `{!Cofe A} : Cofe exclC.
 Proof.
   apply (iso_cofe (from_option Excl ExclBot) (maybe Excl)).
   - by intros n [a|] [b|]; split; inversion_clear 1; constructor.

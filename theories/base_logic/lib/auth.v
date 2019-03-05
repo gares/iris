@@ -16,7 +16,7 @@ Instance subG_authΣ Σ A : subG (authΣ A) Σ → CmraDiscrete A → authG Σ A
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{invG Σ, authG Σ A} {T : Type} (γ : gname).
+  Context `{!invG Σ, !authG Σ A} {T : Type} (γ : gname).
 
   Definition auth_own (a : A) : iProp Σ :=
     own γ (◯ a).
@@ -60,7 +60,7 @@ Instance: Params (@auth_inv) 5 := {}.
 Instance: Params (@auth_ctx) 7 := {}.
 
 Section auth.
-  Context `{invG Σ, authG Σ A}.
+  Context `{!invG Σ, !authG Σ A}.
   Context {T : Type} `{!Inhabited T}.
   Context (f : T → A) (φ : T → iProp Σ).
   Implicit Types N : namespace.

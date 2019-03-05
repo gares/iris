@@ -35,30 +35,30 @@ Import invG.
 
 Definition invariant_unfold {Σ} (P : iProp Σ) : agree (later (iPreProp Σ)) :=
   to_agree (Next (iProp_unfold P)).
-Definition ownI `{invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
+Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (◯ {[ i := invariant_unfold P ]}).
 Arguments ownI {_ _} _ _%I.
 Typeclasses Opaque ownI.
 Instance: Params (@invariant_unfold) 1 := {}.
 Instance: Params (@ownI) 3 := {}.
 
-Definition ownE `{invG Σ} (E : coPset) : iProp Σ :=
+Definition ownE `{!invG Σ} (E : coPset) : iProp Σ :=
   own enabled_name (CoPset E).
 Typeclasses Opaque ownE.
 Instance: Params (@ownE) 3 := {}.
 
-Definition ownD `{invG Σ} (E : gset positive) : iProp Σ :=
+Definition ownD `{!invG Σ} (E : gset positive) : iProp Σ :=
   own disabled_name (GSet E).
 Typeclasses Opaque ownD.
 Instance: Params (@ownD) 3 := {}.
 
-Definition wsat `{invG Σ} : iProp Σ :=
+Definition wsat `{!invG Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
     own invariant_name (● (invariant_unfold <$> I : gmap _ _)) ∗
     [∗ map] i ↦ Q ∈ I, ▷ Q ∗ ownD {[i]} ∨ ownE {[i]})%I.
 
 Section wsat.
-Context `{invG Σ}.
+Context `{!invG Σ}.
 Implicit Types P : iProp Σ.
 
 (* Invariants *)
@@ -194,7 +194,7 @@ Qed.
 End wsat.
 
 (* Allocation of an initial world *)
-Lemma wsat_alloc `{invPreG Σ} : (|==> ∃ _ : invG Σ, wsat ∗ ownE ⊤)%I.
+Lemma wsat_alloc `{!invPreG Σ} : (|==> ∃ _ : invG Σ, wsat ∗ ownE ⊤)%I.
 Proof.
   iIntros.
   iMod (own_alloc (● (∅ : gmap _ _))) as (γI) "HI"; first done.

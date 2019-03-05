@@ -8,7 +8,7 @@ Section class_instances.
 Context {M : ucmraT}.
 Implicit Types P Q R : uPred M.
 
-Global Instance into_pure_cmra_valid `{CmraDiscrete A} (a : A) :
+Global Instance into_pure_cmra_valid `{!CmraDiscrete A} (a : A) :
   @IntoPure (uPredI M) (✓ a) (✓ a).
 Proof. by rewrite /IntoPure discrete_valid. Qed.
 

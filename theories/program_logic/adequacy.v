@@ -33,7 +33,7 @@ Proof.
 Qed.
 
 Section adequacy.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types e : expr Λ.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -173,8 +173,8 @@ Proof.
 Qed.
 End adequacy.
 
-Theorem wp_strong_adequacy Σ Λ `{invPreG Σ} s e σ φ :
-  (∀ `{Hinv : invG Σ} κs,
+Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} s e σ φ :
+  (∀ `{Hinv : !invG Σ} κs,
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
@@ -198,8 +198,8 @@ Proof.
     iApply (@wptp_safe _ _ (IrisG _ _ Hinv stateI fork_post) with "[Hσ] Hwp"); eauto.
 Qed.
 
-Theorem wp_adequacy Σ Λ `{invPreG Σ} s e σ φ :
-  (∀ `{Hinv : invG Σ} κs,
+Theorem wp_adequacy Σ Λ `{!invPreG Σ} s e σ φ :
+  (∀ `{Hinv : !invG Σ} κs,
      (|={⊤}=> ∃ stateI : state Λ → list (observation Λ) → iProp Σ,
        let _ : irisG Λ Σ := IrisG _ _ Hinv (λ σ κs _, stateI σ κs) (λ _, True%I) in
        stateI σ κs ∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }})%I) →
@@ -212,8 +212,8 @@ Proof.
   iIntros "_". by iApply fupd_mask_weaken.
 Qed.
 
-Theorem wp_strong_all_adequacy Σ Λ `{invPreG Σ} s e σ1 v vs σ2 φ :
-  (∀ `{Hinv : invG Σ} κs,
+Theorem wp_strong_all_adequacy Σ Λ `{!invPreG Σ} s e σ1 v vs σ2 φ :
+  (∀ `{Hinv : !invG Σ} κs,
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
@@ -232,8 +232,8 @@ Proof.
     with "[Hσ] [Hwp]"); eauto. by rewrite right_id_L.
 Qed.
 
-Theorem wp_invariance Σ Λ `{invPreG Σ} s e σ1 t2 σ2 φ :
-  (∀ `{Hinv : invG Σ} κs κs',
+Theorem wp_invariance Σ Λ `{!invPreG Σ} s e σ1 t2 σ2 φ :
+  (∀ `{Hinv : !invG Σ} κs κs',
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
@@ -253,8 +253,8 @@ Qed.
 
 (* An equivalent version that does not require finding [fupd_intro_mask'], but
 can be confusing to use. *)
-Corollary wp_invariance' Σ Λ `{invPreG Σ} s e σ1 t2 σ2 φ :
-  (∀ `{Hinv : invG Σ} κs κs',
+Corollary wp_invariance' Σ Λ `{!invPreG Σ} s e σ1 t2 σ2 φ :
+  (∀ `{Hinv : !invG Σ} κs κs',
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),

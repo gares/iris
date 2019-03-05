@@ -14,7 +14,7 @@ Class heapG Σ := HeapG {
   heapG_proph_mapG :> proph_mapG proph_id val Σ
 }.
 
-Instance heapG_irisG `{heapG Σ} : irisG heap_lang Σ := {
+Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
   iris_invG := heapG_invG;
   state_interp σ κs _ :=
     (gen_heap_ctx σ.(heap) ∗ proph_map_ctx κs σ.(used_proph_id))%I;
@@ -117,7 +117,7 @@ Instance pure_injrc (v : val) :
   PureExec True 1 (InjR $ Val v) (Val $ InjRV v).
 Proof. solve_pure_exec. Qed.
 
-Instance pure_beta f x (erec : expr) (v1 v2 : val) `{AsRecV v1 f x erec} :
+Instance pure_beta f x (erec : expr) (v1 v2 : val) `{!AsRecV v1 f x erec} :
   PureExec True 1 (App (Val v1) (Val v2)) (subst' x v2 (subst' f v1 erec)).
 Proof. unfold AsRecV in *. solve_pure_exec. Qed.
 
@@ -152,7 +152,7 @@ Instance pure_case_inr v e1 e2 :
 Proof. solve_pure_exec. Qed.
 
 Section lifting.
-Context `{heapG Σ}.
+Context `{!heapG Σ}.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ : val → iProp Σ.
 Implicit Types efs : list expr.

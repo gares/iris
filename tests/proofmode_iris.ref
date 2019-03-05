@@ -1,9 +1,9 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   N : namespace
   P : iProp Σ
   ============================
@@ -15,9 +15,9 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   N : namespace
   P : iProp Σ
   ============================
@@ -31,9 +31,9 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   γ : gname
   p : Qp
   N : namespace
@@ -49,9 +49,9 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   γ : gname
   p : Qp
   N : namespace
@@ -68,14 +68,14 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   t : na_inv_pool_name
   N : namespace
   E1, E2 : coPset
   P : iProp Σ
-  H2 : ↑N ⊆ E2
+  H : ↑N ⊆ E2
   ============================
   _ : na_inv t N (<pers> P)
   "HP" : ▷ <pers> P
@@ -89,14 +89,14 @@
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
-  H0 : cinvG Σ
-  H1 : na_invG Σ
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
   t : na_inv_pool_name
   N : namespace
   E1, E2 : coPset
   P : iProp Σ
-  H2 : ↑N ⊆ E2
+  H : ↑N ⊆ E2
   ============================
   _ : na_inv t N (<pers> P)
   "HP" : ▷ <pers> P
@@ -132,12 +132,12 @@ Tactic failure: iInv: invariant "H2" not found.
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
+  invG0 : invG Σ
   I : biIndex
   N : namespace
   E : coPset
   𝓟 : iProp Σ
-  H0 : ↑N ⊆ E
+  H : ↑N ⊆ E
   ============================
   "HP" : ⎡ ▷ 𝓟 ⎤
   --------------------------------------∗
@@ -148,12 +148,12 @@ Tactic failure: iInv: invariant "H2" not found.
 1 subgoal
   
   Σ : gFunctors
-  H : invG Σ
+  invG0 : invG Σ
   I : biIndex
   N : namespace
   E : coPset
   𝓟 : iProp Σ
-  H0 : ↑N ⊆ E
+  H : ↑N ⊆ E
   ============================
   "HP" : ⎡ ▷ 𝓟 ⎤
   "Hclose" : ⎡ ▷ 𝓟 ={E ∖ ↑N,E}=∗ emp ⎤

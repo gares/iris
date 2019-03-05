@@ -6,7 +6,7 @@ Set Ltac Backtrace.
 Set Default Proof Using "Type".
 
 Section tests.
-  Context `{heapG Σ}.
+  Context `{!heapG Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
 
@@ -147,7 +147,7 @@ Section tests.
 End tests.
 
 Section printing_tests.
-  Context `{heapG Σ}.
+  Context `{!heapG Σ}.
 
   (* These terms aren't even closed, but that's not what this is about.  The
   length of the variable names etc. has been carefully chosen to trigger
@@ -192,7 +192,7 @@ Section printing_tests.
 End printing_tests.
 
 Section error_tests.
-  Context `{heapG Σ}.
+  Context `{!heapG Σ}.
 
   Check "not_cas".
   Lemma not_cas :

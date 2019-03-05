@@ -3,7 +3,7 @@ From iris.base_logic.lib Require Export viewshifts.
 From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
-Definition ht `{irisG Λ Σ} (s : stuckness) (E : coPset) (P : iProp Σ)
+Definition ht `{!irisG Λ Σ} (s : stuckness) (E : coPset) (P : iProp Σ)
     (e : expr Λ) (Φ : val Λ → iProp Σ) : iProp Σ :=
   (□ (P -∗ WP e @ s; E {{ Φ }}))%I.
 Instance: Params (@ht) 5 := {}.
@@ -41,7 +41,7 @@ Notation "{{ P } } e ? {{ v , Q } }" := (ht MaybeStuck ⊤ P%I e%E (λ v, Q)%I)
    format "{{  P  } }  e  ? {{  v ,  Q  } }") : stdpp_scope.
 
 Section hoare.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P Q : iProp Σ.
 Implicit Types Φ Ψ : val Λ → iProp Σ.
@@ -89,7 +89,7 @@ Proof.
   iIntros (v) "Hv". by iApply "HΦ".
 Qed.
 
-Lemma ht_bind `{LanguageCtx Λ K} s E P Φ Φ' e :
+Lemma ht_bind `{!LanguageCtx Λ K} s E P Φ Φ' e :
   {{ P }} e @ s; E {{ Φ }} ∧ (∀ v, {{ Φ v }} K (of_val v) @ s; E {{ Φ' }})
   ⊢ {{ P }} K e @ s; E {{ Φ' }}.
 Proof.

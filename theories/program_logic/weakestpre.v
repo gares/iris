@@ -22,7 +22,7 @@ Class irisG (Λ : language) (Σ : gFunctors) := IrisG {
 }.
 Global Opaque iris_invG.
 
-Definition wp_pre `{irisG Λ Σ} (s : stuckness)
+Definition wp_pre `{!irisG Λ Σ} (s : stuckness)
     (wp : coPset -c> expr Λ -c> (val Λ -c> iProp Σ) -c> iProp Σ) :
     coPset -c> expr Λ -c> (val Λ -c> iProp Σ) -c> iProp Σ := λ E e1 Φ,
   match to_val e1 with
@@ -36,20 +36,20 @@ Definition wp_pre `{irisG Λ Σ} (s : stuckness)
          [∗ list] i ↦ ef ∈ efs, wp ⊤ ef fork_post
   end%I.
 
-Local Instance wp_pre_contractive `{irisG Λ Σ} s : Contractive (wp_pre s).
+Local Instance wp_pre_contractive `{!irisG Λ Σ} s : Contractive (wp_pre s).
 Proof.
   rewrite /wp_pre=> n wp wp' Hwp E e1 Φ.
   repeat (f_contractive || f_equiv); apply Hwp.
 Qed.
 
-Definition wp_def `{irisG Λ Σ} (s : stuckness) :
+Definition wp_def `{!irisG Λ Σ} (s : stuckness) :
   coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ := fixpoint (wp_pre s).
-Definition wp_aux `{irisG Λ Σ} : seal (@wp_def Λ Σ _). by eexists. Qed.
-Instance wp' `{irisG Λ Σ} : Wp Λ (iProp Σ) stuckness := wp_aux.(unseal).
-Definition wp_eq `{irisG Λ Σ} : wp = @wp_def Λ Σ _ := wp_aux.(seal_eq).
+Definition wp_aux `{!irisG Λ Σ} : seal (@wp_def Λ Σ _). by eexists. Qed.
+Instance wp' `{!irisG Λ Σ} : Wp Λ (iProp Σ) stuckness := wp_aux.(unseal).
+Definition wp_eq `{!irisG Λ Σ} : wp = @wp_def Λ Σ _ := wp_aux.(seal_eq).
 
 Section wp.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types s : stuckness.
 Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
@@ -143,7 +143,7 @@ Proof.
   iIntros (v) "H". by iApply "H".
 Qed.
 
-Lemma wp_bind K `{!LanguageCtx K} s E e Φ :
+Lemma wp_bind K `{!LanguageCtx Λ K} s E e Φ :
   WP e @ s; E {{ v, WP K (of_val v) @ s; E {{ Φ }} }} ⊢ WP K e @ s; E {{ Φ }}.
 Proof.
   iIntros "H". iLöb as "IH" forall (E e Φ). rewrite wp_unfold /wp_pre.
@@ -160,7 +160,7 @@ Proof.
   iModIntro. iFrame "Hσ Hefs". by iApply "IH".
 Qed.
 
-Lemma wp_bind_inv K `{!LanguageCtx K} s E e Φ :
+Lemma wp_bind_inv K `{!LanguageCtx Λ K} s E e Φ :
   WP K e @ s; E {{ Φ }} ⊢ WP e @ s; E {{ v, WP K (of_val v) @ s; E {{ Φ }} }}.
 Proof.
   iIntros "H". iLöb as "IH" forall (E e Φ). rewrite !wp_unfold /wp_pre.
@@ -252,7 +252,7 @@ End wp.
 
 (** Proofmode class instances *)
 Section proofmode_classes.
-  Context `{irisG Λ Σ}.
+  Context `{!irisG Λ Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val Λ → iProp Σ.
 

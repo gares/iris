@@ -16,7 +16,7 @@ Instance subG_stsΣ Σ sts :
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{stsG Σ sts} (γ : gname).
+  Context `{!stsG Σ sts} (γ : gname).
 
   Definition sts_ownS (S : sts.states sts) (T : sts.tokens sts) : iProp Σ :=
     own γ (sts_frag S T).
@@ -57,7 +57,7 @@ Instance: Params (@sts_own) 5 := {}.
 Instance: Params (@sts_ctx) 6 := {}.
 
 Section sts.
-  Context `{invG Σ, stsG Σ sts}.
+  Context `{!invG Σ, !stsG Σ sts}.
   Implicit Types φ : sts.state sts → iProp Σ.
   Implicit Types N : namespace.
   Implicit Types P Q R : iProp Σ.

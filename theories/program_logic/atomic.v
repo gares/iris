@@ -7,7 +7,7 @@ Set Default Proof Using "Type".
 
 (* This hard-codes the inner mask to be empty, because we have yet to find an
 example where we want it to be anything else. *)
-Definition atomic_wp `{irisG Λ Σ} {TA TB : tele}
+Definition atomic_wp `{!irisG Λ Σ} {TA TB : tele}
   (e: expr Λ) (* expression *)
   (Eo : coPset) (* (outer) mask *)
   (α: TA → iProp Σ) (* atomic pre-condition *)
@@ -94,7 +94,7 @@ Notation "'<<<' α '>>>' e @ Eo '<<<' β , 'RET' v '>>>'" :=
 
 (** Theory *)
 Section lemmas.
-  Context `{irisG Λ Σ} {TA TB : tele}.
+  Context `{!irisG Λ Σ} {TA TB : tele}.
   Notation iProp := (iProp Σ).
   Implicit Types (α : TA → iProp) (β : TA → TB → iProp) (f : TA → TB → val Λ).
 

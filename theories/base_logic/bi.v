@@ -202,7 +202,7 @@ Lemma option_validI {A : cmraT} (mx : option A) :
 Proof. exact: uPred_primitive.option_validI. Qed.
 Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. exact: uPred_primitive.discrete_valid. Qed.
-Lemma ofe_fun_validI `{B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
+Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. exact: uPred_primitive.ofe_fun_validI. Qed.
 
 (** Consistency/soundness statement *)

@@ -60,7 +60,7 @@ Proof.
 Qed.
 
 (** Timeless instances *)
-Global Instance valid_timeless {A : cmraT} `{CmraDiscrete A} (a : A) :
+Global Instance valid_timeless {A : cmraT} `{!CmraDiscrete A} (a : A) :
   Timeless (✓ a : uPred M)%I.
 Proof. rewrite /Timeless !discrete_valid. apply (timeless _). Qed.
 Global Instance ownM_timeless (a : M) : Discrete a → Timeless (uPred_ownM a).

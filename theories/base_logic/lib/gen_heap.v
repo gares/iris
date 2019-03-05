@@ -28,7 +28,7 @@ Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{hG : gen_heapG L V Σ}.
+  Context `{Countable L, hG : !gen_heapG L V Σ}.
 
   Definition gen_heap_ctx (σ : gmap L V) : iProp Σ :=
     own (gen_heap_name hG) (● (to_gen_heap σ)).
@@ -72,7 +72,7 @@ Section to_gen_heap.
   Proof. by rewrite /to_gen_heap fmap_delete. Qed.
 End to_gen_heap.
 
-Lemma gen_heap_init `{gen_heapPreG L V Σ} σ :
+Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
 Proof.
   iMod (own_alloc (● to_gen_heap σ)) as (γ) "Hh".
@@ -81,7 +81,7 @@ Proof.
 Qed.
 
 Section gen_heap.
-  Context `{gen_heapG L V Σ}.
+  Context `{Countable L, !gen_heapG L V Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : V → iProp Σ.
   Implicit Types σ : gmap L V.

@@ -6,7 +6,7 @@ Set Default Proof Using "Type".
 Import uPred.
 
 Section adequacy.
-Context `{irisG Λ Σ}.
+Context `{!irisG Λ Σ}.
 Implicit Types e : expr Λ.
 
 Definition twptp_pre (twptp : list (expr Λ) → iProp Σ)
@@ -114,8 +114,8 @@ Proof.
 Qed.
 End adequacy.
 
-Theorem twp_total Σ Λ `{invPreG Σ} s e σ Φ :
-  (∀ `{Hinv : invG Σ},
+Theorem twp_total Σ Λ `{!invPreG Σ} s e σ Φ :
+  (∀ `{Hinv : !invG Σ},
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),

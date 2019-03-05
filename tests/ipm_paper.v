@@ -107,7 +107,7 @@ under max can be found in [theories/heap_lang/lib/counter.v]. *)
 update modalities (which we did not cover in the paper). Normally we use these
 mask changing update modalities directly in our proofs, but in this file we use
 the first prove the rule as a lemma, and then use that. *)
-Lemma wp_inv_open `{irisG Λ Σ} N E P e Φ :
+Lemma wp_inv_open `{!irisG Λ Σ} N E P e Φ :
   nclose N ⊆ E → Atomic WeaklyAtomic e →
   inv N P ∗ (▷ P -∗ WP e @ E ∖ ↑N {{ v, ▷ P ∗ Φ v }}) ⊢ WP e @ E {{ Φ }}.
 Proof.

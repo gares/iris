@@ -693,7 +693,7 @@ Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → uPred M) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
 Proof. intros HΨ. unseal; split=> n x ?? n' x' ??? Ha. by apply HΨ with n a. Qed.
 
-Lemma fun_ext `{B : A → ofeT} (g1 g2 : ofe_fun B) :
+Lemma fun_ext {A} {B : A → ofeT} (g1 g2 : ofe_fun B) :
   (∀ i, g1 i ≡ g2 i) ⊢ g1 ≡ g2.
 Proof. by unseal. Qed.
 Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sigC P) :
@@ -797,7 +797,7 @@ Proof. unseal. by destruct mx. Qed.
 Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
 
-Lemma ofe_fun_validI `{B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
+Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. by unseal. Qed.
 
 (** Consistency/soundness statement *)

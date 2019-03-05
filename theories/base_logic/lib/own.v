@@ -47,11 +47,11 @@ Ltac solve_inG :=
   split; (assumption || by apply _).
 
 (** * Definition of the connective [own] *)
-Definition iRes_singleton `{i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
+Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
   ofe_fun_singleton (inG_id i) {[ γ := cmra_transport inG_prf a ]}.
 Instance: Params (@iRes_singleton) 4 := {}.
 
-Definition own_def `{inG Σ A} (γ : gname) (a : A) : iProp Σ :=
+Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
 Definition own_aux : seal (@own_def). by eexists. Qed.
 Definition own {Σ A i} := own_aux.(unseal) Σ A i.
@@ -61,7 +61,7 @@ Typeclasses Opaque own.
 
 (** * Properties about ghost ownership *)
 Section global.
-Context `{inG Σ A}.
+Context `{Hin: !inG Σ A}.
 Implicit Types a : A.
 
 (** ** Properties of [iRes_singleton] *)
@@ -113,9 +113,9 @@ Proof. rewrite !own_eq /own_def; apply _. Qed.
 Lemma later_own γ a : ▷ own γ a -∗ ◇ (∃ b, own γ b ∧ ▷ (a ≡ b)).
 Proof.
   rewrite own_eq /own_def later_ownM. apply exist_elim=> r.
-  assert (NonExpansive (λ r : iResUR Σ, r (inG_id H) !! γ)).
+  assert (NonExpansive (λ r : iResUR Σ, r (inG_id Hin) !! γ)).
   { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id _)). }
-  rewrite (f_equiv (λ r : iResUR Σ, r (inG_id H) !! γ) _ r).
+  rewrite (f_equiv (λ r : iResUR Σ, r (inG_id Hin) !! γ) _ r).
   rewrite {1}/iRes_singleton ofe_fun_lookup_singleton lookup_singleton.
   rewrite option_equivI. case Hb: (r (inG_id _) !! γ)=> [b|]; last first.
   { by rewrite and_elim_r /sbi_except_0 -or_intro_l. }
@@ -125,7 +125,7 @@ Proof.
       cmra_transport Heq (cmra_transport (eq_sym Heq) a) = a) as ->
       by (by intros ?? ->).
     apply ownM_mono=> /=.
-    exists (ofe_fun_insert (inG_id _) (delete γ (r (inG_id H))) r).
+    exists (ofe_fun_insert (inG_id _) (delete γ (r (inG_id Hin))) r).
     intros i'. rewrite ofe_fun_lookup_op.
     destruct (decide (i' = inG_id _)) as [->|?].
     + rewrite ofe_fun_lookup_insert ofe_fun_lookup_singleton.
@@ -196,7 +196,7 @@ Arguments own_update {_ _} [_] _ _ _ _.
 Arguments own_update_2 {_ _} [_] _ _ _ _ _.
 Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
 
-Lemma own_unit A `{inG Σ (A:ucmraT)} γ : (|==> own γ ε)%I.
+Lemma own_unit A `{!inG Σ (A:ucmraT)} γ : (|==> own γ ε)%I.
 Proof.
   rewrite /uPred_valid /bi_emp_valid (ownM_unit emp) !own_eq /own_def.
   apply bupd_ownM_update, ofe_fun_singleton_update_empty.
@@ -206,13 +206,13 @@ Proof.
 Qed.
 
 (** Big op class instances *)
-Instance own_cmra_sep_homomorphism `{inG Σ (A:ucmraT)} :
+Instance own_cmra_sep_homomorphism `{!inG Σ (A:ucmraT)} :
   WeakMonoidHomomorphism op uPred_sep (≡) (own γ).
 Proof. split; try apply _. apply own_op. Qed.
 
 (** Proofmode class instances *)
 Section proofmode_classes.
-  Context `{inG Σ A}.
+  Context `{!inG Σ A}.
   Implicit Types a b : A.
 
   Global Instance into_sep_own γ a b1 b2 :

@@ -1,7 +1,7 @@
 1 subgoal
   
   Σ : gFunctors
-  H : heapG Σ
+  heapG0 : heapG Σ
   fun1, fun2, fun3 : expr
   ============================
   --------------------------------------∗
