@@ -81,7 +81,7 @@ Proof.
 Qed.
 
 Section gen_heap.
-  Context `{Countable L, !gen_heapG L V Σ}.
+  Context {L V} `{Countable L, !gen_heapG L V Σ}.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : V → iProp Σ.
   Implicit Types σ : gmap L V.
