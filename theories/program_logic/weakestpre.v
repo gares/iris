@@ -143,7 +143,7 @@ Proof.
   iIntros (v) "H". by iApply "H".
 Qed.
 
-Lemma wp_bind K `{!LanguageCtx Λ K} s E e Φ :
+Lemma wp_bind K `{!LanguageCtx K} s E e Φ :
   WP e @ s; E {{ v, WP K (of_val v) @ s; E {{ Φ }} }} ⊢ WP K e @ s; E {{ Φ }}.
 Proof.
   iIntros "H". iLöb as "IH" forall (E e Φ). rewrite wp_unfold /wp_pre.
@@ -160,7 +160,7 @@ Proof.
   iModIntro. iFrame "Hσ Hefs". by iApply "IH".
 Qed.
 
-Lemma wp_bind_inv K `{!LanguageCtx Λ K} s E e Φ :
+Lemma wp_bind_inv K `{!LanguageCtx K} s E e Φ :
   WP K e @ s; E {{ Φ }} ⊢ WP e @ s; E {{ v, WP K (of_val v) @ s; E {{ Φ }} }}.
 Proof.
   iIntros "H". iLöb as "IH" forall (E e Φ). rewrite !wp_unfold /wp_pre.

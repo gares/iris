@@ -147,7 +147,7 @@ Proof.
     iModIntro. iSplit; first done. iFrame "Hσ Hefs". by iApply twp_value'.
 Qed.
 
-Lemma twp_bind K `{!LanguageCtx Λ K} s E e Φ :
+Lemma twp_bind K `{!LanguageCtx K} s E e Φ :
   WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }] -∗ WP K e @ s; E [{ Φ }].
 Proof.
   revert Φ. cut (∀ Φ', WP e @ s; E [{ Φ' }] -∗ ∀ Φ,
@@ -169,7 +169,7 @@ Proof.
   - by setoid_rewrite and_elim_r.
 Qed.
 
-Lemma twp_bind_inv K `{!LanguageCtx Λ K} s E e Φ :
+Lemma twp_bind_inv K `{!LanguageCtx K} s E e Φ :
   WP K e @ s; E [{ Φ }] -∗ WP e @ s; E [{ v, WP K (of_val v) @ s; E [{ Φ }] }].
 Proof.
   iIntros "H". remember (K e) as e' eqn:He'.

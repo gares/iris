@@ -89,7 +89,7 @@ Proof.
   iIntros (v) "Hv". by iApply "HΦ".
 Qed.
 
-Lemma ht_bind `{!LanguageCtx Λ K} s E P Φ Φ' e :
+Lemma ht_bind `{!LanguageCtx K} s E P Φ Φ' e :
   {{ P }} e @ s; E {{ Φ }} ∧ (∀ v, {{ Φ v }} K (of_val v) @ s; E {{ Φ' }})
   ⊢ {{ P }} K e @ s; E {{ Φ' }}.
 Proof.
