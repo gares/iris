@@ -100,6 +100,9 @@ Changes in Coq:
   steps that would require unlocking subterms. Every impure wp_ tactic executes
   this tactic before doing anything else.
 * Add `big_sepM_insert_acc`.
+* The `_strong` lemmas (e.g. `own_alloc_strong`) work for all infinite
+  sets, instead of just for cofinite sets. The versions with cofinite
+  sets have been renamed to use the `_cofinite` suffix.
 
 ## Iris 3.1.0 (released 2017-12-19)
 

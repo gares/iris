@@ -1,5 +1,5 @@
 From iris.algebra Require Export cmra.
-From stdpp Require Export gmap.
+From stdpp Require Export list gmap.
 From iris.algebra Require Import updates local_updates.
 From iris.base_logic Require Import base_logic.
 From iris.algebra Require Import proofmode_classes.
@@ -354,29 +354,48 @@ Qed.
 Section freshness.
   Local Set Default Proof Using "Type*".
   Context `{!Infinite K}.
-  Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : gset K) m x :
-    ✓ x → (∀ i, m !! i = None → i ∉ I → Q (<[i:=x]>m)) → m ~~>: Q.
+  Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : K → Prop) m x :
+    pred_infinite I →
+    ✓ x → (∀ i, m !! i = None → I i → Q (<[i:=x]>m)) → m ~~>: Q.
   Proof.
-    intros ? HQ. apply cmra_total_updateP.
-    intros n mf Hm. set (i := fresh (I ∪ dom (gset K) (m ⋅ mf))).
-    assert (i ∉ I ∧ i ∉ dom (gset K) m ∧ i ∉ dom (gset K) mf) as [?[??]].
-    { rewrite -not_elem_of_union -dom_op -not_elem_of_union; apply is_fresh. }
+    move=> /(pred_infinite_set I (C:=gset K)) HP ? HQ.
+    apply cmra_total_updateP. intros n mf Hm.
+    destruct (HP (dom (gset K) (m ⋅ mf))) as [i [Hi1 Hi2]].
+    assert (m !! i = None).
+    { eapply (not_elem_of_dom (D:=gset K)). revert Hi2.
+      rewrite dom_op not_elem_of_union. naive_solver. }
     exists (<[i:=x]>m); split.
-    { apply HQ; last done. by eapply not_elem_of_dom. }
-    rewrite insert_singleton_op; last by eapply not_elem_of_dom.
-    rewrite -assoc -insert_singleton_op;
-      last by eapply (not_elem_of_dom (D:=gset K)); rewrite dom_op not_elem_of_union.
+    - by apply HQ.
+    - rewrite insert_singleton_op //.
+      rewrite -assoc -insert_singleton_op;
+        last by eapply (not_elem_of_dom (D:=gset K)).
     by apply insert_validN; [apply cmra_valid_validN|].
   Qed.
   Lemma alloc_updateP (Q : gmap K A → Prop) m x :
     ✓ x → (∀ i, m !! i = None → Q (<[i:=x]>m)) → m ~~>: Q.
-  Proof. move=>??. eapply alloc_updateP_strong with (I:=∅); by eauto. Qed.
-  Lemma alloc_updateP_strong' m x (I : gset K) :
-    ✓ x → m ~~>: λ m', ∃ i, i ∉ I ∧ m' = <[i:=x]>m ∧ m !! i = None.
+  Proof.
+    move=>??.
+    eapply alloc_updateP_strong with (I:=λ _, True);
+    eauto using pred_infinite_True.
+  Qed.
+  Lemma alloc_updateP_strong' m x (I : K → Prop) :
+    pred_infinite I →
+    ✓ x → m ~~>: λ m', ∃ i, I i ∧ m' = <[i:=x]>m ∧ m !! i = None.
   Proof. eauto using alloc_updateP_strong. Qed.
   Lemma alloc_updateP' m x :
     ✓ x → m ~~>: λ m', ∃ i, m' = <[i:=x]>m ∧ m !! i = None.
   Proof. eauto using alloc_updateP. Qed.
+  Lemma alloc_updateP_cofinite (Q : gmap K A → Prop) (J : gset K) m x :
+    ✓ x → (∀ i, m !! i = None → i ∉ J → Q (<[i:=x]>m)) → m ~~>: Q.
+  Proof.
+    eapply alloc_updateP_strong.
+    apply (pred_infinite_set (C:=gset K)).
+    intros E. exists (fresh (J ∪ E)).
+    apply not_elem_of_union, is_fresh.
+  Qed.
+  Lemma alloc_updateP_cofinite' m x (J : gset K) :
+    ✓ x → m ~~>: λ m', ∃ i, i ∉ J ∧ m' = <[i:=x]>m ∧ m !! i = None.
+  Proof. eauto using alloc_updateP_cofinite. Qed.
 End freshness.
 
 Lemma alloc_unit_singleton_updateP (P : A → Prop) (Q : gmap K A → Prop) u i :
