@@ -17,6 +17,8 @@ This definition varies slightly from the original one in~\cite{catlogic}.
 The key intuition behind OFEs is that elements $x$ and $y$ are $n$-equivalent, notation $x \nequiv{n} y$, if they are \emph{equivalent for $n$ steps of computation}, \ie if they cannot be distinguished by a program running for no more than $n$ steps.
 In other words, as $n$ increases, $\nequiv{n}$ becomes more and more refined (\ruleref{ofe-mono})---and in the limit, it agrees with plain equality (\ruleref{ofe-limit}).
 
+Notice that OFEs are just a different presentation of bisected 1-bounded ultrametric spaces, where the family of equivalence relations gives rise to the distance function (two elements that are equal for $n$ steps are no more than $2^{-n}$ apart).
+
 \begin{defn}
   An element $x \in \ofe$ of an OFE is called \emph{discrete} if
   \[ \All y \in \ofe. x \nequiv{0} y \Ra x = y\]
