@@ -75,14 +75,12 @@ Section least.
 End least.
 
 Lemma greatest_fixpoint_ne_outer {PROP : bi} {A : ofeT}
-  (F1 : (A → PROP) → (A → PROP))
-  (F2 : (A → PROP) → (A → PROP)):
+    (F1 : (A → PROP) → (A → PROP)) (F2 : (A → PROP) → (A → PROP)):
   (∀ Φ x n, F1 Φ x ≡{n}≡ F2 Φ x) → ∀ x1 x2 n,
-  (dist n) x1 x2 → (dist n) (bi_greatest_fixpoint F1 x1) (bi_greatest_fixpoint F2 x2).
+  x1 ≡{n}≡ x2 → bi_greatest_fixpoint F1 x1 ≡{n}≡ bi_greatest_fixpoint F2 x2.
 Proof.
-  intros HF ??? Hx. rewrite /bi_greatest_fixpoint /=.
-  f_equiv. f_equiv. f_equiv. 2: solve_proper.
-  f_equiv. f_equiv. f_equiv. f_equiv. apply HF.
+  intros HF x1 x2 n Hx. rewrite /bi_greatest_fixpoint /=.
+  do 3 f_equiv; last solve_proper. repeat f_equiv. apply HF.
 Qed.
 
 Global Instance greatest_fixpoint_ne {PROP : bi} {A : ofeT} n :
