@@ -26,6 +26,10 @@ Global Instance least_fixpoint_ne {PROP : bi} {A : ofeT} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>
           dist n ==> dist n) bi_least_fixpoint.
 Proof. solve_proper. Qed.
+Global Instance least_fixpoint_proper {PROP : bi} {A : ofeT} :
+  Proper (pointwise_relation (A → PROP) (pointwise_relation A (≡)) ==>
+          (≡) ==> (≡)) bi_least_fixpoint.
+Proof. solve_proper. Qed.
 
 Section least.
   Context {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
@@ -84,6 +88,10 @@ Qed.
 Global Instance greatest_fixpoint_ne {PROP : bi} {A : ofeT} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>
           dist n ==> dist n) bi_greatest_fixpoint.
+Proof. solve_proper. Qed.
+Global Instance greatest_fixpoint_proper {PROP : bi} {A : ofeT} :
+  Proper (pointwise_relation (A → PROP) (pointwise_relation A (≡)) ==>
+          (≡) ==> (≡)) bi_greatest_fixpoint.
 Proof. solve_proper. Qed.
 
 Section greatest.
