@@ -45,7 +45,7 @@ Section least.
     bi_least_fixpoint F x ⊢ F (bi_least_fixpoint F) x.
   Proof.
     iIntros "HF". iApply ("HF" $! (CofeMor (F (bi_least_fixpoint F))) with "[#]").
-    iIntros "!#" (y) "Hy". iApply (bi_mono_pred with "[#]"); last done.
+    iIntros "!#" (y) "Hy /=". iApply (bi_mono_pred with "[#]"); last done.
     iIntros "!#" (z) "?". by iApply least_fixpoint_unfold_2.
   Qed.
 
