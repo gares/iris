@@ -103,11 +103,10 @@ Definition client : expr :=
   (Fst "ff" #5 ||| let: "check" := Snd "ff" #() in "check" #()).
 
 Section client.
-  Local Set Default Proof Using "Type*".
   Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
 
   Lemma client_safe : WP client {{ _, True }}%I.
-  Proof.
+  Proof using Type*.
     rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]".
     wp_let. wp_apply wp_par.
     - wp_apply "Hf1".

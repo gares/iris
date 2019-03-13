@@ -8,8 +8,10 @@ Import uPred.
 (* "Saved anything" -- this can give you saved propositions, saved predicates,
    saved whatever-you-like. *)
 
-Class savedAnythingG (Σ : gFunctors) (F : cFunctor) :=
-  saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ))).
+Class savedAnythingG (Σ : gFunctors) (F : cFunctor) := SavedAnythingG {
+  saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ)));
+  saved_anything_contractive : cFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
+}.
 Definition savedAnythingΣ (F : cFunctor) `{!cFunctorContractive F} : gFunctors :=
   #[ GFunctor (agreeRF F) ].
 
