@@ -105,17 +105,16 @@ Ltac wp_pures :=
   repeat (wp_pure _; []). (* The `;[]` makes sure that no side-condition
                              magically spawns. *)
 
-(* The handling of beta-reductions with wp_rec needs special care in
-  order to allow it to unlock locked `RecV` values: We first put
-  `AsRecV_recv_locked` in the current environment so that it can be
-  used as an instance by the typeclass resolution system, then we
-  perform the reduction, and finally we clear this new hypothesis.
+(** Unlike [wp_pures], the tactics [wp_rec] and [wp_lam] should also reduce
+lambdas/recs that are hidden behind a definition, i.e. they should use
+[AsRecV_recv] as a proper instance instead of a [Hint Extern].
 
-  The reason is that we do not want impure wp_ tactics to unfold
-  locked terms, while we want them to execute arbitrary pure steps. *)
+We achieve this by putting [AsRecV_recv] in the current environment so that it
+can be used as an instance by the typeclass resolution system. We then perform
+the reduction, and finally we clear this new hypothesis. *)
 Tactic Notation "wp_rec" :=
   let H := fresh in
-  assert (H := AsRecV_recv_locked);
+  assert (H := AsRecV_recv);
   wp_pure (App _ _);
   clear H.
 

@@ -85,7 +85,7 @@ by two spaces in case the whole rec does not fit on a single line. *)
 Notation "'rec:' f x := e" := (Rec f%bind x%bind e%E)
   (at level 200, f at level 1, x at level 1, e at level 200,
    format "'[' 'rec:'  f  x  :=  '/  ' e ']'") : expr_scope.
-Notation "'rec:' f x := e" := (locked (RecV f%bind x%bind e%E))
+Notation "'rec:' f x := e" := (RecV f%bind x%bind e%E)
   (at level 200, f at level 1, x at level 1, e at level 200,
    format "'[' 'rec:'  f  x  :=  '/  ' e ']'") : val_scope.
 Notation "'if:' e1 'then' e2 'else' e3" := (If e1%E e2%E e3%E)
@@ -98,7 +98,7 @@ notations are otherwise not pretty printed back accordingly. *)
 Notation "'rec:' f x y .. z := e" := (Rec f%bind x%bind (Lam y%bind .. (Lam z%bind e%E) ..))
   (at level 200, f, x, y, z at level 1, e at level 200,
    format "'[' 'rec:'  f  x  y  ..  z  :=  '/  ' e ']'") : expr_scope.
-Notation "'rec:' f x y .. z := e" := (locked (RecV f%bind x%bind (Lam y%bind .. (Lam z%bind e%E) ..)))
+Notation "'rec:' f x y .. z := e" := (RecV f%bind x%bind (Lam y%bind .. (Lam z%bind e%E) ..))
   (at level 200, f, x, y, z at level 1, e at level 200,
    format "'[' 'rec:'  f  x  y  ..  z  :=  '/  ' e ']'") : val_scope.
 
@@ -111,21 +111,10 @@ Notation "λ: x y .. z , e" := (Lam x%bind (Lam y%bind .. (Lam z%bind e%E) ..))
   (at level 200, x, y, z at level 1, e at level 200,
    format "'[' 'λ:'  x  y  ..  z ,  '/  ' e ']'") : expr_scope.
 
-(* When parsing lambdas, we want them to be locked (so as to avoid needless
-unfolding by tactics and unification). However, unlocked lambda-values sometimes
-appear as part of compound expressions, in which case we want them to be pretty
-printed too. We achieve that by using printing only notations for the non-locked
-notation. *)
 Notation "λ: x , e" := (LamV x%bind e%E)
-  (at level 200, x at level 1, e at level 200,
-   format "'[' 'λ:'  x ,  '/  ' e ']'", only printing) : val_scope.
-Notation "λ: x , e" := (locked (LamV x%bind e%E))
   (at level 200, x at level 1, e at level 200,
    format "'[' 'λ:'  x ,  '/  ' e ']'") : val_scope.
 Notation "λ: x y .. z , e" := (LamV x%bind (Lam y%bind .. (Lam z%bind e%E) .. ))
-  (at level 200, x, y, z at level 1, e at level 200,
-   format "'[' 'λ:'  x  y  ..  z ,  '/  ' e ']'", only printing) : val_scope.
-Notation "λ: x y .. z , e" := (locked (LamV x%bind (Lam y%bind .. (Lam z%bind e%E) .. )))
   (at level 200, x, y, z at level 1, e at level 200,
    format "'[' 'λ:'  x  y  ..  z ,  '/  ' e ']'") : val_scope.
 
