@@ -111,13 +111,17 @@ that should be compatible with this version:
 
 ## Further Resources
 
-* Information on how to set up your editor for unicode input and output is
-  collected in [Editor.md](Editor.md).
-* The Iris Proof Mode (IPM) / MoSeL is documented at [ProofMode.md](ProofMode.md).
-* HeapLang (the Iris example language) and its tactics are documented at
-  [HeapLang.md](HeapLang.md).
-* Naming conventions are documented at [Naming.md](Naming.md).
+Getting along with Iris in Coq:
+
+* Iris proof patterns are documented in the [proof guide](ProofGuide.md).
+* Syntactic conventions are described in the [style guide](StyleGuide.md).
+* The Iris tactics are described in the
+  [the Iris Proof Mode (IPM) / MoSeL documentation](ProofMode.md) as well as the
+  [HeapLang documentation](HeapLang.md).
 * The generated coqdoc is [available online](https://plv.mpi-sws.org/coqdoc/iris/).
+
+Contacting the developers:
+
 * Discussion about the Iris Coq development happens on the mailing list
   [iris-club@lists.mpi-sws.org](https://lists.mpi-sws.org/listinfo/iris-club)
   and in the [Iris Chat](https://mattermost.mpi-sws.org/iris).  This is also the
@@ -128,6 +132,11 @@ that should be compatible with this version:
   [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which also
   requires an MPI-SWS GitLab account.
 * To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
+
+Miscellaneous:
+
+* Information on how to set up your editor for unicode input and output is
+  collected in [Editor.md](Editor.md).
 * If you are writing a paper that uses Iris in one way or another, you could use
   the [Iris LaTeX macros](docs/iris.sty) for typesetting the various Iris
   connectives.
