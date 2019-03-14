@@ -91,18 +91,26 @@ Local Ltac solve_pure_exec :=
   subst; intros ?; apply nsteps_once, pure_head_step_pure_step;
     constructor; [solve_exec_safe | solve_exec_puredet].
 
+(** The behavior of the various [wp_] tactics with regard to lambda differs in
+the following way:
+
+- [wp_pures] does *not* reduce lambdas/recs that are hidden behind a definition.
+- [wp_rec] and [wp_lam] reduce lambdas/recs that are hidden behind a definition.
+
+To realize this behavior, we define the class [AsRecV v f x erec], which takes a
+value [v] as its input, and turns it into a [RecV f x erec] via the instance
+[AsRecV_recv : AsRecV (RecV f x e) f x e]. We register this instance via
+[Hint Extern] so that it is only used if [v] is syntactically a lambda/rec, and
+not if [v] contains a lambda/rec that is hidden behind a definition.
+
+To make sure that [wp_rec] and [wp_lam] do reduce lambdas/recs that are hidden
+behind a definition, we activate [AsRecV_recv] by hand in these tactics. *)
 Class AsRecV (v : val) (f x : binder) (erec : expr) :=
   as_recv : v = RecV f x erec.
-Instance AsRecV_recv f x e : AsRecV (RecV f x e) f x e := eq_refl.
-
-(* Pure reductions are automatically performed before any wp_ tactics
-   handling impure operations. Since we do not want these tactics to
-   unfold locked terms, we do not register this instance explicitely,
-   but only activate it by hand in the `wp_rec` tactic, where we
-   *actually* want it to unlock. *)
-Lemma AsRecV_recv_locked v f x e :
-  AsRecV v f x e → AsRecV (locked v) f x e.
-Proof. by unlock. Qed.
+Hint Mode AsRecV ! - - - : typeclass_instances.
+Definition AsRecV_recv f x e : AsRecV (RecV f x e) f x e := eq_refl.
+Hint Extern 0 (AsRecV (RecV _ _ _) _ _ _) =>
+  apply AsRecV_recv : typeclass_instances.
 
 Instance pure_recc f x (erec : expr) :
   PureExec True 1 (Rec f x erec) (Val $ RecV f x erec).

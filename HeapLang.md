@@ -42,10 +42,6 @@ We define a whole lot of short-hands, such as non-recursive functions (`λ:`),
 let-bindings, sequential composition, and a more conventional `match:` that has
 binders in both branches.
 
-Noteworthy is the fact that functions (`rec:`, `λ:`) in the value scope (`%V`)
-are *locked*.  This is to prevent them from being unfolded and reduced too
-eagerly.
-
 The widely used `#` is a short-hand to turn a basic literal (an integer, a
 location, a boolean literal or a unit value) into a value.  Since values coerce
 to expressions, `#` is widely used whenever a Coq value needs to be placed into
@@ -62,9 +58,10 @@ Tactics to take one or more pure program steps:
 - `wp_pure`: Perform one pure reduction step.  Pure steps are defined by the
   `PureExec` typeclass and include beta reduction, projections, constructors, as
   well as unary and binary arithmetic operators.
-- `wp_pures`: Perform as many pure reduction steps as possible.
+- `wp_pures`: Perform as many pure reduction steps as possible. This
+  tactic will **not** reduce lambdas/recs that are hidden behind a definition.
 - `wp_rec`, `wp_lam`: Perform a beta reduction.  Unlike `wp_pure`, this will
-  also reduce locked lambdas.
+  also reduce lambdas that are hidden behind a definition.
 - `wp_let`, `wp_seq`: Reduce a let-binding or a sequential composition.
 - `wp_proj`: Reduce a projection.
 - `wp_if_true`, `wp_if_false`, `wp_if`: Reduce a conditional expression. The
@@ -122,7 +119,7 @@ The normal `e1 ||| e2` notation uses expression lambdas, because clearly we want
 value lambda).  However, the *specification* for parallel composition should use
 value lambdas, because prior to applying it the term will be reduced as much as
 possible to achieve a normal form.  To facilitate this, we define a copy of the
-`e1 ||| e2` notation in the value scope that uses *unlocked* value lambdas.
+`e1 ||| e2` notation in the value scope that uses value lambdas.
 This is not actually a value, but we still but it in the value scope to
 differentiate from the other notation that uses expression lambdas.  (In the
 future, we might decide to add a separate scope for this.)  Then, we write the

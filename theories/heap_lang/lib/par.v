@@ -12,7 +12,7 @@ Definition par : val :=
     let: "v1" := join "handle" in
     ("v1", "v2").
 Notation "e1 ||| e2" := (par (λ: <>, e1)%E (λ: <>, e2)%E) : expr_scope.
-Notation "e1 ||| e2" := (par (LamV BAnon e1%E) (LamV BAnon e2%E)) : val_scope.
+Notation "e1 ||| e2" := (par (λ: <>, e1)%V (λ: <>, e2)%V) : val_scope.
 
 Section proof.
 Local Set Default Proof Using "Type*".
