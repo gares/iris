@@ -103,6 +103,9 @@ Changes in Coq:
 * The `_strong` lemmas (e.g. `own_alloc_strong`) work for all infinite
   sets, instead of just for cofinite sets. The versions with cofinite
   sets have been renamed to use the `_cofinite` suffix.
+* Remove locked value lambdas. The value scope notations `rec: f x := e` and
+  `(λ: x, e)` no longer add a `locked`. Instead, we made the `wp_` tactics
+  smarter to no longer unfold lambdas/recs that occur behind definitions.
 
 ## Iris 3.1.0 (released 2017-12-19)
 
