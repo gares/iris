@@ -308,39 +308,28 @@ Proof.
   iModIntro. iSplit=>//. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
 
-(** Lifting lemmas for creating and resolving prophecy variables *)
 Lemma wp_new_proph :
-  {{{ True }}} NewProph {{{ v (p : proph_id), RET (LitV (LitProphecy p)); proph p v }}}.
+  {{{ True }}} NewProph {{{ vs p, RET (LitV (LitProphecy p)); proph p vs }}}.
 Proof.
   iIntros (Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs n) "[Hσ HR] !>". iDestruct "HR" as (R [Hfr Hdom]) "HR".
-  iSplit; first by eauto.
+  iIntros (σ1 κ κs n) "[Hσ HR] !>". iSplit; first by eauto.
   iNext; iIntros (v2 σ2 efs Hstep). inv_head_step.
-  iMod (@proph_map_alloc with "HR") as "[HR Hp]".
-  { intro Hin. apply (iffLR (elem_of_subseteq _ _) Hdom) in Hin. done. }
-  iModIntro; iSplit=> //. iFrame. iSplitL "HR".
-  - iExists _. iSplit; last done.
-    iPureIntro. split.
-    + apply first_resolve_insert; auto.
-    + rewrite dom_insert_L. by apply union_mono_l.
-  - iApply "HΦ". done.
+  iMod (proph_map_new_proph p with "HR") as "[HR Hp]"; first done.
+  iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
 Qed.
 
-Lemma wp_resolve_proph p v w:
-  {{{ proph p v }}}
-    ResolveProph (Val $ LitV $ LitProphecy p) (Val w)
-  {{{ RET (LitV LitUnit); ⌜v = Some w⌝ }}}.
+Lemma wp_resolve_proph p vs v :
+  {{{ proph p vs }}}
+    ResolveProph (Val $ LitV $ LitProphecy p) (Val v)
+  {{{ vs', RET (LitV LitUnit); ⌜vs = v::vs'⌝ ∗ proph p vs' }}}.
 Proof.
   iIntros (Φ) "Hp HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs n) "[Hσ HR] !>". iDestruct "HR" as (R [Hfr Hdom]) "HR".
-  iDestruct (@proph_map_valid with "HR Hp") as %Hlookup.
-  iSplit; first by eauto.
-  iNext; iIntros (v2 σ2 efs Hstep); inv_head_step. iApply fupd_frame_l.
-  iSplit=> //. iFrame.
-  iMod (@proph_map_remove with "HR Hp") as "Hp". iModIntro.
-  iSplitR "HΦ".
-  - iExists _. iFrame. iPureIntro. split; first by eapply first_resolve_delete.
-    rewrite dom_delete. set_solver.
-  - iApply "HΦ". iPureIntro. by eapply first_resolve_eq.
+  iIntros (σ1 κ κs n) "[Hσ HR] !>". iSplit; first by eauto.
+  iNext; iIntros (v2 σ2 efs Hstep). inv_head_step.
+  iMod (proph_map_resolve_proph p v κs with "[HR Hp]") as "HPost"; first by iFrame.
+  iModIntro. iFrame. iSplitR; first done.
+  iDestruct "HPost" as (vs') "[HEq [HR Hp]]". iFrame.
+  iApply "HΦ". iFrame.
 Qed.
+
 End lifting.

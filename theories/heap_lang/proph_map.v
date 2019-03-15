@@ -1,17 +1,17 @@
-From iris.algebra Require Import auth gmap.
+From iris.algebra Require Import auth list gmap.
 From iris.base_logic.lib Require Export own.
 From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 Import uPred.
 
-Definition proph_map (P V : Type) `{Countable P} := gmap P (option V).
+Definition proph_map (P V : Type) `{Countable P} := gmap P (list V).
 Definition proph_val_list (P V : Type) := list (P * V).
 
 Definition proph_mapUR (P V : Type) `{Countable P} : ucmraT :=
-  gmapUR P $ exclR $ optionC $ leibnizC V.
+  gmapUR P $ exclR $ listC $ leibnizC V.
 
 Definition to_proph_map {P V} `{Countable P} (pvs : proph_map P V) : proph_mapUR P V :=
-  fmap (λ v, Excl (v : option (leibnizC V))) pvs.
+  fmap (λ vs, Excl (vs : list (leibnizC V))) pvs.
 
 (** The CMRA we need. *)
 Class proph_mapG (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapG {
@@ -31,83 +31,64 @@ Instance subG_proph_mapPreG {Σ P V} `{Countable P} :
 Proof. solve_inG. Qed.
 
 Section definitions.
-  Context `{Countable P, pG : !proph_mapG P V Σ}.
+  Context `{pG : proph_mapG P V Σ}.
+  Implicit Types pvs : proph_val_list P V.
+  Implicit Types R : proph_map P V.
+  Implicit Types p : P.
 
-  (** The first resolve for [p] in [pvs] *)
-  Definition first_resolve (pvs : proph_val_list P V) (p : P) : option V :=
-    (list_to_map pvs : gmap P V) !! p.
+  (** The list of resolves for [p] in [pvs]. *)
+  Fixpoint list_resolves pvs p : list V :=
+    match pvs with
+    | []         => []
+    | (q,v)::pvs => if decide (p = q) then v :: list_resolves pvs p
+                    else list_resolves pvs p
+    end.
 
-  Definition first_resolve_in_list (R : proph_map P V) (pvs : proph_val_list P V) :=
-    ∀ p v, p ∈ dom (gset _) R →
-           first_resolve pvs p = Some v →
-           R !! p = Some (Some v).
+  Definition resolves_in_list R pvs :=
+    map_Forall (λ p vs, vs = list_resolves pvs p) R.
 
-  Definition proph_map_auth (R : proph_map P V) : iProp Σ :=
-    own (proph_map_name pG) (● (to_proph_map R)).
-
-  Definition proph_map_ctx (pvs : proph_val_list P V) (ps : gset P) : iProp Σ :=
-    (∃ R, ⌜first_resolve_in_list R pvs ∧
+  Definition proph_map_ctx pvs (ps : gset P) : iProp Σ :=
+    (∃ R, ⌜resolves_in_list R pvs ∧
           dom (gset _) R ⊆ ps⌝ ∗
-          proph_map_auth R)%I.
+          own (proph_map_name pG) (● (to_proph_map R)))%I.
 
-  Definition proph_def (p : P) (v: option V) : iProp Σ :=
-    own (proph_map_name pG) (◯ {[ p := Excl (v : option $ leibnizC V) ]}).
+  Definition proph_def (p : P) (vs : list V) : iProp Σ :=
+    own (proph_map_name pG) (◯ {[p := Excl vs]}).
+
   Definition proph_aux : seal (@proph_def). by eexists. Qed.
   Definition proph := proph_aux.(unseal).
-  Definition proph_eq :
-    @proph = @proph_def := proph_aux.(seal_eq).
+  Definition proph_eq : @proph = @proph_def := proph_aux.(seal_eq).
 End definitions.
 
-Section first_resolve.
+Section list_resolves.
   Context {P V : Type} `{Countable P}.
   Implicit Type pvs : proph_val_list P V.
   Implicit Type p : P.
-  Implicit Type v : V.
   Implicit Type R : proph_map P V.
 
-  Lemma first_resolve_insert pvs p R :
-    first_resolve_in_list R pvs →
+  Lemma resolves_insert pvs p R :
+    resolves_in_list R pvs →
     p ∉ dom (gset _) R →
-    first_resolve_in_list (<[p := first_resolve pvs p]> R) pvs.
+    resolves_in_list (<[p := list_resolves pvs p]> R) pvs.
   Proof.
-    intros Hf Hnotin p' v' Hp'. rewrite (dom_insert_L R p) in Hp'.
-    erewrite elem_of_union in Hp'. destruct Hp' as [->%elem_of_singleton | Hin].
-    - intros ->. by rewrite lookup_insert.
-    - intros <-%Hf; last done. rewrite lookup_insert_ne; first done.
-      intros ?. subst. done.
+    intros Hinlist Hp q vs HEq.
+    destruct (decide (p = q)) as [->|NEq].
+    - rewrite lookup_insert in HEq. by inversion HEq.
+    - rewrite lookup_insert_ne in HEq; last done. by apply Hinlist.
   Qed.
-
-  Lemma first_resolve_delete pvs p v R :
-    first_resolve_in_list R ((p, v) :: pvs) →
-    first_resolve_in_list (delete p R) pvs.
-  Proof.
-    intros Hfr p' v' Hpin Heq. rewrite dom_delete_L in Hpin. rewrite /first_resolve in Heq.
-    apply elem_of_difference in Hpin as [Hpin Hne%not_elem_of_singleton].
-    erewrite <- lookup_insert_ne in Heq; last done. rewrite lookup_delete_ne; eauto.
-  Qed.
-
-  Lemma first_resolve_eq R p v w pvs :
-    first_resolve_in_list R ((p, v) :: pvs) →
-    R !! p = Some w →
-    w = Some v.
-  Proof.
-    intros Hfr Hlookup. specialize (Hfr p v (elem_of_dom_2 _ _ _ Hlookup)).
-    rewrite /first_resolve lookup_insert in Hfr. rewrite Hfr in Hlookup; last done.
-    inversion Hlookup. done.
-  Qed.
-
-End first_resolve.
+End list_resolves.
 
 Section to_proph_map.
   Context (P V : Type) `{Countable P}.
   Implicit Types p : P.
+  Implicit Types vs : list V.
   Implicit Types R : proph_map P V.
 
   Lemma to_proph_map_valid R : ✓ to_proph_map R.
   Proof. intros l. rewrite lookup_fmap. by case (R !! l). Qed.
 
-  Lemma to_proph_map_insert p v R :
-    to_proph_map (<[p := v]> R) = <[p := Excl (v: option (leibnizC V))]> (to_proph_map R).
+  Lemma to_proph_map_insert p vs R :
+    to_proph_map (<[p := vs]> R) = <[p := Excl (vs: list (leibnizC V))]> (to_proph_map R).
   Proof. by rewrite /to_proph_map fmap_insert. Qed.
 
   Lemma to_proph_map_delete p R :
@@ -118,16 +99,15 @@ Section to_proph_map.
     R !! p = None → to_proph_map R !! p = None.
   Proof. by rewrite /to_proph_map lookup_fmap=> ->. Qed.
 
-  Lemma proph_map_singleton_included R p v :
-    {[p := Excl v]} ≼ to_proph_map R → R !! p = Some v.
+  Lemma proph_map_singleton_included R p vs :
+    {[p := Excl vs]} ≼ to_proph_map R → R !! p = Some vs.
   Proof.
     rewrite singleton_included_exclusive; last by apply to_proph_map_valid.
     by rewrite leibniz_equiv_iff /to_proph_map lookup_fmap fmap_Some=> -[v' [-> [->]]].
   Qed.
 End to_proph_map.
 
-
-Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
+Lemma proph_map_init `{proph_mapPreG P V PVS} pvs ps :
   (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
@@ -137,39 +117,65 @@ Proof.
 Qed.
 
 Section proph_map.
-  Context `{Countable P, !proph_mapG P V Σ}.
+  Context `{proph_mapG P V Σ}.
   Implicit Types p : P.
-  Implicit Types v : option V.
+  Implicit Types v : V.
+  Implicit Types vs : list V.
   Implicit Types R : proph_map P V.
+  Implicit Types ps : gset P.
 
   (** General properties of mapsto *)
-  Global Instance proph_timeless p v : Timeless (proph p v).
+  Global Instance proph_timeless p vs : Timeless (proph p vs).
   Proof. rewrite proph_eq /proph_def. apply _. Qed.
 
-  Lemma proph_map_alloc R p v :
-    p ∉ dom (gset _) R →
-    proph_map_auth R ==∗ proph_map_auth (<[p := v]> R) ∗ proph p v.
+  Lemma proph_map_new_proph p ps pvs :
+    p ∉ ps →
+    proph_map_ctx pvs ps ==∗
+    proph_map_ctx pvs ({[p]} ∪ ps) ∗ proph p (list_resolves pvs p).
   Proof.
-    iIntros (Hp) "HR". rewrite /proph_map_ctx proph_eq /proph_def.
-    iMod (own_update with "HR") as "[HR Hl]".
-    { eapply auth_update_alloc,
-        (alloc_singleton_local_update _ _ (Excl $ (v : option (leibnizC _))))=> //.
-      apply lookup_to_proph_map_None. apply (iffLR (not_elem_of_dom _ _) Hp). }
-    iModIntro. rewrite /proph_map_auth to_proph_map_insert. iFrame.
+    iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
+    rewrite proph_eq /proph_def.
+    iMod (own_update with "H●") as "[H● H◯]". {
+      eapply auth_update_alloc, (alloc_singleton_local_update _ p (Excl _))=> //.
+      apply lookup_to_proph_map_None. 
+      assert (p ∉ dom (gset P) R). { set_solver. }
+      apply (iffLR (not_elem_of_dom _ _) H3).
+    }
+    iModIntro. iFrame.
+    iExists (<[p := list_resolves pvs p]> R). iSplitR "H●".
+    - iPureIntro. split.
+      + apply resolves_insert. exact H1. set_solver.
+      + rewrite dom_insert. set_solver.
+    - unfold to_proph_map. by rewrite fmap_insert.
   Qed.
 
-  Lemma proph_map_remove R p v :
-    proph_map_auth R -∗ proph p v ==∗ proph_map_auth (delete p R).
+  Lemma proph_map_resolve_proph p v pvs ps vs :
+    proph_map_ctx ((p,v) :: pvs) ps ∗ proph p vs ==∗
+    ∃vs', ⌜vs = v::vs'⌝ ∗ proph_map_ctx pvs ps ∗ proph p vs'.
   Proof.
-    iIntros "HR Hp". rewrite /proph_map_ctx proph_eq /proph_def.
-    rewrite /proph_map_auth to_proph_map_delete. iApply (own_update_2 with "HR Hp").
-    apply auth_update_dealloc, (delete_singleton_local_update _ _ _).
-  Qed.
-
-  Lemma proph_map_valid R p v : proph_map_auth R -∗ proph p v -∗ ⌜R !! p = Some v⌝.
-  Proof.
-    iIntros "HR Hp". rewrite /proph_map_ctx proph_eq /proph_def.
-    iDestruct (own_valid_2 with "HR Hp")
-      as %[HH%proph_map_singleton_included _]%auth_valid_discrete_2; auto.
+    iIntros "[HR Hp]". iDestruct "HR" as (R) "[[% %] H●]".
+    rewrite /proph_map_ctx proph_eq /proph_def.
+    iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_valid_discrete_2.
+    assert (vs = v :: list_resolves pvs p). {
+      rewrite (H1 p vs HR). simpl. rewrite decide_True; done.
+    }
+    SearchAbout "own_update".
+    iMod (own_update_2 with "H● Hp") as "[H● H◯]". {
+      apply auth_update.
+      apply (singleton_local_update (to_proph_map R) p (Excl (vs : list (leibnizC V))) _ (Excl (list_resolves pvs p)) (Excl (list_resolves pvs p))).
+      - unfold to_proph_map. rewrite lookup_fmap. rewrite HR. done.
+      - apply exclusive_local_update. done.
+    }
+    unfold to_proph_map. rewrite <- fmap_insert.
+    iModIntro. iExists (list_resolves pvs p). iFrame. iSplitR.
+    - iPureIntro. exact H3.
+    - iExists _. iFrame. iPureIntro. split.
+      + intros q ws HEq. destruct (decide (p = q)) as [<-|NEq].
+        * rewrite lookup_insert in HEq. by inversion HEq.
+        * rewrite lookup_insert_ne in HEq; last done.
+          pose (HHH := H1 q ws HEq). rewrite HHH.
+          simpl. rewrite decide_False; last done. reflexivity.
+      + assert (p ∈ dom (gset P) R). { by apply: elem_of_dom_2. }
+        rewrite dom_insert. set_solver.
   Qed.
 End proph_map.
