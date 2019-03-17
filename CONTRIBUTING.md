@@ -61,7 +61,10 @@ whatever the master branch uses for its timing job, which you can determine by
 checking its `.gitlab-ci.yml`.  If you change the Coq version, remember to do it
 in both places (`OPAM_PINS` and `TIMING_CONF`).  You will also have to adjust
 the Iris branch being used, which is determined after the `#` in `OPAM_PINS`.
-If you are in doubt, ask on Mattermost *before* pushing your branch.
+If you are in doubt, ask on Mattermost *before* pushing your branch.  Please
+double-check that the job name is `build-iris.dev` to avoid polluting the caches
+of regular CI builds!  This way, you are going to share the cache with the
+nightly builds, which is fine.
 
 Once you are confident with your CI configuration, push this to a new branch
 whose name starts with `ci/`.  It should usually be of the form
