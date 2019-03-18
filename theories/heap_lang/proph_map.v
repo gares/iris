@@ -4,7 +4,7 @@ From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 Import uPred.
 
-Definition proph_map (P V : Type) `{Countable P} := gmap P (list V).
+Local Notation proph_map P V := (gmap P (list V)).
 Definition proph_val_list (P V : Type) := list (P * V).
 
 Definition proph_mapUR (P V : Type) `{Countable P} : ucmraT :=
@@ -137,14 +137,13 @@ Section proph_map.
     rewrite proph_eq /proph_def.
     iMod (own_update with "H●") as "[H● H◯]". {
       eapply auth_update_alloc, (alloc_singleton_local_update _ p (Excl _))=> //.
-      apply lookup_to_proph_map_None. 
-      assert (p ∉ dom (gset P) R). { set_solver. }
-      apply (iffLR (not_elem_of_dom _ _) H3).
+      apply lookup_to_proph_map_None.
+      apply (not_elem_of_dom (D:=gset P)). set_solver.
     }
     iModIntro. iFrame.
     iExists (<[p := list_resolves pvs p]> R). iSplitR "H●".
     - iPureIntro. split.
-      + apply resolves_insert. exact H1. set_solver.
+      + apply resolves_insert; first done. set_solver.
       + rewrite dom_insert. set_solver.
     - unfold to_proph_map. by rewrite fmap_insert.
   Qed.
@@ -153,29 +152,27 @@ Section proph_map.
     proph_map_ctx ((p,v) :: pvs) ps ∗ proph p vs ==∗
     ∃vs', ⌜vs = v::vs'⌝ ∗ proph_map_ctx pvs ps ∗ proph p vs'.
   Proof.
-    iIntros "[HR Hp]". iDestruct "HR" as (R) "[[% %] H●]".
+    iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_ctx proph_eq /proph_def.
     iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_valid_discrete_2.
-    assert (vs = v :: list_resolves pvs p). {
-      rewrite (H1 p vs HR). simpl. rewrite decide_True; done.
+    assert (vs = v :: list_resolves pvs p) as ->. {
+      rewrite (Hres p vs HR). simpl. rewrite decide_True; done.
     }
-    SearchAbout "own_update".
     iMod (own_update_2 with "H● Hp") as "[H● H◯]". {
-      apply auth_update.
-      apply (singleton_local_update (to_proph_map R) p (Excl (vs : list (leibnizC V))) _ (Excl (list_resolves pvs p)) (Excl (list_resolves pvs p))).
+      eapply auth_update. apply: singleton_local_update.
       - unfold to_proph_map. rewrite lookup_fmap. rewrite HR. done.
-      - apply exclusive_local_update. done.
+      - apply (exclusive_local_update _ (Excl (list_resolves pvs p : list (leibnizC V)))). done.
     }
-    unfold to_proph_map. rewrite <- fmap_insert.
+    unfold to_proph_map. rewrite -fmap_insert.
     iModIntro. iExists (list_resolves pvs p). iFrame. iSplitR.
-    - iPureIntro. exact H3.
+    - iPureIntro. done.
     - iExists _. iFrame. iPureIntro. split.
       + intros q ws HEq. destruct (decide (p = q)) as [<-|NEq].
         * rewrite lookup_insert in HEq. by inversion HEq.
         * rewrite lookup_insert_ne in HEq; last done.
-          pose (HHH := H1 q ws HEq). rewrite HHH.
-          simpl. rewrite decide_False; last done. reflexivity.
-      + assert (p ∈ dom (gset P) R). { by apply: elem_of_dom_2. }
+          rewrite (Hres q ws HEq).
+          simpl. rewrite decide_False; done.
+      + assert (p ∈ dom (gset P) R) by exact: elem_of_dom_2.
         rewrite dom_insert. set_solver.
   Qed.
 End proph_map.
