@@ -1,8 +1,9 @@
 From iris.algebra Require Import auth gmap.
 From iris.base_logic Require Export gen_heap.
+From iris.base_logic.lib Require Export proph_map.
 From iris.program_logic Require Export weakestpre.
 From iris.program_logic Require Import ectx_lifting total_ectx_lifting.
-From iris.heap_lang Require Export lang proph_map.
+From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import tactics.
 From iris.proofmode Require Import tactics.
 From stdpp Require Import fin_maps.

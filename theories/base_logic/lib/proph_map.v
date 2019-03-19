@@ -37,18 +37,18 @@ Section definitions.
   Implicit Types p : P.
 
   (** The list of resolves for [p] in [pvs]. *)
-  Fixpoint list_resolves pvs p : list V :=
+  Fixpoint proph_list_resolves pvs p : list V :=
     match pvs with
     | []         => []
-    | (q,v)::pvs => if decide (p = q) then v :: list_resolves pvs p
-                    else list_resolves pvs p
+    | (q,v)::pvs => if decide (p = q) then v :: proph_list_resolves pvs p
+                    else proph_list_resolves pvs p
     end.
 
-  Definition resolves_in_list R pvs :=
-    map_Forall (λ p vs, vs = list_resolves pvs p) R.
+  Definition proph_resolves_in_list R pvs :=
+    map_Forall (λ p vs, vs = proph_list_resolves pvs p) R.
 
   Definition proph_map_ctx pvs (ps : gset P) : iProp Σ :=
-    (∃ R, ⌜resolves_in_list R pvs ∧
+    (∃ R, ⌜proph_resolves_in_list R pvs ∧
           dom (gset _) R ⊆ ps⌝ ∗
           own (proph_map_name pG) (● (to_proph_map R)))%I.
 
@@ -67,9 +67,9 @@ Section list_resolves.
   Implicit Type R : proph_map P V.
 
   Lemma resolves_insert pvs p R :
-    resolves_in_list R pvs →
+    proph_resolves_in_list R pvs →
     p ∉ dom (gset _) R →
-    resolves_in_list (<[p := list_resolves pvs p]> R) pvs.
+    proph_resolves_in_list (<[p := proph_list_resolves pvs p]> R) pvs.
   Proof.
     intros Hinlist Hp q vs HEq.
     destruct (decide (p = q)) as [->|NEq].
@@ -107,7 +107,7 @@ Section to_proph_map.
   Qed.
 End to_proph_map.
 
-Lemma proph_map_init `{proph_mapPreG P V PVS} pvs ps :
+Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
   (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
@@ -131,7 +131,7 @@ Section proph_map.
   Lemma proph_map_new_proph p ps pvs :
     p ∉ ps →
     proph_map_ctx pvs ps ==∗
-    proph_map_ctx pvs ({[p]} ∪ ps) ∗ proph p (list_resolves pvs p).
+    proph_map_ctx pvs ({[p]} ∪ ps) ∗ proph p (proph_list_resolves pvs p).
   Proof.
     iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
     rewrite proph_eq /proph_def.
@@ -141,7 +141,7 @@ Section proph_map.
       apply (not_elem_of_dom (D:=gset P)). set_solver.
     }
     iModIntro. iFrame.
-    iExists (<[p := list_resolves pvs p]> R). iSplitR "H●".
+    iExists (<[p := proph_list_resolves pvs p]> R). iSplitR "H●".
     - iPureIntro. split.
       + apply resolves_insert; first done. set_solver.
       + rewrite dom_insert. set_solver.
@@ -155,16 +155,16 @@ Section proph_map.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_ctx proph_eq /proph_def.
     iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_valid_discrete_2.
-    assert (vs = v :: list_resolves pvs p) as ->. {
+    assert (vs = v :: proph_list_resolves pvs p) as ->. {
       rewrite (Hres p vs HR). simpl. rewrite decide_True; done.
     }
     iMod (own_update_2 with "H● Hp") as "[H● H◯]". {
       eapply auth_update. apply: singleton_local_update.
       - unfold to_proph_map. rewrite lookup_fmap. rewrite HR. done.
-      - apply (exclusive_local_update _ (Excl (list_resolves pvs p : list (leibnizC V)))). done.
+      - apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizC V)))). done.
     }
     unfold to_proph_map. rewrite -fmap_insert.
-    iModIntro. iExists (list_resolves pvs p). iFrame. iSplitR.
+    iModIntro. iExists (proph_list_resolves pvs p). iFrame. iSplitR.
     - iPureIntro. done.
     - iExists _. iFrame. iPureIntro. split.
       + intros q ws HEq. destruct (decide (p = q)) as [<-|NEq].
