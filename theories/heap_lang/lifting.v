@@ -309,8 +309,10 @@ Proof.
   iModIntro. iSplit=>//. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
 
-Lemma wp_new_proph :
-  {{{ True }}} NewProph {{{ vs p, RET (LitV (LitProphecy p)); proph p vs }}}.
+Lemma wp_new_proph s E :
+  {{{ True }}}
+    NewProph @ s; E
+  {{{ vs p, RET (LitV (LitProphecy p)); proph p vs }}}.
 Proof.
   iIntros (Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ HR] !>". iSplit; first by eauto.
@@ -319,9 +321,9 @@ Proof.
   iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
 Qed.
 
-Lemma wp_resolve_proph p vs v :
+Lemma wp_resolve_proph s E p vs v :
   {{{ proph p vs }}}
-    ResolveProph (Val $ LitV $ LitProphecy p) (Val v)
+    ResolveProph (Val $ LitV $ LitProphecy p) (Val v) @ s; E
   {{{ vs', RET (LitV LitUnit); ⌜vs = v::vs'⌝ ∗ proph p vs' }}}.
 Proof.
   iIntros (Φ) "Hp HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
