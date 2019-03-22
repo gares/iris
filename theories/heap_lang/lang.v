@@ -557,9 +557,7 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪) σ)
                []
-  | ResolveProphS e1 p e2 v σ :
-     to_val e1 = Some (LitV $ LitProphecy p) →
-     to_val e2 = Some v →
+  | ResolveProphS p v σ :
      head_step (ResolveProph (Val $ LitV $ LitProphecy p) (Val v)) σ
                [(p, v)]
                (Val $ LitV LitUnit) σ [].
