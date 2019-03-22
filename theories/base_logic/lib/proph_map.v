@@ -135,17 +135,16 @@ Section proph_map.
   Proof.
     iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
     rewrite proph_eq /proph_def.
-    iMod (own_update with "H●") as "[H● H◯]". {
-      eapply auth_update_alloc, (alloc_singleton_local_update _ p (Excl _))=> //.
+    iMod (own_update with "H●") as "[H● H◯]".
+    { eapply auth_update_alloc, (alloc_singleton_local_update _ p (Excl _))=> //.
       apply lookup_to_proph_map_None.
-      apply (not_elem_of_dom (D:=gset P)). set_solver.
-    }
+      apply (not_elem_of_dom (D:=gset P)). set_solver. }
     iModIntro. iFrame.
     iExists (<[p := proph_list_resolves pvs p]> R). iSplitR "H●".
     - iPureIntro. split.
       + apply resolves_insert; first done. set_solver.
       + rewrite dom_insert. set_solver.
-    - unfold to_proph_map. by rewrite fmap_insert.
+    - by rewrite /to_proph_map fmap_insert.
   Qed.
 
   Lemma proph_map_resolve_proph p v pvs ps vs :
@@ -155,15 +154,13 @@ Section proph_map.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_ctx proph_eq /proph_def.
     iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_valid_discrete_2.
-    assert (vs = v :: proph_list_resolves pvs p) as ->. {
-      rewrite (Hres p vs HR). simpl. rewrite decide_True; done.
-    }
-    iMod (own_update_2 with "H● Hp") as "[H● H◯]". {
-      eapply auth_update. apply: singleton_local_update.
-      - unfold to_proph_map. rewrite lookup_fmap. rewrite HR. done.
-      - apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizC V)))). done.
-    }
-    unfold to_proph_map. rewrite -fmap_insert.
+    assert (vs = v :: proph_list_resolves pvs p) as ->.
+    { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
+    iMod (own_update_2 with "H● Hp") as "[H● H◯]".
+    { eapply auth_update. apply: singleton_local_update.
+      - by rewrite /to_proph_map lookup_fmap HR.
+      - by apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizC V)))). }
+    rewrite /to_proph_map -fmap_insert.
     iModIntro. iExists (proph_list_resolves pvs p). iFrame. iSplitR.
     - iPureIntro. done.
     - iExists _. iFrame. iPureIntro. split.
