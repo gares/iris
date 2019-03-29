@@ -124,7 +124,7 @@ Theorem twp_total Σ Λ `{!invPreG Σ} s e σ Φ :
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
   intros Hwp. apply (soundness (M:=iResUR Σ) _  2); simpl.
-  apply (fupd_plain_soundness ⊤ _)=> Hinv.
+  apply (fupd_plain_soundness ⊤ ⊤ _)=> Hinv.
   iMod (Hwp) as (stateI fork_post) "[Hσ H]".
   iApply (@twptp_total _ _ (IrisG _ _ Hinv stateI fork_post) with "Hσ").
   by iApply (@twp_twptp _ _ (IrisG _ _ Hinv stateI fork_post)).

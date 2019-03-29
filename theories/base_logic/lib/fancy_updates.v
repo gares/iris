@@ -59,11 +59,12 @@ Proof.
     by iFrame.
 Qed.
 
-Lemma fupd_plain_soundness `{!invPreG Σ} E (P: iProp Σ) `{!Plain P}:
-  (∀ `{Hinv: !invG Σ}, (|={⊤,E}=> P)%I) → (▷ P)%I.
+Lemma fupd_plain_soundness `{!invPreG Σ} E1 E2 (P: iProp Σ) `{!Plain P}:
+  (∀ `{Hinv: !invG Σ}, (|={E1,E2}=> P)%I) → (▷ P)%I.
 Proof.
   iIntros (Hfupd). iMod wsat_alloc as (Hinv) "[Hw HE]".
-  iPoseProof (Hfupd Hinv) as "H".
+  iAssert (|={⊤,E2}=> P)%I as "H".
+  { iMod fupd_intro_mask'; last iApply Hfupd. done. }
   rewrite uPred_fupd_eq /uPred_fupd_def.
   iMod ("H" with "[$]") as "[Hw [HE >H']]"; iFrame.
 Qed.
@@ -74,7 +75,7 @@ Lemma step_fupdN_soundness `{!invPreG Σ} φ n :
 Proof.
   intros Hiter.
   apply (soundness (M:=iResUR Σ) _  (S (S n))); simpl.
-  apply (fupd_plain_soundness ⊤ _)=> Hinv.
+  apply (fupd_plain_soundness ⊤ ⊤ _)=> Hinv.
   iPoseProof (Hiter Hinv) as "H". clear Hiter.
   destruct n as [|n].
   - iApply fupd_plainly_mask_empty. iMod "H" as %?; auto.
