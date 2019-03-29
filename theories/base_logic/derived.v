@@ -92,7 +92,7 @@ Global Instance uPred_ownM_sep_homomorphism :
 Proof. split; [split; try apply _|]. apply ownM_op. apply ownM_unit'. Qed.
 
 (** Consistency/soundness statement *)
-Lemma soundness_bupd_plain P `{!Plain P} : bi_emp_valid (|==> P) → bi_emp_valid P.
+Lemma bupd_plain_soundness P `{!Plain P} : bi_emp_valid (|==> P) → bi_emp_valid P.
 Proof.
   eapply bi_emp_valid_mono. etrans; last exact: bupd_plainly. apply bupd_mono'.
   apply: plain.
@@ -101,8 +101,8 @@ Qed.
 Corollary soundness φ n : (▷^n ⌜ φ ⌝ : uPred M)%I → φ.
 Proof.
   induction n as [|n IH]=> /=.
-  - apply soundness_pure.
-  - intros H. by apply IH, soundness_later.
+  - apply pure_soundness.
+  - intros H. by apply IH, later_soundness.
 Qed.
 
 Corollary consistency_modal n : ¬ (▷^n False : uPred M)%I.

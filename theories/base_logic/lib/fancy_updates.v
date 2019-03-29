@@ -62,7 +62,7 @@ Qed.
 Lemma fupd_plain_soundness `{!invPreG Σ} E1 E2 (P: iProp Σ) `{!Plain P}:
   (∀ `{Hinv: !invG Σ}, bi_emp_valid (|={E1,E2}=> P)) → bi_emp_valid P.
 Proof.
-  iIntros (Hfupd). apply soundness_later. iMod wsat_alloc as (Hinv) "[Hw HE]".
+  iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hinv) "[Hw HE]".
   iAssert (|={⊤,E2}=> P)%I as "H".
   { iMod fupd_intro_mask'; last iApply Hfupd. done. }
   rewrite uPred_fupd_eq /uPred_fupd_def.

@@ -206,11 +206,11 @@ Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i
 Proof. exact: uPred_primitive.ofe_fun_validI. Qed.
 
 (** Consistency/soundness statement *)
-Lemma soundness_pure φ : bi_emp_valid (PROP:=uPredI M) ⌜ φ ⌝ → φ.
-Proof. apply soundness_pure. Qed.
+Lemma pure_soundness φ : bi_emp_valid (PROP:=uPredI M) ⌜ φ ⌝ → φ.
+Proof. apply pure_soundness. Qed.
 
-Lemma soundness_later P : bi_emp_valid (▷ P) → bi_emp_valid P.
-Proof. apply soundness_later. Qed.
+Lemma later_soundness P : bi_emp_valid (▷ P) → bi_emp_valid P.
+Proof. apply later_soundness. Qed.
 End restate.
 
 (** See [derived.v] for the version for basic updates. *)
