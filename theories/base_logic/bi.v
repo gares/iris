@@ -211,9 +211,9 @@ Proof. apply pure_soundness. Qed.
 
 Lemma later_soundness P : bi_emp_valid (▷ P) → bi_emp_valid P.
 Proof. apply later_soundness. Qed.
+(** See [derived.v] for a similar soundness result for basic updates. *)
 End restate.
 
-(** See [derived.v] for the version for basic updates. *)
 
 (** New unseal tactic that also unfolds the BI layer.
     This is used by [base_logic.double_negation].
