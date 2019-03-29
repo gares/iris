@@ -801,12 +801,14 @@ Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i
 Proof. by unseal. Qed.
 
 (** Consistency/soundness statement *)
-Lemma soundness φ n : (True ⊢ iter n uPred_later (⌜ φ ⌝)%I) → φ.
-Proof.
-  cut (iter n (@uPred_later M) (⌜ φ ⌝)%I n ε → φ).
-  { intros help H. eapply help, H; eauto using ucmra_unit_validN. by unseal. }
-  unseal. induction n as [|n IH]=> H; auto.
-Qed.
+Lemma soundness_pure φ : (True ⊢ ⌜ φ ⌝) → φ.
+Proof. unseal=> -[H]. by apply (H 0 ε); eauto using ucmra_unit_validN. Qed.
 
+Lemma soundness_later P : (True ⊢ ▷ P) → (True ⊢ P).
+Proof.
+  unseal=> -[HP]; split=> n x Hx _.
+  apply uPred_mono with n ε; eauto using ucmra_unit_leastN.
+  by apply (HP (S n)); eauto using ucmra_unit_validN.
+Qed.
 End primitive.
 End uPred_primitive.

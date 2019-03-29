@@ -92,15 +92,18 @@ Global Instance uPred_ownM_sep_homomorphism :
 Proof. split; [split; try apply _|]. apply ownM_op. apply ownM_unit'. Qed.
 
 (** Consistency/soundness statement *)
-Lemma soundness φ n : (▷^n ⌜ φ ⌝ : uPred M)%I → φ.
-Proof. rewrite laterN_iter. apply soundness_iter. Qed.
+Corollary soundness φ n : (▷^n ⌜ φ ⌝ : uPred M)%I → φ.
+Proof.
+  induction n as [|n IH]=> /=.
+  - apply soundness_pure.
+  - intros H. by apply IH, soundness_later.
+Qed.
 
 Corollary consistency_modal n : ¬ (▷^n False : uPred M)%I.
 Proof. exact (soundness False n). Qed.
 
 Corollary consistency : ¬(False : uPred M)%I.
 Proof. exact (consistency_modal 0). Qed.
-
 End derived.
 
 End uPred.
