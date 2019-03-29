@@ -213,6 +213,8 @@ Lemma soundness_later P : bi_emp_valid (▷ P) → bi_emp_valid P.
 Proof. apply soundness_later. Qed.
 End restate.
 
+(** See [derived.v] for the version for basic updates. *)
+
 (** New unseal tactic that also unfolds the BI layer.
     This is used by [base_logic.double_negation].
     TODO: Can we get rid of this? *)
