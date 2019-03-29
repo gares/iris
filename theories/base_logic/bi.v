@@ -206,9 +206,11 @@ Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i
 Proof. exact: uPred_primitive.ofe_fun_validI. Qed.
 
 (** Consistency/soundness statement *)
-Lemma soundness_iter φ n : Nat.iter n sbi_later (⌜ φ ⌝ : uPred M)%I → φ.
-Proof. exact: uPred_primitive.soundness. Qed.
+Lemma soundness_pure φ : bi_emp_valid (PROP:=uPredI M) ⌜ φ ⌝ → φ.
+Proof. apply soundness_pure. Qed.
 
+Lemma soundness_later P : bi_emp_valid (▷ P) → bi_emp_valid P.
+Proof. apply soundness_later. Qed.
 End restate.
 
 (** New unseal tactic that also unfolds the BI layer.
