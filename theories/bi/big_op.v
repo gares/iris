@@ -1027,6 +1027,13 @@ Section list2.
   Context {A B : Type}.
   Implicit Types Φ Ψ : nat → A → B → PROP.
 
+  Lemma big_sepL2_later_1 `{BiAffine PROP} Φ l1 l2 :
+    (▷ [∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢ ◇ [∗ list] k↦y1;y2 ∈ l1;l2, ▷ Φ k y1 y2.
+  Proof.
+    rewrite !big_sepL2_alt later_and big_sepL_later (timeless ⌜ _ ⌝%I).
+    rewrite except_0_and. auto using and_mono, except_0_intro.
+  Qed.
+
   Lemma big_sepL2_later_2 Φ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, ▷ Φ k y1 y2) ⊢ ▷ [∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2.
   Proof.
