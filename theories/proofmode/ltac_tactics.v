@@ -2414,6 +2414,8 @@ Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
   rewrite envs_entails_eq; apply big_sepL2_nil' : core.
 Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
   rewrite envs_entails_eq; apply big_sepM_empty' : core.
+Hint Extern 0 (envs_entails _ (big_sepM2 _ _ _)) =>
+  rewrite envs_entails_eq; apply big_sepM2_empty' : core.
 Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
   rewrite envs_entails_eq; apply big_sepS_empty' : core.
 Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>

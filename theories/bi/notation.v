@@ -127,6 +127,13 @@ Reserved Notation "'[∗' 'map]' x ∈ m , P"
   (at level 200, m at level 10, x at level 1, right associativity,
    format "[∗  map]  x  ∈  m ,  P").
 
+Reserved Notation "'[∗' 'map]' k ↦ x1 ; x2 ∈ m1 ; m2 , P"
+  (at level 200, m1, m2 at level 10, k, x1, x2 at level 1, right associativity,
+   format "[∗  map]  k ↦ x1 ; x2  ∈  m1 ; m2 ,  P").
+Reserved Notation "'[∗' 'map]' x1 ; x2 ∈ m1 ; m2 , P"
+  (at level 200, m1, m2 at level 10, x1, x2 at level 1, right associativity,
+   format "[∗  map]  x1 ; x2  ∈  m1 ; m2 ,  P").
+
 Reserved Notation "'[∗' 'set]' x ∈ X , P"
   (at level 200, X at level 10, x at level 1, right associativity,
    format "[∗  set]  x  ∈  X ,  P").
