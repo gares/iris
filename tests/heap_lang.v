@@ -149,6 +149,12 @@ End tests.
 Section printing_tests.
   Context `{!heapG Σ}.
 
+  Lemma ref_print :
+    True -∗ WP let: "f" := (λ: "x", "x") in ref ("f" #10) {{ _, True }}.
+  Proof.
+    iIntros "_". Show.
+  Abort.
+
   (* These terms aren't even closed, but that's not what this is about.  The
   length of the variable names etc. has been carefully chosen to trigger
   particular behavior of the Coq pretty printer. *)
