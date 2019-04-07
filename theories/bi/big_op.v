@@ -934,8 +934,8 @@ Section map2.
     - apply and_elim_r.
     - rewrite <- (left_id True%I (∧)%I (Φ i x1 x2)).
       apply and_mono=>//. apply pure_mono=>_ k.
-      rewrite !lookup_insert_is_Some' !lookup_empty.
-      firstorder.
+      rewrite !lookup_insert_is_Some' !lookup_empty -!not_eq_None_Some.
+      naive_solver.
   Qed.
 
   Lemma big_sepM2_fmap {A' B'} (f : A → A') (g : B → B') (Φ : nat → A' → B' → PROP) m1 m2 :
