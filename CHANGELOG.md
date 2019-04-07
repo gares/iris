@@ -100,6 +100,10 @@ Changes in Coq:
   steps that would require unlocking subterms. Every impure wp_ tactic executes
   this tactic before doing anything else.
 * Add `big_sepM_insert_acc`.
+* Add big separating conjunctions that operate on pairs of lists (`big_sepL2`)
+  and on pairs of maps (`big_sepM2`). In the former case the lists are required
+  to have the same length, and in the latter case the maps are required to
+  have the same domains.
 * The `_strong` lemmas (e.g. `own_alloc_strong`) work for all infinite
   sets, instead of just for cofinite sets. The versions with cofinite
   sets have been renamed to use the `_cofinite` suffix.
