@@ -245,6 +245,13 @@ Proof.
   - rewrite -(exist_intro ()). done.
 Qed.
 
+Lemma impl_curry P Q R : (P → Q → R) ⊣⊢ (P ∧ Q → R).
+Proof.
+  apply (anti_symm _).
+  - apply impl_intro_l. by rewrite (comm _ P) -and_assoc !impl_elim_r.
+  - do 2 apply impl_intro_l. by rewrite assoc (comm _ Q) impl_elim_r.
+Qed.
+
 Lemma or_and_l P Q R : P ∨ Q ∧ R ⊣⊢ (P ∨ Q) ∧ (P ∨ R).
 Proof.
   apply (anti_symm (⊢)); first auto.

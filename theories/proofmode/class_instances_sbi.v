@@ -650,6 +650,14 @@ Proof.
   rewrite /IntoLaterN /MaybeIntoLaterN=> ?.
   rewrite big_opM_commute. by apply big_sepM_mono.
 Qed.
+Global Instance into_laterN_big_sepM2 n `{Countable K} {A B}
+    (Φ Ψ : K → A → B → PROP) (m1 : gmap K A) (m2 : gmap K B) :
+  (∀ x1 x2 k, IntoLaterN false n (Φ k x1 x2) (Ψ k x1 x2)) →
+  IntoLaterN false n ([∗ map] k ↦ x1;x2 ∈ m1;m2, Φ k x1 x2) ([∗ map] k ↦ x1;x2 ∈ m1;m2, Ψ k x1 x2).
+Proof.
+  rewrite /IntoLaterN /MaybeIntoLaterN=> HΦΨ.
+  rewrite -big_sepM2_laterN_2. by apply big_sepM2_mono.
+Qed.
 Global Instance into_laterN_big_sepS n `{Countable A}
     (Φ Ψ : A → PROP) (X : gset A) :
   (∀ x, IntoLaterN false n (Φ x) (Ψ x)) →
