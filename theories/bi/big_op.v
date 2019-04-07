@@ -809,8 +809,8 @@ Section map2.
     ⊣⊢ Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2.
   Proof.
     intros Hm1 Hm2. rewrite /big_sepM2 -map_insert_zip_with.
-    rewrite big_sepM_insert.
-    2:{ rewrite map_lookup_zip_with Hm1 //. }
+    rewrite big_sepM_insert;
+      last by rewrite map_lookup_zip_with Hm1.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm _ (Φ _ _ _)) -sep_assoc.
     repeat apply sep_proper=>//.
@@ -903,8 +903,8 @@ Section map2.
     assert (is_Some (m2 !! i)) as [x2 Hm2].
     { apply Hm. by econstructor. }
     apply wand_intro_r. rewrite -(exist_intro x2).
-    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2)).
-    2: { by rewrite map_lookup_zip_with Hm1 Hm2. }
+    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2));
+      last by rewrite map_lookup_zip_with Hm1 Hm2.
     rewrite pure_True// sep_elim_r.
     apply and_intro=>//. by apply pure_intro.
   Qed.
@@ -920,8 +920,8 @@ Section map2.
     assert (is_Some (m1 !! i)) as [x1 Hm1].
     { apply Hm. by econstructor. }
     apply wand_intro_r. rewrite -(exist_intro x1).
-    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2)).
-    2: { by rewrite map_lookup_zip_with Hm1 Hm2. }
+    rewrite /big_sepM2 (big_sepM_lookup _ _ i (x1,x2));
+      last by rewrite map_lookup_zip_with Hm1 Hm2.
     rewrite pure_True// sep_elim_r.
     apply and_intro=>//. by apply pure_intro.
   Qed.
