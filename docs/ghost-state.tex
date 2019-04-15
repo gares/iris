@@ -60,7 +60,13 @@ It turns out that we can somewhat mitigate this trouble by working below the fol
 
 This modality is useful because there is a class of propositions which we call \emph{timeless} propositions, for which we have
 \[ \timeless{\prop} \eqdef \later\prop \proves \diamond\prop  \]
-In other words, when working below the except-0 modality, we can \emph{strip away} the later from timeless propositions.
+In other words, when working below the except-0 modality, we can \emph{strip
+  away} the later from timeless propositions. In fact, we can strip away later
+from timeless propositions even when working under the later modality:
+\begin{mathpar}
+  \infer{\prop \proves \later \propB}
+  {\later\prop \proves \later\propB}
+\end{mathpar}
 
 The following rules can be derived about except-0:
 \begin{mathpar}
