@@ -237,11 +237,13 @@ appear at the top level:
 
 For example, given:
 
-        ∀ x, x = 0 ⊢ □ (P → False ∨ □ (Q ∧ ▷ R) -∗ P ∗ ▷ (R ∗ Q ∧ x = pred 2)).
+        ∀ x, <affine> ⌜ x = 0 ⌝ ⊢
+          □ (P → False ∨ □ (Q ∧ ▷ R) -∗
+          P ∗ ▷ (R ∗ Q ∧ ⌜ x = pred 2 ⌝)).
 
 You can write
 
-        iIntros (x) "% !# $ [[] | #[HQ HR]] /= !>".
+        iIntros (x Hx) "!# $ [[] | #[HQ HR]] /= !>".
 
 which results in:
 
