@@ -288,7 +288,7 @@ Section lemmas.
     rewrite atomic_update_eq {1}/atomic_update_def /=.
     iIntros (??? HAU) "[#HP HQ]".
     iApply (greatest_fixpoint_coind _ (λ _, Q)); last done. iIntros "!#" ([]) "HQ".
-    iApply (make_laterable_intro with "[] HQ"). iIntros "!# >HQ".
+    iApply (make_laterable_intro Q with "[] HQ"). iIntros "!# >HQ".
     iApply HAU. by iFrame.
   Qed.
 

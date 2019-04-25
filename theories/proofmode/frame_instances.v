@@ -33,10 +33,10 @@ Proof.
 Qed.
 
 Global Instance make_embed_pure `{BiEmbed PROP PROP'} φ :
-  KnownMakeEmbed ⌜φ⌝ ⌜φ⌝.
+  KnownMakeEmbed (PROP:=PROP) ⌜φ⌝ ⌜φ⌝.
 Proof. apply embed_pure. Qed.
 Global Instance make_embed_emp `{BiEmbedEmp PROP PROP'} :
-  KnownMakeEmbed emp emp.
+  KnownMakeEmbed (PROP:=PROP) emp emp.
 Proof. apply embed_emp. Qed.
 Global Instance make_embed_default `{BiEmbed PROP PROP'} P :
   MakeEmbed P ⎡P⎤ | 100.

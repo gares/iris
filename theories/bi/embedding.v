@@ -12,17 +12,23 @@ Hint Mode Embed - ! : typeclass_instances.
 
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
-  bi_embed_mixin_ne : NonExpansive embed;
-  bi_embed_mixin_mono : Proper ((⊢) ==> (⊢)) embed;
+  bi_embed_mixin_ne : NonExpansive (embed (A:=PROP1) (B:=PROP2));
+  bi_embed_mixin_mono : Proper ((⊢) ==> (⊢)) (embed (A:=PROP1) (B:=PROP2));
   bi_embed_mixin_emp_valid_inj (P : PROP1) :
     bi_emp_valid (PROP:=PROP2) ⎡P⎤ → bi_emp_valid P;
-  bi_embed_mixin_emp_2 : emp ⊢ ⎡emp⎤;
-  bi_embed_mixin_impl_2 P Q : (⎡P⎤ → ⎡Q⎤) ⊢ ⎡P → Q⎤;
-  bi_embed_mixin_forall_2 A (Φ : A → PROP1) : (∀ x, ⎡Φ x⎤) ⊢ ⎡∀ x, Φ x⎤;
-  bi_embed_mixin_exist_1 A (Φ : A → PROP1) : ⎡∃ x, Φ x⎤ ⊢ ∃ x, ⎡Φ x⎤;
-  bi_embed_mixin_sep P Q : ⎡P ∗ Q⎤ ⊣⊢ ⎡P⎤ ∗ ⎡Q⎤;
-  bi_embed_mixin_wand_2 P Q : (⎡P⎤ -∗ ⎡Q⎤) ⊢ ⎡P -∗ Q⎤;
-  bi_embed_mixin_persistently P : ⎡<pers> P⎤ ⊣⊢ <pers> ⎡P⎤
+  bi_embed_mixin_emp_2 : emp ⊢@{PROP2} ⎡emp⎤;
+  bi_embed_mixin_impl_2 (P Q : PROP1) :
+    (⎡P⎤ → ⎡Q⎤) ⊢@{PROP2} ⎡P → Q⎤;
+  bi_embed_mixin_forall_2 A (Φ : A → PROP1) :
+    (∀ x, ⎡Φ x⎤) ⊢@{PROP2} ⎡∀ x, Φ x⎤;
+  bi_embed_mixin_exist_1 A (Φ : A → PROP1) :
+    ⎡∃ x, Φ x⎤ ⊢@{PROP2} ∃ x, ⎡Φ x⎤;
+  bi_embed_mixin_sep (P Q : PROP1) :
+    ⎡P ∗ Q⎤ ⊣⊢@{PROP2} ⎡P⎤ ∗ ⎡Q⎤;
+  bi_embed_mixin_wand_2 (P Q : PROP1) :
+    (⎡P⎤ -∗ ⎡Q⎤) ⊢@{PROP2} ⎡P -∗ Q⎤;
+  bi_embed_mixin_persistently (P : PROP1) :
+    ⎡<pers> P⎤ ⊣⊢@{PROP2} <pers> ⎡P⎤
 }.
 
 Class BiEmbed (PROP1 PROP2 : bi) := {
@@ -302,7 +308,8 @@ Section sbi_embed.
     ⎡■?p P⎤ ⊢ ■?p ⎡P⎤.
   Proof. destruct p; simpl; auto using embed_plainly_1. Qed.
 
-  Lemma embed_plain `{!BiPlainly PROP1, !BiPlainly PROP2} P : Plain P → Plain ⎡P⎤.
+  Lemma embed_plain `{!BiPlainly PROP1, !BiPlainly PROP2} (P : PROP1) :
+    Plain P → Plain (PROP:=PROP2) ⎡P⎤.
   Proof. intros ?. by rewrite /Plain {1}(plain P) embed_plainly_1. Qed.
 
   Global Instance embed_timeless P : Timeless P → Timeless ⎡P⎤.

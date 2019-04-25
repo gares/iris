@@ -7,7 +7,7 @@ Structure biIndex :=
     { bi_index_type :> Type;
       bi_index_inhabited : Inhabited bi_index_type;
       bi_index_rel : SqSubsetEq bi_index_type;
-      bi_index_rel_preorder : PreOrder (⊑) }.
+      bi_index_rel_preorder : PreOrder (⊑@{bi_index_type}) }.
 Existing Instances bi_index_inhabited bi_index_rel bi_index_rel_preorder.
 
 (* We may want to instantiate monPred with the reflexivity relation in

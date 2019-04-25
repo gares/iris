@@ -39,7 +39,7 @@ Notation "P ={ E1 , E2 }▷=∗^ n Q" := (P -∗ |={E1,E2}▷=>^n Q)%I : bi_scop
 (** Bundled versions  *)
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiBUpdMixin (PROP : bi) `(BUpd PROP) := {
-  bi_bupd_mixin_bupd_ne : NonExpansive bupd;
+  bi_bupd_mixin_bupd_ne : NonExpansive (bupd (PROP:=PROP));
   bi_bupd_mixin_bupd_intro (P : PROP) : P ==∗ P;
   bi_bupd_mixin_bupd_mono (P Q : PROP) : (P ⊢ Q) → (|==> P) ==∗ Q;
   bi_bupd_mixin_bupd_trans (P : PROP) : (|==> |==> P) ==∗ P;
@@ -47,7 +47,7 @@ Record BiBUpdMixin (PROP : bi) `(BUpd PROP) := {
 }.
 
 Record BiFUpdMixin (PROP : sbi) `(FUpd PROP) := {
-  bi_fupd_mixin_fupd_ne E1 E2 : NonExpansive (fupd E1 E2);
+  bi_fupd_mixin_fupd_ne E1 E2 : NonExpansive (fupd (PROP:=PROP) E1 E2);
   bi_fupd_mixin_fupd_intro_mask E1 E2 (P : PROP) : E2 ⊆ E1 → P ⊢ |={E1,E2}=> |={E2,E1}=> P;
   bi_fupd_mixin_except_0_fupd E1 E2 (P : PROP) : ◇ (|={E1,E2}=> P) ={E1,E2}=∗ P;
   bi_fupd_mixin_fupd_mono E1 E2 (P Q : PROP) : (P ⊢ Q) → (|={E1,E2}=> P) ⊢ |={E1,E2}=> Q;

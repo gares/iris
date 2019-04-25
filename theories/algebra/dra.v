@@ -3,26 +3,27 @@ Set Default Proof Using "Type".
 
 Record DraMixin A `{Equiv A, Core A, Disjoint A, Op A, Valid A} := {
   (* setoids *)
-  mixin_dra_equivalence : Equivalence ((≡) : relation A);
-  mixin_dra_op_proper : Proper ((≡) ==> (≡) ==> (≡)) (⋅);
-  mixin_dra_core_proper : Proper ((≡) ==> (≡)) core;
-  mixin_dra_valid_proper : Proper ((≡) ==> impl) valid;
-  mixin_dra_disjoint_proper x : Proper ((≡) ==> impl) (disjoint x);
+  mixin_dra_equivalence : Equivalence (≡@{A});
+  mixin_dra_op_proper : Proper ((≡@{A}) ==> (≡) ==> (≡)) (⋅);
+  mixin_dra_core_proper : Proper ((≡@{A}) ==> (≡)) core;
+  mixin_dra_valid_proper : Proper ((≡@{A}) ==> impl) valid;
+  mixin_dra_disjoint_proper (x : A) : Proper ((≡) ==> impl) (disjoint x);
   (* validity *)
-  mixin_dra_op_valid x y : ✓ x → ✓ y → x ## y → ✓ (x ⋅ y);
-  mixin_dra_core_valid x : ✓ x → ✓ core x;
+  mixin_dra_op_valid (x y : A) : ✓ x → ✓ y → x ## y → ✓ (x ⋅ y);
+  mixin_dra_core_valid (x : A) : ✓ x → ✓ core x;
   (* monoid *)
-  mixin_dra_assoc x y z :
+  mixin_dra_assoc (x y z : A) :
     ✓ x → ✓ y → ✓ z → x ## y → x ⋅ y ## z → x ⋅ (y ⋅ z) ≡ (x ⋅ y) ⋅ z;
-  mixin_dra_disjoint_ll x y z : ✓ x → ✓ y → ✓ z → x ## y → x ⋅ y ## z → x ## z;
-  mixin_dra_disjoint_move_l x y z :
+  mixin_dra_disjoint_ll (x y z :  A) :
+    ✓ x → ✓ y → ✓ z → x ## y → x ⋅ y ## z → x ## z;
+  mixin_dra_disjoint_move_l (x y z : A) :
     ✓ x → ✓ y → ✓ z → x ## y → x ⋅ y ## z → x ## y ⋅ z;
   mixin_dra_symmetric : Symmetric (@disjoint A _);
-  mixin_dra_comm x y : ✓ x → ✓ y → x ## y → x ⋅ y ≡ y ⋅ x;
-  mixin_dra_core_disjoint_l x : ✓ x → core x ## x;
-  mixin_dra_core_l x : ✓ x → core x ⋅ x ≡ x;
-  mixin_dra_core_idemp x : ✓ x → core (core x) ≡ core x;
-  mixin_dra_core_mono x y :
+  mixin_dra_comm (x y : A) : ✓ x → ✓ y → x ## y → x ⋅ y ≡ y ⋅ x;
+  mixin_dra_core_disjoint_l (x : A) : ✓ x → core x ## x;
+  mixin_dra_core_l (x : A) : ✓ x → core x ⋅ x ≡ x;
+  mixin_dra_core_idemp (x : A) : ✓ x → core (core x) ≡ core x;
+  mixin_dra_core_mono (x y : A) :
     ∃ z, ✓ x → ✓ y → x ## y → core (x ⋅ y) ≡ core x ⋅ z ∧ ✓ z ∧ core x ## z
 }.
 Structure draT := DraT {

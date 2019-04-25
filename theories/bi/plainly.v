@@ -9,11 +9,11 @@ Notation "■ P" := (plainly P) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiPlainlyMixin (PROP : sbi) `(Plainly PROP) := {
-  bi_plainly_mixin_plainly_ne : NonExpansive plainly;
+  bi_plainly_mixin_plainly_ne : NonExpansive (plainly (A:=PROP));
 
-  bi_plainly_mixin_plainly_mono P Q : (P ⊢ Q) → ■ P ⊢ ■ Q;
-  bi_plainly_mixin_plainly_elim_persistently P : ■ P ⊢ <pers> P;
-  bi_plainly_mixin_plainly_idemp_2 P : ■ P ⊢ ■ ■ P;
+  bi_plainly_mixin_plainly_mono (P Q : PROP) : (P ⊢ Q) → ■ P ⊢ ■ Q;
+  bi_plainly_mixin_plainly_elim_persistently (P : PROP) : ■ P ⊢ <pers> P;
+  bi_plainly_mixin_plainly_idemp_2 (P : PROP) : ■ P ⊢ ■ ■ P;
 
   bi_plainly_mixin_plainly_forall_2 {A} (Ψ : A → PROP) :
     (∀ a, ■ (Ψ a)) ⊢ ■ (∀ a, Ψ a);
@@ -21,17 +21,18 @@ Record BiPlainlyMixin (PROP : sbi) `(Plainly PROP) := {
   (* The following two laws are very similar, and indeed they hold not just
      for persistently and plainly, but for any modality defined as `M P n x :=
      ∀ y, R x y → P n y`. *)
-  bi_plainly_mixin_persistently_impl_plainly P Q :
+  bi_plainly_mixin_persistently_impl_plainly (P Q : PROP) :
     (■ P → <pers> Q) ⊢ <pers> (■ P → Q);
-  bi_plainly_mixin_plainly_impl_plainly P Q : (■ P → ■ Q) ⊢ ■ (■ P → Q);
+  bi_plainly_mixin_plainly_impl_plainly (P Q : PROP) :
+    (■ P → ■ Q) ⊢ ■ (■ P → Q);
 
-  bi_plainly_mixin_plainly_emp_intro P : P ⊢ ■ emp;
-  bi_plainly_mixin_plainly_absorb P Q : ■ P ∗ Q ⊢ ■ P;
+  bi_plainly_mixin_plainly_emp_intro (P : PROP) : P ⊢ ■ emp;
+  bi_plainly_mixin_plainly_absorb (P Q : PROP) : ■ P ∗ Q ⊢ ■ P;
 
-  bi_plainly_mixin_prop_ext P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q;
+  bi_plainly_mixin_prop_ext (P Q : PROP) : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q;
 
-  bi_plainly_mixin_later_plainly_1 P : ▷ ■ P ⊢ ■ ▷ P;
-  bi_plainly_mixin_later_plainly_2 P : ■ ▷ P ⊢ ▷ ■ P;
+  bi_plainly_mixin_later_plainly_1 (P : PROP) : ▷ ■ P ⊢ ■ ▷ P;
+  bi_plainly_mixin_later_plainly_2 (P : PROP) : ■ ▷ P ⊢ ▷ ■ P;
 }.
 
 Class BiPlainly (PROP : sbi) := {

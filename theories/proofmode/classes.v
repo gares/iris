@@ -285,7 +285,7 @@ Proof. done. Qed.
 
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.
 Arguments Frame {_} _ _%I _%I _%I.
-Arguments frame {_ _} _%I _%I _%I {_}.
+Arguments frame {_} _ _%I _%I _%I {_}.
 Hint Mode Frame + + ! ! - : typeclass_instances.
 
 (* The boolean [progress] indicates whether actual framing has been performed.
