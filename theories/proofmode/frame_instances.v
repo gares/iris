@@ -296,14 +296,14 @@ Global Instance make_laterN_default P : MakeLaterN n P (▷^n P) | 100.
 Proof. by rewrite /MakeLaterN. Qed.
 
 Global Instance frame_later p R R' P Q Q' :
-  NoBackTrack (MaybeIntoLaterN true 1 R' R) →
+  TCNoBackTrack (MaybeIntoLaterN true 1 R' R) →
   Frame p R P Q → MakeLaterN 1 Q Q' → Frame p R' (▷ P) Q'.
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.
   by rewrite later_intuitionistically_if_2 later_sep.
 Qed.
 Global Instance frame_laterN p n R R' P Q Q' :
-  NoBackTrack (MaybeIntoLaterN true n R' R) →
+  TCNoBackTrack (MaybeIntoLaterN true n R' R) →
   Frame p R P Q → MakeLaterN n Q Q' → Frame p R' (▷^n P) Q'.
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.
