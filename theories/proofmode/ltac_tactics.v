@@ -1219,7 +1219,7 @@ Tactic Notation "iModCore" constr(H) :=
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
   lazymatch pat with
-  | IAnom =>
+  | IFresh =>
      lazymatch Hz with
      | IAnon _ => idtac
      | INamed ?Hz => let Hz' := iFresh in iRename Hz into Hz'

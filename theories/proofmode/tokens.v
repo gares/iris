@@ -4,7 +4,7 @@ Set Default Proof Using "Type".
 Inductive token :=
   | TName : string → token
   | TNat : nat → token
-  | TAnom : token
+  | TAnon : token
   | TFrame : token
   | TBar : token
   | TBracketL : token
@@ -43,7 +43,7 @@ Definition cons_state (kn : state) (k : list token) : list token :=
 Fixpoint tokenize_go (s : string) (k : list token) (kn : state) : list token :=
   match s with
   | "" => reverse (cons_state kn k)
-  | String "?" s => tokenize_go s (TAnom :: cons_state kn k) SNone
+  | String "?" s => tokenize_go s (TAnon :: cons_state kn k) SNone
   | String "$" s => tokenize_go s (TFrame :: cons_state kn k) SNone
   | String "[" s => tokenize_go s (TBracketL :: cons_state kn k) SNone
   | String "]" s => tokenize_go s (TBracketR :: cons_state kn k) SNone

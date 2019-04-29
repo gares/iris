@@ -4,7 +4,7 @@ Set Default Proof Using "Type".
 
 Inductive intro_pat :=
   | IIdent : ident → intro_pat
-  | IAnom : intro_pat
+  | IFresh : intro_pat
   | IDrop : intro_pat
   | IFrame : intro_pat
   | IList : list (list intro_pat) → intro_pat
@@ -74,7 +74,7 @@ Fixpoint parse_go (ts : list token) (k : stack) : option stack :=
   | [] => Some k
   | TName "_" :: ts => parse_go ts (StPat IDrop :: k)
   | TName s :: ts => parse_go ts (StPat (IIdent s) :: k)
-  | TAnom :: ts => parse_go ts (StPat IAnom :: k)
+  | TAnon :: ts => parse_go ts (StPat IFresh :: k)
   | TFrame :: ts => parse_go ts (StPat IFrame :: k)
   | TBracketL :: ts => parse_go ts (StList :: k)
   | TBar :: ts => parse_go ts (StBar :: k)
