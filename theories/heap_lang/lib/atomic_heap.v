@@ -19,7 +19,7 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   mapsto_fractional l v :> Fractional (λ q, mapsto l q v);
   mapsto_as_fractional l q v :>
     AsFractional (mapsto l q v) (λ q, mapsto l q v) q;
-  mapsto_agree l q1 q2 v1 v2 :> mapsto l q1 v1 -∗ mapsto l q2 v2 -∗ ⌜v1 = v2⌝;
+  mapsto_agree l q1 q2 v1 v2 : mapsto l q1 v1 -∗ mapsto l q2 v2 -∗ ⌜v1 = v2⌝;
   (* -- operation specs -- *)
   alloc_spec (v : val) :
     {{{ True }}} alloc v {{{ l, RET #l; mapsto l 1 v }}};

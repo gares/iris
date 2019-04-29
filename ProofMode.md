@@ -111,6 +111,9 @@ Separation logic-specific tactics
   framed.
 - `iCombine "H1" "H2" as "pat"` : combines `H1 : P1` and `H2 : P2` into
   `H: P1 ∗ P2`, then calls `iDestruct H as pat` on the combined hypothesis.
+- `iAccu` : solves a goal that is an evar by instantiating it with a all
+  hypotheses from the spatial context joined together with a separating
+  conjunction (or `emp` in case the spatial context is empty).
 
 Modalities
 ----------
@@ -234,11 +237,13 @@ appear at the top level:
 
 For example, given:
 
-        ∀ x, x = 0 ⊢ □ (P → False ∨ □ (Q ∧ ▷ R) -∗ P ∗ ▷ (R ∗ Q ∧ x = pred 2)).
+        ∀ x, <affine> ⌜ x = 0 ⌝ ⊢
+          □ (P → False ∨ □ (Q ∧ ▷ R) -∗
+          P ∗ ▷ (R ∗ Q ∧ ⌜ x = pred 2 ⌝)).
 
 You can write
 
-        iIntros (x) "% !# $ [[] | #[HQ HR]] /= !>".
+        iIntros (x Hx) "!# $ [[] | #[HQ HR]] /= !>".
 
 which results in:
 

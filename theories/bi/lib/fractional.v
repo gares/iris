@@ -30,11 +30,11 @@ Section fractional.
   Lemma fractional_split_1 P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     P -∗ P1 ∗ P2.
-  Proof. intros. by rewrite -fractional_split. Qed.
+  Proof. intros. by rewrite -(fractional_split P). Qed.
   Lemma fractional_split_2 P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     P1 -∗ P2 -∗ P.
-  Proof. intros. apply bi.wand_intro_r. by rewrite -fractional_split. Qed.
+  Proof. intros. apply bi.wand_intro_r. by rewrite -(fractional_split P). Qed.
 
   Lemma fractional_half P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
@@ -43,11 +43,11 @@ Section fractional.
   Lemma fractional_half_1 P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P -∗ P12 ∗ P12.
-  Proof. intros. by rewrite -fractional_half. Qed.
+  Proof. intros. by rewrite -(fractional_half P). Qed.
   Lemma fractional_half_2 P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P12 -∗ P12 -∗ P.
-  Proof. intros. apply bi.wand_intro_r. by rewrite -fractional_half. Qed.
+  Proof. intros. apply bi.wand_intro_r. by rewrite -(fractional_half P). Qed.
 
   (** Fractional and logical connectives *)
   Global Instance persistent_fractional P :

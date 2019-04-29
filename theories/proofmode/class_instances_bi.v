@@ -730,7 +730,7 @@ Global Instance into_sep_and_persistent_l P P' Q Q' :
   Persistent P → AndIntoSep P P' Q Q' → IntoSep (P ∧ Q) P' Q'.
 Proof.
   destruct 2 as [P Q Q'|P Q]; rewrite /IntoSep.
-  - rewrite -(from_affinely Q') -(affine_affinely P) affinely_and_lr.
+  - rewrite -(from_affinely Q' Q) -(affine_affinely P) affinely_and_lr.
     by rewrite persistent_and_affinely_sep_l_1.
   - by rewrite persistent_and_affinely_sep_l_1.
 Qed.
@@ -738,7 +738,7 @@ Global Instance into_sep_and_persistent_r P P' Q Q' :
   Persistent Q → AndIntoSep Q Q' P P' → IntoSep (P ∧ Q) P' Q'.
 Proof.
   destruct 2 as [Q P P'|Q P]; rewrite /IntoSep.
-  - rewrite -(from_affinely P') -(affine_affinely Q) -affinely_and_lr.
+  - rewrite -(from_affinely P' P) -(affine_affinely Q) -affinely_and_lr.
     by rewrite persistent_and_affinely_sep_r_1.
   - by rewrite persistent_and_affinely_sep_r_1.
 Qed.

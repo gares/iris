@@ -33,10 +33,10 @@ Proof.
 Qed.
 
 Global Instance make_embed_pure `{BiEmbed PROP PROP'} φ :
-  KnownMakeEmbed ⌜φ⌝ ⌜φ⌝.
+  KnownMakeEmbed (PROP:=PROP) ⌜φ⌝ ⌜φ⌝.
 Proof. apply embed_pure. Qed.
 Global Instance make_embed_emp `{BiEmbedEmp PROP PROP'} :
-  KnownMakeEmbed emp emp.
+  KnownMakeEmbed (PROP:=PROP) emp emp.
 Proof. apply embed_emp. Qed.
 Global Instance make_embed_default `{BiEmbed PROP PROP'} P :
   MakeEmbed P ⎡P⎤ | 100.
@@ -296,14 +296,14 @@ Global Instance make_laterN_default P : MakeLaterN n P (▷^n P) | 100.
 Proof. by rewrite /MakeLaterN. Qed.
 
 Global Instance frame_later p R R' P Q Q' :
-  NoBackTrack (MaybeIntoLaterN true 1 R' R) →
+  TCNoBackTrack (MaybeIntoLaterN true 1 R' R) →
   Frame p R P Q → MakeLaterN 1 Q Q' → Frame p R' (▷ P) Q'.
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.
   by rewrite later_intuitionistically_if_2 later_sep.
 Qed.
 Global Instance frame_laterN p n R R' P Q Q' :
-  NoBackTrack (MaybeIntoLaterN true n R' R) →
+  TCNoBackTrack (MaybeIntoLaterN true n R' R) →
   Frame p R P Q → MakeLaterN n Q Q' → Frame p R' (▷^n P) Q'.
 Proof.
   rewrite /Frame /MakeLaterN /MaybeIntoLaterN=>-[->] <- <-.

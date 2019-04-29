@@ -1,6 +1,6 @@
 From iris.program_logic Require Export language ectx_language ectxi_language.
 From iris.algebra Require Export ofe.
-From stdpp Require Export strings.
+From stdpp Require Export binders strings.
 From stdpp Require Import gmap.
 Set Default Proof Using "Type".
 
@@ -41,22 +41,6 @@ Inductive bin_op : Set :=
   | AndOp | OrOp | XorOp (* Bitwise *)
   | ShiftLOp | ShiftROp (* Shifts *)
   | LeOp | LtOp | EqOp. (* Relations *)
-
-Inductive binder := BAnon | BNamed : string → binder.
-Delimit Scope binder_scope with bind.
-Bind Scope binder_scope with binder.
-Definition cons_binder (mx : binder) (X : list string) : list string :=
-  match mx with BAnon => X | BNamed x => x :: X end.
-Infix ":b:" := cons_binder (at level 60, right associativity).
-Instance binder_eq_dec_eq : EqDecision binder.
-Proof. solve_decision. Defined.
-
-Instance set_unfold_cons_binder x mx X P :
-  SetUnfold (x ∈ X) P → SetUnfold (x ∈ mx :b: X) (BNamed x = mx ∨ P).
-Proof.
-  constructor. rewrite -(set_unfold (x ∈ X) P).
-  destruct mx; rewrite /= ?elem_of_cons; naive_solver.
-Qed.
 
 Inductive expr :=
   (* Values *)
@@ -243,11 +227,6 @@ Proof.
   | 5 => AndOp | 6 => OrOp | 7 => XorOp | 8 => ShiftLOp | 9 => ShiftROp
   | 10 => LeOp | 11 => LtOp | _ => EqOp
   end) _); by intros [].
-Qed.
-Instance binder_countable : Countable binder.
-Proof.
- refine (inj_countable' (λ b, match b with BNamed s => Some s | BAnon => None end)
-  (λ b, match b with Some s => BNamed s | None => BAnon end) _); by intros [].
 Qed.
 Instance expr_countable : Countable expr.
 Proof.

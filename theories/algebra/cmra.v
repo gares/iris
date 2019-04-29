@@ -45,21 +45,21 @@ Section mixin.
   Record CmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, ValidN A} := {
     (* setoids *)
     mixin_cmra_op_ne (x : A) : NonExpansive (op x);
-    mixin_cmra_pcore_ne n x y cx :
+    mixin_cmra_pcore_ne n (x y : A) cx :
       x ≡{n}≡ y → pcore x = Some cx → ∃ cy, pcore y = Some cy ∧ cx ≡{n}≡ cy;
     mixin_cmra_validN_ne n : Proper (dist n ==> impl) (validN n);
     (* valid *)
-    mixin_cmra_valid_validN x : ✓ x ↔ ∀ n, ✓{n} x;
-    mixin_cmra_validN_S n x : ✓{S n} x → ✓{n} x;
+    mixin_cmra_valid_validN (x : A) : ✓ x ↔ ∀ n, ✓{n} x;
+    mixin_cmra_validN_S n (x : A) : ✓{S n} x → ✓{n} x;
     (* monoid *)
-    mixin_cmra_assoc : Assoc (≡) (⋅);
-    mixin_cmra_comm : Comm (≡) (⋅);
-    mixin_cmra_pcore_l x cx : pcore x = Some cx → cx ⋅ x ≡ x;
-    mixin_cmra_pcore_idemp x cx : pcore x = Some cx → pcore cx ≡ Some cx;
-    mixin_cmra_pcore_mono x y cx :
+    mixin_cmra_assoc : Assoc (≡@{A}) (⋅);
+    mixin_cmra_comm : Comm (≡@{A}) (⋅);
+    mixin_cmra_pcore_l (x : A) cx : pcore x = Some cx → cx ⋅ x ≡ x;
+    mixin_cmra_pcore_idemp (x : A) cx : pcore x = Some cx → pcore cx ≡ Some cx;
+    mixin_cmra_pcore_mono (x y : A) cx :
       x ≼ y → pcore x = Some cx → ∃ cy, pcore y = Some cy ∧ cx ≼ cy;
-    mixin_cmra_validN_op_l n x y : ✓{n} (x ⋅ y) → ✓{n} x;
-    mixin_cmra_extend n x y1 y2 :
+    mixin_cmra_validN_op_l n (x y : A) : ✓{n} (x ⋅ y) → ✓{n} x;
+    mixin_cmra_extend n (x y1 y2 : A) :
       ✓{n} x → x ≡{n}≡ y1 ⋅ y2 →
       { z1 : A & { z2 | x ≡ z1 ⋅ z2 ∧ z1 ≡{n}≡ y1 ∧ z2 ≡{n}≡ y2 } }
   }.
@@ -187,7 +187,7 @@ Class Unit (A : Type) := ε : A.
 Arguments ε {_ _}.
 
 Record UcmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, Unit A} := {
-  mixin_ucmra_unit_valid : ✓ ε;
+  mixin_ucmra_unit_valid : ✓ (ε : A);
   mixin_ucmra_unit_left_id : LeftId (≡) ε (⋅);
   mixin_ucmra_pcore_unit : pcore ε ≡ Some ε
 }.
@@ -861,17 +861,17 @@ End cmra_transport.
 Record RAMixin A `{Equiv A, PCore A, Op A, Valid A} := {
   (* setoids *)
   ra_op_proper (x : A) : Proper ((≡) ==> (≡)) (op x);
-  ra_core_proper x y cx :
+  ra_core_proper (x y : A) cx :
     x ≡ y → pcore x = Some cx → ∃ cy, pcore y = Some cy ∧ cx ≡ cy;
-  ra_validN_proper : Proper ((≡) ==> impl) valid;
+  ra_validN_proper : Proper ((≡@{A}) ==> impl) valid;
   (* monoid *)
-  ra_assoc : Assoc (≡) (⋅);
-  ra_comm : Comm (≡) (⋅);
-  ra_pcore_l x cx : pcore x = Some cx → cx ⋅ x ≡ x;
-  ra_pcore_idemp x cx : pcore x = Some cx → pcore cx ≡ Some cx;
-  ra_pcore_mono x y cx :
+  ra_assoc : Assoc (≡@{A}) (⋅);
+  ra_comm : Comm (≡@{A}) (⋅);
+  ra_pcore_l (x : A) cx : pcore x = Some cx → cx ⋅ x ≡ x;
+  ra_pcore_idemp (x : A) cx : pcore x = Some cx → pcore cx ≡ Some cx;
+  ra_pcore_mono (x y : A) cx :
     x ≼ y → pcore x = Some cx → ∃ cy, pcore y = Some cy ∧ cx ≼ cy;
-  ra_valid_op_l x y : ✓ (x ⋅ y) → ✓ x
+  ra_valid_op_l (x y : A) : ✓ (x ⋅ y) → ✓ x
 }.
 
 Section discrete.
@@ -1491,7 +1491,7 @@ Proof.
   by intros ? A1 A2 B1 B2 n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
 Qed.
 
-(* Dependently-typed functions over a finite discrete domain *)
+(* Dependently-typed functions over a discrete domain *)
 Section ofe_fun_cmra.
   Context `{B : A → ucmraT}.
   Implicit Types f g : ofe_fun B.
