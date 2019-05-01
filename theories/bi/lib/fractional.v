@@ -64,22 +64,22 @@ Section fractional.
   Global Instance fractional_big_sepL {A} l Ψ :
     (∀ k (x : A), Fractional (Ψ k x)) →
     Fractional (PROP:=PROP) (λ q, [∗ list] k↦x ∈ l, Ψ k x q)%I.
-  Proof. intros ? q q'. rewrite -big_opL_opL. by setoid_rewrite fractional. Qed.
+  Proof. intros ? q q'. rewrite -big_sepL_sep. by setoid_rewrite fractional. Qed.
 
   Global Instance fractional_big_sepM `{Countable K} {A} (m : gmap K A) Ψ :
     (∀ k (x : A), Fractional (Ψ k x)) →
     Fractional (PROP:=PROP) (λ q, [∗ map] k↦x ∈ m, Ψ k x q)%I.
-  Proof. intros ? q q'. rewrite -big_opM_opM. by setoid_rewrite fractional. Qed.
+  Proof. intros ? q q'. rewrite -big_sepM_sep. by setoid_rewrite fractional. Qed.
 
   Global Instance fractional_big_sepS `{Countable A} (X : gset A) Ψ :
     (∀ x, Fractional (Ψ x)) →
     Fractional (PROP:=PROP) (λ q, [∗ set] x ∈ X, Ψ x q)%I.
-  Proof. intros ? q q'. rewrite -big_opS_opS. by setoid_rewrite fractional. Qed.
+  Proof. intros ? q q'. rewrite -big_sepS_sep. by setoid_rewrite fractional. Qed.
 
   Global Instance fractional_big_sepMS `{Countable A} (X : gmultiset A) Ψ :
     (∀ x, Fractional (Ψ x)) →
     Fractional (PROP:=PROP) (λ q, [∗ mset] x ∈ X, Ψ x q)%I.
-  Proof. intros ? q q'. rewrite -big_opMS_opMS. by setoid_rewrite fractional. Qed.
+  Proof. intros ? q q'. rewrite -big_sepMS_sep. by setoid_rewrite fractional. Qed.
 
   (** Mult instances *)
 

@@ -145,7 +145,7 @@ Section list.
     ([^o list] k↦y ∈ h <$> l, f k y) ≡ ([^o list] k↦y ∈ l, f k (h y)).
   Proof. revert f. induction l as [|x l IH]=> f; csimpl=> //. by rewrite IH. Qed.
 
-  Lemma big_opL_opL f g l :
+  Lemma big_opL_op f g l :
     ([^o list] k↦x ∈ l, f k x `o` g k x)
     ≡ ([^o list] k↦x ∈ l, f k x) `o` ([^o list] k↦x ∈ l, g k x).
   Proof.
@@ -253,10 +253,10 @@ Section gmap.
     rewrite -assoc IH //.
   Qed.
 
-  Lemma big_opM_opM f g m :
+  Lemma big_opM_op f g m :
     ([^o map] k↦x ∈ m, f k x `o` g k x)
     ≡ ([^o map] k↦x ∈ m, f k x) `o` ([^o map] k↦x ∈ m, g k x).
-  Proof. rewrite /big_opM -big_opL_opL. by apply big_opL_proper=> ? [??]. Qed.
+  Proof. rewrite /big_opM -big_opL_op. by apply big_opL_proper=> ? [??]. Qed.
 End gmap.
 
 
@@ -335,9 +335,9 @@ Section gset.
     induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id //.
   Qed.
 
-  Lemma big_opS_opS f g X :
+  Lemma big_opS_op f g X :
     ([^o set] y ∈ X, f y `o` g y) ≡ ([^o set] y ∈ X, f y) `o` ([^o set] y ∈ X, g y).
-  Proof. by rewrite /big_opS -big_opL_opL. Qed.
+  Proof. by rewrite /big_opS -big_opL_op. Qed.
 End gset.
 
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
@@ -403,9 +403,9 @@ Section gmultiset.
       rewrite /= ?big_opMS_disj_union ?big_opMS_singleton ?left_id //.
   Qed.
 
-  Lemma big_opMS_opMS f g X :
+  Lemma big_opMS_op f g X :
     ([^o mset] y ∈ X, f y `o` g y) ≡ ([^o mset] y ∈ X, f y) `o` ([^o mset] y ∈ X, g y).
-  Proof. by rewrite /big_opMS -big_opL_opL. Qed.
+  Proof. by rewrite /big_opMS -big_opL_op. Qed.
 End gmultiset.
 End big_op.
 

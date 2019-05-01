@@ -132,10 +132,10 @@ Section sep_list.
     ([∗ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
 
-  Lemma big_sepL_sepL Φ Ψ l :
+  Lemma big_sepL_sep Φ Ψ l :
     ([∗ list] k↦x ∈ l, Φ k x ∗ Ψ k x)
     ⊣⊢ ([∗ list] k↦x ∈ l, Φ k x) ∗ ([∗ list] k↦x ∈ l, Ψ k x).
-  Proof. by rewrite big_opL_opL. Qed.
+  Proof. by rewrite big_opL_op. Qed.
 
   Lemma big_sepL_and Φ Ψ l :
     ([∗ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
@@ -392,11 +392,11 @@ Section sep_list2.
     by f_equiv; f_equiv=> k [??].
   Qed.
 
-  Lemma big_sepL2_sepL2 Φ Ψ l1 l2 :
+  Lemma big_sepL2_sep Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2)
     ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
   Proof.
-    rewrite !big_sepL2_alt big_sepL_sepL !persistent_and_affinely_sep_l.
+    rewrite !big_sepL2_alt big_sepL_sep !persistent_and_affinely_sep_l.
     rewrite -assoc (assoc _ _ (<affine> _)%I). rewrite -(comm bi_sep (<affine> _)%I).
     rewrite -assoc (assoc _ _ (<affine> _)%I) -!persistent_and_affinely_sep_l.
     by rewrite affinely_and_r persistent_and_affinely_sep_l idemp.
@@ -507,15 +507,10 @@ Section and_list.
     ([∧ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∧ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
 
-  Lemma big_andL_andL Φ Ψ l :
-    ([∧ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
-    ⊣⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
-  Proof. by rewrite big_opL_opL. Qed.
-
   Lemma big_andL_and Φ Ψ l :
     ([∧ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
-    ⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
-  Proof. auto using and_intro, big_andL_mono, and_elim_l, and_elim_r. Qed.
+    ⊣⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
+  Proof. by rewrite big_opL_op. Qed.
 
   Lemma big_andL_persistently Φ l :
     <pers> ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, <pers> (Φ k x).
@@ -667,10 +662,10 @@ Section map.
     ⊣⊢ ([∗ map] k↦y ∈ m1, Φ k y) ∗ ([∗ map] k↦y ∈ m2, Φ k y).
   Proof. apply big_opM_union. Qed.
 
-  Lemma big_sepM_sepM Φ Ψ m :
+  Lemma big_sepM_sep Φ Ψ m :
     ([∗ map] k↦x ∈ m, Φ k x ∗ Ψ k x)
     ⊣⊢ ([∗ map] k↦x ∈ m, Φ k x) ∗ ([∗ map] k↦x ∈ m, Ψ k x).
-  Proof. apply big_opM_opM. Qed.
+  Proof. apply big_opM_op. Qed.
 
   Lemma big_sepM_and Φ Ψ m :
     ([∗ map] k↦x ∈ m, Φ k x ∧ Ψ k x)
@@ -962,7 +957,7 @@ Section map2.
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 (g y2)).
   Proof. rewrite -{1}(map_fmap_id m1). apply big_sepM2_fmap. Qed.
 
-  Lemma big_sepM2_sepM2 Φ Ψ m1 m2 :
+  Lemma big_sepM2_sep Φ Ψ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∗ Ψ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∗ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof.
@@ -972,7 +967,7 @@ Section map2.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite -sep_assoc. apply sep_proper=>//.
     rewrite sep_assoc (sep_comm _ (<affine> _)%I) -sep_assoc.
-    apply sep_proper=>//. apply big_sepM_sepM.
+    apply sep_proper=>//. apply big_sepM_sep.
   Qed.
 
   Lemma big_sepM2_and Φ Ψ m1 m2 :
@@ -1148,9 +1143,9 @@ Section gset.
       (([∗ set] y ∈ Y, ⌜P y⌝ → Φ y) -∗ [∗ set] y ∈ X, Φ y).
   Proof. intros. setoid_rewrite <-decide_emp. by apply big_sepS_filter_acc'. Qed.
 
-  Lemma big_sepS_sepS Φ Ψ X :
+  Lemma big_sepS_sep Φ Ψ X :
     ([∗ set] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ set] y ∈ X, Φ y) ∗ ([∗ set] y ∈ X, Ψ y).
-  Proof. apply big_opS_opS. Qed.
+  Proof. apply big_opS_op. Qed.
 
   Lemma big_sepS_and Φ Ψ X :
     ([∗ set] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ set] y ∈ X, Φ y) ∧ ([∗ set] y ∈ X, Ψ y).
@@ -1256,9 +1251,9 @@ Section gmultiset.
   Lemma big_sepMS_singleton Φ x : ([∗ mset] y ∈ {[ x ]}, Φ y) ⊣⊢ Φ x.
   Proof. apply big_opMS_singleton. Qed.
 
-  Lemma big_sepMS_sepMS Φ Ψ X :
+  Lemma big_sepMS_sep Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ mset] y ∈ X, Φ y) ∗ ([∗ mset] y ∈ X, Ψ y).
-  Proof. apply big_opMS_opMS. Qed.
+  Proof. apply big_opMS_op. Qed.
 
   Lemma big_sepMS_and Φ Ψ X :
     ([∗ mset] y ∈ X, Φ y ∧ Ψ y) ⊢ ([∗ mset] y ∈ X, Φ y) ∧ ([∗ mset] y ∈ X, Ψ y).
