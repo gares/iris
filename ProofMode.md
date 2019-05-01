@@ -171,8 +171,8 @@ Iris
 ----
 
 - `iInv S with "selpat" as (x1 ... xn) "ipat" "Hclose"` : where `S` is either
-   a namespace N or an identifier "H". Open the invariant indicated by S.  The
-   selection pattern `selpat` is used for any auxiliary assertions needed to
+   a namespace `N` or an identifier `H`. Open the invariant indicated by `S`.
+   The selection pattern `selpat` is used for any auxiliary assertions needed to
    open the invariant (e.g. for cancelable or non-atomic invariants). The update
    for closing the invariant is put in a hypothesis named `Hclose`.
 
