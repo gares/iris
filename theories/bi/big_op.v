@@ -489,7 +489,7 @@ Section and_list.
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_and PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
 
-  Lemma big_andL_lookup Φ l i x `{!Absorbing (Φ i x)} :
+  Lemma big_andL_lookup Φ l i x :
     l !! i = Some x → ([∧ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
   Proof.
     intros. rewrite -(take_drop_middle l i x) // big_andL_app /=.
@@ -497,7 +497,7 @@ Section and_list.
       eauto using lookup_lt_Some, Nat.lt_le_incl, and_elim_l', and_elim_r'.
   Qed.
 
-  Lemma big_andL_elem_of (Φ : A → PROP) l x `{!Absorbing (Φ x)} :
+  Lemma big_andL_elem_of (Φ : A → PROP) l x :
     x ∈ l → ([∧ list] y ∈ l, Φ y) ⊢ Φ x.
   Proof.
     intros [i ?]%elem_of_list_lookup; eauto using (big_andL_lookup (λ _, Φ)).
@@ -521,7 +521,7 @@ Section and_list.
     <pers> ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, <pers> (Φ k x).
   Proof. apply (big_opL_commute _). Qed.
 
-  Lemma big_andL_forall `{BiAffine PROP} Φ l :
+  Lemma big_andL_forall Φ l :
     ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ (∀ k x, ⌜l !! k = Some x⌝ → Φ k x).
   Proof.
     apply (anti_symm _).
