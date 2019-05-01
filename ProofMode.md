@@ -160,6 +160,7 @@ Rewriting / simplification
   with the resulting `P`, which in turn becomes the new proof mode goal /
   hypothesis `H`.
   Note that parentheses around `tac` are needed.
+  If `H` is a list of hypothesis, then `iEval` will perform `tac` on each of them.
 - `iSimpl` / `iSimpl in H` : performs `simpl` on the proof mode goal /
   hypothesis `H`. This is a shorthand for `iEval (simpl)`.
 

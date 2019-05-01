@@ -114,13 +114,21 @@ Tactic Notation "iEval" tactic(t) :=
     [let x := fresh in intros x; t; unfold x; reflexivity
     |].
 
+Ltac iEval_go t Hs :=
+  match Hs with
+  | [] => idtac
+  | ?H :: ?Hs =>
+    let H := pretty_ident H in
+    eapply tac_eval_in with _ H _ _ _;
+      [pm_reflexivity || fail "iEval:" H "not found"
+      |let x := fresh in intros x; t; unfold x; reflexivity
+      |pm_reflexivity
+      |iEval_go t Hs]
+  end.
+
 Tactic Notation "iEval" tactic(t) "in" constr(H) :=
   iStartProof;
-  eapply tac_eval_in with _ H _ _ _;
-    [pm_reflexivity || fail "iEval:" H "not found"
-    |let x := fresh in intros x; t; unfold x; reflexivity
-    |pm_reflexivity
-    |].
+  let Hs := words H in iEval_go t Hs.
 
 Tactic Notation "iSimpl" := iEval (simpl).
 Tactic Notation "iSimpl" "in" constr(H) := iEval (simpl) in H.
