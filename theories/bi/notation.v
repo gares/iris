@@ -120,6 +120,15 @@ Reserved Notation "'[∧' 'list]' x ∈ l , P"
 
 Reserved Notation "'[∧]' Ps" (at level 20).
 
+Reserved Notation "'[∨' 'list]' k ↦ x ∈ l , P"
+  (at level 200, l at level 10, k, x at level 1, right associativity,
+   format "[∨  list]  k ↦ x  ∈  l ,  P").
+Reserved Notation "'[∨' 'list]' x ∈ l , P"
+  (at level 200, l at level 10, x at level 1, right associativity,
+   format "[∨  list]  x  ∈  l ,  P").
+
+Reserved Notation "'[∨]' Ps" (at level 20).
+
 Reserved Notation "'[∗' 'map]' k ↦ x ∈ m , P"
   (at level 200, m at level 10, k, x at level 1, right associativity,
    format "[∗  map]  k ↦ x  ∈  m ,  P").

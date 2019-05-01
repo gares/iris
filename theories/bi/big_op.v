@@ -9,15 +9,19 @@ Notation "'[∗' 'list]' k ↦ x ∈ l , P" :=
   (big_opL bi_sep (λ k x, P) l) : bi_scope.
 Notation "'[∗' 'list]' x ∈ l , P" :=
   (big_opL bi_sep (λ _ x, P) l) : bi_scope.
-
 Notation "'[∗]' Ps" := (big_opL bi_sep (λ _ x, x) Ps) : bi_scope.
 
 Notation "'[∧' 'list]' k ↦ x ∈ l , P" :=
   (big_opL bi_and (λ k x, P) l) : bi_scope.
 Notation "'[∧' 'list]' x ∈ l , P" :=
   (big_opL bi_and (λ _ x, P) l) : bi_scope.
-
 Notation "'[∧]' Ps" := (big_opL bi_and (λ _ x, x) Ps) : bi_scope.
+
+Notation "'[∨' 'list]' k ↦ x ∈ l , P" :=
+  (big_opL bi_or (λ k x, P) l) : bi_scope.
+Notation "'[∨' 'list]' x ∈ l , P" :=
+  (big_opL bi_or (λ _ x, P) l) : bi_scope.
+Notation "'[∨]' Ps" := (big_opL bi_or (λ _ x, x) Ps) : bi_scope.
 
 Notation "'[∗' 'map]' k ↦ x ∈ m , P" := (big_opM bi_sep (λ k x, P) m) : bi_scope.
 Notation "'[∗' 'map]' x ∈ m , P" := (big_opM bi_sep (λ _ x, P) m) : bi_scope.
@@ -535,6 +539,104 @@ Section and_list.
     (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End and_list.
+
+Section or_list.
+  Context {A : Type}.
+  Implicit Types l : list A.
+  Implicit Types Φ Ψ : nat → A → PROP.
+
+  Lemma big_orL_nil Φ : ([∨ list] k↦y ∈ nil, Φ k y) ⊣⊢ False.
+  Proof. done. Qed.
+  Lemma big_orL_cons Φ x l :
+    ([∨ list] k↦y ∈ x :: l, Φ k y) ⊣⊢ Φ 0 x ∨ [∨ list] k↦y ∈ l, Φ (S k) y.
+  Proof. by rewrite big_opL_cons. Qed.
+  Lemma big_orL_singleton Φ x : ([∨ list] k↦y ∈ [x], Φ k y) ⊣⊢ Φ 0 x.
+  Proof. by rewrite big_opL_singleton. Qed.
+  Lemma big_orL_app Φ l1 l2 :
+    ([∨ list] k↦y ∈ l1 ++ l2, Φ k y)
+    ⊣⊢ ([∨ list] k↦y ∈ l1, Φ k y) ∨ ([∨ list] k↦y ∈ l2, Φ (length l1 + k) y).
+  Proof. by rewrite big_opL_app. Qed.
+
+  Lemma big_orL_mono Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
+    ([∨ list] k ↦ y ∈ l, Φ k y) ⊢ [∨ list] k ↦ y ∈ l, Ψ k y.
+  Proof. apply big_opL_forall; apply _. Qed.
+  Lemma big_orL_proper Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
+    ([∨ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∨ list] k ↦ y ∈ l, Ψ k y).
+  Proof. apply big_opL_proper. Qed.
+  Lemma big_orL_submseteq (Φ : A → PROP) l1 l2 :
+    l1 ⊆+ l2 → ([∨ list] y ∈ l1, Φ y) ⊢ [∨ list] y ∈ l2, Φ y.
+  Proof.
+    intros [l ->]%submseteq_Permutation. by rewrite big_orL_app -or_intro_l.
+  Qed.
+
+  Global Instance big_orL_mono' :
+    Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
+           (big_opL (@bi_or PROP) (A:=A)).
+  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Global Instance big_orL_id_mono' :
+    Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_or PROP) (λ _ P, P)).
+  Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
+
+  Lemma big_orL_lookup Φ l i x :
+    l !! i = Some x → Φ i x ⊢ ([∨ list] k↦y ∈ l, Φ k y).
+  Proof.
+    intros. rewrite -(take_drop_middle l i x) // big_orL_app /=.
+    rewrite Nat.add_0_r take_length_le;
+      eauto using lookup_lt_Some, Nat.lt_le_incl, or_intro_l', or_intro_r'.
+  Qed.
+
+  Lemma big_orL_elem_of (Φ : A → PROP) l x :
+    x ∈ l → Φ x ⊢ ([∨ list] y ∈ l, Φ y).
+  Proof.
+    intros [i ?]%elem_of_list_lookup; eauto using (big_orL_lookup (λ _, Φ)).
+  Qed.
+
+  Lemma big_orL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
+    ([∨ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∨ list] k↦y ∈ l, Φ k (f y)).
+  Proof. by rewrite big_opL_fmap. Qed.
+
+  Lemma big_orL_or Φ Ψ l :
+    ([∨ list] k↦x ∈ l, Φ k x ∨ Ψ k x)
+    ⊣⊢ ([∨ list] k↦x ∈ l, Φ k x) ∨ ([∨ list] k↦x ∈ l, Ψ k x).
+  Proof. by rewrite big_opL_op. Qed.
+
+  Lemma big_orL_persistently Φ l :
+    <pers> ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ [∨ list] k↦x ∈ l, <pers> (Φ k x).
+  Proof. apply (big_opL_commute _). Qed.
+
+  Lemma big_orL_exist Φ l :
+    ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ (∃ k x, ⌜l !! k = Some x⌝ ∧ Φ k x).
+  Proof.
+    apply (anti_symm _).
+    { revert Φ. induction l as [|x l IH]=> Φ.
+      { rewrite big_orL_nil. apply False_elim. }
+      rewrite big_orL_cons. apply or_elim.
+      - by rewrite -(exist_intro 0) -(exist_intro x) pure_True // left_id.
+      - rewrite IH. apply exist_elim=> k. by rewrite -(exist_intro (S k)). }
+    apply exist_elim=> k; apply exist_elim=> x. apply pure_elim_l=> ?.
+    by apply: big_orL_lookup.
+  Qed.
+
+  Lemma big_orL_sep_l P Φ l :
+    P ∗ ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ ([∨ list] k↦x ∈ l, P ∗ Φ k x).
+  Proof.
+    rewrite !big_orL_exist sep_exist_l.
+    f_equiv=> k. rewrite sep_exist_l. f_equiv=> x.
+    by rewrite !persistent_and_affinely_sep_l !assoc (comm _ P).
+ Qed.
+  Lemma big_orL_sep_r Q Φ l :
+    ([∨ list] k↦x ∈ l, Φ k x) ∗ Q ⊣⊢ ([∨ list] k↦x ∈ l, Φ k x ∗ Q).
+  Proof. setoid_rewrite (comm bi_sep). apply big_orL_sep_l. Qed.
+
+  Global Instance big_orL_nil_persistent Φ :
+    Persistent ([∨ list] k↦x ∈ [], Φ k x).
+  Proof. simpl; apply _. Qed.
+  Global Instance big_orL_persistent Φ l :
+    (∀ k x, Persistent (Φ k x)) → Persistent ([∨ list] k↦x ∈ l, Φ k x).
+  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+End or_list.
 
 (** ** Big ops over finite maps *)
 Section map.
@@ -1339,6 +1441,18 @@ Section list.
 
     Global Instance big_andL_plain Φ l :
       (∀ k x, Plain (Φ k x)) → Plain ([∧ list] k↦x ∈ l, Φ k x).
+    Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+    Lemma big_orL_plainly `{!BiPlainlyExist PROP} Φ l :
+      ■ ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ [∨ list] k↦x ∈ l, ■ (Φ k x).
+    Proof. apply (big_opL_commute _). Qed.
+
+    Global Instance big_orL_nil_plain Φ :
+      Plain ([∨ list] k↦x ∈ [], Φ k x).
+    Proof. simpl; apply _. Qed.
+
+    Global Instance big_orL_plain Φ l :
+      (∀ k x, Plain (Φ k x)) → Plain ([∨ list] k↦x ∈ l, Φ k x).
     Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
   End plainly.
 End list.
