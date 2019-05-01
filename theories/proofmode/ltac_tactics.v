@@ -107,40 +107,6 @@ Ltac iFresh :=
     constr:(IAnon n)
   end.
 
-(** * Simplification *)
-Tactic Notation "iEval" tactic(t) :=
-  iStartProof;
-  eapply tac_eval;
-    [let x := fresh in intros x; t; unfold x; reflexivity
-    |].
-
-Ltac iEval_go t Hs :=
-  match Hs with
-  | [] => idtac
-  | ?H :: ?Hs =>
-    let H := pretty_ident H in
-    eapply tac_eval_in with _ H _ _ _;
-      [pm_reflexivity || fail "iEval:" H "not found"
-      |let x := fresh in intros x; t; unfold x; reflexivity
-      |pm_reflexivity
-      |iEval_go t Hs]
-  end.
-
-Tactic Notation "iEval" tactic(t) "in" constr(H) :=
-  iStartProof;
-  let Hs := words H in iEval_go t Hs.
-
-Tactic Notation "iSimpl" := iEval (simpl).
-Tactic Notation "iSimpl" "in" constr(H) := iEval (simpl) in H.
-
-(* It would be nice to also have an `iSsrRewrite`, however, for this we need to
-pass arguments to Ssreflect's `rewrite` like `/= foo /bar` in Ltac, see:
-
-  https://sympa.inria.fr/sympa/arc/coq-club/2018-01/msg00000.html
-
-PMP told me (= Robbert) in person that this is not possible with the current
-Ltac, but it may be possible in Ltac2. *)
-
 (** * Context manipulation *)
 Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
   eapply tac_rename with _ H1 H2 _ _; (* (i:=H1) (j:=H2) *)
@@ -151,9 +117,12 @@ Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
      let H2 := pretty_ident H2 in
      fail "iRename:" H2 "not fresh"|].
 
+(** Elaborated selection patterns, unlike the type [sel_pat], contains
+only specific identifiers, and no wildcards like `#` (with the
+exception of the pure selection pattern `%`) *)
 Inductive esel_pat :=
   | ESelPure
-  | ESelIdent : bool → ident → esel_pat.
+  | ESelIdent : (* whether the ident is intuitionistic *) bool → ident → esel_pat.
 
 Local Ltac iElaborateSelPat_go pat Δ Hs :=
   lazymatch pat with
@@ -175,6 +144,8 @@ Local Ltac iElaborateSelPat_go pat Δ Hs :=
       fail "iElaborateSelPat:" H "not found"
     end
   end.
+(** Converts a selection pattern (given as a string) to a list of
+elaborated selection patterns. *)
 Ltac iElaborateSelPat pat :=
   lazymatch goal with
   | |- envs_entails ?Δ _ =>
@@ -203,6 +174,39 @@ Tactic Notation "iClear" constr(Hs) :=
 
 Tactic Notation "iClear" "(" ident_list(xs) ")" constr(Hs) :=
   iClear Hs; clear xs.
+
+(** ** Simplification *)
+Tactic Notation "iEval" tactic(t) :=
+  iStartProof;
+  eapply tac_eval;
+    [let x := fresh in intros x; t; unfold x; reflexivity
+    |].
+
+Local Ltac iEval_go t Hs :=
+  lazymatch Hs with
+  | [] => idtac
+  | ESelPure :: ?Hs => fail "iEval: %: unsupported selection pattern"
+  | ESelIdent _ ?H :: ?Hs =>
+    eapply tac_eval_in with _ H _ _ _;
+      [pm_reflexivity || let H := pretty_ident H in fail "iEval:" H "not found"
+      |let x := fresh in intros x; t; unfold x; reflexivity
+      |pm_reflexivity
+      |iEval_go t Hs]
+  end.
+
+Tactic Notation "iEval" tactic(t) "in" constr(Hs) :=
+  iStartProof; let Hs := iElaborateSelPat Hs in iEval_go t Hs.
+
+Tactic Notation "iSimpl" := iEval (simpl).
+Tactic Notation "iSimpl" "in" constr(H) := iEval (simpl) in H.
+
+(* It would be nice to also have an `iSsrRewrite`, however, for this we need to
+pass arguments to Ssreflect's `rewrite` like `/= foo /bar` in Ltac, see:
+
+  https://sympa.inria.fr/sympa/arc/coq-club/2018-01/msg00000.html
+
+PMP told me (= Robbert) in person that this is not possible with the current
+Ltac, but it may be possible in Ltac2. *)
 
 (** * Assumptions *)
 Tactic Notation "iExact" constr(H) :=
