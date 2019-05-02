@@ -53,11 +53,10 @@ Changes in Coq:
   - `iModIntro` is more flexible and more powerful, it now also subsumes
     `iNext` and `iAlways`.
   - General infrastructure for deriving a logic for monotone predicates over
-    an existing logic (see the paper for more details).
-
+    an existing logic (see the paper for more details).  
     Developments instantiating the proof mode typeclasses may need significant
-  changes.  For developments just using the proof mode tactics, porting should
-  not be too much effort.  Notable things to port are:
+    changes.  For developments just using the proof mode tactics, porting should
+    not be too much effort.  Notable things to port are:
   - All the BI laws moved from the `uPred` module to the `bi` module.  For
     example, `uPred.later_equivI` became `bi.later_equivI`.
   - Big-ops are automatically imported, imports of `iris.base_logic.big_op` have
