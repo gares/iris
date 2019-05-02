@@ -136,6 +136,10 @@ Section sep_list.
     ([∗ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
 
+  Lemma big_sepL_bind {B} (f : A → list B) (Φ : B → PROP) l :
+    ([∗ list] y ∈ l ≫= f, Φ y) ⊣⊢ ([∗ list] x ∈ l, [∗ list] y ∈ f x, Φ y).
+  Proof. by rewrite big_opL_bind. Qed.
+
   Lemma big_sepL_sep Φ Ψ l :
     ([∗ list] k↦x ∈ l, Φ k x ∗ Ψ k x)
     ⊣⊢ ([∗ list] k↦x ∈ l, Φ k x) ∗ ([∗ list] k↦x ∈ l, Ψ k x).
@@ -511,6 +515,10 @@ Section and_list.
     ([∧ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∧ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
 
+  Lemma big_andL_bind {B} (f : A → list B) (Φ : B → PROP) l :
+    ([∧ list] y ∈ l ≫= f, Φ y) ⊣⊢ ([∧ list] x ∈ l, [∧ list] y ∈ f x, Φ y).
+  Proof. by rewrite big_opL_bind. Qed.
+
   Lemma big_andL_and Φ Ψ l :
     ([∧ list] k↦x ∈ l, Φ k x ∧ Ψ k x)
     ⊣⊢ ([∧ list] k↦x ∈ l, Φ k x) ∧ ([∧ list] k↦x ∈ l, Ψ k x).
@@ -596,6 +604,10 @@ Section or_list.
   Lemma big_orL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
     ([∨ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∨ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
+
+  Lemma big_orL_bind {B} (f : A → list B) (Φ : B → PROP) l :
+    ([∨ list] y ∈ l ≫= f, Φ y) ⊣⊢ ([∨ list] x ∈ l, [∨ list] y ∈ f x, Φ y).
+  Proof. by rewrite big_opL_bind. Qed.
 
   Lemma big_orL_or Φ Ψ l :
     ([∨ list] k↦x ∈ l, Φ k x ∨ Ψ k x)

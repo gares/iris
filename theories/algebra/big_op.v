@@ -154,6 +154,12 @@ Section list.
   Qed.
 End list.
 
+Lemma big_opL_bind {A B} (h : A → list B) (f : B → M) l :
+  ([^o list] y ∈ l ≫= h, f y) ≡ ([^o list] x ∈ l, [^o list] y ∈ h x, f y).
+Proof.
+  revert f. induction l as [|x l IH]=> f; csimpl=> //. by rewrite big_opL_app IH.
+Qed.
+
 (** ** Big ops over finite maps *)
 Section gmap.
   Context `{Countable K} {A : Type}.
