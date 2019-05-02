@@ -511,6 +511,8 @@ Proof. destruct p=>//=. apply monPred_at_intuitionistically. Qed.
 
 Lemma monPred_at_absorbingly i P : (<absorb> P) i ⊣⊢ <absorb> (P i).
 Proof. by rewrite /bi_absorbingly monPred_at_sep monPred_at_pure. Qed.
+Lemma monPred_at_absorbingly_if i p P : (<absorb>?p P) i ⊣⊢ <absorb>?p (P i).
+Proof. destruct p=>//=. apply monPred_at_absorbingly. Qed.
 
 Lemma monPred_wand_force i P Q : (P -∗ Q) i -∗ (P i -∗ Q i).
 Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
@@ -651,6 +653,8 @@ Global Instance persistently_if_objective P p `{!Objective P} : Objective (<pers
 Proof. rewrite /bi_persistently_if. destruct p; apply _. Qed.
 Global Instance affinely_if_objective P p `{!Objective P} : Objective (<affine>?p P).
 Proof. rewrite /bi_affinely_if. destruct p; apply _. Qed.
+Global Instance absorbingly_if_objective P p `{!Objective P} : Objective (<absorb>?p P).
+Proof. rewrite /bi_absorbingly_if. destruct p; apply _. Qed.
 Global Instance intuitionistically_if_objective P p `{!Objective P} : Objective (□?p P).
 Proof. rewrite /bi_intuitionistically_if. destruct p; apply _. Qed.
 

@@ -1144,6 +1144,57 @@ Proof. destruct p; simpl; auto using affinely_sep. Qed.
 Lemma affinely_if_idemp p P : <affine>?p <affine>?p P ⊣⊢ <affine>?p P.
 Proof. destruct p; simpl; auto using affinely_idemp. Qed.
 
+(* Conditional absorbingly modality *)
+Global Instance absorbingly_if_ne p : NonExpansive (@bi_absorbingly_if PROP p).
+Proof. solve_proper. Qed.
+Global Instance absorbingly_if_proper p : Proper ((⊣⊢) ==> (⊣⊢)) (@bi_absorbingly_if PROP p).
+Proof. solve_proper. Qed.
+Global Instance absorbingly_if_mono' p : Proper ((⊢) ==> (⊢)) (@bi_absorbingly_if PROP p).
+Proof. solve_proper. Qed.
+Global Instance absorbingly_if_flip_mono' p :
+  Proper (flip (⊢) ==> flip (⊢)) (@bi_absorbingly_if PROP p).
+Proof. solve_proper. Qed.
+
+Lemma absorbingly_if_absorbingly p P : <absorb>?p P ⊢ <absorb> P.
+Proof. destruct p; simpl; auto using absorbingly_intro. Qed.
+Lemma absorbingly_if_intro p P : P ⊢ <absorb>?p P.
+Proof. destruct p; simpl; auto using absorbingly_intro. Qed.
+Lemma absorbingly_if_mono p P Q : (P ⊢ Q) → <absorb>?p P ⊢ <absorb>?p Q.
+Proof. by intros ->. Qed.
+Lemma absorbingly_if_flag_mono (p q : bool) P : (p → q) → <absorb>?p P ⊢ <absorb>?q P.
+Proof. destruct p, q; try naive_solver auto using absorbingly_intro. Qed.
+Lemma absorbingly_if_idemp p P : <absorb>?p <absorb>?p P ⊣⊢ <absorb>?p P.
+Proof. destruct p; simpl; auto using absorbingly_idemp. Qed.
+
+Lemma absorbingly_if_pure p φ : <absorb>?p ⌜ φ ⌝ ⊣⊢ ⌜ φ ⌝.
+Proof. destruct p; simpl; auto using absorbingly_pure. Qed.
+Lemma absorbingly_if_or p P Q : <absorb>?p (P ∨ Q) ⊣⊢ <absorb>?p P ∨ <absorb>?p Q.
+Proof. destruct p; simpl; auto using absorbingly_or. Qed.
+Lemma absorbingly_if_and_1 p P Q : <absorb>?p (P ∧ Q) ⊢ <absorb>?p P ∧ <absorb>?p Q.
+Proof. destruct p; simpl; auto using absorbingly_and_1. Qed.
+Lemma absorbingly_if_forall {A} p (Φ : A → PROP) :
+  <absorb>?p (∀ a, Φ a) ⊢ ∀ a, <absorb>?p (Φ a).
+Proof. destruct p; simpl; auto using absorbingly_forall. Qed.
+Lemma absorbingly_if_exist {A} p (Φ : A → PROP) :
+  <absorb>?p (∃ a, Φ a) ⊣⊢ ∃ a, <absorb>?p (Φ a).
+Proof. destruct p; simpl; auto using absorbingly_exist. Qed.
+
+Lemma absorbingly_if_sep p P Q : <absorb>?p (P ∗ Q) ⊣⊢ <absorb>?p P ∗ <absorb>?p Q.
+Proof. destruct p; simpl; auto using absorbingly_sep. Qed.
+Lemma absorbingly_if_wand p P Q : <absorb>?p (P -∗ Q) ⊢ <absorb>?p P -∗ <absorb>?p Q.
+Proof. destruct p; simpl; auto using absorbingly_wand. Qed.
+
+Lemma absorbingly_if_sep_l p P Q : <absorb>?p P ∗ Q ⊣⊢ <absorb>?p (P ∗ Q).
+Proof. destruct p; simpl; auto using absorbingly_sep_l. Qed.
+Lemma absorbingly_if_sep_r p P Q : P ∗ <absorb>?p Q ⊣⊢ <absorb>?p (P ∗ Q).
+Proof. destruct p; simpl; auto using absorbingly_sep_r. Qed.
+Lemma absorbingly_if_sep_lr p P Q : <absorb>?p P ∗ Q ⊣⊢ P ∗ <absorb>?p Q.
+Proof. destruct p; simpl; auto using absorbingly_sep_lr. Qed.
+
+Lemma affinely_if_absorbingly_if_elim `{!BiPositive PROP} p P :
+  <affine>?p <absorb>?p P ⊣⊢ <affine>?p P.
+Proof. destruct p; simpl; auto using affinely_absorbingly_elim. Qed.
+
 (* Conditional persistently *)
 Global Instance persistently_if_ne p : NonExpansive (@bi_persistently_if PROP p).
 Proof. solve_proper. Qed.

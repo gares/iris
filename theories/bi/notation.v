@@ -36,6 +36,8 @@ Reserved Notation "'<affine>?' p P" (at level 20, p at level 9, P at level 20,
    right associativity, format "'<affine>?' p  P").
 
 Reserved Notation "'<absorb>' P" (at level 20, right associativity).
+Reserved Notation "'<absorb>?' p P" (at level 20, p at level 9, P at level 20,
+   right associativity, format "'<absorb>?' p  P").
 
 Reserved Notation "□ P" (at level 20, right associativity).
 Reserved Notation "'□?' p P" (at level 20, p at level 9, P at level 20,

@@ -31,7 +31,7 @@ Declare Reduction pm_prettify := cbn [
   (* telescope combinators *)
   tele_fold tele_bind tele_app
   (* BI connectives *)
-  bi_persistently_if bi_affinely_if bi_intuitionistically_if
+  bi_persistently_if bi_affinely_if bi_absorbingly_if bi_intuitionistically_if
   bi_wandM sbi_laterN
   bi_tforall bi_texist
 ].

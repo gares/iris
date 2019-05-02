@@ -62,6 +62,13 @@ Instance: Params (@bi_affinely_if) 2 := {}.
 Typeclasses Opaque bi_affinely_if.
 Notation "'<affine>?' p P" := (bi_affinely_if p P) : bi_scope.
 
+Definition bi_absorbingly_if {PROP : bi} (p : bool) (P : PROP) : PROP :=
+  (if p then <absorb> P else P)%I.
+Arguments bi_absorbingly_if {_} !_ _%I /.
+Instance: Params (@bi_absorbingly_if) 2 := {}.
+Typeclasses Opaque bi_absorbingly_if.
+Notation "'<absorb>?' p P" := (bi_absorbingly_if p P) : bi_scope.
+
 Definition bi_intuitionistically {PROP : bi} (P : PROP) : PROP :=
   (<affine> <pers> P)%I.
 Arguments bi_intuitionistically {_} _%I : simpl never.

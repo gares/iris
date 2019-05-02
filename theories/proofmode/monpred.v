@@ -123,6 +123,10 @@ Global Instance make_monPred_at_affinely_if i P 𝓟 p :
   MakeMonPredAt i P 𝓟 →
   MakeMonPredAt i (<affine>?p P) (<affine>?p 𝓟).
 Proof. destruct p; simpl; apply _. Qed.
+Global Instance make_monPred_at_absorbingly_if i P 𝓟 p :
+  MakeMonPredAt i P 𝓟 →
+  MakeMonPredAt i (<absorb>?p P) (<absorb>?p 𝓟).
+Proof. destruct p; simpl; apply _. Qed.
 Global Instance make_monPred_at_intuitionistically_if i P 𝓟 p :
   MakeMonPredAt i P 𝓟 →
   MakeMonPredAt i (□?p P) (□?p 𝓟).

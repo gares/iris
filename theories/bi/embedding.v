@@ -188,6 +188,8 @@ Section embed.
   Lemma embed_affinely_if `{!BiEmbedEmp PROP1 PROP2} P b :
     ⎡<affine>?b P⎤ ⊣⊢ <affine>?b ⎡P⎤.
   Proof. destruct b; simpl; auto using embed_affinely. Qed.
+  Lemma embed_absorbingly_if b P : ⎡<absorb>?b P⎤ ⊣⊢ <absorb>?b ⎡P⎤.
+  Proof. destruct b; simpl; auto using embed_absorbingly. Qed.
   Lemma embed_intuitionistically_if_2 P b : □?b ⎡P⎤ ⊢ ⎡□?b P⎤.
   Proof. destruct b; simpl; auto using embed_intuitionistically_2. Qed.
   Lemma embed_intuitionistically_if `{!BiEmbedEmp PROP1 PROP2} P b :
