@@ -46,6 +46,13 @@ Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
 Global Instance resize_ne n :
   NonExpansive2 (@resize A n) := _.
 
+Lemma list_dist_cons_inv_l n x l k :
+  x :: l ≡{n}≡ k → ∃ y k', x ≡{n}≡ y ∧ l ≡{n}≡ k' ∧ k = y :: k'.
+Proof. apply Forall2_cons_inv_l. Qed.
+Lemma list_dist_cons_inv_r n l k y :
+  l ≡{n}≡ y :: k → ∃ x l', x ≡{n}≡ y ∧ l' ≡{n}≡ k ∧ l = x :: l'.
+Proof. apply Forall2_cons_inv_r. Qed.
+
 Definition list_ofe_mixin : OfeMixin (list A).
 Proof.
   split.
