@@ -19,6 +19,8 @@ Global Instance length_ne n : Proper (dist n ==> (=)) (@length A) := _.
 Global Instance tail_ne : NonExpansive (@tail A) := _.
 Global Instance take_ne : NonExpansive (@take A n) := _.
 Global Instance drop_ne : NonExpansive (@drop A n) := _.
+Global Instance list_head_ne : NonExpansive (head (A:=A)).
+Proof. destruct 1; by constructor. Qed.
 Global Instance list_lookup_ne i :
   NonExpansive (lookup (M:=list A) i).
 Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
