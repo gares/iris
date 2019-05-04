@@ -19,6 +19,8 @@ Global Instance length_ne n : Proper (dist n ==> (=)) (@length A) := _.
 Global Instance tail_ne : NonExpansive (@tail A) := _.
 Global Instance take_ne : NonExpansive (@take A n) := _.
 Global Instance drop_ne : NonExpansive (@drop A n) := _.
+Global Instance head_ne : NonExpansive (head (A:=A)).
+Proof. destruct 1; by constructor. Qed.
 Global Instance list_lookup_ne i :
   NonExpansive (lookup (M:=list A) i).
 Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
@@ -44,6 +46,13 @@ Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
 Global Instance resize_ne n :
   NonExpansive2 (@resize A n) := _.
 
+Lemma list_dist_cons_inv_l n x l k :
+  x :: l ≡{n}≡ k → ∃ y k', x ≡{n}≡ y ∧ l ≡{n}≡ k' ∧ k = y :: k'.
+Proof. apply Forall2_cons_inv_l. Qed.
+Lemma list_dist_cons_inv_r n l k y :
+  l ≡{n}≡ y :: k → ∃ x l', x ≡{n}≡ y ∧ l' ≡{n}≡ k ∧ l = x :: l'.
+Proof. apply Forall2_cons_inv_r. Qed.
+
 Definition list_ofe_mixin : OfeMixin (list A).
 Proof.
   split.
@@ -54,28 +63,30 @@ Proof.
 Qed.
 Canonical Structure listC := OfeT (list A) list_ofe_mixin.
 
-Program Definition list_chain
-    (c : chain listC) (x : A) (k : nat) : chain A :=
-  {| chain_car n := default x (c n !! k) |}.
-Next Obligation. intros c x k n i ?. by rewrite /= (chain_cauchy c n i). Qed.
-Definition list_compl `{!Cofe A} : Compl listC := λ c,
-  match c 0 with
+(** To define [compl : chain (list A) → list A] we make use of the fact that
+given a given chain [c0, c1, c2, ...] of lists, the list [c0] completely
+determines the shape (i.e. the length) of all lists in the chain. So, the
+[compl] operation is defined by structural recursion on [c0], and takes the
+completion of the elements of all lists in the chain point-wise. We use [head]
+and [tail] as the inverse of [cons]. *)
+Fixpoint list_compl_go `{!Cofe A} (c0 : list A) (c : chain listC) : listC :=
+  match c0 with
   | [] => []
-  | x :: _ => compl ∘ list_chain c x <$> seq 0 (length (c 0))
+  | x :: c0 => compl (chain_map (default x ∘ head) c) :: list_compl_go c0 (chain_map tail c)
   end.
+
 Global Program Instance list_cofe `{!Cofe A} : Cofe listC :=
-  {| compl := list_compl |}.
+  {| compl c := list_compl_go (c 0) c |}.
 Next Obligation.
-  intros ? n c; rewrite /compl /list_compl.
-  destruct (c 0) as [|x l] eqn:Hc0 at 1.
-  { by destruct (chain_cauchy c 0 n); auto with lia. }
-  rewrite -(λ H, length_ne _ _ _ (chain_cauchy c 0 n H)); last lia.
-  apply Forall2_lookup=> i. rewrite -dist_option_Forall2 list_lookup_fmap.
-  destruct (decide (i < length (c n))); last first.
-  { rewrite lookup_seq_ge ?lookup_ge_None_2; auto with lia. }
-  rewrite lookup_seq //= (conv_compl n (list_chain c _ _)) /=.
-  destruct (lookup_lt_is_Some_2 (c n) i) as [? Hcn]; first done.
-  by rewrite Hcn.
+  intros ? n c; rewrite /compl.
+  assert (c 0 ≡{0}≡ c n) as Hc0 by (symmetry; apply chain_cauchy; lia).
+  revert Hc0. generalize (c 0)=> c0. revert c.
+  induction c0 as [|x c0 IH]=> c Hc0 /=.
+  { by inversion Hc0. }
+  apply list_dist_cons_inv_l in Hc0 as (x' & xs' & Hx & Hc0 & Hcn).
+  rewrite Hcn. f_equiv.
+  - by rewrite conv_compl /= Hcn /=.
+  - rewrite IH /= ?Hcn //.
 Qed.
 
 Global Instance list_ofe_discrete : OfeDiscrete A → OfeDiscrete listC.
