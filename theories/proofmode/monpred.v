@@ -202,8 +202,8 @@ Global Instance from_pure_monPred_at a P φ i : FromPure a P φ → FromPure a (
 Proof. rewrite /FromPure=><-. by rewrite monPred_at_affinely_if monPred_at_pure. Qed.
 Global Instance into_pure_monPred_in i j : @IntoPure PROP (monPred_in i j) (i ⊑ j).
 Proof. by rewrite /IntoPure monPred_at_in. Qed.
-Global Instance from_pure_monPred_in i j af : @FromPure PROP af (monPred_in i j) (i ⊑ j).
-Proof. by rewrite /FromPure monPred_at_in bi.affinely_if_elim. Qed.
+Global Instance from_pure_monPred_in i j : @FromPure PROP false (monPred_in i j) (i ⊑ j).
+Proof. by rewrite /FromPure monPred_at_in. Qed.
 
 Global Instance into_persistent_monPred_at p P Q 𝓠 i :
   IntoPersistent p P Q → MakeMonPredAt i Q 𝓠 → IntoPersistent p (P i) 𝓠 | 0.

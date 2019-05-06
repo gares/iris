@@ -56,24 +56,20 @@ Proof. by exists φ. Qed.
 Hint Extern 0 (IntoPureT _ _) =>
   notypeclasses refine (into_pureT_hint _ _ _) : typeclass_instances.
 
-(** [FromPure] is used when introducing a pure assertion. It is used
-    by iPure, the "[%]" specialization pattern, and the [with "[%]"]
-    pattern when using [iAssert].
+(** [FromPure] is used when introducing a pure assertion. It is used by
+[IntoPure] and the [[%]] specialization pattern.
 
-    The [a] Boolean asserts whether we introduce the pure assertion in
-    an affine way or in an absorbing way. When [FromPure true P φ] is
-    derived, then [FromPure false P φ] can always be derived too. We
-    use [true] for specialization patterns and [false] for the
-    [iPureIntro] tactic.
+The Boolean [a] asserts whether we the pure assertion required the [emp]
+resource or not. Concretely, for [IntoPure] it specifies whether the spatial
+context should be empty or not.
 
-    This Boolean is not needed for [IntoPure], because in the case of
-    [IntoPure], we can have the same behavior by asking that [P] be
-    [Affine]. *)
+Note that this Boolean is not needed for [IntoPure], because in the case of
+[IntoPure], we can have the same behavior by asking that [P] be [Affine]. *)
 Class FromPure {PROP : bi} (a : bool) (P : PROP) (φ : Prop) :=
   from_pure : <affine>?a ⌜φ⌝ ⊢ P.
 Arguments FromPure {_} _ _%I _%type_scope : simpl never.
 Arguments from_pure {_} _ _%I _%type_scope {_}.
-Hint Mode FromPure + + ! - : typeclass_instances.
+Hint Mode FromPure + - ! - : typeclass_instances.
 
 Class FromPureT {PROP : bi} (a : bool) (P : PROP) (φ : Type) :=
   from_pureT : ∃ ψ : Prop, φ = ψ ∧ FromPure a P ψ.

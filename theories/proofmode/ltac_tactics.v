@@ -300,10 +300,11 @@ Tactic Notation "iEmpIntro" :=
 Tactic Notation "iPureIntro" :=
   iStartProof;
   eapply tac_pure_intro;
-    [pm_reflexivity
-    |iSolveTC ||
+    [iSolveTC ||
      let P := match goal with |- FromPure _ ?P _ => P end in
      fail "iPureIntro:" P "not pure"
+    |pm_reduce; iSolveTC ||
+     fail "iPureIntro: spatial context contains non-affine hypotheses"
     |].
 
 (** Framing *)
@@ -780,7 +781,7 @@ Ltac iSpecializePat_go H1 pats :=
              fail "iSpecialize: cannot instantiate" P "with" Q
             |pm_reflexivity|iSpecializePat_go H1 pats]]
     | SPureGoal ?d :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_pure _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_pure _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
