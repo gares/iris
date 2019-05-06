@@ -1144,6 +1144,13 @@ Proof. destruct p; simpl; auto using affinely_sep. Qed.
 Lemma affinely_if_idemp p P : <affine>?p <affine>?p P ⊣⊢ <affine>?p P.
 Proof. destruct p; simpl; auto using affinely_idemp. Qed.
 
+Lemma affinely_if_and_l p P Q : <affine>?p P ∧ Q ⊣⊢ <affine>?p (P ∧ Q).
+Proof. destruct p; simpl; auto using affinely_and_l. Qed.
+Lemma affinely_if_and_r p P Q : P ∧ <affine>?p Q ⊣⊢ <affine>?p (P ∧ Q).
+Proof. destruct p; simpl; auto using affinely_and_r. Qed.
+Lemma affinely_if_and_lr p P Q : <affine>?p P ∧ Q ⊣⊢ P ∧ <affine>?p Q.
+Proof. destruct p; simpl; auto using affinely_and_lr. Qed.
+
 (* Conditional absorbingly modality *)
 Global Instance absorbingly_if_ne p : NonExpansive (@bi_absorbingly_if PROP p).
 Proof. solve_proper. Qed.
@@ -1468,10 +1475,14 @@ Global Instance persistently_persistent P : Persistent (<pers> P).
 Proof. by rewrite /Persistent persistently_idemp. Qed.
 Global Instance affinely_persistent P : Persistent P → Persistent (<affine> P).
 Proof. rewrite /bi_affinely. apply _. Qed.
+Global Instance affinely_if_persistent p P : Persistent P → Persistent (<affine>?p P).
+Proof. destruct p; simpl; apply _. Qed.
 Global Instance intuitionistically_persistent P : Persistent (□ P).
 Proof. rewrite /bi_intuitionistically. apply _. Qed.
 Global Instance absorbingly_persistent P : Persistent P → Persistent (<absorb> P).
 Proof. rewrite /bi_absorbingly. apply _. Qed.
+Global Instance absorbingly_if_persistent p P : Persistent P → Persistent (<absorb>?p P).
+Proof. destruct p; simpl; apply _. Qed.
 Global Instance from_option_persistent {A} P (Ψ : A → PROP) (mx : option A) :
   (∀ x, Persistent (Ψ x)) → Persistent P → Persistent (from_option Ψ P mx).
 Proof. destruct mx; apply _. Qed.
