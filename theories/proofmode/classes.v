@@ -56,15 +56,15 @@ Proof. by exists φ. Qed.
 Hint Extern 0 (IntoPureT _ _) =>
   notypeclasses refine (into_pureT_hint _ _ _) : typeclass_instances.
 
-(** [FromPure] is used when introducing a pure assertion. It is used by
-[IntoPure] and the [[%]] specialization pattern.
+(** [FromPure a P φ] is used when introducing a pure assertion. It is used by
+[iPureIntro] and the [[%]] specialization pattern.
 
-The Boolean [a] asserts whether we the pure assertion required the [emp]
-resource or not. Concretely, for [IntoPure] it specifies whether the spatial
-context should be empty or not.
+The Boolean [a] specifies whether introduction of [P] needs [emp] in addition
+to [φ]. Concretely, for the [iPureIntro] tactic, this means it specifies whether
+the spatial context should be empty or not.
 
-Note that this Boolean is not needed for [IntoPure], because in the case of
-[IntoPure], we can have the same behavior by asking that [P] be [Affine]. *)
+Note that the Boolean [a] is not needed for the (dual) [IntoPure] class, because
+there we can just ask that [P] is [Affine]. *)
 Class FromPure {PROP : bi} (a : bool) (P : PROP) (φ : Prop) :=
   from_pure : <affine>?a ⌜φ⌝ ⊢ P.
 Arguments FromPure {_} _ _%I _%type_scope : simpl never.
