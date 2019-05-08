@@ -1,5 +1,5 @@
 -Q theories iris
--arg -w -arg -notation-overridden,-redundant-canonical-projection,-several-object-files
+-arg -w -arg -notation-overridden,-redundant-canonical-projection,-several-object-files,-undeclared-scope,-convert_concl_no_check
 theories/algebra/monoid.v
 theories/algebra/cmra.v
 theories/algebra/big_op.v
