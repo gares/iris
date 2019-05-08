@@ -483,6 +483,10 @@ Lemma test_iSimpl_in3 x y z :
   ⌜ S (S (S x)) = y ⌝ : PROP.
 Proof. iIntros "#H1 H2". iSimpl in "#". Show. done. Qed.
 
+Check "test_iSimpl_in4".
+Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
+Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
+
 Lemma test_iIntros_pure_neg : (⌜ ¬False ⌝ : PROP)%I.
 Proof. by iIntros (?). Qed.
 
