@@ -23,6 +23,7 @@ variables:
   except:
   - triggers
   - schedules
+  - api
 
 ## Build jobs
 
