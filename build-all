@@ -1,0 +1,34 @@
+#!/bin/bash
+set -eo pipefail
+
+# A script to build Iris' reverse-dependencies (the one that usually get built every night against Iris master)
+# against a branch of your choice.
+# Set the GITLAB_TOKEN environment variable to a GitLab access token.
+# Set at least one of IRIS_REV or STDPP_REV to control which branches of these projects to build against
+# (default to `master`).
+
+if [[ -z "$GITLAB_TOKEN" ]]; then
+    echo "You need to set the GITLAB_TOKEN environment variable to a GitLab access token."
+    echo "You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>."
+    echo "Make sure you grant access to the 'api' scope."
+    exit 1
+fi
+
+IRIS_REV=${IRIS_REV:-master}
+STDPP_REV=${STDPP_REV:-master}
+
+curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Flambda-rust/pipeline \
+     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+     --header "Content-Type: application/json" \
+     --data '{ "ref": "master", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"} ] }'
+echo
+curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Flambda-rust/pipeline \
+     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+     --header "Content-Type: application/json" \
+     --data '{ "ref": "ci/weak_mem", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"}, {"key": "ORC11_REV", "value": "master"}, {"key": "GPFSL_REV", "value": "master"} ] }'
+echo
+curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Firon/pipeline \
+     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+     --header "Content-Type: application/json" \
+     --data '{ "ref": "master", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"} ] }'
+echo
