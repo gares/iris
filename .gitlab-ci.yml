@@ -34,6 +34,12 @@ build-coq.dev:
     OPAM_PINS: "coq version dev"
     CI_COQCHK: "1"
 
+build-coq.8.10.dev:
+  <<: *template
+  variables:
+    OCAML: "ocaml-base-compiler.4.07.0"
+    OPAM_PINS: "coq version 8.10.dev"
+
 build-coq.8.9.0:
   <<: *template
   variables:
