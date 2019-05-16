@@ -98,13 +98,17 @@ Ltac iFresh :=
      [tac_fresh] wrapped under a match to force evaluation of this
      side-effect. See https://stackoverflow.com/a/46178884 *)
   let do_incr :=
-      lazymatch goal with
-      | _ => iStartProof; eapply tac_fresh; first by (pm_reflexivity)
-      end in
+    lazymatch goal with
+    | _ =>
+       iStartProof;
+       lazymatch goal with
+       | |- envs_entails (Envs ?Δp ?Δs ?c) ?Q =>
+          let c' := eval vm_compute in (Pos.succ c) in
+          convert_concl_no_check (envs_entails (Envs Δp Δs c') Q)
+       end
+    end in
   lazymatch goal with
-  |- envs_entails ?Δ _ =>
-    let n := pm_eval (env_counter Δ) in
-    constr:(IAnon n)
+  |- envs_entails (Envs _ _ ?c) _ => constr:(IAnon c)
   end.
 
 (** * Context manipulation *)
