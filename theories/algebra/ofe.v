@@ -11,7 +11,7 @@ Set Primitive Projections.
     cases, we do not even need non-expansiveness.
 *)
 
-(** Unbundeled version *)
+(** Unbundled version *)
 Class Dist A := dist : nat → relation A.
 Instance: Params (@dist) 3 := {}.
 Notation "x ≡{ n }≡ y" := (dist n x y)
@@ -43,7 +43,7 @@ Record OfeMixin A `{Equiv A, Dist A} := {
   mixin_dist_S n x y : x ≡{S n}≡ y → x ≡{n}≡ y
 }.
 
-(** Bundeled version *)
+(** Bundled version *)
 Structure ofeT := OfeT {
   ofe_car :> Type;
   ofe_equiv : Equiv ofe_car;
