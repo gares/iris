@@ -101,7 +101,7 @@ Ltac iFresh :=
   side-effect (i.e. to bump the counter) and to return a value (the fresh name).
   We do this by wrapped the side-effect under a [match] in a let-binding. See
   https://stackoverflow.com/a/46178884 *)
-  let _ :=
+  let start :=
     lazymatch goal with
     | _ => iStartProof
     end in
@@ -109,7 +109,7 @@ Ltac iFresh :=
     lazymatch goal with
     | |- envs_entails (Envs _ _ ?c) _ => c
     end in
-  let _ :=
+  let inc :=
     lazymatch goal with
     | |- envs_entails (Envs ?Δp ?Δs _) ?Q =>
       let c' := eval vm_compute in (Pos.succ c) in
