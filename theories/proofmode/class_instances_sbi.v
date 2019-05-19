@@ -37,9 +37,9 @@ Proof.
 Qed.
 
 (** FromPure *)
-Global Instance from_pure_internal_eq af {A : ofeT} (a b : A) :
-  @FromPure PROP af (a ≡ b) (a ≡ b).
-Proof. by rewrite /FromPure pure_internal_eq affinely_if_elim. Qed.
+Global Instance from_pure_internal_eq {A : ofeT} (a b : A) :
+  @FromPure PROP false (a ≡ b) (a ≡ b).
+Proof. by rewrite /FromPure pure_internal_eq. Qed.
 Global Instance from_pure_later a P φ : FromPure a P φ → FromPure a (▷ P) φ.
 Proof. rewrite /FromPure=> ->. apply later_intro. Qed.
 Global Instance from_pure_laterN a n P φ : FromPure a P φ → FromPure a (▷^n P) φ.

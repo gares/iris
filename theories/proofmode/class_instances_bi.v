@@ -153,13 +153,12 @@ Proof. rewrite /IntoPure=>Hx. rewrite -pure_forall_2. by setoid_rewrite Hx. Qed.
 Global Instance into_pure_pure_sep (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 ∗ P2) (φ1 ∧ φ2).
 Proof. rewrite /IntoPure=> -> ->. by rewrite sep_and pure_and. Qed.
-Global Instance into_pure_pure_wand (φ1 φ2 : Prop) P1 P2 :
-  FromPure true P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 -∗ P2) (φ1 → φ2).
+Global Instance into_pure_pure_wand a (φ1 φ2 : Prop) P1 P2 :
+  FromPure a P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 -∗ P2) (φ1 → φ2).
 Proof.
-  rewrite /FromPure /IntoPure=> <- -> /=.
-  rewrite pure_impl -impl_wand_2. apply bi.wand_intro_l.
-  rewrite -{1}(persistent_absorbingly_affinely ⌜φ1⌝%I) absorbingly_sep_l
-          bi.wand_elim_r absorbing //.
+  rewrite /FromPure /IntoPure=> <- -> /=. rewrite pure_impl.
+  apply impl_intro_l, pure_elim_l=> ?. rewrite (pure_True φ1) //.
+  by rewrite -affinely_affinely_if affinely_True_emp affinely_emp left_id.
 Qed.
 
 Global Instance into_pure_affinely P φ : IntoPure P φ → IntoPure (<affine> P) φ.
@@ -177,14 +176,24 @@ Global Instance into_pure_embed `{BiEmbed PROP PROP'} P φ :
 Proof. rewrite /IntoPure=> ->. by rewrite embed_pure. Qed.
 
 (** FromPure *)
-Global Instance from_pure_pure a φ : @FromPure PROP a ⌜φ⌝ φ.
-Proof. rewrite /FromPure. apply affinely_if_elim. Qed.
-Global Instance from_pure_pure_and a (φ1 φ2 : Prop) P1 P2 :
-  FromPure a P1 φ1 → FromPure a P2 φ2 → FromPure a (P1 ∧ P2) (φ1 ∧ φ2).
-Proof. rewrite /FromPure pure_and=> <- <- /=. by rewrite affinely_if_and. Qed.
-Global Instance from_pure_pure_or a (φ1 φ2 : Prop) P1 P2 :
-  FromPure a P1 φ1 → FromPure a P2 φ2 → FromPure a (P1 ∨ P2) (φ1 ∨ φ2).
-Proof. by rewrite /FromPure pure_or affinely_if_or=><- <-. Qed.
+Global Instance from_pure_emp : @FromPure PROP true emp True.
+Proof. rewrite /FromPure /=. apply (affine _). Qed.
+Global Instance from_pure_pure φ : @FromPure PROP false ⌜φ⌝ φ.
+Proof. by rewrite /FromPure /=. Qed.
+Global Instance from_pure_pure_and a1 a2 (φ1 φ2 : Prop) P1 P2 :
+  FromPure a1 P1 φ1 → FromPure a2 P2 φ2 →
+  FromPure (if a1 then true else a2) (P1 ∧ P2) (φ1 ∧ φ2).
+Proof.
+  rewrite /FromPure pure_and=> <- <- /=. rewrite affinely_if_and.
+  f_equiv; apply affinely_if_flag_mono; destruct a1; naive_solver.
+Qed.
+Global Instance from_pure_pure_or a1 a2 (φ1 φ2 : Prop) P1 P2 :
+  FromPure a1 P1 φ1 → FromPure a2 P2 φ2 →
+  FromPure (if a1 then true else a2) (P1 ∨ P2) (φ1 ∨ φ2).
+Proof.
+  rewrite /FromPure pure_or=> <- <- /=. rewrite affinely_if_or.
+  f_equiv; apply affinely_if_flag_mono; destruct a1; naive_solver.
+Qed.
 Global Instance from_pure_pure_impl a (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → FromPure a P2 φ2 → FromPure a (P1 → P2) (φ1 → φ2).
 Proof.
@@ -205,27 +214,25 @@ Proof.
   destruct a=>//=. apply affinely_forall.
 Qed.
 
-Global Instance from_pure_pure_sep_true (φ1 φ2 : Prop) P1 P2 :
-  FromPure true P1 φ1 → FromPure true P2 φ2 → FromPure true (P1 ∗ P2) (φ1 ∧ φ2).
+Global Instance from_pure_pure_sep_true a1 a2 (φ1 φ2 : Prop) P1 P2 :
+  FromPure a1 P1 φ1 → FromPure a2 P2 φ2 →
+  FromPure (if a1 then a2 else false) (P1 ∗ P2) (φ1 ∧ φ2).
 Proof.
-  rewrite /FromPure=> <- <- /=.
-  by rewrite -persistent_and_affinely_sep_l affinely_and_r pure_and.
+  rewrite /FromPure=> <- <-. destruct a1; simpl.
+  - by rewrite pure_and -persistent_and_affinely_sep_l affinely_if_and_r.
+  - by rewrite pure_and -affinely_affinely_if -persistent_and_affinely_sep_r_1.
 Qed.
-Global Instance from_pure_pure_sep_false_l (φ1 φ2 : Prop) P1 P2 :
-  FromPure false P1 φ1 → FromPure true P2 φ2 → FromPure false (P1 ∗ P2) (φ1 ∧ φ2).
+Global Instance from_pure_pure_wand a (φ1 φ2 : Prop) P1 P2 :
+  IntoPure P1 φ1 → FromPure a P2 φ2 →
+  TCOr (TCEq a false) (Affine P1) →
+  FromPure a (P1 -∗ P2) (φ1 → φ2).
 Proof.
-  rewrite /FromPure=> <- <- /=. by rewrite -persistent_and_affinely_sep_r pure_and.
-Qed.
-Global Instance from_pure_pure_sep_false_r (φ1 φ2 : Prop) P1 P2 :
-  FromPure true P1 φ1 → FromPure false P2 φ2 → FromPure false (P1 ∗ P2) (φ1 ∧ φ2).
-Proof.
-  rewrite /FromPure=> <- <- /=. by rewrite -persistent_and_affinely_sep_l pure_and.
-Qed.
-Global Instance from_pure_pure_wand (φ1 φ2 : Prop) a P1 P2 :
-  IntoPure P1 φ1 → FromPure false P2 φ2 → FromPure a (P1 -∗ P2) (φ1 → φ2).
-Proof.
-  rewrite /FromPure /IntoPure=> -> <- /=.
-  by rewrite bi.affinely_if_elim pure_wand_forall pure_impl pure_impl_forall.
+  rewrite /FromPure /IntoPure=> HP1 <- Ha /=. apply wand_intro_l.
+  destruct a; simpl.
+  - destruct Ha as [Ha|?]; first inversion Ha.
+    rewrite -persistent_and_affinely_sep_r -(affine_affinely P1) HP1.
+    by rewrite affinely_and_l pure_impl impl_elim_r.
+  - by rewrite HP1 sep_and pure_impl impl_elim_r.
 Qed.
 
 Global Instance from_pure_persistently P a φ :
@@ -234,24 +241,21 @@ Proof.
   rewrite /FromPure=> <- /=.
   by rewrite persistently_affinely_elim affinely_if_elim persistently_pure.
 Qed.
-Global Instance from_pure_affinely_true P φ :
-  FromPure true P φ → FromPure true (<affine> P) φ.
-Proof. rewrite /FromPure=><- /=. by rewrite affinely_idemp. Qed.
-Global Instance from_pure_affinely_false P φ `{!Affine P} :
-  FromPure false P φ → FromPure false (<affine> P) φ.
-Proof. rewrite /FromPure /= affine_affinely //. Qed.
-Global Instance from_pure_intuitionistically_true P φ :
-  FromPure true P φ → FromPure true (□ P) φ.
+Global Instance from_pure_affinely_true a P φ :
+  FromPure a P φ → FromPure true (<affine> P) φ.
+Proof. rewrite /FromPure=><- /=. by rewrite -affinely_affinely_if affinely_idemp. Qed.
+Global Instance from_pure_intuitionistically_true a P φ :
+  FromPure a P φ → FromPure true (□ P) φ.
 Proof.
-  rewrite /FromPure=><- /=. rewrite intuitionistically_affinely_elim.
-  rewrite {1}(persistent ⌜φ⌝%I) //.
+  rewrite /FromPure=><- /=.
+  rewrite -intuitionistically_affinely_elim -affinely_affinely_if affinely_idemp.
+  by rewrite intuitionistic_intuitionistically.
 Qed.
-
-Global Instance from_pure_absorbingly P φ p :
-  FromPure true P φ → FromPure p (<absorb> P) φ.
+Global Instance from_pure_absorbingly a P φ :
+  FromPure a P φ → FromPure false (<absorb> P) φ.
 Proof.
-  rewrite /FromPure=> <- /=.
-  rewrite persistent_absorbingly_affinely affinely_if_elim //.
+  rewrite /FromPure=> <- /=. rewrite -affinely_affinely_if.
+  by rewrite -persistent_absorbingly_affinely_2.
 Qed.
 Global Instance from_pure_embed `{BiEmbed PROP PROP'} a P φ :
   FromPure a P φ → FromPure a ⎡P⎤ φ.
@@ -946,17 +950,20 @@ Global Instance into_forall_embed `{BiEmbed PROP PROP'} {A} P (Φ : A → PROP) 
   IntoForall P Φ → IntoForall ⎡P⎤ (λ a, ⎡Φ a⎤%I).
 Proof. by rewrite /IntoForall -embed_forall => <-. Qed.
 
-Global Instance into_forall_impl_pure φ P Q :
-  FromPureT false P φ → IntoForall (P → Q) (λ _ : φ, Q).
+Global Instance into_forall_impl_pure a φ P Q :
+  FromPureT a P φ →
+  TCOr (TCEq a false) (BiAffine PROP) →
+  IntoForall (P → Q) (λ _ : φ, Q).
 Proof.
-  rewrite /FromPureT /FromPure /IntoForall=> -[φ' [-> <-]].
-  by rewrite pure_impl_forall.
+  rewrite /FromPureT /FromPure /IntoForall=> -[φ' [-> <-]] [->|?] /=.
+  - by rewrite pure_impl_forall.
+  - by rewrite -affinely_affinely_if affine_affinely pure_impl_forall.
 Qed.
-Global Instance into_forall_wand_pure φ P Q :
-  FromPureT true P φ → IntoForall (P -∗ Q) (λ _ : φ, Q).
+Global Instance into_forall_wand_pure a φ P Q :
+  FromPureT a P φ → IntoForall (P -∗ Q) (λ _ : φ, Q).
 Proof.
   rewrite /FromPureT /FromPure /IntoForall=> -[φ' [-> <-]] /=.
-  apply forall_intro=>? /=.
+  apply forall_intro=>? /=. rewrite -affinely_affinely_if.
   by rewrite -(pure_intro _ True%I) // /bi_affinely right_id emp_wand.
 Qed.
 

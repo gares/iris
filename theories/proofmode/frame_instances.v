@@ -26,10 +26,20 @@ Proof.
   apply sep_elim_l, _.
 Qed.
 
-Global Instance frame_here_pure p φ Q : FromPure false Q φ → Frame p ⌜φ⌝ Q True.
+Global Instance frame_here_pure_persistent a φ Q :
+  FromPure a Q φ → Frame true ⌜φ⌝ Q emp.
 Proof.
-  rewrite /FromPure /Frame=> <-.
-  by rewrite intuitionistically_if_elim sep_elim_l.
+  rewrite /FromPure /Frame /= => <-. rewrite right_id.
+  by rewrite -affinely_affinely_if intuitionistically_affinely.
+Qed.
+Global Instance frame_here_pure a φ Q :
+  FromPure a Q φ →
+  TCOr (TCEq a false) (BiAffine PROP) →
+  Frame false ⌜φ⌝ Q emp.
+Proof.
+  rewrite /FromPure /Frame => <- [->|?] /=.
+  - by rewrite right_id.
+  - by rewrite right_id -affinely_affinely_if affine_affinely.
 Qed.
 
 Global Instance make_embed_pure `{BiEmbed PROP PROP'} φ :

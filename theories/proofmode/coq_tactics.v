@@ -104,14 +104,14 @@ Proof.
 Qed.
 
 (** * Pure *)
-(* This relies on the invariant that [FromPure false] implies
-   [FromPure true] *)
-Lemma tac_pure_intro Δ Q φ af :
-  env_spatial_is_nil Δ = af → FromPure af Q φ → φ → envs_entails Δ Q.
+Lemma tac_pure_intro Δ Q φ a :
+  FromPure a Q φ →
+  (if a then AffineEnv (env_spatial Δ) else TCTrue) →
+  φ →
+  envs_entails Δ Q.
 Proof.
-  intros ???. rewrite envs_entails_eq -(from_pure af Q). destruct af.
-  - rewrite env_spatial_is_nil_intuitionistically //= /bi_intuitionistically.
-    f_equiv. by apply pure_intro.
+  intros ???. rewrite envs_entails_eq -(from_pure a Q). destruct a; simpl.
+  - by rewrite (affine (of_envs Δ)) pure_True // affinely_True_emp affinely_emp.
   - by apply pure_intro.
 Qed.
 
@@ -276,19 +276,18 @@ Proof.
   apply wand_intro_l. by rewrite assoc !wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert_pure Δ Δ' j q R P1 P2 φ Q :
+Lemma tac_specialize_assert_pure Δ Δ' j q a R P1 P2 φ Q :
   envs_lookup j Δ = Some (q, R) →
   IntoWand q true R P1 P2 →
-  FromPure true P1 φ →
+  FromPure a P1 φ →
   envs_simple_replace j q (Esnoc Enil j P2) Δ = Some Δ' →
   φ → envs_entails Δ' Q → envs_entails Δ Q.
 Proof.
   rewrite envs_entails_eq=> ????? <-. rewrite envs_simple_replace_singleton_sound //=.
   rewrite -intuitionistically_if_idemp (into_wand q true) /=.
-  rewrite -(from_pure true P1) /bi_intuitionistically.
-  rewrite pure_True //= persistently_affinely_elim persistently_pure
-          affinely_True_emp affinely_emp.
-  by rewrite emp_wand wand_elim_r.
+  rewrite -(from_pure a P1) pure_True //.
+  rewrite -affinely_affinely_if affinely_True_emp affinely_emp.
+  by rewrite intuitionistically_emp left_id wand_elim_r.
 Qed.
 
 Lemma tac_specialize_assert_intuitionistic Δ Δ' Δ'' j q P1 P1' P2 R Q :

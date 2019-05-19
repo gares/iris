@@ -133,9 +133,20 @@ Lemma test_iSpecialize_Coq_entailment P Q R :
   P → (P -∗ Q) → Q.
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
 
+Lemma test_iPure_intro_emp R `{!Affine R} :
+  R -∗ emp.
+Proof. iIntros "HR". by iPureIntro. Qed.
+
 Lemma test_iEmp_intro P Q R `{!Affine P, !Persistent Q, !Affine R} :
   P -∗ Q → R -∗ emp.
 Proof. iIntros "HP #HQ HR". iEmpIntro. Qed.
+
+Lemma test_iPure_intro (φ : nat → Prop) P Q R `{!Affine P, !Persistent Q, !Affine R} :
+  φ 0 → P -∗ Q → R -∗ ∃ x : nat, <affine> ⌜ φ x ⌝ ∧ ⌜ φ x ⌝.
+Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
+Lemma test_iPure_intro_2 (φ : nat → Prop) P Q R `{!Persistent Q} :
+  φ 0 → P -∗ Q → R -∗ ∃ x : nat, <affine> ⌜ φ x ⌝ ∗ ⌜ φ x ⌝.
+Proof. iIntros (?) "HP #HQ HR". iPureIntro; eauto. Qed.
 
 Lemma test_fresh P Q:
   (P ∗ Q) -∗ (P ∗ Q).
