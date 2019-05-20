@@ -122,7 +122,7 @@ Module Type iProp_solution_sig.
   Notation iPropI Σ := (uPredI (iResUR Σ)).
   Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
-  Global Declare Instance iPreProp_cofe: Cofe (iPreProp Σ).
+  Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ).
   Parameter iProp_unfold: ∀ {Σ}, iProp Σ -n> iPreProp Σ.
   Parameter iProp_fold: ∀ {Σ}, iPreProp Σ -n> iProp Σ.
   Parameter iProp_fold_unfold: ∀ {Σ} (P : iProp Σ),
@@ -141,7 +141,7 @@ Module Export iProp_solution : iProp_solution_sig.
     ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ))).
   Notation iProp Σ := (uPredC (iResUR Σ)).
 
-  Global Instance iPreProp_cofe: Cofe (iPreProp Σ) := _.
+  Global Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ) := _.
   Definition iProp_unfold {Σ} : iProp Σ -n> iPreProp Σ :=
     solution_fold (iProp_result Σ).
   Definition iProp_fold {Σ} : iPreProp Σ -n> iProp Σ := solution_unfold _.
