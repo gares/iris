@@ -1,5 +1,7 @@
 From iris.base_logic.lib Require Import invariants.
 
+Instance test_cofe: Cofe (iPreProp Σ) := _.
+
 Section tests.
   Context `{!invG Σ}.
 
