@@ -150,23 +150,23 @@ Instance exclC_map_ne A B : NonExpansive (@exclC_map A B).
 Proof. by intros n f f' Hf []; constructor; apply Hf. Qed.
 
 Program Definition exclRF (F : cFunctor) : rFunctor := {|
-  rFunctor_car A B := (exclR (cFunctor_car F A B));
-  rFunctor_map A1 A2 B1 B2 fg := exclC_map (cFunctor_map F fg)
+  rFunctor_car A _ B _ := (exclR (cFunctor_car F A B));
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := exclC_map (cFunctor_map F fg)
 |}.
 Next Obligation.
-  intros F A1 A2 B1 B2 n x1 x2 ??. by apply exclC_map_ne, cFunctor_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclC_map_ne, cFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x; simpl. rewrite -{2}(excl_map_id x).
+  intros F A ? B ? x; simpl. rewrite -{2}(excl_map_id x).
   apply excl_map_ext=>y. by rewrite cFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x; simpl. rewrite -excl_map_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl. rewrite -excl_map_compose.
   apply excl_map_ext=>y; apply cFunctor_compose.
 Qed.
 
 Instance exclRF_contractive F :
   cFunctorContractive F → rFunctorContractive (exclRF F).
 Proof.
-  intros A1 A2 B1 B2 n x1 x2 ??. by apply exclC_map_ne, cFunctor_contractive.
+  intros A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclC_map_ne, cFunctor_contractive.
 Qed.

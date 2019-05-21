@@ -161,26 +161,26 @@ Proof.
 Qed.
 
 Program Definition uPredCF (F : urFunctor) : cFunctor := {|
-  cFunctor_car A B := uPredC (urFunctor_car F B A);
-  cFunctor_map A1 A2 B1 B2 fg := uPredC_map (urFunctor_map F (fg.2, fg.1))
+  cFunctor_car A _ B _ := uPredC (urFunctor_car F B A);
+  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := uPredC_map (urFunctor_map F (fg.2, fg.1))
 |}.
 Next Obligation.
-  intros F A1 A2 B1 B2 n P Q HPQ.
+  intros F A1 ? A2 ? B1 ? B2 ? n P Q HPQ.
   apply uPredC_map_ne, urFunctor_ne; split; by apply HPQ.
 Qed.
 Next Obligation.
-  intros F A B P; simpl. rewrite -{2}(uPred_map_id P).
+  intros F A ? B ? P; simpl. rewrite -{2}(uPred_map_id P).
   apply uPred_map_ext=>y. by rewrite urFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' P; simpl. rewrite -uPred_map_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' P; simpl. rewrite -uPred_map_compose.
   apply uPred_map_ext=>y; apply urFunctor_compose.
 Qed.
 
 Instance uPredCF_contractive F :
   urFunctorContractive F → cFunctorContractive (uPredCF F).
 Proof.
-  intros ? A1 A2 B1 B2 n P Q HPQ. apply uPredC_map_ne, urFunctor_contractive.
+  intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ. apply uPredC_map_ne, urFunctor_contractive.
   destruct n; split; by apply HPQ.
 Qed.
 

@@ -306,24 +306,24 @@ Proof.
 Qed.
 
 Program Definition agreeRF (F : cFunctor) : rFunctor := {|
-  rFunctor_car A B := agreeR (cFunctor_car F A B);
-  rFunctor_map A1 A2 B1 B2 fg := agreeC_map (cFunctor_map F fg)
+  rFunctor_car A _ B _ := agreeR (cFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := agreeC_map (cFunctor_map F fg)
 |}.
 Next Obligation.
-  intros ? A1 A2 B1 B2 n ???; simpl. by apply agreeC_map_ne, cFunctor_ne.
+  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl. by apply agreeC_map_ne, cFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x; simpl. rewrite -{2}(agree_map_id x).
+  intros F A ? B ? x; simpl. rewrite -{2}(agree_map_id x).
   apply (agree_map_ext _)=>y. by rewrite cFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x; simpl. rewrite -agree_map_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl. rewrite -agree_map_compose.
   apply (agree_map_ext _)=>y; apply cFunctor_compose.
 Qed.
 
 Instance agreeRF_contractive F :
   cFunctorContractive F → rFunctorContractive (agreeRF F).
 Proof.
-  intros ? A1 A2 B1 B2 n ???; simpl.
+  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl.
   by apply agreeC_map_ne, cFunctor_contractive.
 Qed.

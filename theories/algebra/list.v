@@ -113,25 +113,25 @@ Instance listC_map_ne A B : NonExpansive (@listC_map A B).
 Proof. intros n f g ? l. by apply list_fmap_ext_ne. Qed.
 
 Program Definition listCF (F : cFunctor) : cFunctor := {|
-  cFunctor_car A B := listC (cFunctor_car F A B);
-  cFunctor_map A1 A2 B1 B2 fg := listC_map (cFunctor_map F fg)
+  cFunctor_car A _ B _ := listC (cFunctor_car F A B);
+  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listC_map (cFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 A2 B1 B2 n f g Hfg; apply listC_map_ne, cFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, cFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(list_fmap_id x).
+  intros F A ? B ? x. rewrite /= -{2}(list_fmap_id x).
   apply list_fmap_equiv_ext=>y. apply cFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -list_fmap_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -list_fmap_compose.
   apply list_fmap_equiv_ext=>y; apply cFunctor_compose.
 Qed.
 
 Instance listCF_contractive F :
   cFunctorContractive F → cFunctorContractive (listCF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply listC_map_ne, cFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, cFunctor_contractive.
 Qed.
 
 (* CMRA *)
@@ -462,23 +462,23 @@ Proof.
 Qed.
 
 Program Definition listURF (F : urFunctor) : urFunctor := {|
-  urFunctor_car A B := listUR (urFunctor_car F A B);
-  urFunctor_map A1 A2 B1 B2 fg := listC_map (urFunctor_map F fg)
+  urFunctor_car A _ B _ := listUR (urFunctor_car F A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listC_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F ???? n f g Hfg; apply listC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(list_fmap_id x).
+  intros F A ? B ? x. rewrite /= -{2}(list_fmap_id x).
   apply list_fmap_equiv_ext=>y. apply urFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -list_fmap_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -list_fmap_compose.
   apply list_fmap_equiv_ext=>y; apply urFunctor_compose.
 Qed.
 
 Instance listURF_contractive F :
   urFunctorContractive F → urFunctorContractive (listURF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply listC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, urFunctor_contractive.
 Qed.

@@ -766,16 +766,18 @@ End cmra_morphism.
 
 (** Functors *)
 Record rFunctor := RFunctor {
-  rFunctor_car : ofeT → ofeT → cmraT;
-  rFunctor_map {A1 A2 B1 B2} :
+  rFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, cmraT;
+  rFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → rFunctor_car A1 B1 -n> rFunctor_car A2 B2;
-  rFunctor_ne A1 A2 B1 B2 :
-    NonExpansive (@rFunctor_map A1 A2 B1 B2);
-  rFunctor_id {A B} (x : rFunctor_car A B) : rFunctor_map (cid,cid) x ≡ x;
-  rFunctor_compose {A1 A2 A3 B1 B2 B3}
+  rFunctor_ne `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
+    NonExpansive (@rFunctor_map A1 _ A2 _ B1 _ B2 _);
+  rFunctor_id `{!Cofe A, !Cofe B} (x : rFunctor_car A B) :
+    rFunctor_map (cid,cid) x ≡ x;
+  rFunctor_compose `{!Cofe A1, !Cofe A2, !Cofe A3, !Cofe B1, !Cofe B2, !Cofe B3}
       (f : A2 -n> A1) (g : A3 -n> A2) (f' : B1 -n> B2) (g' : B2 -n> B3) x :
     rFunctor_map (f◎g, g'◎f') x ≡ rFunctor_map (g,g') (rFunctor_map (f,f') x);
-  rFunctor_mor {A1 A2 B1 B2} (fg : (A2 -n> A1) * (B1 -n> B2)) :
+  rFunctor_mor `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2}
+      (fg : (A2 -n> A1) * (B1 -n> B2)) :
     CmraMorphism (rFunctor_map fg)
 }.
 Existing Instances rFunctor_ne rFunctor_mor.
@@ -785,13 +787,15 @@ Delimit Scope rFunctor_scope with RF.
 Bind Scope rFunctor_scope with rFunctor.
 
 Class rFunctorContractive (F : rFunctor) :=
-  rFunctor_contractive A1 A2 B1 B2 :> Contractive (@rFunctor_map F A1 A2 B1 B2).
+  rFunctor_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
+    Contractive (@rFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition rFunctor_diag (F: rFunctor) (A: ofeT) : cmraT := rFunctor_car F A A.
+Definition rFunctor_diag (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
+  rFunctor_car F A A.
 Coercion rFunctor_diag : rFunctor >-> Funclass.
 
 Program Definition constRF (B : cmraT) : rFunctor :=
-  {| rFunctor_car A1 A2 := B; rFunctor_map A1 A2 B1 B2 f := cid |}.
+  {| rFunctor_car A1 _ A2 _ := B; rFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
 Coercion constRF : cmraT >-> rFunctor.
 
@@ -799,16 +803,18 @@ Instance constRF_contractive B : rFunctorContractive (constRF B).
 Proof. rewrite /rFunctorContractive; apply _. Qed.
 
 Record urFunctor := URFunctor {
-  urFunctor_car : ofeT → ofeT → ucmraT;
-  urFunctor_map {A1 A2 B1 B2} :
+  urFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ucmraT;
+  urFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → urFunctor_car A1 B1 -n> urFunctor_car A2 B2;
-  urFunctor_ne A1 A2 B1 B2 :
-    NonExpansive (@urFunctor_map A1 A2 B1 B2);
-  urFunctor_id {A B} (x : urFunctor_car A B) : urFunctor_map (cid,cid) x ≡ x;
-  urFunctor_compose {A1 A2 A3 B1 B2 B3}
+  urFunctor_ne `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
+    NonExpansive (@urFunctor_map A1 _ A2 _ B1 _ B2 _);
+  urFunctor_id `{!Cofe A, !Cofe B} (x : urFunctor_car A B) :
+    urFunctor_map (cid,cid) x ≡ x;
+  urFunctor_compose `{!Cofe A1, !Cofe A2, !Cofe A3, !Cofe B1, !Cofe B2, !Cofe B3}
       (f : A2 -n> A1) (g : A3 -n> A2) (f' : B1 -n> B2) (g' : B2 -n> B3) x :
     urFunctor_map (f◎g, g'◎f') x ≡ urFunctor_map (g,g') (urFunctor_map (f,f') x);
-  urFunctor_mor {A1 A2 B1 B2} (fg : (A2 -n> A1) * (B1 -n> B2)) :
+  urFunctor_mor `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2}
+      (fg : (A2 -n> A1) * (B1 -n> B2)) :
     CmraMorphism (urFunctor_map fg)
 }.
 Existing Instances urFunctor_ne urFunctor_mor.
@@ -818,13 +824,15 @@ Delimit Scope urFunctor_scope with URF.
 Bind Scope urFunctor_scope with urFunctor.
 
 Class urFunctorContractive (F : urFunctor) :=
-  urFunctor_contractive A1 A2 B1 B2 :> Contractive (@urFunctor_map F A1 A2 B1 B2).
+  urFunctor_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
+    Contractive (@urFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition urFunctor_diag (F: urFunctor) (A: ofeT) : ucmraT := urFunctor_car F A A.
+Definition urFunctor_diag (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
+  urFunctor_car F A A.
 Coercion urFunctor_diag : urFunctor >-> Funclass.
 
 Program Definition constURF (B : ucmraT) : urFunctor :=
-  {| urFunctor_car A1 A2 := B; urFunctor_map A1 A2 B1 B2 f := cid |}.
+  {| urFunctor_car A1 _ A2 _ := B; urFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
 Coercion constURF : ucmraT >-> urFunctor.
 
@@ -1189,16 +1197,16 @@ Proof.
 Qed.
 
 Program Definition prodRF (F1 F2 : rFunctor) : rFunctor := {|
-  rFunctor_car A B := prodR (rFunctor_car F1 A B) (rFunctor_car F2 A B);
-  rFunctor_map A1 A2 B1 B2 fg :=
+  rFunctor_car A _ B _ := prodR (rFunctor_car F1 A B) (rFunctor_car F2 A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
     prodC_map (rFunctor_map F1 fg) (rFunctor_map F2 fg)
 |}.
 Next Obligation.
-  intros F1 F2 A1 A2 B1 B2 n ???. by apply prodC_map_ne; apply rFunctor_ne.
+  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodC_map_ne; apply rFunctor_ne.
 Qed.
-Next Obligation. by intros F1 F2 A B [??]; rewrite /= !rFunctor_id. Qed.
+Next Obligation. by intros F1 F2 A ? B ? [??]; rewrite /= !rFunctor_id. Qed.
 Next Obligation.
-  intros F1 F2 A1 A2 A3 B1 B2 B3 f g f' g' [??]; simpl.
+  intros F1 F2 A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' [??]; simpl.
   by rewrite !rFunctor_compose.
 Qed.
 Notation "F1 * F2" := (prodRF F1%RF F2%RF) : rFunctor_scope.
@@ -1207,21 +1215,21 @@ Instance prodRF_contractive F1 F2 :
   rFunctorContractive F1 → rFunctorContractive F2 →
   rFunctorContractive (prodRF F1 F2).
 Proof.
-  intros ?? A1 A2 B1 B2 n ???;
+  intros ?? A1 ? A2 ? B1 ? B2 ? n ???;
     by apply prodC_map_ne; apply rFunctor_contractive.
 Qed.
 
 Program Definition prodURF (F1 F2 : urFunctor) : urFunctor := {|
-  urFunctor_car A B := prodUR (urFunctor_car F1 A B) (urFunctor_car F2 A B);
-  urFunctor_map A1 A2 B1 B2 fg :=
+  urFunctor_car A _ B _ := prodUR (urFunctor_car F1 A B) (urFunctor_car F2 A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
     prodC_map (urFunctor_map F1 fg) (urFunctor_map F2 fg)
 |}.
 Next Obligation.
-  intros F1 F2 A1 A2 B1 B2 n ???. by apply prodC_map_ne; apply urFunctor_ne.
+  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodC_map_ne; apply urFunctor_ne.
 Qed.
-Next Obligation. by intros F1 F2 A B [??]; rewrite /= !urFunctor_id. Qed.
+Next Obligation. by intros F1 F2 A ? B ? [??]; rewrite /= !urFunctor_id. Qed.
 Next Obligation.
-  intros F1 F2 A1 A2 A3 B1 B2 B3 f g f' g' [??]; simpl.
+  intros F1 F2 A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' [??]; simpl.
   by rewrite !urFunctor_compose.
 Qed.
 Notation "F1 * F2" := (prodURF F1%URF F2%URF) : urFunctor_scope.
@@ -1230,7 +1238,7 @@ Instance prodURF_contractive F1 F2 :
   urFunctorContractive F1 → urFunctorContractive F2 →
   urFunctorContractive (prodURF F1 F2).
 Proof.
-  intros ?? A1 A2 B1 B2 n ???;
+  intros ?? A1 ? A2 ? B1 ? B2 ? n ???;
     by apply prodC_map_ne; apply urFunctor_contractive.
 Qed.
 
@@ -1450,47 +1458,47 @@ Proof.
 Qed.
 
 Program Definition optionRF (F : rFunctor) : rFunctor := {|
-  rFunctor_car A B := optionR (rFunctor_car F A B);
-  rFunctor_map A1 A2 B1 B2 fg := optionC_map (rFunctor_map F fg)
+  rFunctor_car A _ B _ := optionR (rFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionC_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 A2 B1 B2 n f g Hfg; apply optionC_map_ne, rFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(option_fmap_id x).
+  intros F A ? B ? x. rewrite /= -{2}(option_fmap_id x).
   apply option_fmap_equiv_ext=>y; apply rFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -option_fmap_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -option_fmap_compose.
   apply option_fmap_equiv_ext=>y; apply rFunctor_compose.
 Qed.
 
 Instance optionRF_contractive F :
   rFunctorContractive F → rFunctorContractive (optionRF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
 Qed.
 
 Program Definition optionURF (F : rFunctor) : urFunctor := {|
-  urFunctor_car A B := optionUR (rFunctor_car F A B);
-  urFunctor_map A1 A2 B1 B2 fg := optionC_map (rFunctor_map F fg)
+  urFunctor_car A _ B _ := optionUR (rFunctor_car F A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionC_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 A2 B1 B2 n f g Hfg; apply optionC_map_ne, rFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(option_fmap_id x).
+  intros F A ? B ? x. rewrite /= -{2}(option_fmap_id x).
   apply option_fmap_equiv_ext=>y; apply rFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -option_fmap_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -option_fmap_compose.
   apply option_fmap_equiv_ext=>y; apply rFunctor_compose.
 Qed.
 
 Instance optionURF_contractive F :
   rFunctorContractive F → urFunctorContractive (optionURF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
 Qed.
 
 (* Dependently-typed functions over a discrete domain *)
@@ -1573,23 +1581,23 @@ Proof.
 Qed.
 
 Program Definition ofe_funURF {C} (F : C → urFunctor) : urFunctor := {|
-  urFunctor_car A B := ofe_funUR (λ c, urFunctor_car (F c) A B);
-  urFunctor_map A1 A2 B1 B2 fg := ofe_funC_map (λ c, urFunctor_map (F c) fg)
+  urFunctor_car A _ B _ := ofe_funUR (λ c, urFunctor_car (F c) A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := ofe_funC_map (λ c, urFunctor_map (F c) fg)
 |}.
 Next Obligation.
-  intros C F A1 A2 B1 B2 n ?? g. by apply ofe_funC_map_ne=>?; apply urFunctor_ne.
+  intros C F A1 ? A2 ? B1 ? B2 ? n ?? g. by apply ofe_funC_map_ne=>?; apply urFunctor_ne.
 Qed.
 Next Obligation.
-  intros C F A B g; simpl. rewrite -{2}(ofe_fun_map_id g).
+  intros C F A ? B ? g; simpl. rewrite -{2}(ofe_fun_map_id g).
   apply ofe_fun_map_ext=> y; apply urFunctor_id.
 Qed.
 Next Obligation.
-  intros C F A1 A2 A3 B1 B2 B3 f1 f2 f1' f2' g. rewrite /=-ofe_fun_map_compose.
+  intros C F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f1 f2 f1' f2' g. rewrite /=-ofe_fun_map_compose.
   apply ofe_fun_map_ext=>y; apply urFunctor_compose.
 Qed.
 Instance ofe_funURF_contractive {C} (F : C → urFunctor) :
   (∀ c, urFunctorContractive (F c)) → urFunctorContractive (ofe_funURF F).
 Proof.
-  intros ? A1 A2 B1 B2 n ?? g.
+  intros ? A1 ? A2 ? B1 ? B2 ? n ?? g.
   by apply ofe_funC_map_ne=>c; apply urFunctor_contractive.
 Qed.

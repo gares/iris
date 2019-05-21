@@ -9,7 +9,7 @@ Import uPred.
    saved whatever-you-like. *)
 
 Class savedAnythingG (Σ : gFunctors) (F : cFunctor) := SavedAnythingG {
-  saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ)));
+  saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ) _));
   saved_anything_contractive : cFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
 }.
 Definition savedAnythingΣ (F : cFunctor) `{!cFunctorContractive F} : gFunctors :=
@@ -20,14 +20,14 @@ Instance subG_savedAnythingΣ {Σ F} `{!cFunctorContractive F} :
 Proof. solve_inG. Qed.
 
 Definition saved_anything_own `{!savedAnythingG Σ F}
-    (γ : gname) (x : F (iProp Σ)) : iProp Σ :=
+    (γ : gname) (x : F (iProp Σ) _) : iProp Σ :=
   own γ (to_agree $ (cFunctor_map F (iProp_fold, iProp_unfold) x)).
 Typeclasses Opaque saved_anything_own.
 Instance: Params (@saved_anything_own) 4 := {}.
 
 Section saved_anything.
   Context `{!savedAnythingG Σ F}.
-  Implicit Types x y : F (iProp Σ).
+  Implicit Types x y : F (iProp Σ) _.
   Implicit Types γ : gname.
 
   Global Instance saved_anything_persistent γ x :

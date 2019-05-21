@@ -10,10 +10,10 @@ individual CMRAs instead of (lists of) CMRA *functors*. This additional class is
 needed because Coq is otherwise unable to solve type class constraints due to
 higher-order unification problems. *)
 Class inG (Σ : gFunctors) (A : cmraT) :=
-  InG { inG_id : gid Σ; inG_prf : A = Σ inG_id (iPreProp Σ) }.
+  InG { inG_id : gid Σ; inG_prf : A = Σ inG_id (iPreProp Σ) _ }.
 Arguments inG_id {_ _} _.
 
-Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (F (iPreProp Σ)).
+Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (F (iPreProp Σ) _).
 Proof. move=> /(_ 0%fin) /= [j ->]. by exists j. Qed.
 
 (** This tactic solves the usual obligations "subG ? Σ → {in,?}G ? Σ" *)

@@ -100,7 +100,7 @@ Global Instance csum_ofe_discrete :
   OfeDiscrete A → OfeDiscrete B → OfeDiscrete csumC.
 Proof. by inversion_clear 3; constructor; apply (discrete _). Qed.
 Global Instance csum_leibniz :
-  LeibnizEquiv A → LeibnizEquiv B → LeibnizEquiv (csumC A B).
+  LeibnizEquiv A → LeibnizEquiv B → LeibnizEquiv csumC.
 Proof. by destruct 3; f_equal; apply leibniz_equiv. Qed.
 
 Global Instance Cinl_discrete a : Discrete a → Discrete (Cinl a).
@@ -367,18 +367,18 @@ Proof.
 Qed.
 
 Program Definition csumRF (Fa Fb : rFunctor) : rFunctor := {|
-  rFunctor_car A B := csumR (rFunctor_car Fa A B) (rFunctor_car Fb A B);
-  rFunctor_map A1 A2 B1 B2 fg := csumC_map (rFunctor_map Fa fg) (rFunctor_map Fb fg)
+  rFunctor_car A _ B _ := csumR (rFunctor_car Fa A B) (rFunctor_car Fb A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := csumC_map (rFunctor_map Fa fg) (rFunctor_map Fb fg)
 |}.
 Next Obligation.
-  by intros Fa Fb A1 A2 B1 B2 n f g Hfg; apply csumC_map_ne; try apply rFunctor_ne.
+  by intros Fa Fb A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply csumC_map_ne; try apply rFunctor_ne.
 Qed.
 Next Obligation.
-  intros Fa Fb A B x. rewrite /= -{2}(csum_map_id x).
+  intros Fa Fb A ? B ? x. rewrite /= -{2}(csum_map_id x).
   apply csum_map_ext=>y; apply rFunctor_id.
 Qed.
 Next Obligation.
-  intros Fa Fb A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -csum_map_compose.
+  intros Fa Fb A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -csum_map_compose.
   apply csum_map_ext=>y; apply rFunctor_compose.
 Qed.
 
@@ -386,5 +386,6 @@ Instance csumRF_contractive Fa Fb :
   rFunctorContractive Fa → rFunctorContractive Fb →
   rFunctorContractive (csumRF Fa Fb).
 Proof.
-  by intros ?? A1 A2 B1 B2 n f g Hfg; apply csumC_map_ne; try apply rFunctor_contractive.
+  intros ?? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
+  by apply csumC_map_ne; try apply rFunctor_contractive.
 Qed.

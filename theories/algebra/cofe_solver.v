@@ -4,8 +4,8 @@ Set Default Proof Using "Type".
 Record solution (F : cFunctor) := Solution {
   solution_car :> ofeT;
   solution_cofe : Cofe solution_car;
-  solution_unfold : solution_car -n> F solution_car;
-  solution_fold : F solution_car -n> solution_car;
+  solution_unfold : solution_car -n> F solution_car _;
+  solution_fold : F solution_car _ -n> solution_car;
   solution_fold_unfold X : solution_fold (solution_unfold X) ≡ X;
   solution_unfold_fold X : solution_unfold (solution_fold X) ≡ X
 }.
@@ -14,21 +14,25 @@ Arguments solution_fold {_} _.
 Existing Instance solution_cofe.
 
 Module solver. Section solver.
-Context (F : cFunctor) `{Fcontr : cFunctorContractive F}
-        `{Fcofe : ∀ T : ofeT, Cofe T → Cofe (F T)} `{Finh : Inhabited (F unitC)}.
+Context (F : cFunctor) `{Fcontr : cFunctorContractive F}.
+Context `{Fcofe : ∀ (T : ofeT) `{!Cofe T}, Cofe (F T _)}.
+Context `{Finh : Inhabited (F unitC _)}.
 Notation map := (cFunctor_map F).
 
-Fixpoint A (k : nat) : ofeT :=
-  match k with 0 => unitC | S k => F (A k) end.
-Local Instance: ∀ k, Cofe (A k).
-Proof using Fcofe. induction k; apply _. Defined.
+Fixpoint A' (k : nat) : { C : ofeT & Cofe C } :=
+  match k with
+  | 0 => existT (P:=Cofe) unitC _
+  | S k => existT (P:=Cofe) (F (projT1 (A' k)) (projT2 (A' k))) _
+  end.
+Notation A k := (projT1 (A' k)).
+Local Instance A_cofe k : Cofe (A k) := projT2 (A' k).
+
 Fixpoint f (k : nat) : A k -n> A (S k) :=
   match k with 0 => CofeMor (λ _, inhabitant) | S k => map (g k,f k) end
 with g (k : nat) : A (S k) -n> A k :=
   match k with 0 => CofeMor (λ _, ()) | S k => map (f k,g k) end.
 Definition f_S k (x : A (S k)) : f (S k) x = map (g k,f k) x := eq_refl.
 Definition g_S k (x : A (S (S k))) : g (S k) x = map (f k,g k) x := eq_refl.
-Arguments A : simpl never.
 Arguments f : simpl never.
 Arguments g : simpl never.
 
@@ -177,7 +181,7 @@ Proof.
   - rewrite (ff_tower k (i - S k) X). by destruct (Nat.sub_add _ _ _).
 Qed.
 
-Program Definition unfold_chain (X : T) : chain (F T) :=
+Program Definition unfold_chain (X : T) : chain (F T _) :=
   {| chain_car n := map (project n,embed' n) (X (S n)) |}.
 Next Obligation.
   intros X n i Hi.
@@ -187,14 +191,14 @@ Next Obligation.
   rewrite f_S -cFunctor_compose.
   by apply (contractive_ne map); split=> Y /=; rewrite ?g_tower ?embed_f.
 Qed.
-Definition unfold (X : T) : F T := compl (unfold_chain X).
+Definition unfold (X : T) : F T _ := compl (unfold_chain X).
 Instance unfold_ne : NonExpansive unfold.
 Proof.
   intros n X Y HXY. by rewrite /unfold (conv_compl n (unfold_chain X))
     (conv_compl n (unfold_chain Y)) /= (HXY (S n)).
 Qed.
 
-Program Definition fold (X : F T) : T :=
+Program Definition fold (X : F T _) : T :=
   {| tower_car n := g n (map (embed' n,project n) X) |}.
 Next Obligation.
   intros X k. apply (_ : Proper ((≡) ==> (≡)) (g k)).
