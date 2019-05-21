@@ -15,8 +15,8 @@ Implicit Types P Q : PROP.
 (** * Adequacy *)
 Lemma tac_adequate P : envs_entails (Envs Enil Enil 1) P → P.
 Proof.
-  rewrite envs_entails_eq /of_envs /= intuitionistically_True_emp
-          left_id=><-.
+  rewrite envs_entails_eq !of_envs_eq /=.
+  rewrite intuitionistically_True_emp left_id=><-.
   apply and_intro=> //. apply pure_intro; repeat constructor.
 Qed.
 
@@ -589,14 +589,8 @@ Lemma tac_accu Δ P :
   envs_entails Δ P.
 Proof.
   rewrite envs_entails_eq=><-.
-  rewrite env_to_prop_sound /of_envs and_elim_r sep_elim_r //.
+  rewrite env_to_prop_sound !of_envs_eq and_elim_r sep_elim_r //.
 Qed.
-
-(** * Fresh *)
-Lemma tac_fresh Δ Δ' (Q : PROP) :
-  envs_incr_counter Δ = Δ' →
-  envs_entails Δ' Q → envs_entails Δ Q.
-Proof. rewrite envs_entails_eq=> <- <-. by rewrite envs_incr_counter_sound. Qed.
 
 (** * Invariants *)
 Lemma tac_inv_elim {X : Type} Δ Δ' i j φ p Pinv Pin Pout (Pclose : option (X → PROP))
@@ -805,7 +799,7 @@ Section tac_modal_intro.
     (if fi then Absorbing Q' else TCTrue) →
     envs_entails (Envs Γp' Γs' n) Q → envs_entails (Envs Γp Γs n) Q'.
   Proof.
-    rewrite envs_entails_eq /FromModal /of_envs /= => HQ' HΓp HΓs ? HQ.
+    rewrite envs_entails_eq /FromModal !of_envs_eq => HQ' HΓp HΓs ? HQ.
     apply pure_elim_l=> -[???]. assert (envs_wf (Envs Γp' Γs' n)) as Hwf.
     { split; simpl in *.
       - destruct HΓp as [| |????? []| |]; eauto using Enil_wf.
@@ -910,7 +904,7 @@ Proof. by split. Qed.
 Lemma into_laterN_env_sound n Δ1 Δ2 :
   MaybeIntoLaterNEnvs n Δ1 Δ2 → of_envs Δ1 ⊢ ▷^n (of_envs Δ2).
 Proof.
-  intros [[Hp ??] [Hs ??]]; rewrite /of_envs /= !laterN_and !laterN_sep.
+  intros [[Hp ??] [Hs ??]]; rewrite !of_envs_eq /= !laterN_and !laterN_sep.
   rewrite -{1}laterN_intro. apply and_mono, sep_mono.
   - apply pure_mono; destruct 1; constructor; naive_solver.
   - apply Hp; rewrite /= /MaybeIntoLaterN.

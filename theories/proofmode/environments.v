@@ -212,31 +212,60 @@ Global Instance env_to_list_subenv_proper :
 Proof. induction 1; simpl; constructor; auto. Qed.
 End env.
 
-Record envs (PROP : bi) :=
-  Envs { env_intuitionistic : env PROP; env_spatial : env PROP; env_counter : positive }.
+Record envs (PROP : bi) := Envs {
+  env_intuitionistic : env PROP;
+  env_spatial : env PROP;
+  env_counter : positive (** A counter to generate fresh hypothesis names *)
+}.
 Add Printing Constructor envs.
 Arguments Envs {_} _ _ _.
 Arguments env_intuitionistic {_} _.
 Arguments env_spatial {_} _.
 Arguments env_counter {_} _.
 
-Record envs_wf {PROP} (Δ : envs PROP) := {
-  env_intuitionistic_valid : env_wf (env_intuitionistic Δ);
-  env_spatial_valid : env_wf (env_spatial Δ);
-  envs_disjoint i : env_intuitionistic Δ !! i = None ∨ env_spatial Δ !! i = None
-}.
+(** We now define the judgment [envs_entails Δ Q] for proof mode entailments.
+This judgment expresses that [Q] can be proved under the proof mode environment
+[Δ]. To improve performance and to encapsulate the internals of the proof mode
+(i.e. to ensure that tactics like [intro] cannot accidentally unfold the
+entailment), we seal off [envs_entails].
 
-Definition of_envs {PROP} (Δ : envs PROP) : PROP :=
-  (⌜envs_wf Δ⌝ ∧ □ [∧] env_intuitionistic Δ ∗ [∗] env_spatial Δ)%I.
+The way the the definitions below are setup involves some trickery so we can
+implement the [iFresh] tactic, which increases the counter [env_counter], in
+an efficient way. Concretely, we made sure that [envs_entails (Envs Γp Γs c) Q]
+and [envs_entails (Envs Γp Γs c') Q] are convertible for any [c] and [c']. This
+way, [iFresh] can simply be implemented by changing the goal from
+[envs_entails (Envs Γp Γs c) Q] into [envs_entails (Envs Γp Γs (Pos_succ c)) Q]
+using the tactic [convert_concl_no_check]. This way, the generated proof term
+contains no additional steps for changing the counter.
+
+For all definitions below, we first define a version that take the two contexts
+[env_intuitionistic] and [env_spatial] as its arguments, and then lift these
+definitions that take the whole proof mode context [Δ : envs PROP]. This is
+crucial to make sure that the counter [env_counter] is not part of the seal. *)
+Record envs_wf' {PROP : bi} (Γp Γs : env PROP) := {
+  env_intuitionistic_valid : env_wf Γp;
+  env_spatial_valid : env_wf Γs;
+  envs_disjoint i : Γp !! i = None ∨ Γs !! i = None
+}.
+Definition envs_wf {PROP : bi} (Δ : envs PROP) :=
+  envs_wf' (env_intuitionistic Δ) (env_spatial Δ).
+
+Definition of_envs' {PROP : bi} (Γp Γs : env PROP) : PROP :=
+  (⌜envs_wf' Γp Γs⌝ ∧ □ [∧] Γp ∗ [∗] Γs)%I.
+Instance: Params (@of_envs') 1 := {}.
+Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
+  of_envs' (env_intuitionistic Δ) (env_spatial Δ).
 Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
-(* We seal [envs_entails], so that it does not get unfolded by the
-   proofmode's own tactics, such as [iIntros (?)]. *)
-Definition envs_entails_aux : seal (λ PROP (Δ : envs PROP) (Q : PROP), (of_envs Δ ⊢ Q)).
+Definition envs_entails_aux :
+  seal (λ {PROP : bi} (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
 Proof. by eexists. Qed.
-Definition envs_entails := envs_entails_aux.(unseal).
-Definition envs_entails_eq : envs_entails = _ := envs_entails_aux.(seal_eq).
+Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
+  envs_entails_aux.(unseal) PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
+Definition envs_entails_eq :
+  @envs_entails = λ {PROP} (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
+Proof. by rewrite /envs_entails envs_entails_aux.(seal_eq). Qed.
 Arguments envs_entails {PROP} Δ Q%I : rename.
 Instance: Params (@envs_entails) 1 := {}.
 
@@ -343,7 +372,7 @@ Definition env_to_prop {PROP : bi} (Γ : env PROP) : PROP :=
 
 Section envs.
 Context {PROP : bi}.
-Implicit Types Γ : env PROP.
+Implicit Types Γ Γp Γs : env PROP.
 Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
@@ -372,19 +401,46 @@ Lemma envs_Forall2_impl (R R' : relation PROP) Δ1 Δ2 :
   envs_Forall2 R Δ1 Δ2 → (∀ P Q, R P Q → R' P Q) → envs_Forall2 R' Δ1 Δ2.
 Proof. intros [??] ?; constructor; eauto using env_Forall2_impl. Qed.
 
-Global Instance of_envs_mono : Proper (envs_Forall2 (⊢) ==> (⊢)) (@of_envs PROP).
+Global Instance env_intuitionistic_mono :
+  Proper (envs_Forall2 (⊢) ==> env_Forall2 (⊢)) (@env_intuitionistic PROP).
+Proof. solve_proper. Qed.
+Global Instance env_intuitionistic_flip_mono :
+  Proper (flip (envs_Forall2 (⊢)) ==> flip (env_Forall2 (⊢))) (@env_intuitionistic PROP).
+Proof. solve_proper. Qed.
+Global Instance env_intuitionistic_proper :
+  Proper (envs_Forall2 (⊣⊢) ==> env_Forall2 (⊣⊢)) (@env_intuitionistic PROP).
+Proof. solve_proper. Qed.
+
+Global Instance env_spatial_mono :
+  Proper (envs_Forall2 (⊢) ==> env_Forall2 (⊢)) (@env_spatial PROP).
+Proof. solve_proper. Qed.
+Global Instance env_spatial_flip_mono :
+  Proper (flip (envs_Forall2 (⊢)) ==> flip (env_Forall2 (⊢))) (@env_spatial PROP).
+Proof. solve_proper. Qed.
+Global Instance env_spatial_proper :
+  Proper (envs_Forall2 (⊣⊢) ==> env_Forall2 (⊣⊢)) (@env_spatial PROP).
+Proof. solve_proper. Qed.
+
+Global Instance of_envs_mono' :
+  Proper (env_Forall2 (⊢) ==> env_Forall2 (⊢) ==> (⊢)) (@of_envs' PROP).
 Proof.
-  intros [Γp1 Γs1] [Γp2 Γs2] [Hp Hs]; apply and_mono; simpl in *.
+  intros Γp1 Γp2 Hp Γs1 Γs2 Hs; apply and_mono; simpl in *.
   - apply pure_mono=> -[???]. constructor;
       naive_solver eauto using env_Forall2_wf, env_Forall2_fresh.
   - by repeat f_equiv.
 Qed.
-Global Instance of_envs_proper :
-  Proper (envs_Forall2 (⊣⊢) ==> (⊣⊢)) (@of_envs PROP).
+Global Instance of_envs_proper' :
+  Proper (env_Forall2 (⊣⊢) ==> env_Forall2 (⊣⊢) ==> (⊣⊢)) (@of_envs' PROP).
 Proof.
-  intros Δ1 Δ2 HΔ; apply (anti_symm (⊢)); apply of_envs_mono;
-    eapply (envs_Forall2_impl (⊣⊢)); [| |symmetry|]; eauto using equiv_entails.
+  intros Γp1 Γp2 Hp Γs1 Γs2 Hs; apply (anti_symm (⊢)); apply of_envs_mono';
+    eapply (env_Forall2_impl (⊣⊢)); by eauto using equiv_entails.
 Qed.
+
+Global Instance of_envs_mono : Proper (envs_Forall2 (⊢) ==> (⊢)) (@of_envs PROP).
+Proof. solve_proper. Qed.
+Global Instance of_envs_proper : Proper (envs_Forall2 (⊣⊢) ==> (⊣⊢)) (@of_envs PROP).
+Proof. solve_proper. Qed.
+
 Global Instance Envs_proper (R : relation PROP) :
   Proper (env_Forall2 R ==> env_Forall2 R ==> eq ==> envs_Forall2 R) (@Envs PROP).
 Proof. by constructor. Qed.
@@ -392,6 +448,9 @@ Proof. by constructor. Qed.
 Global Instance envs_entails_proper :
   Proper (envs_Forall2 (⊣⊢) ==> (⊣⊢) ==> iff) (@envs_entails PROP).
 Proof. rewrite envs_entails_eq. solve_proper. Qed.
+Global Instance envs_entails_mono :
+  Proper (flip (envs_Forall2 (⊢)) ==> (⊢) ==> impl) (@envs_entails PROP).
+Proof. rewrite envs_entails_eq=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
 Global Instance envs_entails_flip_mono :
   Proper (envs_Forall2 (⊢) ==> flip (⊢) ==> flip impl) (@envs_entails PROP).
 Proof. rewrite envs_entails_eq=> Δ1 Δ2 ? P1 P2 <- <-. by f_equiv. Qed.
@@ -415,7 +474,8 @@ Lemma envs_lookup_sound' Δ rp i p P :
   envs_lookup i Δ = Some (p,P) →
   of_envs Δ ⊢ □?p P ∗ of_envs (envs_delete rp i p Δ).
 Proof.
-  rewrite /envs_lookup /envs_delete /of_envs=>?. apply pure_elim_l=> Hwf.
+  rewrite /envs_lookup /envs_delete !of_envs_eq=>?.
+  apply pure_elim_l=> Hwf.
   destruct Δ as [Γp Γs], (Γp !! i) eqn:?; simplify_eq/=.
   - rewrite pure_True ?left_id; last (destruct Hwf, rp; constructor;
       naive_solver eauto using env_delete_wf, env_delete_fresh).
@@ -440,7 +500,8 @@ Lemma envs_lookup_sound_2 Δ i p P :
   envs_wf Δ → envs_lookup i Δ = Some (p,P) →
   □?p P ∗ of_envs (envs_delete true i p Δ) ⊢ of_envs Δ.
 Proof.
-  rewrite /envs_lookup /of_envs=>Hwf ?. rewrite [⌜envs_wf Δ⌝%I]pure_True // left_id.
+  rewrite /envs_lookup !of_envs_eq=>Hwf ?.
+  rewrite [⌜envs_wf Δ⌝%I]pure_True // left_id.
   destruct Δ as [Γp Γs], (Γp !! i) eqn:?; simplify_eq/=.
   - rewrite (env_lookup_perm Γp) //= intuitionistically_and
       and_sep_intuitionistically and_elim_r.
@@ -503,7 +564,7 @@ Qed.
 Lemma envs_snoc_sound Δ p i P :
   envs_lookup i Δ = None → of_envs Δ ⊢ □?p P -∗ of_envs (envs_snoc Δ p i P).
 Proof.
-  rewrite /envs_lookup /envs_snoc /of_envs=> ?; apply pure_elim_l=> Hwf.
+  rewrite /envs_lookup /envs_snoc !of_envs_eq=> ?; apply pure_elim_l=> Hwf.
   destruct Δ as [Γp Γs], (Γp !! i) eqn:?, (Γs !! i) eqn:?; simplify_eq/=.
   apply wand_intro_l; destruct p; simpl.
   - apply and_intro; [apply pure_intro|].
@@ -520,7 +581,7 @@ Lemma envs_app_sound Δ Δ' p Γ :
   envs_app p Γ Δ = Some Δ' →
   of_envs Δ ⊢ (if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ'.
 Proof.
-  rewrite /of_envs /envs_app=> ?; apply pure_elim_l=> Hwf.
+  rewrite !of_envs_eq /envs_app=> ?; apply pure_elim_l=> Hwf.
   destruct Δ as [Γp Γs], p; simplify_eq/=.
   - destruct (env_app Γ Γs) eqn:Happ,
       (env_app Γ Γp) as [Γp'|] eqn:?; simplify_eq/=.
@@ -548,7 +609,7 @@ Lemma envs_simple_replace_sound' Δ Δ' i p Γ :
   envs_simple_replace i p Γ Δ = Some Δ' →
   of_envs (envs_delete true i p Δ) ⊢ (if p then □ [∧] Γ else [∗] Γ) -∗ of_envs Δ'.
 Proof.
-  rewrite /envs_simple_replace /envs_delete /of_envs=> ?.
+  rewrite /envs_simple_replace /envs_delete !of_envs_eq=> ?.
   apply pure_elim_l=> Hwf. destruct Δ as [Γp Γs], p; simplify_eq/=.
   - destruct (env_app Γ Γs) eqn:Happ,
       (env_replace i Γ Γp) as [Γp'|] eqn:?; simplify_eq/=.
@@ -634,7 +695,7 @@ Qed.
 Lemma envs_clear_spatial_sound Δ :
   of_envs Δ ⊢ of_envs (envs_clear_spatial Δ) ∗ [∗] env_spatial Δ.
 Proof.
-  rewrite /of_envs /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
+  rewrite !of_envs_eq /envs_clear_spatial /=. apply pure_elim_l=> Hwf.
   rewrite right_id -persistent_and_sep_assoc. apply and_intro; [|done].
   apply pure_intro. destruct Hwf; constructor; simpl; auto using Enil_wf.
 Qed.
@@ -642,7 +703,7 @@ Qed.
 Lemma env_spatial_is_nil_intuitionistically Δ :
   env_spatial_is_nil Δ = true → of_envs Δ ⊢ □ of_envs Δ.
 Proof.
-  intros. unfold of_envs; destruct Δ as [? []]; simplify_eq/=.
+  intros. rewrite !of_envs_eq; destruct Δ as [? []]; simplify_eq/=.
   rewrite !right_id /bi_intuitionistically {1}affinely_and_r persistently_and.
   by rewrite persistently_affinely_elim persistently_idemp persistently_pure.
 Qed.
@@ -678,7 +739,7 @@ Proof.
   revert Δ1 Δ2.
   induction js as [|j js IH]=> Δ1 Δ2 Hlookup HΔ; simplify_eq/=; [done|].
   apply pure_elim with (envs_wf Δ1)=> [|Hwf].
-  { by rewrite /of_envs !and_elim_l sep_elim_l. }
+  { by rewrite !of_envs_eq !and_elim_l sep_elim_l. }
   destruct (envs_lookup_delete _ j Δ1)
     as [[[[] P] Δ1'']|] eqn:Hdel; simplify_eq/=; auto.
   apply envs_lookup_delete_Some in Hdel as [??]; subst.

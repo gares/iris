@@ -91,21 +91,31 @@ Tactic Notation "iStartProof" uconstr(PROP) :=
   end.
 
 (** * Generate a fresh identifier *)
-(* Tactic Notation tactics cannot return terms *)
+(** The tactic [iFresh] bumps the fresh name counter in the proof mode
+environment and returns the old value.
+
+Note that we use [Ltac] instead of [Tactic Notation] since [Tactic Notation]
+tactics can only have side-effects, but cannot return terms. *)
 Ltac iFresh :=
-  (* We need to increment the environment counter using [tac_fresh].
-     But because [iFresh] returns a value, we have to let bind
-     [tac_fresh] wrapped under a match to force evaluation of this
-     side-effect. See https://stackoverflow.com/a/46178884 *)
-  let do_incr :=
-      lazymatch goal with
-      | _ => iStartProof; eapply tac_fresh; first by (pm_reflexivity)
-      end in
-  lazymatch goal with
-  |- envs_entails ?Δ _ =>
-    let n := pm_eval (env_counter Δ) in
-    constr:(IAnon n)
-  end.
+  (* We make use of an Ltac hack to allow the [iFresh] tactic to both have a
+  side-effect (i.e. to bump the counter) and to return a value (the fresh name).
+  We do this by wrapped the side-effect under a [match] in a let-binding. See
+  https://stackoverflow.com/a/46178884 *)
+  let start :=
+    lazymatch goal with
+    | _ => iStartProof
+    end in
+  let c :=
+    lazymatch goal with
+    | |- envs_entails (Envs _ _ ?c) _ => c
+    end in
+  let inc :=
+    lazymatch goal with
+    | |- envs_entails (Envs ?Δp ?Δs _) ?Q =>
+      let c' := eval vm_compute in (Pos.succ c) in
+      convert_concl_no_check (envs_entails (Envs Δp Δs c') Q)
+    end in
+  constr:(IAnon c).
 
 (** * Context manipulation *)
 Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
