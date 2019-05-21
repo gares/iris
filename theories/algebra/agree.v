@@ -7,7 +7,7 @@ Local Arguments op _ _ _ !_ /.
 Local Arguments pcore _ _ !_ /.
 
 (** Define an agreement construction such that Agree A is discrete when A is discrete.
-    Notice that this construction is NOT complete.  The fullowing is due to Aleš:
+    Notice that this construction is NOT complete.  The following is due to Aleš:
 
 Proposition: Ag(T) is not necessarily complete.
 Proof.
