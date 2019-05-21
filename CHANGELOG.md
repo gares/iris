@@ -67,6 +67,8 @@ Changes in Coq:
 * The `iInv` tactic can now be used without the second argument (the name for
   the closing update).  It will then instead add the obligation to close the
   invariant to the goal.
+* The new `iEval` tactic can be used to execute a simplification or rewriting
+  tactic on some specific part(s) of the proofmode goal.
 * Added support for defining derived connectives involving n-ary binders using
   telescopes.
 * The proof mode now more consistently "prettifies" the goal after each tactic.
@@ -109,6 +111,7 @@ Changes in Coq:
 * Remove locked value lambdas. The value scope notations `rec: f x := e` and
   `(λ: x, e)` no longer add a `locked`. Instead, we made the `wp_` tactics
   smarter to no longer unfold lambdas/recs that occur behind definitions.
+* Export the fact that `iPreProp` is a COFE.
 
 ## Iris 3.1.0 (released 2017-12-19)
 
