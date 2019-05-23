@@ -112,6 +112,13 @@ Changes in Coq:
   `(λ: x, e)` no longer add a `locked`. Instead, we made the `wp_` tactics
   smarter to no longer unfold lambdas/recs that occur behind definitions.
 * Export the fact that `iPreProp` is a COFE.
+* The CMRA `auth` now can have fractional authoritative parts. So now `auth` has
+  3 types of elements: the fractional authoritative `●{q} a`, the full
+  authoritative `● a ≡ ●{1} a`, and the non-authoritative `◯ a`. Updates are
+  only possible with the full authoritative element `● a`, while fractional
+  authoritative elements have agreement: `✓ (●{p} a ⋅ ●{q} b) ⇒ a ≡ b`. As a
+  consequence, `auth` is no longer a COFE and does not preserve Leibniz
+  equality.
 
 ## Iris 3.1.0 (released 2017-12-19)
 

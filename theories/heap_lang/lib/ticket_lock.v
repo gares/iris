@@ -2,7 +2,7 @@ From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
 From iris.proofmode Require Import tactics.
 From iris.heap_lang Require Import proofmode notation.
-From iris.algebra Require Import auth gset.
+From iris.algebra Require Import excl auth gset.
 From iris.heap_lang.lib Require Export lock.
 Set Default Proof Using "Type".
 Import uPred.
@@ -76,7 +76,7 @@ Section proof.
     iIntros (Φ) "HR HΦ". rewrite -wp_fupd. wp_lam.
     wp_alloc ln as "Hln". wp_alloc lo as "Hlo".
     iMod (own_alloc (● (Excl' 0%nat, GSet ∅) ⋅ ◯ (Excl' 0%nat, GSet ∅))) as (γ) "[Hγ Hγ']".
-    { by rewrite -auth_both_op. }
+    { by apply auth_valid_discrete_2. }
     iMod (inv_alloc _ _ (lock_inv γ lo ln R) with "[-HΦ]").
     { iNext. rewrite /lock_inv.
       iExists 0%nat, 0%nat. iFrame. iLeft. by iFrame. }

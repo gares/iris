@@ -110,10 +110,10 @@ Lemma invariant_lookup (I : gmap positive (iProp Σ)) i P :
   own invariant_name (◯ {[i := invariant_unfold P]}) ⊢
   ∃ Q, ⌜I !! i = Some Q⌝ ∗ ▷ (Q ≡ P).
 Proof.
-  rewrite -own_op own_valid auth_validI /=. iIntros "[#HI #HvI]".
+  rewrite -own_op own_valid auth_both_validI /=. iIntros "[_ [#HI #HvI]]".
   iDestruct "HI" as (I') "HI". rewrite gmap_equivI gmap_validI.
   iSpecialize ("HI" $! i). iSpecialize ("HvI" $! i).
-  rewrite left_id_L lookup_fmap lookup_op lookup_singleton bi.option_equivI.
+  rewrite lookup_fmap lookup_op lookup_singleton bi.option_equivI.
   case: (I !! i)=> [Q|] /=; [|case: (I' !! i)=> [Q'|] /=; by iExFalso].
   iExists Q; iSplit; first done.
   iAssert (invariant_unfold Q ≡ invariant_unfold P)%I as "?".
@@ -197,7 +197,8 @@ End wsat.
 Lemma wsat_alloc `{!invPreG Σ} : (|==> ∃ _ : invG Σ, wsat ∗ ownE ⊤)%I.
 Proof.
   iIntros.
-  iMod (own_alloc (● (∅ : gmap _ _))) as (γI) "HI"; first done.
+  iMod (own_alloc (● (∅ : gmap positive _))) as (γI) "HI";
+    first by rewrite -auth_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
   iModIntro; iExists (WsatG _ _ _ _ γI γE γD).

@@ -94,7 +94,7 @@ Section auth.
   Lemma auth_own_mono γ a b : a ≼ b → auth_own γ b ⊢ auth_own γ a.
   Proof. intros [? ->]. by rewrite auth_own_op sep_elim_l. Qed.
   Lemma auth_own_valid γ a : auth_own γ a ⊢ ✓ a.
-  Proof. by rewrite /auth_own own_valid auth_validI. Qed.
+  Proof. by rewrite /auth_own own_valid auth_frag_validI. Qed.
   Global Instance auth_own_sep_homomorphism γ :
     WeakMonoidHomomorphism op uPred_sep (≡) (auth_own γ).
   Proof. split; try apply _. apply auth_own_op. Qed.
@@ -107,8 +107,8 @@ Section auth.
     ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜I γ⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
   Proof.
     iIntros (??) "Hφ". rewrite /auth_own /auth_ctx.
-    iMod (own_alloc_strong (Auth (Excl' (f t)) (f t)) I) as (γ) "[% Hγ]"; [done|done|].
-    iRevert "Hγ"; rewrite auth_both_op; iIntros "[Hγ Hγ']".
+    iMod (own_alloc_strong (● f t ⋅ ◯ f t) I) as (γ) "[% [Hγ Hγ']]";
+      [done|by apply auth_valid_discrete_2|].
     iMod (inv_alloc N _ (auth_inv γ f φ) with "[-Hγ']") as "#?".
     { iNext. rewrite /auth_inv. iExists t. by iFrame. }
     eauto.

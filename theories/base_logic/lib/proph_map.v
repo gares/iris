@@ -1,4 +1,4 @@
-From iris.algebra Require Import auth list gmap.
+From iris.algebra Require Import auth excl list gmap.
 From iris.base_logic.lib Require Export own.
 From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
@@ -111,7 +111,7 @@ Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
   (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
-  { apply: auth_auth_valid. exact: to_proph_map_valid. }
+  { rewrite -auth_auth_valid. exact: to_proph_map_valid. }
   iModIntro. iExists (ProphMapG P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
   iPureIntro. split =>//.
 Qed.

@@ -28,7 +28,8 @@ Proof.
 
 (** Note that the projection [agree_car] is not non-expansive, so it cannot be
 used in the logic. If you need to get a witness out, you should use the
-lemma [to_agree_uninjN] instead. *)
+lemma [to_agree_uninjN] instead. In general, [agree_car] should ONLY be used
+internally in this file.  *)
 Record agree (A : Type) : Type := {
   agree_car : list A;
   agree_not_nil : bool_decide (agree_car = []) = false

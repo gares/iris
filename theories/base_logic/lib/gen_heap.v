@@ -76,7 +76,7 @@ Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
 Proof.
   iMod (own_alloc (● to_gen_heap σ)) as (γ) "Hh".
-  { apply: auth_auth_valid. exact: to_gen_heap_valid. }
+  { rewrite -auth_auth_valid. exact: to_gen_heap_valid. }
   iModIntro. by iExists (GenHeapG L V Σ _ _ _ γ).
 Qed.
 
@@ -105,7 +105,7 @@ Section gen_heap.
   Proof.
     apply wand_intro_r.
     rewrite mapsto_eq /mapsto_def -own_op -auth_frag_op own_valid discrete_valid.
-    f_equiv=> /auth_own_valid /=. rewrite op_singleton singleton_valid pair_op.
+    f_equiv. rewrite -auth_frag_valid op_singleton singleton_valid pair_op.
     by intros [_ ?%agree_op_invL'].
   Qed.
 
@@ -122,8 +122,8 @@ Section gen_heap.
 
   Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
   Proof.
-    rewrite mapsto_eq /mapsto_def own_valid !discrete_valid.
-    by apply pure_mono=> /auth_own_valid /singleton_valid [??].
+    rewrite mapsto_eq /mapsto_def own_valid !discrete_valid -auth_frag_valid.
+    by apply pure_mono=> /singleton_valid [??].
   Qed.
   Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ✓ (q1 + q2)%Qp.
   Proof.
