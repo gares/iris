@@ -2,6 +2,13 @@ From iris.algebra Require Export frac auth.
 From iris.algebra Require Export updates local_updates.
 From iris.algebra Require Import proofmode_classes.
 
+(** Authoritative CMRA where the NON-authoritative parts can be fractional.
+  This CMRA allows the original non-authoritative element `◯ a` to be split into
+  fractional parts `◯!{q} a`. Using `◯! a ≡ ◯!{1} a` is in effect the same as
+  using the original `◯ a`. Currently, however, this CMRA hides the ability to
+  split the authoritative part into fractions.
+*)
+
 Definition frac_authR (A : cmraT) : cmraT :=
   authR (optionUR (prodR fracR A)).
 Definition frac_authUR (A : cmraT) : ucmraT :=
@@ -35,18 +42,18 @@ Section frac_auth.
   Proof. solve_proper. Qed.
 
   Global Instance frac_auth_auth_discrete a : Discrete a → Discrete (●! a).
-  Proof. intros; apply Auth_discrete; apply _. Qed.
+  Proof. intros; apply auth_auth_discrete; [apply Some_discrete|]; apply _. Qed.
   Global Instance frac_auth_frag_discrete a : Discrete a → Discrete (◯! a).
-  Proof. intros; apply Auth_discrete, Some_discrete; apply _. Qed.
+  Proof. intros; apply auth_frag_discrete, Some_discrete; apply _. Qed.
 
   Lemma frac_auth_validN n a : ✓{n} a → ✓{n} (●! a ⋅ ◯! a).
-  Proof. done. Qed.
+  Proof. by rewrite auth_both_validN. Qed.
   Lemma frac_auth_valid a : ✓ a → ✓ (●! a ⋅ ◯! a).
-  Proof. done. Qed.
+  Proof. intros. by apply auth_both_valid. Qed.
 
   Lemma frac_auth_agreeN n a b : ✓{n} (●! a ⋅ ◯! b) → a ≡{n}≡ b.
   Proof.
-    rewrite auth_validN_eq /= => -[Hincl Hvalid].
+    rewrite auth_both_validN /= => -[Hincl Hvalid].
     by move: Hincl=> /Some_includedN_exclusive /(_ Hvalid ) [??].
   Qed.
   Lemma frac_auth_agree a b : ✓ (●! a ⋅ ◯! b) → a ≡ b.
@@ -57,10 +64,10 @@ Section frac_auth.
   Proof. intros. by apply leibniz_equiv, frac_auth_agree. Qed.
 
   Lemma frac_auth_includedN n q a b : ✓{n} (●! a ⋅ ◯!{q} b) → Some b ≼{n} Some a.
-  Proof. by rewrite auth_validN_eq /= => -[/Some_pair_includedN [_ ?] _]. Qed.
+  Proof. by rewrite auth_both_validN /= => -[/Some_pair_includedN [_ ?] _]. Qed.
   Lemma frac_auth_included `{CmraDiscrete A} q a b :
     ✓ (●! a ⋅ ◯!{q} b) → Some b ≼ Some a.
-  Proof. by rewrite auth_valid_discrete /= => -[/Some_pair_included [_ ?] _]. Qed.
+  Proof. by rewrite auth_valid_discrete_2 /= => -[/Some_pair_included [_ ?] _]. Qed.
   Lemma frac_auth_includedN_total `{CmraTotal A} n q a b :
     ✓{n} (●! a ⋅ ◯!{q} b) → b ≼{n} a.
   Proof. intros. by eapply Some_includedN_total, frac_auth_includedN. Qed.
@@ -70,8 +77,8 @@ Section frac_auth.
 
   Lemma frac_auth_auth_validN n a : ✓{n} (●! a) ↔ ✓{n} a.
   Proof.
-    split; [by intros [_ [??]]|].
-    by repeat split; simpl; auto using ucmra_unit_leastN.
+    rewrite auth_auth_frac_validN Some_validN. split.
+    by intros [?[]]. intros. by split.
   Qed.
   Lemma frac_auth_auth_valid a : ✓ (●! a) ↔ ✓ a.
   Proof. rewrite !cmra_valid_validN. by setoid_rewrite frac_auth_auth_validN. Qed.

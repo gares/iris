@@ -1,7 +1,7 @@
 From iris.program_logic Require Export weakestpre.
 From iris.program_logic Require Import lifting adequacy.
 From iris.program_logic Require ectx_language.
-From iris.algebra Require Import auth.
+From iris.algebra Require Import excl auth.
 From iris.proofmode Require Import tactics classes.
 Set Default Proof Using "Type".
 
@@ -53,7 +53,8 @@ Theorem ownP_adequacy Σ `{!ownPPreG Λ Σ} s e σ φ :
 Proof.
   intros Hwp. apply (wp_adequacy Σ _).
   iIntros (? κs).
-  iMod (own_alloc (● (Excl' σ) ⋅ ◯ (Excl' σ))) as (γσ) "[Hσ Hσf]"; first done.
+  iMod (own_alloc (● (Excl' σ) ⋅ ◯ (Excl' σ))) as (γσ) "[Hσ Hσf]";
+    first by apply auth_valid_discrete_2.
   iModIntro. iExists (λ σ κs, own γσ (● (Excl' σ)))%I.
   iFrame "Hσ".
   iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
@@ -68,7 +69,8 @@ Theorem ownP_invariance Σ `{!ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
 Proof.
   intros Hwp Hsteps. eapply (wp_invariance Σ Λ s e σ1 t2 σ2 _)=> //.
   iIntros (? κs κs').
-  iMod (own_alloc (● (Excl' σ1) ⋅ ◯ (Excl' σ1))) as (γσ) "[Hσ Hσf]"; first done.
+  iMod (own_alloc (● (Excl' σ1) ⋅ ◯ (Excl' σ1))) as (γσ) "[Hσ Hσf]";
+    first by apply auth_valid_discrete_2.
   iExists (λ σ κs' _, own γσ (● (Excl' σ)))%I, (λ _, True%I).
   iFrame "Hσ".
   iMod (Hwp (OwnPG _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
