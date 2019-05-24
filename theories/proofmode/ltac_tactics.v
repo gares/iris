@@ -172,7 +172,7 @@ Ltac iElaborateSelPat pat :=
   end.
 
 Local Ltac iClearHyp H :=
-  eapply tac_clear with _ H _ _; (* (i:=H) *)
+  eapply tac_clear with H _ _; (* (i:=H) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iClear:" H "not found"
@@ -180,7 +180,7 @@ Local Ltac iClearHyp H :=
      let H := pretty_ident H in
      let P := match goal with |- TCOr (Affine ?P) _ => P end in
      fail "iClear:" H ":" P "not affine and the goal not absorbing"
-    |].
+    |pm_reduce].
 
 Local Ltac iClear_go Hs :=
   lazymatch Hs with
@@ -297,7 +297,7 @@ Local Tactic Notation "iIntuitionistic" constr(H) :=
     |pm_reduce].
 
 Local Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
-  eapply tac_pure with _ H _ _ _; (* (i:=H1) *)
+  eapply tac_pure with H _ _ _; (* (i:=H1) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iPure:" H "not found"
@@ -307,7 +307,7 @@ Local Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
     |pm_reduce; iSolveTC ||
      let P := match goal with |- TCOr (Affine ?P) _ => P end in
      fail "iPure:" P "not affine and the goal not absorbing"
-    |intros pat].
+    |pm_reduce; intros pat].
 
 Tactic Notation "iEmpIntro" :=
   iStartProof;
@@ -342,14 +342,14 @@ Local Ltac iFramePure t :=
 
 Local Ltac iFrameHyp H :=
   iStartProof;
-  eapply tac_frame with _ H _ _ _;
+  eapply tac_frame with H _ _ _;
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iFrame:" H "not found"
     |iSolveTC ||
      let R := match goal with |- Frame _ ?R _ _ => R end in
      fail "iFrame: cannot frame" R
-    |iFrameFinish].
+    |pm_reduce; iFrameFinish].
 
 Local Ltac iFrameAnyPure :=
   repeat match goal with H : _ |- _ => iFramePure H end.
@@ -836,7 +836,7 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reduce;
           iSpecializePat_go H1 pats]
     | SGoal (SpecGoal GIntuitionistic false ?Hs_frame [] ?d) :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -845,13 +845,13 @@ Ltac iSpecializePat_go H1 pats :=
           let Q := match goal with |- Persistent ?Q => Q end in
           fail "iSpecialize:" Q "not persistent"
          |iSolveTC
-         |iFrame Hs_frame; solve_done d (*goal*)
+         |pm_reduce; iFrame Hs_frame; solve_done d (*goal*)
          |pm_reduce; iSpecializePat_go H1 pats]
     | SGoal (SpecGoal GIntuitionistic _ _ _ _) :: ?pats =>
        fail "iSpecialize: cannot select hypotheses for intuitionistic premise"
     | SGoal (SpecGoal ?m ?lr ?Hs_frame ?Hs ?d) :: ?pats =>
        let Hs' := eval cbv in (if lr then Hs else Hs_frame ++ Hs) in
-       notypeclasses refine (tac_specialize_assert _ _ _ _ H1 _ lr Hs' _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert _ _ _ H1 _ lr Hs' _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -866,7 +866,7 @@ Ltac iSpecializePat_go H1 pats :=
          |iFrame Hs_frame; solve_done d (*goal*)
          |iSpecializePat_go H1 pats]
     | SAutoFrame GIntuitionistic :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -874,10 +874,10 @@ Ltac iSpecializePat_go H1 pats :=
          |iSolveTC ||
           let Q := match goal with |- Persistent ?Q => Q end in
           fail "iSpecialize:" Q "not persistent"
-         |solve [iFrame "∗ #"]
+         |pm_reduce; solve [iFrame "∗ #"]
          |pm_reduce; iSpecializePat_go H1 pats]
     | SAutoFrame ?m :: ?pats =>
-       notypeclasses refine (tac_specialize_frame _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_frame _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -886,7 +886,8 @@ Ltac iSpecializePat_go H1 pats :=
           | GSpatial => class_apply add_modal_id
           | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
           end
-         |first
+         |pm_reduce;
+          first
             [notypeclasses refine (tac_unlock_emp _ _ _)
             |notypeclasses refine (tac_unlock_True _ _ _)
             |iFrame "∗ #"; notypeclasses refine (tac_unlock _ _ _)
@@ -1060,10 +1061,11 @@ Local Ltac iApplyHypExact H :=
      end].
 Local Ltac iApplyHypLoop H :=
   first
-    [eapply tac_apply with _ H _ _ _;
+    [eapply tac_apply with H _ _ _;
       [pm_reflexivity
       |iSolveTC
-      |pm_prettify (* reduce redexes created by instantiation *)]
+      |pm_reduce;
+       pm_prettify (* reduce redexes created by instantiation *)]
     |iSpecializePat H "[]"; last iApplyHypLoop H].
 
 Tactic Notation "iApplyHyp" constr(H) :=
@@ -2299,7 +2301,7 @@ Tactic Notation "iAssumptionInv" constr(N) :=
       first [let H := constr:(_: IntoInv P' N) in unify i j|find Γ i]
     end in
   lazymatch goal with
-  | |- envs_lookup_delete _ ?i (Envs ?Γp ?Γs _) = Some _ =>
+  | |- envs_lookup ?i (Envs ?Γp ?Γs _) = Some _ =>
      first [find Γp i|find Γs i]; pm_reflexivity
   end.
 

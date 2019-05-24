@@ -88,15 +88,14 @@ Proof.
   by rewrite wand_elim_r.
 Qed.
 
-(* TODO: convert to not take Δ' *)
-Lemma tac_clear Δ Δ' i p P Q :
-  envs_lookup_delete true i Δ = Some (p,P,Δ') →
+Lemma tac_clear Δ i p P Q :
+  envs_lookup i Δ = Some (p,P) →
   (if p then TCTrue else TCOr (Affine P) (Absorbing Q)) →
-  envs_entails Δ' Q →
+  envs_entails (envs_delete true i p Δ) Q →
   envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq=> ?? HQ. rewrite envs_lookup_delete_sound //.
-  by destruct p; rewrite /= HQ sep_elim_r.
+  rewrite envs_entails_eq=> ?? HQ. rewrite envs_lookup_sound //. rewrite HQ.
+  by destruct p; rewrite /= sep_elim_r.
 Qed.
 
 (** * False *)
@@ -124,15 +123,14 @@ Proof.
   - by apply pure_intro.
 Qed.
 
-(* TODO: convert to not take Δ' *)
-Lemma tac_pure Δ Δ' i p P φ Q :
-  envs_lookup_delete true i Δ = Some (p, P, Δ') →
+Lemma tac_pure Δ i p P φ Q :
+  envs_lookup i Δ = Some (p, P) →
   IntoPure P φ →
   (if p then TCTrue else TCOr (Affine P) (Absorbing Q)) →
-  (φ → envs_entails Δ' Q) → envs_entails Δ Q.
+  (φ → envs_entails (envs_delete true i p Δ) Q) → envs_entails Δ Q.
 Proof.
   rewrite envs_entails_eq=> ?? HPQ HQ.
-  rewrite envs_lookup_delete_sound //; simpl. destruct p; simpl.
+  rewrite envs_lookup_sound //; simpl. destruct p; simpl.
   - rewrite (into_pure P) -persistently_and_intuitionistically_sep_l persistently_pure.
     by apply pure_elim_l.
   - destruct HPQ.
@@ -273,15 +271,16 @@ Proof.
   - by rewrite HR assoc !wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert Δ Δ' Δ1 Δ2' j q neg js R P1 P2 P1' Q :
-  envs_lookup_delete true j Δ = Some (q, R, Δ') →
+Lemma tac_specialize_assert Δ Δ1 Δ2' j q neg js R P1 P2 P1' Q :
+  envs_lookup j Δ = Some (q, R) →
   IntoWand q false R P1 P2 → AddModal P1' P1 Q →
-  (''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left) js Δ';
+  (''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
+      js (envs_delete true j q Δ);
     Δ2' ← envs_app false (Esnoc Enil j P2) Δ2;
     Some (Δ1,Δ2')) = Some (Δ1,Δ2') → (* does not preserve position of [j] *)
   envs_entails Δ1 P1' → envs_entails Δ2' Q → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros [? ->]%envs_lookup_delete_Some ??? HP1 HQ.
+  rewrite envs_entails_eq. intros ???? HP1 HQ.
   destruct (envs_split _ _ _) as [[? Δ2]|] eqn:?; simplify_eq/=;
     destruct (envs_app _ _ _) eqn:?; simplify_eq/=.
   rewrite envs_lookup_sound // envs_split_sound //.
@@ -297,15 +296,15 @@ Proof. rewrite envs_entails_eq=> ->. by rewrite -lock -True_sep_2. Qed.
 Lemma tac_unlock Δ Q : envs_entails Δ Q → envs_entails Δ (locked Q).
 Proof. by unlock. Qed.
 
-Lemma tac_specialize_frame Δ Δ' j q R P1 P2 P1' Q Q' :
-  envs_lookup_delete true j Δ = Some (q, R, Δ') →
+Lemma tac_specialize_frame Δ j q R P1 P2 P1' Q Q' :
+  envs_lookup j Δ = Some (q, R) →
   IntoWand q false R P1 P2 →
   AddModal P1' P1 Q →
-  envs_entails Δ' (P1' ∗ locked Q') →
+  envs_entails (envs_delete true j q Δ) (P1' ∗ locked Q') →
   Q' = (P2 -∗ Q)%I →
   envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros [? ->]%envs_lookup_delete_Some ?? HPQ ->.
+  rewrite envs_entails_eq. intros ??? HPQ ->.
   rewrite envs_lookup_sound //. rewrite HPQ -lock.
   rewrite (into_wand q false) -{2}(add_modal P1' P1 Q). cancel [P1'].
   apply wand_intro_l. by rewrite assoc !wand_elim_r.
@@ -330,18 +329,18 @@ Proof.
   by rewrite intuitionistically_emp left_id wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert_intuitionistic Δ Δ' j q P1 P1' P2 R Q :
-  envs_lookup_delete true j Δ = Some (q, R, Δ') →
+Lemma tac_specialize_assert_intuitionistic Δ j q P1 P1' P2 R Q :
+  envs_lookup j Δ = Some (q, R) →
   IntoWand q true R P1 P2 →
   Persistent P1 →
   IntoAbsorbingly P1' P1 →
-  envs_entails Δ' P1' →
+  envs_entails (envs_delete true j q Δ) P1' →
   match envs_simple_replace j q (Esnoc Enil j P2) Δ with
   | Some Δ'' => envs_entails Δ'' Q
   | None => False
   end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq => /envs_lookup_delete_Some [? ->] ??? HP1 HQ.
+  rewrite envs_entails_eq => ???? HP1 HQ.
   destruct (envs_simple_replace _ _ _ _) as [Δ''|] eqn:?; last done.
   rewrite -HQ envs_lookup_sound //.
   rewrite -(idemp bi_and (of_envs (envs_delete _ _ _ _))).
@@ -464,12 +463,12 @@ Proof.
   by rewrite wand_elim_r.
 Qed.
 
-Lemma tac_apply Δ Δ' i p R P1 P2 :
-  envs_lookup_delete true i Δ = Some (p, R, Δ') →
+Lemma tac_apply Δ i p R P1 P2 :
+  envs_lookup i Δ = Some (p, R) →
   IntoWand p false R P1 P2 →
-  envs_entails Δ' P1 → envs_entails Δ P2.
+  envs_entails (envs_delete true i p Δ) P1 → envs_entails Δ P2.
 Proof.
-  rewrite envs_entails_eq => ?? HP1. rewrite envs_lookup_delete_sound //.
+  rewrite envs_entails_eq => ?? HP1. rewrite envs_lookup_sound //.
   by rewrite (into_wand p false) /= HP1 wand_elim_l.
 Qed.
 
@@ -570,12 +569,12 @@ Proof.
   auto using and_intro, pure_intro.
 Qed.
 
-Lemma tac_frame Δ Δ' i p R P Q :
-  envs_lookup_delete false i Δ = Some (p, R, Δ') →
+Lemma tac_frame Δ i p R P Q :
+  envs_lookup i Δ = Some (p, R) →
   Frame p R P Q →
-  envs_entails Δ' Q → envs_entails Δ P.
+  envs_entails (envs_delete false i p Δ) Q → envs_entails Δ P.
 Proof.
-  rewrite envs_entails_eq. intros [? ->]%envs_lookup_delete_Some Hframe HQ.
+  rewrite envs_entails_eq. intros ? Hframe HQ.
   rewrite (envs_lookup_sound' _ false) //. by rewrite -Hframe HQ.
 Qed.
 
@@ -686,9 +685,9 @@ Proof.
 Qed.
 
 (** * Invariants *)
-Lemma tac_inv_elim {X : Type} Δ Δ' i j φ p Pinv Pin Pout (Pclose : option (X → PROP))
+Lemma tac_inv_elim {X : Type} Δ i j φ p Pinv Pin Pout (Pclose : option (X → PROP))
       Q (Q' : X → PROP) :
-  envs_lookup_delete false i Δ = Some (p, Pinv, Δ') →
+  envs_lookup i Δ = Some (p, Pinv) →
   ElimInv φ Pinv Pin Pout Pclose Q Q' →
   φ →
   (∀ R,
@@ -696,11 +695,11 @@ Lemma tac_inv_elim {X : Type} Δ Δ' i j φ p Pinv Pin Pout (Pclose : option (X 
       (Pin -∗
        (∀ x, Pout x -∗ pm_option_fun Pclose x -∗? Q' x) -∗
        R
-      )%I) Δ'
+      )%I) (envs_delete false i p Δ)
     with Some Δ'' => envs_entails Δ'' R | None => False end) →
   envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq=> /envs_lookup_delete_Some [? ->] Hinv ? /(_ Q) Hmatch.
+  rewrite envs_entails_eq=> ? Hinv ? /(_ Q) Hmatch.
   destruct (envs_app _ _ _) eqn:?; last done.
   rewrite -Hmatch (envs_lookup_sound' _ false) // envs_app_singleton_sound //; simpl.
   apply wand_elim_r', wand_mono; last done. apply wand_intro_r, wand_intro_r.
