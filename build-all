@@ -1,5 +1,6 @@
-#!/bin/bash
-set -eo pipefail
+#!/usr/bin/python3
+import sys, os
+import requests
 
 # A script to build Iris' reverse-dependencies (the one that usually get built every night against Iris master)
 # against a branch of your choice.
@@ -7,28 +8,26 @@ set -eo pipefail
 # Set at least one of IRIS_REV or STDPP_REV to control which branches of these projects to build against
 # (default to `master`).
 
-if [[ -z "$GITLAB_TOKEN" ]]; then
-    echo "You need to set the GITLAB_TOKEN environment variable to a GitLab access token."
-    echo "You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>."
-    echo "Make sure you grant access to the 'api' scope."
-    exit 1
-fi
+if not "GITLAB_TOKEN" in os.environ:
+    print("You need to set the GITLAB_TOKEN environment variable to a GitLab access token.")
+    print("You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>.")
+    print("Make sure you grant access to the 'api' scope.")
+    sys.exit(1)
 
-IRIS_REV=${IRIS_REV:-master}
-STDPP_REV=${STDPP_REV:-master}
+GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
+PROJECTS = [
+    { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'lambda-rust', 'branch': 'ci/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] },
+    { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+]
 
-curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Flambda-rust/pipeline \
-     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-     --header "Content-Type: application/json" \
-     --data '{ "ref": "master", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"} ] }'
-echo
-curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Flambda-rust/pipeline \
-     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-     --header "Content-Type: application/json" \
-     --data '{ "ref": "ci/weak_mem", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"}, {"key": "ORC11_REV", "value": "master"}, {"key": "GPFSL_REV", "value": "master"} ] }'
-echo
-curl --fail -sS -X POST https://gitlab.mpi-sws.org/api/v4/projects/iris%2Firon/pipeline \
-     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-     --header "Content-Type: application/json" \
-     --data '{ "ref": "master", "variables": [ {"key": "STDPP_REV", "value": "'"$STDPP_REV"'"}, {"key": "IRIS_REV", "value": "'"$IRIS_REV"'"} ] }'
-echo
+for project in PROJECTS:
+    print("Triggering build for {}{}...".format(project['name'], '' if project['branch'] == 'master' else ':'+project['branch']))
+    url = "https://gitlab.mpi-sws.org/api/v4/projects/iris%2F{}/pipeline".format(project['name'])
+    json = {
+        'ref': project['branch'],
+        'variables': list(map(lambda var: { 'key': var, 'value': os.environ.get(var, "master") }, project['vars'])),
+    }
+    r = requests.post(url, headers={'PRIVATE-TOKEN': GITLAB_TOKEN}, json=json)
+    r.raise_for_status()
+    print("    Pipeline running at {}".format(r.json()['web_url']))
