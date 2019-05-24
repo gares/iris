@@ -76,7 +76,7 @@ Section proof.
     iIntros (Φ) "HR HΦ". rewrite -wp_fupd. wp_lam.
     wp_alloc ln as "Hln". wp_alloc lo as "Hlo".
     iMod (own_alloc (● (Excl' 0%nat, GSet ∅) ⋅ ◯ (Excl' 0%nat, GSet ∅))) as (γ) "[Hγ Hγ']".
-    { by apply auth_valid_discrete_2. }
+    { by apply auth_both_valid. }
     iMod (inv_alloc _ _ (lock_inv γ lo ln R) with "[-HΦ]").
     { iNext. rewrite /lock_inv.
       iExists 0%nat, 0%nat. iFrame. iLeft. by iFrame. }
@@ -141,14 +141,14 @@ Section proof.
     iInv N as (o' n) "(>Hlo & >Hln & >Hauth & Haown)".
     wp_load.
     iDestruct (own_valid_2 with "Hauth Hγo") as
-      %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_valid_discrete_2.
+      %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid.
     iModIntro. iSplitL "Hlo Hln Hauth Haown".
     { iNext. iExists o, n. by iFrame. }
     wp_pures.
     iInv N as (o' n') "(>Hlo & >Hln & >Hauth & Haown)".
     iApply wp_fupd. wp_store.
     iDestruct (own_valid_2 with "Hauth Hγo") as
-      %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_valid_discrete_2.
+      %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid.
     iDestruct "Haown" as "[[Hγo' _]|Haown]".
     { iDestruct (own_valid_2 with "Hγo Hγo'") as %[[] ?]. }
     iMod (own_update_2 with "Hauth Hγo") as "[Hauth Hγo]".

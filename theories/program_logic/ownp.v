@@ -54,7 +54,7 @@ Proof.
   intros Hwp. apply (wp_adequacy Σ _).
   iIntros (? κs).
   iMod (own_alloc (● (Excl' σ) ⋅ ◯ (Excl' σ))) as (γσ) "[Hσ Hσf]";
-    first by apply auth_valid_discrete_2.
+    first by apply auth_both_valid.
   iModIntro. iExists (λ σ κs, own γσ (● (Excl' σ)))%I.
   iFrame "Hσ".
   iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
@@ -70,14 +70,14 @@ Proof.
   intros Hwp Hsteps. eapply (wp_invariance Σ Λ s e σ1 t2 σ2 _)=> //.
   iIntros (? κs κs').
   iMod (own_alloc (● (Excl' σ1) ⋅ ◯ (Excl' σ1))) as (γσ) "[Hσ Hσf]";
-    first by apply auth_valid_discrete_2.
+    first by apply auth_both_valid.
   iExists (λ σ κs' _, own γσ (● (Excl' σ)))%I, (λ _, True%I).
   iFrame "Hσ".
   iMod (Hwp (OwnPG _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
     first by rewrite /ownP; iFrame.
   iIntros "!> Hσ". iMod "H" as (σ2') "[Hσf %]". rewrite /ownP.
   iDestruct (own_valid_2 with "Hσ Hσf")
-    as %[Hp%Excl_included _]%auth_valid_discrete_2; simplify_eq; auto.
+    as %[Hp%Excl_included _]%auth_both_valid; simplify_eq; auto.
 Qed.
 
 
@@ -91,7 +91,7 @@ Section lifting.
   Lemma ownP_eq σ1 σ2 κs n : state_interp σ1 κs n -∗ ownP σ2 -∗ ⌜σ1 = σ2⌝.
   Proof.
     iIntros "Hσ● Hσ◯". rewrite /ownP.
-    iDestruct (own_valid_2 with "Hσ● Hσ◯") as %[Hps _]%auth_valid_discrete_2.
+    iDestruct (own_valid_2 with "Hσ● Hσ◯") as %[Hps _]%auth_both_valid.
     by pose proof (leibniz_equiv _ _ (Excl_included _ _ Hps)) as ->.
   Qed.
   Lemma ownP_state_twice σ1 σ2 : ownP σ1 ∗ ownP σ2 ⊢ False.

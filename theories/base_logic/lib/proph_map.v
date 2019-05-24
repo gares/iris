@@ -111,7 +111,7 @@ Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
   (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
-  { rewrite -auth_auth_valid. exact: to_proph_map_valid. }
+  { rewrite auth_auth_valid. exact: to_proph_map_valid. }
   iModIntro. iExists (ProphMapG P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
   iPureIntro. split =>//.
 Qed.
@@ -153,7 +153,7 @@ Section proph_map.
   Proof.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_ctx proph_eq /proph_def.
-    iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_valid_discrete_2.
+    iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_both_valid.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
     iMod (own_update_2 with "H● Hp") as "[H● H◯]".
