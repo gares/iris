@@ -39,14 +39,19 @@ Ltac pretty_ident H :=
 
 (** * Misc *)
 
-Ltac iMissingHyps Hs :=
-  let Δ :=
-    lazymatch goal with
-    | |- envs_entails ?Δ _ => Δ
-    | |- context[ envs_split _ _ ?Δ ] => Δ
-    end in
+Ltac iGetCtx :=
+  lazymatch goal with
+  | |- envs_entails ?Δ _ => Δ
+  | |- context[ envs_split _ _ ?Δ ] => Δ
+  end.
+
+Ltac iMissingHypsCore Δ Hs :=
   let Hhyps := pm_eval (envs_dom Δ) in
   eval vm_compute in (list_difference Hs Hhyps).
+
+Ltac iMissingHyps Hs :=
+  let Δ := iGetCtx in
+  iMissingHypsCore Δ Hs.
 
 Ltac iTypeOf H :=
   let Δ := match goal with |- envs_entails ?Δ _ => Δ end in
@@ -119,13 +124,17 @@ Ltac iFresh :=
 
 (** * Context manipulation *)
 Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
-  eapply tac_rename with _ H1 H2 _ _; (* (i:=H1) (j:=H2) *)
+  eapply tac_rename with H1 H2 _ _; (* (i:=H1) (j:=H2) *)
     [pm_reflexivity ||
      let H1 := pretty_ident H1 in
      fail "iRename:" H1 "not found"
-    |pm_reflexivity ||
-     let H2 := pretty_ident H2 in
-     fail "iRename:" H2 "not fresh"|].
+    |pm_reduce;
+     lazymatch goal with
+       | |- False =>
+         let H2 := pretty_ident H2 in
+         fail "iRename:" H2 "not fresh"
+       | _ => idtac (* subgoal *)
+     end].
 
 (** Elaborated selection patterns, unlike the type [sel_pat], contains
 only specific identifiers, and no wildcards like `#` (with the
@@ -197,11 +206,10 @@ Local Ltac iEval_go t Hs :=
   | [] => idtac
   | ESelPure :: ?Hs => fail "iEval: %: unsupported selection pattern"
   | ESelIdent _ ?H :: ?Hs =>
-    eapply tac_eval_in with _ H _ _ _;
+    eapply tac_eval_in with H _ _ _;
       [pm_reflexivity || let H := pretty_ident H in fail "iEval:" H "not found"
       |let x := fresh in intros x; t; unfold x; reflexivity
-      |pm_reflexivity
-      |iEval_go t Hs]
+      |pm_reduce; iEval_go t Hs]
   end.
 
 Tactic Notation "iEval" tactic(t) "in" constr(Hs) :=
@@ -276,7 +284,7 @@ Tactic Notation "iExFalso" := apply tac_ex_falso.
 
 (** * Making hypotheses intuitionistic or pure *)
 Local Tactic Notation "iIntuitionistic" constr(H) :=
-  eapply tac_intuitionistic with _ H _ _ _; (* (i:=H) *)
+  eapply tac_intuitionistic with H _ _ _; (* (i:=H) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iIntuitionistic:" H "not found"
@@ -286,7 +294,7 @@ Local Tactic Notation "iIntuitionistic" constr(H) :=
     |pm_reduce; iSolveTC ||
      let P := match goal with |- TCOr (Affine ?P) _ => P end in
      fail "iIntuitionistic:" P "not affine and the goal not absorbing"
-    |pm_reflexivity|].
+    |pm_reduce].
 
 Local Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
   eapply tac_pure with _ H _ _ _; (* (i:=H1) *)
@@ -448,41 +456,51 @@ Local Tactic Notation "iIntro" constr(H) :=
   iStartProof;
   first
   [(* (?Q → _) *)
-    eapply tac_impl_intro with _ H _ _ _; (* (i:=H) *)
+    eapply tac_impl_intro with H _ _ _; (* (i:=H) *)
       [iSolveTC
       |pm_reduce; iSolveTC ||
        let P := lazymatch goal with |- Persistent ?P => P end in
        fail 1 "iIntro: introducing non-persistent" H ":" P
               "into non-empty spatial context"
-      |pm_reflexivity ||
-       let H := pretty_ident H in
-       fail 1 "iIntro:" H "not fresh"
       |iSolveTC
-      |(* subgoal *)]
+      |pm_reduce;
+       let H := pretty_ident H in
+        lazymatch goal with
+        | |- False =>
+          let H := pretty_ident H in
+          fail 1 "iIntro:" H "not fresh"
+        | _ => idtac (* subgoal *)
+        end]
   |(* (_ -∗ _) *)
-    eapply tac_wand_intro with _ H _ _; (* (i:=H) *)
+    eapply tac_wand_intro with H _ _; (* (i:=H) *)
       [iSolveTC
-      | pm_reflexivity ||
-        let H := pretty_ident H in
-        fail 1 "iIntro:" H "not fresh"
-      |(* subgoal *)]
+      | pm_reduce;
+        lazymatch goal with
+        | |- False =>
+          let H := pretty_ident H in
+          fail 1 "iIntro:" H "not fresh"
+        | _ => idtac (* subgoal *)
+        end]
   | fail 1 "iIntro: nothing to introduce" ].
 
 Local Tactic Notation "iIntro" "#" constr(H) :=
   iStartProof;
   first
   [(* (?P → _) *)
-   eapply tac_impl_intro_intuitionistic with _ H _ _ _; (* (i:=H) *)
+   eapply tac_impl_intro_intuitionistic with H _ _ _; (* (i:=H) *)
      [iSolveTC
      |iSolveTC ||
       let P := match goal with |- IntoPersistent _ ?P _ => P end in
       fail 1 "iIntro:" P "not persistent"
-     |pm_reflexivity ||
-      let H := pretty_ident H in
-      fail 1 "iIntro:" H "not fresh"
-     |(* subgoal *)]
+     |pm_reduce;
+      lazymatch goal with
+      | |- False =>
+        let H := pretty_ident H in
+        fail 1 "iIntro:" H "not fresh"
+      | _ => idtac (* subgoal *)
+      end]
   |(* (?P -∗ _) *)
-   eapply tac_wand_intro_intuitionistic with _ H _ _ _; (* (i:=H) *)
+   eapply tac_wand_intro_intuitionistic with H _ _ _; (* (i:=H) *)
      [iSolveTC
      |iSolveTC ||
       let P := match goal with |- IntoPersistent _ ?P _ => P end in
@@ -490,10 +508,13 @@ Local Tactic Notation "iIntro" "#" constr(H) :=
      |iSolveTC ||
       let P := match goal with |- TCOr (Affine ?P) _ => P end in
       fail 1 "iIntro:" P "not affine and the goal not absorbing"
-     |pm_reflexivity ||
-      let H := pretty_ident H in
-      fail 1 "iIntro:" H "not fresh"
-     |(* subgoal *)]
+     |pm_reduce;
+      lazymatch goal with
+      | |- False =>
+        let H := pretty_ident H in
+        fail 1 "iIntro:" H "not fresh"
+      | _ => idtac (* subgoal *)
+      end]
   |fail 1 "iIntro: nothing to introduce"].
 
 Local Tactic Notation "iIntro" constr(H) "as" constr(p) :=
@@ -686,23 +707,34 @@ Local Ltac iIntoEmpValid t :=
           |exact t]].
 
 Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
-  eapply tac_pose_proof_hyp with _ _ H _ Hnew _;
-    [pm_reflexivity ||
-     let H := pretty_ident H in
-     fail "iPoseProof:" H "not found"
-    |pm_reflexivity ||
-     let Htmp := pretty_ident Hnew in
-     fail "iPoseProof:" Hnew "not fresh"
-    |].
+  let Δ := iGetCtx in
+  eapply tac_pose_proof_hyp with H Hnew;
+    pm_reduce;
+    lazymatch goal with
+    | |- False =>
+      let lookup := pm_eval (envs_lookup_delete false H Δ) in
+      lazymatch lookup with
+      | None =>
+        let H := pretty_ident H in
+        fail "iPoseProof:" H "not found"
+      | _ =>
+        let Hnew := pretty_ident Hnew in
+        fail "iPoseProof:" Hnew "not fresh"
+      end
+    | _ => idtac
+    end.
 
 Tactic Notation "iPoseProofCoreLem"
     constr(lem) "as" constr(Hnew) "before_tc" tactic(tac) :=
-  eapply tac_pose_proof with _ Hnew _; (* (j:=H) *)
+  eapply tac_pose_proof with Hnew _; (* (j:=H) *)
     [iIntoEmpValid lem
-    |pm_reflexivity ||
-     let Htmp := pretty_ident Hnew in
-     fail "iPoseProof:" Hnew "not fresh"
-    |tac];
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let Hnew := pretty_ident Hnew in
+       fail "iPoseProof:" Hnew "not fresh"
+     | _ => tac
+     end];
   (* Solve all remaining TC premises generated by [iIntoEmpValid] *)
   try iSolveTC.
 
@@ -715,7 +747,7 @@ Local Ltac iSpecializeArgs_go H xs :=
   lazymatch xs with
   | hnil => idtac
   | hcons ?x ?xs =>
-     notypeclasses refine (tac_forall_specialize _ _ H _ _ _ _ _ _ _);
+     notypeclasses refine (tac_forall_specialize _ H _ _ _ _ _ _ _);
        [pm_reflexivity ||
         let H := pretty_ident H in
         fail "iSpecialize:" H "not found"
@@ -724,8 +756,8 @@ Local Ltac iSpecializeArgs_go H xs :=
         fail "iSpecialize: cannot instantiate" P "with" x
        |lazymatch goal with (* Force [A] in [ex_intro] to deal with coercions. *)
         | |- ∃ _ : ?A, _ =>
-          notypeclasses refine (@ex_intro A _ x (conj _ _))
-        end; [shelve..|pm_reflexivity|iSpecializeArgs_go H xs]]
+          notypeclasses refine (@ex_intro A _ x _)
+        end; [shelve..|pm_reduce; iSpecializeArgs_go H xs]]
   end.
 Local Tactic Notation "iSpecializeArgs" constr(H) open_constr(xs) :=
   iSpecializeArgs_go H xs.
@@ -791,7 +823,7 @@ Ltac iSpecializePat_go H1 pats :=
              fail "iSpecialize: cannot instantiate" P "with" Q
             |pm_reflexivity|iSpecializePat_go H1 pats]]
     | SPureGoal ?d :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_pure _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_pure _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -799,9 +831,9 @@ Ltac iSpecializePat_go H1 pats :=
          |iSolveTC ||
           let Q := match goal with |- FromPure _ ?Q _ => Q end in
           fail "iSpecialize:" Q "not pure"
-         |pm_reflexivity
          |solve_done d (*goal*)
-         |iSpecializePat_go H1 pats]
+         |pm_reduce;
+          iSpecializePat_go H1 pats]
     | SGoal (SpecGoal GIntuitionistic false ?Hs_frame [] ?d) :: ?pats =>
        notypeclasses refine (tac_specialize_assert_intuitionistic _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
@@ -1063,22 +1095,22 @@ Tactic Notation "iRight" :=
      fail "iRight:" P "not a disjunction"
     |(* subgoal *)].
 
-Local Tactic Notation "iOrDestruct" constr(H) "as" constr(H1) constr(H2) :=
-  eapply tac_or_destruct with _ _ H _ H1 H2 _ _ _; (* (i:=H) (j1:=H1) (j2:=H2) *)
+Tactic Notation "iOrDestruct" constr(H) "as" constr(H1) constr(H2) :=
+  eapply tac_or_destruct with H _ H1 H2 _ _ _; (* (i:=H) (j1:=H1) (j2:=H2) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iOrDestruct:" H "not found"
     |iSolveTC ||
      let P := match goal with |- IntoOr ?P _ _ => P end in
      fail "iOrDestruct: cannot destruct" P
-    |pm_reflexivity ||
-     let H1 := pretty_ident H1 in
-     fail "iOrDestruct:" H1 "not fresh"
-    |pm_reflexivity ||
-     let H2 := pretty_ident H2 in
-     fail "iOrDestruct:" H2 "not fresh"
-    |(* subgoal 1 *)
-    |(* subgoal 2 *)].
+    | pm_reduce;
+      lazymatch goal with
+      | |- False =>
+        let H1 := pretty_ident H1 in
+        let H2 := pretty_ident H2 in
+        fail "iOrDestruct:" H1 "or" H2 "not fresh"
+      |  _ => split
+      end].
 
 (** * Conjunction and separating conjunction *)
 Tactic Notation "iSplit" :=
@@ -1094,35 +1126,39 @@ Tactic Notation "iSplitL" constr(Hs) :=
   iStartProof;
   let Hs := words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
-  eapply tac_sep_split with _ _ Left Hs _ _; (* (js:=Hs) *)
+  let Δ := iGetCtx in
+  eapply tac_sep_split with Left Hs _ _; (* (js:=Hs) *)
     [iSolveTC ||
      let P := match goal with |- FromSep _ ?P _ _ => P end in
      fail "iSplitL:" P "not a separating conjunction"
-    |pm_reflexivity ||
-     let Hs := iMissingHyps Hs in
-     fail "iSplitL: hypotheses" Hs "not found"
-    |(* subgoal 1 *)
-    |(* subgoal 2 *)].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False => let Hs := iMissingHypsCore Δ Hs in
+                 fail "iSplitL: hypotheses" Hs "not found"
+     | _ => split; [(* subgoal 1 *)|(* subgoal 2 *)]
+     end].
 
 Tactic Notation "iSplitR" constr(Hs) :=
   iStartProof;
   let Hs := words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
-  eapply tac_sep_split with _ _ Right Hs _ _; (* (js:=Hs) *)
+  let Δ := iGetCtx in
+  eapply tac_sep_split with Right Hs _ _; (* (js:=Hs) *)
     [iSolveTC ||
      let P := match goal with |- FromSep _ ?P _ _ => P end in
      fail "iSplitR:" P "not a separating conjunction"
-    |pm_reflexivity ||
-     let Hs := iMissingHyps Hs in
-     fail "iSplitR: hypotheses" Hs "not found"
-    |(* subgoal 1 *)
-    |(* subgoal 2 *)].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False => let Hs := iMissingHypsCore Δ Hs in
+                 fail "iSplitR: hypotheses" Hs "not found"
+     | _ => split; [(* subgoal 1 *)|(* subgoal 2 *)]
+     end].
 
 Tactic Notation "iSplitL" := iSplitR "".
 Tactic Notation "iSplitR" := iSplitL "".
 
 Local Tactic Notation "iAndDestruct" constr(H) "as" constr(H1) constr(H2) :=
-  eapply tac_and_destruct with _ H _ H1 H2 _ _ _; (* (i:=H) (j1:=H1) (j2:=H2) *)
+  eapply tac_and_destruct with H _ H1 H2 _ _ _; (* (i:=H) (j1:=H1) (j2:=H2) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iAndDestruct:" H "not found"
@@ -1133,22 +1169,28 @@ Local Tactic Notation "iAndDestruct" constr(H) "as" constr(H1) constr(H2) :=
        | |- IntoAnd _ ?P _ _ => P
        end in
      fail "iAndDestruct: cannot destruct" P
-    |pm_reflexivity ||
-     let H1 := pretty_ident H1 in
-     let H2 := pretty_ident H2 in
-     fail "iAndDestruct:" H1 "or" H2 "not fresh"
-    |(* subgoal *)].
+    |pm_reduce;
+     lazymatch goal with
+       | |- False =>
+         let H1 := pretty_ident H1 in
+         let H2 := pretty_ident H2 in
+         fail "iAndDestruct:" H1 "or" H2 "not fresh"
+       | _ => idtac (* subgoal *)
+     end].
 
 Local Tactic Notation "iAndDestructChoice" constr(H) "as" constr(d) constr(H') :=
-  eapply tac_and_destruct_choice with _ H _ d H' _ _ _;
+  eapply tac_and_destruct_choice with H _ d H' _ _ _;
     [pm_reflexivity || fail "iAndDestructChoice:" H "not found"
     |pm_reduce; iSolveTC ||
      let P := match goal with |- TCOr (IntoAnd _ ?P _ _) _ => P end in
      fail "iAndDestructChoice: cannot destruct" P
-    |pm_reflexivity ||
-     let H' := pretty_ident H' in
-     fail "iAndDestructChoice:" H' "not fresh"
-    |(* subgoal *)].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let H' := pretty_ident H' in
+       fail "iAndDestructChoice:" H' "not fresh"
+     | _ => idtac (* subgoal *)
+     end].
 
 (** * Existential *)
 Tactic Notation "iExists" uconstr(x1) :=
@@ -1190,13 +1232,14 @@ Local Tactic Notation "iExistDestruct" constr(H)
     |iSolveTC ||
      let P := match goal with |- IntoExist ?P _ => P end in
      fail "iExistDestruct: cannot destruct" P|];
-  let y := fresh in
-  intros y; eexists; split;
-    [pm_reflexivity ||
-     let Hx := pretty_ident Hx in
-     fail "iExistDestruct:" Hx "not fresh"
-    |revert y; intros x
-     (* subgoal *)].
+    let y := fresh in
+    intros y; pm_reduce;
+    match goal with
+    | |- False =>
+      let Hx := pretty_ident Hx in
+      fail "iExistDestruct:" Hx "not fresh"
+    | _ => revert y; intros x (* subgoal *)
+    end.
 
 (** * Modality introduction *)
 Tactic Notation "iModIntro" uconstr(sel) :=
@@ -1229,15 +1272,14 @@ Tactic Notation "iNext" := iModIntro (▷^_ _)%I.
 
 (** * Update modality *)
 Tactic Notation "iModCore" constr(H) :=
-  eapply tac_modal_elim with _ H _ _ _ _ _ _;
+  eapply tac_modal_elim with H _ _ _ _ _ _;
     [pm_reflexivity || fail "iMod:" H "not found"
     |iSolveTC ||
      let P := match goal with |- ElimModal _ _ _ ?P _ _ _ => P end in
      let Q := match goal with |- ElimModal _ _ _ _ _ ?Q _ => Q end in
      fail "iMod: cannot eliminate modality" P "in" Q
     |iSolveSideCondition
-    |pm_reflexivity
-    |pm_prettify(* subgoal *)].
+    |pm_reduce; pm_prettify(* subgoal *)].
 
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
@@ -1320,9 +1362,10 @@ Tactic Notation "iCombine" constr(Hs) "as" constr(pat) :=
   let Hs := words Hs in
   let Hs := eval vm_compute in (INamed <$> Hs) in
   let H := iFresh in
+  let Δ := iGetCtx in
   eapply tac_combine with _ _ Hs _ _ H _;
     [pm_reflexivity ||
-     let Hs := iMissingHyps Hs in
+     let Hs := iMissingHypsCore Δ Hs in
      fail "iCombine: hypotheses" Hs "not found"
     |iSolveTC
     |pm_reflexivity ||
@@ -1990,11 +2033,15 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
   (* apply is sometimes confused wrt. canonical structures search.
      refine should use the other unification algorithm, which should
      not have this issue. *)
-  notypeclasses refine (tac_löb _ _ IH _ _ _ _);
+  notypeclasses refine (tac_löb _ IH _ _ _);
     [reflexivity || fail "iLöb: spatial context not empty, this should not happen"
-    |pm_reflexivity ||
-     let IH := pretty_ident IH in
-     fail "iLöb:" IH "not fresh"|].
+    |pm_reduce;
+     lazymatch goal with
+     | |- False =>
+       let IH := pretty_ident IH in
+       fail "iLöb:" IH "not fresh"
+     | _ => idtac
+     end].
 
 Tactic Notation "iLöbRevert" constr(Hs) "with" tactic(tac) :=
   iRevertIntros Hs with (
@@ -2065,9 +2112,9 @@ Tactic Notation "iAssertCore" open_constr(Q)
   | _ => fail "iAssert: exactly one specialization pattern should be given"
   end;
   let H := iFresh in
-  eapply tac_assert with _ H Q;
-    [pm_reflexivity
-    |iSpecializeCore H with hnil pats as p; [..|tac H]].
+  eapply tac_assert with H Q;
+  [pm_reduce;
+   iSpecializeCore H with hnil pats as p; [..|tac H]].
 
 Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic(tac) :=
   let p := intro_pat_intuitionistic p in
@@ -2153,7 +2200,7 @@ Local Tactic Notation "iRewriteCore" constr(lr) open_constr(lem) "in" constr(H) 
        fail "iRewrite:" P "not an equality"
       |iRewriteFindPred
       |intros ??? ->; reflexivity
-      |pm_reflexivity|pm_prettify; iClearHyp Heq]).
+      |pm_reduce; pm_prettify; iClearHyp Heq]).
 
 Tactic Notation "iRewrite" open_constr(lem) "in" constr(H) :=
   iRewriteCore Right lem in H.
@@ -2256,7 +2303,7 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
      let I := match goal with |- ElimInv _ ?I  _ _ _ _ _ => I end in
      fail "iInv: cannot eliminate invariant" I
     |iSolveSideCondition
-    |let R := fresh in intros R; eexists; split; [pm_reflexivity|];
+    |let R := fresh in intros R; pm_reduce;
      (* Now we are left proving [envs_entails Δ'' R]. *)
      iSpecializePat H pats; last (
        iApplyHyp H; clear R; pm_reduce;

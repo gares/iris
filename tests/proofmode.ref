@@ -456,7 +456,7 @@ The command has indeed failed with message:
 In nested Ltac calls to "iIntros ( (intropattern) )",
 "iIntro ( (intropattern) )" and "intros x", last call failed.
 x is already used.
-"iSplit_one_of_many"
+"iSplitL_one_of_many"
      : string
 The command has indeed failed with message:
 Ltac call to "iSplitL (constr)" failed.
@@ -464,6 +464,39 @@ Tactic failure: iSplitL: hypotheses ["HPx"] not found.
 The command has indeed failed with message:
 Ltac call to "iSplitL (constr)" failed.
 Tactic failure: iSplitL: hypotheses ["HPx"] not found.
+"iSplitR_one_of_many"
+     : string
+The command has indeed failed with message:
+Ltac call to "iSplitR (constr)" failed.
+Tactic failure: iSplitR: hypotheses ["HPx"] not found.
+The command has indeed failed with message:
+Ltac call to "iSplitR (constr)" failed.
+Tactic failure: iSplitR: hypotheses ["HPx"] not found.
+"iCombine_fail"
+     : string
+The command has indeed failed with message:
+Ltac call to "iCombine (constr) as (constr)" failed.
+Tactic failure: iCombine: hypotheses ["HP3"] not found.
+"iSpecialize_bad_name1_fail"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iSpecialize (open_constr)",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
+"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
+failed.
+Tactic failure: iSpecialize: "H" not found.
+"iSpecialize_bad_name2_fail"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iSpecialize (open_constr)",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
+"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
+failed.
+Tactic failure: iSpecialize: "H" not found.
 "iExact_fail"
      : string
 The command has indeed failed with message:
@@ -519,12 +552,30 @@ In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
 "iPoseProofCoreLem (constr) as (constr) before_tc (tactic)", 
 "tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
 "tac" (bound to fun H => iDestructHyp H as pat),
 "iDestructHyp (constr) as (constr)",
 "<iris.proofmode.ltac_tactics.iDestructHypFindPat>",
 "<iris.proofmode.ltac_tactics.iDestructHypGo>" and
 "iRename (constr) into (constr)", last call failed.
 Tactic failure: iRename: "H" not fresh.
+"iPoseProof_not_found_fail"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)" and
+"iPoseProofCoreHyp (constr) as (constr)", last call failed.
+Tactic failure: iPoseProof: "Hx" not found.
+"iPoseProofCoreHyp_not_found_fail"
+     : string
+The command has indeed failed with message:
+Ltac call to "iPoseProofCoreHyp (constr) as (constr)" failed.
+Tactic failure: iPoseProof: "Hx" not found.
+"iPoseProofCoreHyp_not_fresh_fail"
+     : string
+The command has indeed failed with message:
+Ltac call to "iPoseProofCoreHyp (constr) as (constr)" failed.
+Tactic failure: iPoseProof: "H1" not fresh.
 "iRevert_fail"
      : string
 The command has indeed failed with message:
@@ -555,6 +606,14 @@ In nested Ltac calls to "iDestruct (open_constr) as (constr)",
 "<iris.proofmode.ltac_tactics.iDestructHypGo>", last call failed.
 Tactic failure: iDestruct: (IList [[IClear (sel_patterns.SelIdent "HP")]])
 invalid.
+"iOrDestruct_fail"
+     : string
+The command has indeed failed with message:
+Ltac call to "iOrDestruct (constr) as (constr) (constr)" failed.
+Tactic failure: iOrDestruct: "H'" or "H2" not fresh.
+The command has indeed failed with message:
+Ltac call to "iOrDestruct (constr) as (constr) (constr)" failed.
+Tactic failure: iOrDestruct: "H1" or "H'" not fresh.
 "iApply_fail"
      : string
 The command has indeed failed with message:

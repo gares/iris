@@ -777,11 +777,39 @@ Proof.
   iIntros "HQ" (x). Fail iIntros (x).
 Abort.
 
-Check "iSplit_one_of_many".
-Lemma iSplit_one_of_many P :
+Check "iSplitL_one_of_many".
+Lemma iSplitL_one_of_many P :
   P -∗ P -∗ P ∗ P.
 Proof.
   iIntros "HP1 HP2". Fail iSplitL "HP1 HPx". Fail iSplitL "HPx HP1".
+Abort.
+
+Check "iSplitR_one_of_many".
+Lemma iSplitR_one_of_many P :
+  P -∗ P -∗ P ∗ P.
+Proof.
+  iIntros "HP1 HP2". Fail iSplitR "HP1 HPx". Fail iSplitR "HPx HP1".
+Abort.
+
+Check "iCombine_fail".
+Lemma iCombine_fail P:
+  P -∗ P -∗ P ∗ P.
+Proof.
+  iIntros "HP1 HP2". Fail iCombine "HP1 HP3" as "HP".
+Abort.
+
+Check "iSpecialize_bad_name1_fail".
+Lemma iSpecialize_bad_name1_fail P Q:
+  (P -∗ Q) -∗ P -∗ Q.
+Proof.
+  iIntros "HW HP". Fail iSpecialize ("H" with "HP").
+Abort.
+
+Check "iSpecialize_bad_name2_fail".
+Lemma iSpecialize_bad_name2_fail P Q:
+  (P -∗ Q) -∗ P -∗ Q.
+Proof.
+  iIntros "HW HP". Fail iSpecialize ("HW" with "H").
 Abort.
 
 Check "iExact_fail".
@@ -811,6 +839,24 @@ Proof.
   iIntros "H". Fail iPoseProof bi.and_intro as "H".
 Abort.
 
+Check "iPoseProof_not_found_fail".
+Lemma iPoseProof_not_found_fail P : P -∗ P.
+Proof.
+  iIntros "H". Fail iPoseProof "Hx" as "H1".
+Abort.
+
+Check "iPoseProofCoreHyp_not_found_fail".
+Lemma iPoseProofCoreHyp_not_found_fail P : P -∗ P -∗ P.
+Proof.
+  iIntros "H". Fail iPoseProofCoreHyp "Hx" as "H1".
+Abort.
+
+Check "iPoseProofCoreHyp_not_fresh_fail".
+Lemma iPoseProofCoreHyp_not_fresh_fail P : P -∗ P -∗ P.
+Proof.
+  iIntros "H0 H1". Fail iPoseProofCoreHyp "H0" as "H1".
+Abort.
+
 Check "iRevert_fail".
 Lemma iRevert_fail P : P -∗ P.
 Proof. Fail iRevert "H". Abort.
@@ -818,6 +864,12 @@ Proof. Fail iRevert "H". Abort.
 Check "iDestruct_fail".
 Lemma iDestruct_fail P : P -∗ <absorb> P.
 Proof. iIntros "HP". Fail iDestruct "HP" as "{HP}". Fail iDestruct "HP" as "[{HP}]". Abort.
+
+Check "iOrDestruct_fail".
+Lemma iOrDestruct_fail P : (P ∨ P) -∗ P -∗ P.
+Proof.
+  iIntros "H H'". Fail iOrDestruct "H" as "H'" "H2". Fail iOrDestruct "H" as "H1" "H'".
+Abort.
 
 Check "iApply_fail".
 Lemma iApply_fail P Q : P -∗ Q.
