@@ -119,6 +119,19 @@ Changes in Coq:
   authoritative elements have agreement: `✓ (●{p} a ⋅ ●{q} b) ⇒ a ≡ b`. As a
   consequence, `auth` is no longer a COFE and does not preserve Leibniz
   equality.
+* Rename in `auth`:
+  - Use `auth_auth_proj`/`auth_frag_proj` for the projections of `auth`:
+    `authoritative` → `auth_auth_proj` and `auth_own` → `auth_frag_proj`.
+  - Use `auth_auth` and `auth_frag` for the injections into authoritative
+    elements and non-authoritative elements respectively.
+  - Lemmas for the projections and injections are renamed accordingly.
+    For examples:
+    + `authoritative_validN` → `auth_auth_proj_validN`
+    + `auth_own_validN` → `auth_frag_proj_validN`
+    + `auth_auth_valid` was not renamed because it was already used for the
+      authoritative injection.
+  - `auth_both_valid` → `auth_both_valid_2`
+  - `auth_valid_discrete_2` → `auth_both_valid`
 
 ## Iris 3.1.0 (released 2017-12-19)
 
