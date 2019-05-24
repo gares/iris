@@ -1116,6 +1116,8 @@ Section prod.
 
   Lemma pair_op (a a' : A) (b b' : B) : (a, b) ⋅ (a', b') = (a ⋅ a', b ⋅ b').
   Proof. done. Qed.
+  Lemma pair_valid (a : A) (b : B) : ✓ (a, b) ↔ ✓ a ∧ ✓ b.
+  Proof. done. Qed.
 
   Global Instance prod_cmra_total : CmraTotal A → CmraTotal B → CmraTotal prodR.
   Proof.
