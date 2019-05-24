@@ -49,7 +49,7 @@ Section frac_auth.
   Lemma frac_auth_validN n a : ✓{n} a → ✓{n} (●! a ⋅ ◯! a).
   Proof. by rewrite auth_both_validN. Qed.
   Lemma frac_auth_valid a : ✓ a → ✓ (●! a ⋅ ◯! a).
-  Proof. intros. by apply auth_both_valid. Qed.
+  Proof. intros. by apply auth_both_valid_2. Qed.
 
   Lemma frac_auth_agreeN n a b : ✓{n} (●! a ⋅ ◯! b) → a ≡{n}≡ b.
   Proof.
@@ -67,7 +67,7 @@ Section frac_auth.
   Proof. by rewrite auth_both_validN /= => -[/Some_pair_includedN [_ ?] _]. Qed.
   Lemma frac_auth_included `{CmraDiscrete A} q a b :
     ✓ (●! a ⋅ ◯!{q} b) → Some b ≼ Some a.
-  Proof. by rewrite auth_valid_discrete_2 /= => -[/Some_pair_included [_ ?] _]. Qed.
+  Proof. by rewrite auth_both_valid /= => -[/Some_pair_included [_ ?] _]. Qed.
   Lemma frac_auth_includedN_total `{CmraTotal A} n q a b :
     ✓{n} (●! a ⋅ ◯!{q} b) → b ≼{n} a.
   Proof. intros. by eapply Some_includedN_total, frac_auth_includedN. Qed.

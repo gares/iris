@@ -150,7 +150,7 @@ Proof.
   naive_solver eauto using cmra_validN_includedN.
 Qed.
 
-Lemma auth_frag_validN n a : ✓{n} a ↔ ✓{n} (◯ a).
+Lemma auth_frag_validN n a : ✓{n} (◯ a) ↔ ✓{n} a.
 Proof. done. Qed.
 Lemma auth_auth_frac_validN n q a :
   ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
@@ -176,26 +176,29 @@ Proof.
   rewrite auth_both_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
 Qed.
 
-Lemma auth_frag_valid a : ✓ a ↔ ✓ (◯ a).
+Lemma auth_frag_valid a : ✓ (◯ a) ↔ ✓ a.
 Proof. done. Qed.
-Lemma auth_auth_frac_valid q a : ✓ q ∧ ✓ a ↔ ✓ (●{q} a).
+Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
 Proof.
   rewrite auth_valid_eq /=. apply and_iff_compat_l. split.
-  - intros. exists a. split; [done|].
-    split; by [apply ucmra_unit_leastN|apply cmra_valid_validN].
   - intros H'. apply cmra_valid_validN. intros n.
     by destruct (H' n) as [? [->%to_agree_injN [??]]].
+  - intros. exists a. split; [done|].
+    split; by [apply ucmra_unit_leastN|apply cmra_valid_validN].
 Qed.
-Lemma auth_auth_valid a : ✓ a ↔ ✓ (● a).
-Proof. rewrite -auth_auth_frac_valid frac_valid'. naive_solver. Qed.
-Lemma auth_both_frac_valid q a b : ✓ q → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
+Lemma auth_auth_valid a : ✓ (● a) ↔ ✓ a.
+Proof. rewrite auth_auth_frac_valid frac_valid'. naive_solver. Qed.
+
+(* The reverse direction of the two lemmas below only holds if the camera is
+discrete. *)
+Lemma auth_both_frac_valid_2 q a b : ✓ q → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
 Proof.
   intros Val1 Val2 Incl. rewrite auth_valid_eq /=. split; [done|].
   intros n. exists a. split; [done|]. rewrite left_id.
   split; by [apply cmra_included_includedN|apply cmra_valid_validN].
 Qed.
-Lemma auth_both_valid a b : ✓ a → b ≼ a → ✓ (● a ⋅ ◯ b).
-Proof. intros ??. by apply auth_both_frac_valid. Qed.
+Lemma auth_both_valid_2 a b : ✓ a → b ≼ a → ✓ (● a ⋅ ◯ b).
+Proof. intros ??. by apply auth_both_frac_valid_2. Qed.
 
 Lemma auth_valid_discrete `{!CmraDiscrete A} x :
   ✓ x ↔ match auth_auth_proj x with
@@ -208,7 +211,7 @@ Proof.
   setoid_rewrite <-(discrete_iff _ a).
   setoid_rewrite <-cmra_discrete_valid_iff. naive_solver eauto using O.
 Qed.
-Lemma auth_frac_valid_discrete_2 `{!CmraDiscrete A} q a b :
+Lemma auth_both_frac_valid `{!CmraDiscrete A} q a b :
   ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ b ≼ a ∧ ✓ a.
 Proof.
   rewrite auth_valid_discrete /=. apply and_iff_compat_l.
@@ -216,8 +219,8 @@ Proof.
   - by intros [?[->%to_agree_inj]].
   - naive_solver.
 Qed.
-Lemma auth_valid_discrete_2 `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
-Proof. rewrite auth_frac_valid_discrete_2 frac_valid'. naive_solver. Qed.
+Lemma auth_both_valid `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
+Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
 
 Lemma auth_cmra_mixin : CmraMixin (auth A).
 Proof.
@@ -293,7 +296,7 @@ Proof. by rewrite /op /auth_op /= left_id. Qed.
 Lemma auth_both_op a b : Auth (Some (1%Qp,to_agree a)) b ≡ ● a ⋅ ◯ b.
 Proof. by rewrite auth_both_frac_op. Qed.
 
-Lemma auth_auth_frac_op p q a: ●{p} a ⋅ ●{q} a ≡ ●{p + q} a.
+Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
 Proof.
   intros; split; simpl; last by rewrite left_id.
   by rewrite -Some_op pair_op agree_idemp.

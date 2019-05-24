@@ -78,7 +78,7 @@ Lemma box_own_auth_agree γ b1 b2 :
   box_own_auth γ (● Excl' b1) ∗ box_own_auth γ (◯ Excl' b2) ⊢ ⌜b1 = b2⌝.
 Proof.
   rewrite /box_own_prop -own_op own_valid prod_validI /= and_elim_l.
-  by iDestruct 1 as % [[[] [=]%leibniz_equiv] ?]%auth_valid_discrete_2.
+  by iDestruct 1 as % [[[] [=]%leibniz_equiv] ?]%auth_both_valid.
 Qed.
 
 Lemma box_own_auth_update γ b1 b2 b3 :
@@ -110,7 +110,7 @@ Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
   iMod (own_alloc_cofinite (● Excl' false ⋅ ◯ Excl' false,
     Some (to_agree (Next (iProp_unfold Q)))) (dom _ f))
-    as (γ) "[Hdom Hγ]"; first by (split; [apply auth_valid_discrete_2|]).
+    as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid|]).
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".
   iDestruct "Hdom" as % ?%not_elem_of_dom.
   iMod (inv_alloc N _ (slice_inv γ Q) with "[Hγ]") as "#Hinv".

@@ -198,7 +198,7 @@ Lemma wsat_alloc `{!invPreG Σ} : (|==> ∃ _ : invG Σ, wsat ∗ ownE ⊤)%I.
 Proof.
   iIntros.
   iMod (own_alloc (● (∅ : gmap positive _))) as (γI) "HI";
-    first by rewrite -auth_auth_valid.
+    first by rewrite auth_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
   iModIntro; iExists (WsatG _ _ _ _ γI γE γD).
