@@ -125,7 +125,8 @@ Changes in Coq:
   - Use `auth_auth` and `auth_frag` for the injections into authoritative
     elements and non-authoritative elements respectively.
   - Lemmas for the projections and injections are renamed accordingly.
-
+  - `auth_both_valid` → `auth_both_valid_2`
+  - `auth_valid_discrete_2` → `auth_both_valid`
 ## Iris 3.1.0 (released 2017-12-19)
 
 Changes in and extensions of the theory:
