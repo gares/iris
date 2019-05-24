@@ -249,8 +249,8 @@ Qed.
 
 Lemma heap_array_to_seq_meta l vs n :
   length vs = n →
-  ([∗ map] l' ↦ _ ∈ heap_array l vs, meta_token l') -∗
-  [∗ list] i ∈ seq 0 n, meta_token (l +ₗ (i : nat)).
+  ([∗ map] l' ↦ _ ∈ heap_array l vs, meta_token l' ⊤) -∗
+  [∗ list] i ∈ seq 0 n, meta_token (l +ₗ (i : nat)) ⊤.
 Proof.
   iIntros (<-) "Hvs". iInduction vs as [|v vs] "IH" forall (l)=> //=.
   rewrite big_opM_union; last first.
@@ -268,7 +268,7 @@ Lemma wp_allocN s E v n :
   0 < n →
   {{{ True }}} AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
   {{{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
-         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) }}}.
+         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }}}.
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by auto with lia.
@@ -284,7 +284,7 @@ Lemma twp_allocN s E v n :
   0 < n →
   [[{ True }]] AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
   [[{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
-         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) }]].
+         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }]].
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
@@ -298,14 +298,14 @@ Proof.
 Qed.
 
 Lemma wp_alloc s E v :
-  {{{ True }}} Alloc (Val v) @ s; E {{{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l }}}.
+  {{{ True }}} Alloc (Val v) @ s; E {{{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l ⊤ }}}.
 Proof.
   iIntros (Φ) "_ HΦ". iApply wp_allocN; auto with lia.
   iIntros "!>" (l) "/= (? & ? & _)".
   rewrite array_singleton loc_add_0. iApply "HΦ"; iFrame.
 Qed.
 Lemma twp_alloc s E v :
-  [[{ True }]] Alloc (Val v) @ s; E [[{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l }]].
+  [[{ True }]] Alloc (Val v) @ s; E [[{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l ⊤ }]].
 Proof.
   iIntros (Φ) "_ HΦ". iApply twp_allocN; auto with lia.
   iIntros (l) "/= (? & ? & _)".
