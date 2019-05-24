@@ -582,15 +582,16 @@ Local Tactic Notation "iForallRevert" ident(x) :=
 (** The tactic [iRevertHyp H with tac] reverts the hypothesis [H] and calls
 [tac] with a Boolean that is [true] iff [H] was in the intuitionistic context. *)
 Tactic Notation "iRevertHyp" constr(H) "with" tactic1(tac) :=
-  (* Create a Boolean evar [p] to keep track of whether the hypothesis [H] was
-  in the intuitionistic context. *)
-  let p := fresh in evar (p : bool);
-  let p' := eval unfold p in p in clear p;
-  eapply tac_revert with _ H p' _;
-    [pm_reflexivity ||
-     let H := pretty_ident H in
-     fail "iRevert:" H "not found"
-    |pm_reduce; tac p'].
+  eapply tac_revert with H;
+    [lazymatch goal with
+     | |- match envs_lookup_delete true ?i ?Δ with _ => _ end =>
+        lazymatch eval pm_eval in (envs_lookup_delete true i Δ) with
+        | Some (?p,_,_) => pm_reduce; tac p
+        | None =>
+           let H := pretty_ident H in
+           fail "iRevert:" H "not found"
+        end
+     end].
 
 Tactic Notation "iRevertHyp" constr(H) := iRevertHyp H with (fun _ => idtac).
 
@@ -783,7 +784,7 @@ Ltac iSpecializePat_go H1 pats :=
     | SIdent ?H2 [] :: ?pats =>
        (* If we not need to specialize [H2] we can avoid a lot of unncessary
        context manipulation. *)
-       notypeclasses refine (tac_specialize false _ _ _ H2 _ H1 _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize false _ _ H2 _ H1 _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H2 := pretty_ident H2 in
           fail "iSpecialize:" H2 "not found"
@@ -794,7 +795,7 @@ Ltac iSpecializePat_go H1 pats :=
           let P := match goal with |- IntoWand _ _ ?P ?Q _ => P end in
           let Q := match goal with |- IntoWand _ _ ?P ?Q _ => Q end in
           fail "iSpecialize: cannot instantiate" P "with" Q
-         |pm_reflexivity|iSpecializePat_go H1 pats]
+         |pm_reduce; iSpecializePat_go H1 pats]
     | SIdent ?H2 ?pats1 :: ?pats =>
        (* If [H2] is in the intuitionistic context, we copy it into a new
        hypothesis [Htmp], so that it can be used multiple times. *)
@@ -810,7 +811,7 @@ Ltac iSpecializePat_go H1 pats :=
          Ltac backtraces (which would otherwise include the whole closure). *)
          [.. (* side-conditions of [iSpecialize] *)
          |(* Use [remove_intuitionistic = true] to remove the copy [Htmp]. *)
-          notypeclasses refine (tac_specialize true _ _ _ H2tmp _ H1 _ _ _ _ _ _ _ _ _ _);
+          notypeclasses refine (tac_specialize true _ _ H2tmp _ H1 _ _ _ _ _ _ _ _ _);
             [pm_reflexivity ||
              let H2tmp := pretty_ident H2tmp in
              fail "iSpecialize:" H2tmp "not found"
@@ -821,7 +822,7 @@ Ltac iSpecializePat_go H1 pats :=
              let P := match goal with |- IntoWand _ _ ?P ?Q _ => P end in
              let Q := match goal with |- IntoWand _ _ ?P ?Q _ => Q end in
              fail "iSpecialize: cannot instantiate" P "with" Q
-            |pm_reflexivity|iSpecializePat_go H1 pats]]
+            |pm_reduce; iSpecializePat_go H1 pats]]
     | SPureGoal ?d :: ?pats =>
        notypeclasses refine (tac_specialize_assert_pure _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
@@ -835,7 +836,7 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reduce;
           iSpecializePat_go H1 pats]
     | SGoal (SpecGoal GIntuitionistic false ?Hs_frame [] ?d) :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -844,9 +845,8 @@ Ltac iSpecializePat_go H1 pats :=
           let Q := match goal with |- Persistent ?Q => Q end in
           fail "iSpecialize:" Q "not persistent"
          |iSolveTC
-         |pm_reflexivity
          |iFrame Hs_frame; solve_done d (*goal*)
-         |iSpecializePat_go H1 pats]
+         |pm_reduce; iSpecializePat_go H1 pats]
     | SGoal (SpecGoal GIntuitionistic _ _ _ _) :: ?pats =>
        fail "iSpecialize: cannot select hypotheses for intuitionistic premise"
     | SGoal (SpecGoal ?m ?lr ?Hs_frame ?Hs ?d) :: ?pats =>
@@ -866,7 +866,7 @@ Ltac iSpecializePat_go H1 pats :=
          |iFrame Hs_frame; solve_done d (*goal*)
          |iSpecializePat_go H1 pats]
     | SAutoFrame GIntuitionistic :: ?pats =>
-       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert_intuitionistic _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
@@ -874,9 +874,8 @@ Ltac iSpecializePat_go H1 pats :=
          |iSolveTC ||
           let Q := match goal with |- Persistent ?Q => Q end in
           fail "iSpecialize:" Q "not persistent"
-         |pm_reflexivity
          |solve [iFrame "∗ #"]
-         |iSpecializePat_go H1 pats]
+         |pm_reduce; iSpecializePat_go H1 pats]
     | SAutoFrame ?m :: ?pats =>
        notypeclasses refine (tac_specialize_frame _ _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
@@ -943,7 +942,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
              let PROP := iBiOfGoal in
              lazymatch eval compute in (q || tc_to_bool (BiAffine PROP)) with
              | true =>
-                notypeclasses refine (tac_specialize_intuitionistic_helper _ _ H _ _ _ _ _ _ _ _ _ _ _);
+                notypeclasses refine (tac_specialize_intuitionistic_helper _ H _ _ _ _ _ _ _ _ _ _);
                   [pm_reflexivity
                    (* This premise, [envs_lookup j Δ = Some (q,P)],
                    holds because [iTypeOf] succeeded *)
@@ -957,8 +956,7 @@ Tactic Notation "iSpecializeCore" open_constr(H)
                   |iSolveTC ||
                    let Q := match goal with |- IntoPersistent _ ?Q _ => Q end in
                    fail "iSpecialize:" Q "not persistent"
-                  |pm_reflexivity
-                  |(* goal *)]
+                  |pm_reduce (* goal *)]
              | false => iSpecializePat H pat
              end
           | None =>
