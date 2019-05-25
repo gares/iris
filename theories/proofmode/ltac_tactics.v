@@ -228,7 +228,7 @@ Ltac, but it may be possible in Ltac2. *)
 
 (** * Assumptions *)
 Tactic Notation "iExact" constr(H) :=
-  eapply tac_assumption with _ H _ _; (* (i:=H) *)
+  eapply tac_assumption with H _ _; (* (i:=H) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iExact:" H "not found"
@@ -262,7 +262,7 @@ Tactic Notation "iAssumption" :=
     lazymatch Γ with
     | Esnoc ?Γ ?j ?P => first
        [pose proof (_ : FromAssumption p P Q) as Hass;
-        eapply (tac_assumption _ _ j p P);
+        eapply (tac_assumption _ j p P);
           [pm_reflexivity
           |apply Hass
           |pm_reduce; iSolveTC ||
@@ -1051,7 +1051,7 @@ premises [n], the tactic will have the following behavior:
 actual error. *)
 Local Ltac iApplyHypExact H :=
   first
-    [eapply tac_assumption with _ H _ _; (* (i:=H) *)
+    [eapply tac_assumption with H _ _; (* (i:=H) *)
        [pm_reflexivity || fail 1
        |iSolveTC || fail 1
        |pm_reduce; iSolveTC]

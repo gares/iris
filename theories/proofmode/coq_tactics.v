@@ -61,17 +61,17 @@ Proof. intros H. induction H; simpl; apply _. Qed.
 Lemma tac_emp_intro Δ : AffineEnv (env_spatial Δ) → envs_entails Δ emp.
 Proof. intros. by rewrite envs_entails_eq (affine (of_envs Δ)). Qed.
 
-(* TODO: convert to not take Δ' *)
-Lemma tac_assumption Δ Δ' i p P Q :
-  envs_lookup_delete true i Δ = Some (p,P,Δ') →
+Lemma tac_assumption Δ i p P Q :
+  envs_lookup i Δ = Some (p,P) →
   FromAssumption p P Q →
-  (if env_spatial_is_nil Δ' then TCTrue
+  (let Δ' := envs_delete true i p Δ in
+   if env_spatial_is_nil Δ' then TCTrue
    else TCOr (Absorbing Q) (AffineEnv (env_spatial Δ'))) →
   envs_entails Δ Q.
 Proof.
-  intros ?? H. rewrite envs_entails_eq envs_lookup_delete_sound //.
-  destruct (env_spatial_is_nil Δ') eqn:?.
-  - by rewrite (env_spatial_is_nil_intuitionistically Δ') // sep_elim_l.
+  intros ?? H. rewrite envs_entails_eq envs_lookup_sound //.
+  simpl in *. destruct (env_spatial_is_nil _) eqn:?.
+  - by rewrite (env_spatial_is_nil_intuitionistically _) // sep_elim_l.
   - rewrite from_assumption. destruct H; by rewrite sep_elim_l.
 Qed.
 
