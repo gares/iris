@@ -784,7 +784,7 @@ Ltac iSpecializePat_go H1 pats :=
     | SIdent ?H2 [] :: ?pats =>
        (* If we not need to specialize [H2] we can avoid a lot of unncessary
        context manipulation. *)
-       notypeclasses refine (tac_specialize false _ _ H2 _ H1 _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize false _ H2 _ H1 _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H2 := pretty_ident H2 in
           fail "iSpecialize:" H2 "not found"
@@ -811,7 +811,7 @@ Ltac iSpecializePat_go H1 pats :=
          Ltac backtraces (which would otherwise include the whole closure). *)
          [.. (* side-conditions of [iSpecialize] *)
          |(* Use [remove_intuitionistic = true] to remove the copy [Htmp]. *)
-          notypeclasses refine (tac_specialize true _ _ H2tmp _ H1 _ _ _ _ _ _ _ _ _);
+          notypeclasses refine (tac_specialize true _ H2tmp _ H1 _ _ _ _ _ _ _ _ _);
             [pm_reflexivity ||
              let H2tmp := pretty_ident H2tmp in
              fail "iSpecialize:" H2tmp "not found"

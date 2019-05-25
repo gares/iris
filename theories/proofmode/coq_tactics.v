@@ -250,9 +250,9 @@ Qed.
 
 (* This is pretty much [tac_specialize_assert] with [js:=[j]] and [tac_exact],
 but it is doing some work to keep the order of hypotheses preserved. *)
-(* TODO: convert to not take Δ' *)
-Lemma tac_specialize remove_intuitionistic Δ Δ' i p j q P1 P2 R Q :
-  envs_lookup_delete remove_intuitionistic i Δ = Some (p, P1, Δ') →
+Lemma tac_specialize remove_intuitionistic Δ i p j q P1 P2 R Q :
+  envs_lookup i Δ = Some (p, P1) →
+  let Δ' := envs_delete remove_intuitionistic i p Δ in
   envs_lookup j Δ' = Some (q, R) →
   IntoWand q p R P1 P2 →
   match envs_replace j q (p && q) (Esnoc Enil j P2) Δ' with
@@ -260,8 +260,7 @@ Lemma tac_specialize remove_intuitionistic Δ Δ' i p j q P1 P2 R Q :
   | None => False
   end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq /IntoWand.
-  intros [? ->]%envs_lookup_delete_Some ? HR ?.
+  rewrite envs_entails_eq /IntoWand. intros ?? HR ?.
   destruct (envs_replace _ _ _ _ _) as [Δ''|] eqn:?; last done.
   rewrite (envs_lookup_sound' _ remove_intuitionistic) //.
   rewrite envs_replace_singleton_sound //. destruct p; simpl in *.
