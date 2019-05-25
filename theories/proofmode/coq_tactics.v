@@ -270,16 +270,24 @@ Proof.
   - by rewrite HR assoc !wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert Δ Δ1 Δ2' j q neg js R P1 P2 P1' Q :
+Lemma tac_specialize_assert Δ j q neg js R P1 P2 P1' Q :
   envs_lookup j Δ = Some (q, R) →
   IntoWand q false R P1 P2 → AddModal P1' P1 Q →
-  (''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
-      js (envs_delete true j q Δ);
+  match
+    ''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
+    js (envs_delete true j q Δ);
     Δ2' ← envs_app false (Esnoc Enil j P2) Δ2;
-    Some (Δ1,Δ2')) = Some (Δ1,Δ2') → (* does not preserve position of [j] *)
-  envs_entails Δ1 P1' → envs_entails Δ2' Q → envs_entails Δ Q.
+    Some (Δ1,Δ2') (* does not preserve position of [j] *)
+  with
+  | Some (Δ1,Δ2') =>
+     (* The constructor [conj] of [∧] still stores the contexts [Δ1] and [Δ2'] *)
+     envs_entails Δ1 P1' ∧ envs_entails Δ2' Q
+  | None => False
+  end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros ???? HP1 HQ.
+  rewrite envs_entails_eq. intros ??? HQ.
+  destruct (_ ≫= _) as [[Δ1 Δ2']|] eqn:?; last done.
+  destruct HQ as [HP1 HQ].
   destruct (envs_split _ _ _) as [[? Δ2]|] eqn:?; simplify_eq/=;
     destruct (envs_app _ _ _) eqn:?; simplify_eq/=.
   rewrite envs_lookup_sound // envs_split_sound //.
