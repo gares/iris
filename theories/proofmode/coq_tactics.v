@@ -252,16 +252,19 @@ Qed.
 
 (* This is pretty much [tac_specialize_assert] with [js:=[j]] and [tac_exact],
 but it is doing some work to keep the order of hypotheses preserved. *)
-(* TODO: convert to not take Δ' or Δ'' *)
-Lemma tac_specialize remove_intuitionistic Δ Δ' Δ'' i p j q P1 P2 R Q :
+(* TODO: convert to not take Δ' *)
+Lemma tac_specialize remove_intuitionistic Δ Δ' i p j q P1 P2 R Q :
   envs_lookup_delete remove_intuitionistic i Δ = Some (p, P1, Δ') →
   envs_lookup j Δ' = Some (q, R) →
   IntoWand q p R P1 P2 →
-  envs_replace j q (p && q) (Esnoc Enil j P2) Δ' = Some Δ'' →
-  envs_entails Δ'' Q → envs_entails Δ Q.
+  match envs_replace j q (p && q) (Esnoc Enil j P2) Δ' with
+  | Some Δ'' => envs_entails Δ'' Q
+  | None => False
+  end → envs_entails Δ Q.
 Proof.
   rewrite envs_entails_eq /IntoWand.
-  intros [? ->]%envs_lookup_delete_Some ? HR ? <-.
+  intros [? ->]%envs_lookup_delete_Some ? HR ?.
+  destruct (envs_replace _ _ _ _ _) as [Δ''|] eqn:?; last done.
   rewrite (envs_lookup_sound' _ remove_intuitionistic) //.
   rewrite envs_replace_singleton_sound //. destruct p; simpl in *.
   - rewrite -{1}intuitionistically_idemp -{1}intuitionistically_if_idemp.
@@ -327,16 +330,20 @@ Proof.
   by rewrite intuitionistically_emp left_id wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert_intuitionistic Δ Δ' Δ'' j q P1 P1' P2 R Q :
+Lemma tac_specialize_assert_intuitionistic Δ Δ' j q P1 P1' P2 R Q :
   envs_lookup_delete true j Δ = Some (q, R, Δ') →
   IntoWand q true R P1 P2 →
   Persistent P1 →
   IntoAbsorbingly P1' P1 →
-  envs_simple_replace j q (Esnoc Enil j P2) Δ = Some Δ'' →
-  envs_entails Δ' P1' → envs_entails Δ'' Q → envs_entails Δ Q.
+  envs_entails Δ' P1' →
+  match envs_simple_replace j q (Esnoc Enil j P2) Δ with
+  | Some Δ'' => envs_entails Δ'' Q
+  | None => False
+  end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq => /envs_lookup_delete_Some [? ->] ???? HP1 <-.
-  rewrite envs_lookup_sound //.
+  rewrite envs_entails_eq => /envs_lookup_delete_Some [? ->] ??? HP1 HQ.
+  destruct (envs_simple_replace _ _ _ _) as [Δ''|] eqn:?; last done.
+  rewrite -HQ envs_lookup_sound //.
   rewrite -(idemp bi_and (of_envs (envs_delete _ _ _ _))).
   rewrite {2}envs_simple_replace_singleton_sound' //; simpl.
   rewrite {1}HP1 (into_absorbingly P1' P1) (persistent_persistently_2 P1).
@@ -346,15 +353,19 @@ Proof.
   by rewrite intuitionistically_if_sep_2 (into_wand q true) wand_elim_l wand_elim_r.
 Qed.
 
-Lemma tac_specialize_intuitionistic_helper Δ Δ'' j q P R R' Q :
+Lemma tac_specialize_intuitionistic_helper Δ j q P R R' Q :
   envs_lookup j Δ = Some (q,P) →
   (if q then TCTrue else BiAffine PROP) →
   envs_entails Δ (<absorb> R) →
   IntoPersistent false R R' →
-  envs_replace j q true (Esnoc Enil j R') Δ = Some Δ'' →
-  envs_entails Δ'' Q → envs_entails Δ Q.
+  match envs_replace j q true (Esnoc Enil j R') Δ with
+  | Some Δ'' => envs_entails Δ'' Q
+  | None => False
+  end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq => ?? HR ?? <-. rewrite -(idemp bi_and (of_envs Δ)) {1}HR.
+  rewrite envs_entails_eq => ?? HR ??.
+  destruct (envs_replace _ _ _ _ _) as [Δ'|] eqn:?; last done.
+  rewrite -(idemp bi_and (of_envs Δ)) {1}HR.
   rewrite envs_replace_singleton_sound //; destruct q; simpl.
   - by rewrite (_ : R = <pers>?false R)%I // (into_persistent _ R)
       absorbingly_elim_persistently sep_elim_r
@@ -374,12 +385,16 @@ Proof.
   rewrite intuitionistically_if_elim comm. f_equiv; auto using pure_intro.
 Qed.
 
-Lemma tac_revert Δ Δ' i p P Q :
-  envs_lookup_delete true i Δ = Some (p,P,Δ') →
-  envs_entails Δ' ((if p then □ P else P)%I -∗ Q) →
+Lemma tac_revert Δ i Q :
+  match envs_lookup_delete true i Δ with
+  | Some (p,P,Δ') => envs_entails Δ' ((if p then □ P else P)%I -∗ Q)
+  | None => False
+  end →
   envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq => ? HQ. rewrite envs_lookup_delete_sound //=.
+  rewrite envs_entails_eq => HQ.
+  destruct (envs_lookup_delete _ _ _) as [[[p P] Δ']|] eqn:?; last done.
+  rewrite envs_lookup_delete_sound //=.
   rewrite HQ. destruct p; simpl; auto using wand_elim_r.
 Qed.
 
