@@ -43,7 +43,7 @@ Section frac_auth.
 
   Global Instance frac_auth_auth_discrete a : Discrete a → Discrete (●! a).
   Proof. intros; apply auth_auth_discrete; [apply Some_discrete|]; apply _. Qed.
-  Global Instance frac_auth_frag_discrete a : Discrete a → Discrete (◯! a).
+  Global Instance frac_auth_frag_discrete q a : Discrete a → Discrete (◯!{q} a).
   Proof. intros; apply auth_frag_discrete, Some_discrete; apply _. Qed.
 
   Lemma frac_auth_validN n a : ✓{n} a → ✓{n} (●! a ⋅ ◯! a).
