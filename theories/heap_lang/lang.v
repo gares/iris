@@ -465,7 +465,7 @@ Definition state_upd_used_proph_id (f: gset proph_id → gset proph_id) (σ: sta
   {| heap := σ.(heap); used_proph_id := f σ.(used_proph_id) |}.
 Arguments state_upd_used_proph_id _ !_ /.
 
-Inductive head_step : expr → state → list observation → expr → state → list (expr) → Prop :=
+Inductive head_step : expr → state → list observation → expr → state → list expr → Prop :=
   | RecS f x e σ :
      head_step (Rec f x e) σ [] (Val $ RecV f x e) σ []
   | PairS v1 v2 σ :
