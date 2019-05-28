@@ -21,9 +21,9 @@ Instance: Params (@Auth) 1 := {}.
 Instance: Params (@auth_auth_proj) 1 := {}.
 Instance: Params (@auth_frag_proj) 1 := {}.
 
-Definition auth_frag {A: ucmraT} (a: A) : auth A := (Auth None a).
-Definition auth_auth {A: ucmraT} (q: Qp) (a: A): auth A :=
-  (Auth (Some (q, to_agree a)) ε).
+Definition auth_frag {A: ucmraT} (a: A) : auth A := Auth None a.
+Definition auth_auth {A: ucmraT} (q: Qp) (a: A) : auth A :=
+  Auth (Some (q, to_agree a)) ε.
 
 Typeclasses Opaque auth_auth auth_frag.
 
@@ -34,8 +34,8 @@ Notation "◯ a" := (auth_frag a) (at level 20).
 Notation "●{ q } a" := (auth_auth q a) (at level 20, format "●{ q }  a").
 Notation "● a" := (auth_auth 1 a) (at level 20).
 
-(* COFE *)
-Section cofe.
+(* Ofe *)
+Section ofe.
 Context {A : ofeT}.
 Implicit Types a : option (frac * agree A).
 Implicit Types b : A.
@@ -69,11 +69,11 @@ Global Instance Auth_discrete a b :
 Proof. by intros ?? [??] [??]; split; apply: discrete. Qed.
 Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete authC.
 Proof. intros ? [??]; apply _. Qed.
-End cofe.
+End ofe.
 
 Arguments authC : clear implicits.
 
-(* CMRA *)
+(* Camera *)
 Section cmra.
 Context {A : ucmraT}.
 Implicit Types a b : A.
@@ -288,7 +288,7 @@ Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
 Proof. intros [c ->]. rewrite auth_frag_op. apply cmra_included_l. Qed.
 
 Global Instance auth_frag_sep_homomorphism :
-  MonoidHomomorphism op op (≡) (@Auth A None).
+  MonoidHomomorphism op op (≡) (@auth_frag A).
 Proof. by split; [split; try apply _|]. Qed.
 
 Lemma auth_both_frac_op q a b : Auth (Some (q,to_agree a)) b ≡ ●{q} a ⋅ ◯ b.
