@@ -765,7 +765,7 @@ Section cmra_morphism.
 End cmra_morphism.
 
 (** Functors *)
-Structure rFunctor := RFunctor {
+Record rFunctor := RFunctor {
   rFunctor_car : ofeT → ofeT → cmraT;
   rFunctor_map {A1 A2 B1 B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → rFunctor_car A1 B1 -n> rFunctor_car A2 B2;
@@ -798,7 +798,7 @@ Coercion constRF : cmraT >-> rFunctor.
 Instance constRF_contractive B : rFunctorContractive (constRF B).
 Proof. rewrite /rFunctorContractive; apply _. Qed.
 
-Structure urFunctor := URFunctor {
+Record urFunctor := URFunctor {
   urFunctor_car : ofeT → ofeT → ucmraT;
   urFunctor_map {A1 A2 B1 B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → urFunctor_car A1 B1 -n> urFunctor_car A2 B2;
