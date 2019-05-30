@@ -6,16 +6,71 @@ This complements the tactic documentation for the [proof mode](ProofMode.md) and
 [HeapLang](HeapLang.md) as well as the documentation of syntactic conventions in
 the [style guide](StyleGuide.md).
 
+## Combinators for functors
+
+In Iris, the type of propositions [iProp] is described by the solution to the
+recursive domain equation:
+
+```
+iProp ≅ uPred (F (iProp))
+```
+
+Here, `F` is a user-chosen locally contractive bifunctor from COFEs to unital
+Camaras (a step-indexed generalization of unital resource algebras). To make it
+convenient to construct such functors out of smaller pieces, we provide a number
+of abstractions:
+
+- [`cFunctor`](theories/algebra/ofe.v): bifunctors from COFEs to OFEs.
+- [`rFunctor`](theories/algebra/cmra.v): bifunctors from COFEs to cameras.
+- [`urFunctor`](theories/algebra/cmra.v): bifunctors from COFEs to unital
+  cameras.
+
+Besides, there are the classes `cFunctorContractive`, `rFunctorContractive`, and
+`urFunctorContractive` which describe the subset of the above functors that
+are contractive.
+
+To compose these functors, we provide a number of combinators, e.g.:
+
+- `constCF (A : ofeT) : cFunctor           := λ (B,B⁻), A `
+- `idCF : cFunctor                         := λ (B,B⁻), B`
+- `prodCF (F1 F2 : cFunctor) : cFunctor    := λ (B,B⁻), F1 (B,B⁻) * F2 (B,B⁻)`
+- `ofe_morCF (F1 F2 : cFunctor) : cFunctor := λ (B,B⁻), F1 (B⁻,B) -n> F2 (B,B⁻)`
+- `laterCF (F : cFunctor) : cFunctor       := λ (B,B⁻), later (F (B,B⁻))`
+- `agreeRF (F : cFunctor) : rFunctor       := λ (B,B⁻), agree (F (B,B⁻))`
+- `gmapURF K (F : rFunctor) : urFunctor    := λ (B,B⁻), gmap K (F (B,B⁻))`
+
+Using these combinators, one can easily construct bigger functors in point-free
+style, e.g:
+
+```
+F := gmapURF K (agreeRF (prodCF (constCF natC) (laterCF idCF)))
+```
+
+which effectively defines `F := λ (B,B⁻), gmap K (agree (nat * later B))`.
+
+Furthermore, for functors written using these combinators like the functor `F`
+above, Coq can automatically `urFunctorContractive F`.
+
+To make it a little bit more convenient to write down such functors, we make
+the constant functors (`constCF`, `constRF`, and `constURF`) a coercion, and
+provide the usual notation for products, etc. So the above functor can be
+written as follows (which is similar to the effective definition of `F` above):
+
+```
+F := gmapURF K (agreeRF (natC * ▶ ∙))
+```
+
 ## Resource algebra management
 
 When using ghost state in Iris, you have to make sure that the resource algebras
 you need are actually available.  Every Iris proof is carried out using a
 universally quantified list `Σ: gFunctors` defining which resource algebras are
 available.  You can think of this as a list of resource algebras, though in
-reality it is a list of functors from OFEs to Cameras (where Cameras are a
-step-indexed generalization of resource algebras).  This is the *global* list of
-resources that the entire proof can use.  We keep it universally quantified to
-enable composition of proofs.  The formal side of this is described in §7.4 of
+reality it is a list of locally contractive functors from COFEs to Cameras,
+which are typically defined using the combinators for functors described above.
+The `Σ` is the *global* list of resources that the entire proof can use.  We
+keep the `Σ` universally quantified to enable composition of proofs.  The formal
+side of this is described in §7.4 of
 [The Iris Documentation](http://plv.mpi-sws.org/iris/appendix-3.1.pdf); here we
 describe the Coq aspects of this approach.
 
