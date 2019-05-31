@@ -142,6 +142,22 @@ Section gen_heap.
     iModIntro. rewrite to_gen_heap_insert. iFrame.
   Qed.
 
+  Lemma gen_heap_alloc_gen σ σ' :
+    σ ##ₘ σ' → gen_heap_ctx σ ==∗ gen_heap_ctx (σ ∪ σ') ∗ [∗ map] l ↦ v ∈ σ', l ↦ v.
+  Proof.
+    revert σ; induction σ' as [| l v σ' Hl IHσ'] using map_ind;
+      iIntros (σ Hσdisj) "Hσ".
+    - by rewrite right_id big_opM_empty; iFrame.
+    - iMod (IHσ' with "Hσ") as "[Hσ m]"; first by eapply map_disjoint_insert_r.
+      rewrite big_opM_insert //; iFrame.
+      assert (σ !! l = None).
+      { eapply map_disjoint_Some_r; first by eauto.
+        rewrite lookup_insert //. }
+      rewrite -insert_union_r //.
+      iMod (gen_heap_alloc with "Hσ") as "[$ $]"; last done.
+      apply lookup_union_None; split; auto.
+  Qed.
+
   Lemma gen_heap_dealloc σ l v :
     gen_heap_ctx σ -∗ l ↦ v ==∗ gen_heap_ctx (delete l σ).
   Proof.

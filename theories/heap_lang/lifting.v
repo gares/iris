@@ -53,7 +53,7 @@ Local Hint Extern 0 (head_reducible_no_obs _ _) => eexists _, _, _; simpl : core
 Local Hint Extern 1 (head_step _ _ _ _ _ _) => econstructor : core.
 Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasSucS : core.
 Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasFailS : core.
-Local Hint Extern 0 (head_step (Alloc _) _ _ _ _ _) => apply alloc_fresh : core.
+Local Hint Extern 0 (head_step (AllocN _ _) _ _ _ _ _) => apply alloc_fresh : core.
 Local Hint Extern 0 (head_step NewProph _ _ _ _ _) => apply new_proph_id_fresh : core.
 Local Hint Resolve to_of_val : core.
 
@@ -67,7 +67,7 @@ Local Ltac solve_atomic :=
     [inversion 1; naive_solver
     |apply ectxi_language_sub_redexes_are_values; intros [] **; naive_solver].
 
-Instance alloc_atomic s v : Atomic s (Alloc (Val v)).
+Instance alloc_atomic s v w : Atomic s (AllocN (Val v) (Val w)).
 Proof. solve_atomic. Qed.
 Instance load_atomic s v : Atomic s (Load (Val v)).
 Proof. solve_atomic. Qed.
@@ -184,24 +184,101 @@ Proof.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step. by iFrame.
 Qed.
 
+Definition array (l : loc) (vs : list val) : iProp Σ :=
+  ([∗ list] i ↦ v ∈ vs, loc_add l i ↦ v)%I.
+
+Notation "l ↦∗ vs" := (array l vs)
+  (at level 20, format "l  ↦∗  vs") : bi_scope.
+
+Lemma array_nil l : l ↦∗ [] ⊣⊢ emp.
+Proof. by rewrite /array. Qed.
+
+Lemma array_singleton l v : l ↦∗ [v] ⊣⊢ l ↦ v.
+Proof. by rewrite /array /= right_id loc_add_0. Qed.
+
+Lemma array_app l vs ws :
+  l ↦∗ (vs ++ ws) ⊣⊢ l ↦∗ vs ∗ (loc_add l (length vs)) ↦∗ ws.
+Proof.
+  rewrite /array big_sepL_app.
+  setoid_rewrite Nat2Z.inj_add.
+  by setoid_rewrite loc_add_assoc.
+Qed.
+
+Lemma array_cons l v vs : l ↦∗ (v :: vs) ⊣⊢ l ↦ v ∗ (l +ₗ 1) ↦∗ vs.
+Proof.
+  rewrite /array big_sepL_cons loc_add_0.
+  setoid_rewrite loc_add_assoc.
+  setoid_rewrite Nat2Z.inj_succ.
+  by setoid_rewrite Z.add_1_l.
+Qed.
+
+Lemma heap_array_to_array l vs :
+  ([∗ map] i ↦ v ∈ heap_array l vs, i ↦ v)%I -∗ l ↦∗ vs.
+Proof.
+  iIntros "Hvs".
+  iInduction vs as [|v vs] "IH" forall (l); simpl.
+  { by rewrite big_opM_empty /array big_opL_nil. }
+  rewrite big_opM_union; last first.
+  { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
+    intros (j&?&Hjl&_)%heap_array_lookup.
+    rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl;
+      apply loc_add_inj in Hjl; lia. }
+  rewrite array_cons.
+  rewrite big_opM_singleton; iDestruct "Hvs" as "[$ Hvs]".
+  by iApply "IH".
+Qed.
+
 (** Heap *)
+Lemma wp_allocN s E v n :
+  0 < n →
+  {{{ True }}} AllocN ((Val $ LitV $ LitInt $ n)) (Val v) @ s; E
+  {{{ l, RET LitV (LitLoc l); l ↦∗ (replicate (Z.to_nat n) v) }}}.
+Proof.
+  iIntros (Hn Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
+  iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
+  iNext; iIntros (v2 σ2 efs Hstep); inv_head_step.
+  iMod (@gen_heap_alloc_gen with "Hσ") as "[Hσ Hl]".
+  { symmetry.
+    apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
+    rewrite replicate_length Z2Nat.id; auto with lia. }
+  iModIntro; iSplit; auto.
+  iFrame. iApply "HΦ".
+  by iApply heap_array_to_array.
+Qed.
+Lemma twp_allocN s E v n :
+  0 < n →
+  [[{ True }]] AllocN ((Val $ LitV $ LitInt $ n)) (Val v) @ s; E
+  [[{ l, RET LitV (LitLoc l); l ↦∗ (replicate (Z.to_nat n) v) }]].
+Proof.
+  iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
+  iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
+  iIntros (κ v2 σ2 efs Hstep); inv_head_step.
+  iMod (@gen_heap_alloc_gen with "Hσ") as "[Hσ Hl]".
+  { symmetry.
+    apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
+    rewrite replicate_length Z2Nat.id; auto with lia. }
+  iModIntro; iSplit; auto.
+  iFrame; iSplit; auto. iApply "HΦ".
+  by iApply heap_array_to_array.
+Qed.
+
 Lemma wp_alloc s E v :
   {{{ True }}} Alloc (Val v) @ s; E {{{ l, RET LitV (LitLoc l); l ↦ v }}}.
 Proof.
-  iIntros (Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs n) "[Hσ Hκs] !>"; iSplit; first by auto.
-  iNext; iIntros (v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc with "Hσ") as "[Hσ Hl]"; first done.
-  iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
+  iIntros (Φ) "_ HΦ".
+  iApply wp_allocN; auto with lia.
+  iNext; iIntros (l) "H".
+  iApply "HΦ".
+  by rewrite array_singleton.
 Qed.
 Lemma twp_alloc s E v :
   [[{ True }]] Alloc (Val v) @ s; E [[{ l, RET LitV (LitLoc l); l ↦ v }]].
 Proof.
-  iIntros (Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κs n) "[Hσ Hκs] !>"; iSplit; first by auto.
-  iIntros (κ v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc with "Hσ") as "[Hσ Hl]"; first done.
-  iModIntro; iSplit=> //. iSplit; first done. iFrame. by iApply "HΦ".
+  iIntros (Φ) "_ HΦ".
+  iApply twp_allocN; auto with lia.
+  iIntros (l) "H".
+  iApply "HΦ".
+  by rewrite array_singleton.
 Qed.
 
 Lemma wp_load s E l q v :
@@ -336,3 +413,6 @@ Proof.
 Qed.
 
 End lifting.
+
+Notation "l ↦∗ vs" := (array l vs)
+  (at level 20, format "l  ↦∗  vs") : bi_scope.

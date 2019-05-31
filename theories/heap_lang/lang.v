@@ -1,4 +1,5 @@
 From iris.program_logic Require Export language ectx_language ectxi_language.
+From iris.heap_lang Require Export locations.
 From iris.algebra Require Export ofe.
 From stdpp Require Export binders strings.
 From stdpp Require Import gmap.
@@ -28,7 +29,6 @@ Module heap_lang.
 Open Scope Z_scope.
 
 (** Expressions and vals. *)
-Definition loc := positive. (* Really, any countable type. *)
 Definition proph_id := positive.
 
 Inductive base_lit : Set :=
@@ -40,7 +40,8 @@ Inductive bin_op : Set :=
   | PlusOp | MinusOp | MultOp | QuotOp | RemOp (* Arithmetic *)
   | AndOp | OrOp | XorOp (* Bitwise *)
   | ShiftLOp | ShiftROp (* Shifts *)
-  | LeOp | LtOp | EqOp. (* Relations *)
+  | LeOp | LtOp | EqOp (* Relations *)
+  | OffsetOp. (* Pointer offset *)
 
 Inductive expr :=
   (* Values *)
@@ -64,7 +65,7 @@ Inductive expr :=
   (* Concurrency *)
   | Fork (e : expr)
   (* Heap *)
-  | Alloc (e : expr)
+  | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
   | CAS (e0 : expr) (e1 : expr) (e2 : expr)
@@ -170,7 +171,8 @@ Proof.
      | Case e0 e1 e2, Case e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
      | Fork e, Fork e' => cast_if (decide (e = e'))
-     | Alloc e, Alloc e' => cast_if (decide (e = e'))
+     | AllocN e1 e2, AllocN e1' e2' =>
+        cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
      | Load e, Load e' => cast_if (decide (e = e'))
      | Store e1 e2, Store e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
@@ -221,11 +223,11 @@ Proof.
  refine (inj_countable' (λ op, match op with
   | PlusOp => 0 | MinusOp => 1 | MultOp => 2 | QuotOp => 3 | RemOp => 4
   | AndOp => 5 | OrOp => 6 | XorOp => 7 | ShiftLOp => 8 | ShiftROp => 9
-  | LeOp => 10 | LtOp => 11 | EqOp => 12
+  | LeOp => 10 | LtOp => 11 | EqOp => 12 | OffsetOp => 13
   end) (λ n, match n with
   | 0 => PlusOp | 1 => MinusOp | 2 => MultOp | 3 => QuotOp | 4 => RemOp
   | 5 => AndOp | 6 => OrOp | 7 => XorOp | 8 => ShiftLOp | 9 => ShiftROp
-  | 10 => LeOp | 11 => LtOp | _ => EqOp
+  | 10 => LeOp | 11 => LtOp | 12 => EqOp | _ => OffsetOp
   end) _); by intros [].
 Qed.
 Instance expr_countable : Countable expr.
@@ -247,7 +249,7 @@ Proof.
      | InjR e => GenNode 10 [go e]
      | Case e0 e1 e2 => GenNode 11 [go e0; go e1; go e2]
      | Fork e => GenNode 12 [go e]
-     | Alloc e => GenNode 13 [go e]
+     | AllocN e1 e2 => GenNode 13 [go e1; go e2]
      | Load e => GenNode 14 [go e]
      | Store e1 e2 => GenNode 15 [go e1; go e2]
      | CAS e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
@@ -282,7 +284,7 @@ Proof.
      | GenNode 10 [e] => InjR (go e)
      | GenNode 11 [e0; e1; e2] => Case (go e0) (go e1) (go e2)
      | GenNode 12 [e] => Fork (go e)
-     | GenNode 13 [e] => Alloc (go e)
+     | GenNode 13 [e1; e2] => AllocN (go e1) (go e2)
      | GenNode 14 [e] => Load (go e)
      | GenNode 15 [e1; e2] => Store (go e1) (go e2)
      | GenNode 16 [e0; e1; e2] => CAS (go e0) (go e1) (go e2)
@@ -335,7 +337,8 @@ Inductive ectx_item :=
   | InjLCtx
   | InjRCtx
   | CaseCtx (e1 : expr) (e2 : expr)
-  | AllocCtx
+  | AllocNLCtx (v2 : val)
+  | AllocNRCtx (e1 : expr)
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
@@ -362,7 +365,8 @@ Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
   | InjLCtx => InjL e
   | InjRCtx => InjR e
   | CaseCtx e1 e2 => Case e e1 e2
-  | AllocCtx => Alloc e
+  | AllocNLCtx v2 => AllocN e (Val v2)
+  | AllocNRCtx e1 => AllocN e1 e
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
@@ -393,7 +397,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | InjR e => InjR (subst x v e)
   | Case e0 e1 e2 => Case (subst x v e0) (subst x v e1) (subst x v e2)
   | Fork e => Fork (subst x v e)
-  | Alloc e => Alloc (subst x v e)
+  | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
   | Load e => Load (subst x v e)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
   | CAS e0 e1 e2 => CAS (subst x v e0) (subst x v e1) (subst x v e2)
@@ -414,21 +418,22 @@ Definition un_op_eval (op : un_op) (v : val) : option val :=
   | _, _ => None
   end.
 
-Definition bin_op_eval_int (op : bin_op) (n1 n2 : Z) : base_lit :=
+Definition bin_op_eval_int (op : bin_op) (n1 n2 : Z) : option base_lit :=
   match op with
-  | PlusOp => LitInt (n1 + n2)
-  | MinusOp => LitInt (n1 - n2)
-  | MultOp => LitInt (n1 * n2)
-  | QuotOp => LitInt (n1 `quot` n2)
-  | RemOp => LitInt (n1 `rem` n2)
-  | AndOp => LitInt (Z.land n1 n2)
-  | OrOp => LitInt (Z.lor n1 n2)
-  | XorOp => LitInt (Z.lxor n1 n2)
-  | ShiftLOp => LitInt (n1 ≪ n2)
-  | ShiftROp => LitInt (n1 ≫ n2)
-  | LeOp => LitBool (bool_decide (n1 ≤ n2))
-  | LtOp => LitBool (bool_decide (n1 < n2))
-  | EqOp => LitBool (bool_decide (n1 = n2))
+  | PlusOp => Some $ LitInt (n1 + n2)
+  | MinusOp => Some $ LitInt (n1 - n2)
+  | MultOp => Some $ LitInt (n1 * n2)
+  | QuotOp => Some $ LitInt (n1 `quot` n2)
+  | RemOp => Some $ LitInt (n1 `rem` n2)
+  | AndOp => Some $ LitInt (Z.land n1 n2)
+  | OrOp => Some $ LitInt (Z.lor n1 n2)
+  | XorOp => Some $ LitInt (Z.lxor n1 n2)
+  | ShiftLOp => Some $ LitInt (n1 ≪ n2)
+  | ShiftROp => Some $ LitInt (n1 ≫ n2)
+  | LeOp => Some $ LitBool (bool_decide (n1 ≤ n2))
+  | LtOp => Some $ LitBool (bool_decide (n1 < n2))
+  | EqOp => Some $ LitBool (bool_decide (n1 = n2))
+  | OffsetOp => None (* Pointer arithmetic *)
   end.
 
 Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
@@ -440,13 +445,15 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
   | ShiftLOp | ShiftROp => None (* Shifts *)
   | LeOp | LtOp => None (* InEquality *)
   | EqOp => Some (LitBool (bool_decide (b1 = b2)))
+  | OffsetOp => None (* Pointer arithmetic *)
   end.
 
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
   if decide (op = EqOp) then Some $ LitV $ LitBool $ bool_decide (v1 = v2) else
   match v1, v2 with
-  | LitV (LitInt n1), LitV (LitInt n2) => Some $ LitV $ bin_op_eval_int op n1 n2
+  | LitV (LitInt n1), LitV (LitInt n2) => LitV <$> bin_op_eval_int op n1 n2
   | LitV (LitBool b1), LitV (LitBool b2) => LitV <$> bin_op_eval_bool op b1 b2
+  | LitV (LitLoc l), LitV (LitInt off) => Some $ LitV $ LitLoc (l +ₗ off)
   | _, _ => None
   end.
 
@@ -461,9 +468,52 @@ Arguments vals_cas_compare_safe !_ !_ /.
 Definition state_upd_heap (f: gmap loc val → gmap loc val) (σ: state) : state :=
   {| heap := f σ.(heap); used_proph_id := σ.(used_proph_id) |}.
 Arguments state_upd_heap _ !_ /.
+
 Definition state_upd_used_proph_id (f: gset proph_id → gset proph_id) (σ: state) : state :=
   {| heap := σ.(heap); used_proph_id := f σ.(used_proph_id) |}.
 Arguments state_upd_used_proph_id _ !_ /.
+
+Fixpoint heap_array (l : loc) (vs : list val) : gmap loc val :=
+  match vs with
+  | [] => ∅
+  | v :: vs' => {[l := v]} ∪ heap_array (l +ₗ 1) vs'
+  end.
+
+Lemma heap_array_singleton l v : heap_array l [v] = {[l := v]}.
+Proof. by rewrite /heap_array right_id. Qed.
+
+Lemma heap_array_lookup l vs w k :
+  heap_array l vs !! k = Some w ↔
+  ∃ j, 0 ≤ j ∧ k = l +ₗ j ∧ vs !! (Z.to_nat j) = Some w.
+Proof.
+  revert k l; induction vs as [|v' vs IH]=> l' l /=.
+  { rewrite lookup_empty. naive_solver lia. }
+  rewrite -insert_union_singleton_l lookup_insert_Some IH. split.
+  - intros [[-> ->] | (Hl & j & ? & -> & ?)].
+    { exists 0. rewrite loc_add_0. naive_solver lia. }
+    exists (1 + j). rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
+  - intros (j & ? & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
+    { rewrite loc_add_0; eauto. }
+    right. split.
+    { rewrite -{1}(loc_add_0 l). intros ?%(inj _); lia. }
+    assert (Z.to_nat j = S (Z.to_nat (j - 1))) as Hj.
+    { rewrite -Z2Nat.inj_succ; last lia. f_equal; lia. }
+    rewrite Hj /= in Hil.
+    exists (j - 1). rewrite loc_add_assoc Z.add_sub_assoc Z.add_simpl_l.
+    auto with lia.
+Qed.
+
+Lemma heap_array_map_disjoint (h : gmap loc val) (l : loc) (vs : list val) :
+  (∀ i, (0 ≤ i) → (i < length vs) → h !! (l +ₗ i) = None) →
+  (heap_array l vs) ##ₘ h.
+Proof.
+  intros Hdisj. apply map_disjoint_spec=> l' v1 v2.
+  intros (j&?&->&Hj%lookup_lt_Some%inj_lt)%heap_array_lookup.
+  move: Hj. rewrite Z2Nat.id // => ?. by rewrite Hdisj.
+Qed.
+
+Definition state_init_heap (l : loc) (n : Z) (v : val) (σ : state) : state :=
+  state_upd_heap (λ h, h ∪ heap_array l (replicate (Z.to_nat n) v)) σ.
 
 Inductive head_step : expr → state → list observation → expr → state → list expr → Prop :=
   | RecS f x e σ :
@@ -497,11 +547,12 @@ Inductive head_step : expr → state → list observation → expr → state →
      head_step (Case (Val $ InjRV v) e1 e2) σ [] (App e2 (Val v)) σ []
   | ForkS e σ:
      head_step (Fork e) σ [] (Val $ LitV LitUnit) σ [e]
-  | AllocS v σ l :
-     σ.(heap) !! l = None →
-     head_step (Alloc $ Val v) σ
+  | AllocNS n v σ l :
+     0 < n →
+     (∀ i, 0 ≤ i → i < n → σ.(heap) !! (l +ₗ i) = None) →
+     head_step (AllocN (Val $ LitV $ LitInt n) (Val v)) σ
                []
-               (Val $ LitV $ LitLoc l) (state_upd_heap <[l:=v]> σ)
+               (Val $ LitV $ LitLoc l) (state_init_heap l n v σ)
                []
   | LoadS l v σ :
      σ.(heap) !! l = Some v →
@@ -561,10 +612,17 @@ Lemma fill_item_no_val_inj Ki1 Ki2 e1 e2 :
   fill_item Ki1 e1 = fill_item Ki2 e2 → Ki1 = Ki2.
 Proof. destruct Ki1, Ki2; intros; by simplify_eq. Qed.
 
-Lemma alloc_fresh v σ :
-  let l := fresh (dom (gset loc) σ.(heap)) in
-  head_step (Alloc $ Val v) σ [] (Val $ LitV $ LitLoc l) (state_upd_heap <[l:=v]> σ) [].
-Proof. by intros; apply AllocS, (not_elem_of_dom (D:=gset loc)), is_fresh. Qed.
+Lemma alloc_fresh v n σ :
+  let l := fresh_locs (dom (gset loc) σ.(heap)) n in
+  0 < n →
+  head_step (AllocN ((Val $ LitV $ LitInt $ n)) (Val v)) σ []
+            (Val $ LitV $ LitLoc l) (state_init_heap l n v σ) [].
+Proof.
+  intros.
+  apply AllocNS; first done.
+  intros. apply (not_elem_of_dom (D := gset loc)).
+  by apply fresh_locs_fresh.
+Qed.
 
 Lemma new_proph_id_fresh σ :
   let p := fresh σ.(used_proph_id) in
@@ -594,6 +652,7 @@ Notation LamV x e := (RecV BAnon x e) (only parsing).
 Notation LetCtx x e2 := (AppRCtx (LamV x e2)) (only parsing).
 Notation SeqCtx e2 := (LetCtx BAnon e2) (only parsing).
 Notation Match e0 x1 e1 x2 e2 := (Case e0 (Lam x1 e1) (Lam x2 e2)) (only parsing).
+Notation Alloc e := (AllocN (Val $ LitV $ LitInt 1) e) (only parsing).
 
 (* Skip should be atomic, we sometimes open invariants around
    it. Hence, we need to explicitly use LamV instead of e.g., Seq. *)

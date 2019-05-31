@@ -144,6 +144,16 @@ Section tests.
     WP let: "x" := #() in (λ: "y", "x")%V #() {{ _, True }}%I.
   Proof. wp_let. wp_lam. Fail wp_pure _. Show. Abort.
 
+  Lemma wp_alloc_array n : 0 < n →
+    {{{ True }}}
+      AllocN #n #0
+    {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0}}}%I.
+  Proof.
+    iIntros (? ?) "!# _ HΦ".
+    wp_alloc l as "?"; first done.
+    by iApply "HΦ".
+  Qed.
+
 End tests.
 
 Section printing_tests.
