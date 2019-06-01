@@ -11,7 +11,7 @@ Instance loc_inhabited : Inhabited loc := populate {|loc_car := 0 |}.
 Instance loc_countable : Countable loc.
 Proof. by apply (inj_countable' loc_car (λ i, {| loc_car := i |})); intros []. Qed.
 
-Program Definition loc_infinite : Infinite loc := {|
+Program Instance loc_infinite : Infinite loc := {|
   infinite_fresh l := {| loc_car := infinite_fresh (loc_car <$> l) |}
 |}.
 Next Obligation.
