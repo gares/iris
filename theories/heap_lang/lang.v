@@ -513,7 +513,14 @@ Proof.
 Qed.
 
 Definition state_init_heap (l : loc) (n : Z) (v : val) (σ : state) : state :=
-  state_upd_heap (λ h, h ∪ heap_array l (replicate (Z.to_nat n) v)) σ.
+  state_upd_heap (λ h, heap_array l (replicate (Z.to_nat n) v) ∪ h) σ.
+
+Lemma state_init_heap_singleton l v σ :
+  state_init_heap l 1 v σ = state_upd_heap <[l:=v]> σ.
+Proof.
+  destruct σ as [h p]. rewrite /state_init_heap /=. f_equiv.
+  rewrite right_id insert_union_singleton_l. done.
+Qed.
 
 Inductive head_step : expr → state → list observation → expr → state → list expr → Prop :=
   | RecS f x e σ :
