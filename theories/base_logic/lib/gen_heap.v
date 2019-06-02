@@ -143,12 +143,12 @@ Section gen_heap.
   Qed.
 
   Lemma gen_heap_alloc_gen σ σ' :
-    σ ##ₘ σ' → gen_heap_ctx σ ==∗ gen_heap_ctx (σ' ∪ σ) ∗ [∗ map] l ↦ v ∈ σ', l ↦ v.
+    σ' ##ₘ σ → gen_heap_ctx σ ==∗ gen_heap_ctx (σ' ∪ σ) ∗ [∗ map] l ↦ v ∈ σ', l ↦ v.
   Proof.
     revert σ; induction σ' as [| l v σ' Hl IHσ'] using map_ind;
       iIntros (σ Hσdisj) "Hσ".
     - by rewrite left_id big_opM_empty; iFrame.
-    - iMod (IHσ' with "Hσ") as "[Hσ m]"; first by eapply map_disjoint_insert_r.
+    - iMod (IHσ' with "Hσ") as "[Hσ m]"; first by eapply map_disjoint_insert_l.
       rewrite big_opM_insert //; iFrame.
       assert (σ !! l = None).
       { eapply map_disjoint_Some_r; first by eauto.

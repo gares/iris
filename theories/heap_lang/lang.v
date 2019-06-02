@@ -512,6 +512,7 @@ Proof.
   move: Hj. rewrite Z2Nat.id // => ?. by rewrite Hdisj.
 Qed.
 
+(* [h] is added on the right here to make [state_init_heap_singleton] true. *)
 Definition state_init_heap (l : loc) (n : Z) (v : val) (σ : state) : state :=
   state_upd_heap (λ h, heap_array l (replicate (Z.to_nat n) v) ∪ h) σ.
 
