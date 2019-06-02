@@ -11,19 +11,9 @@ Instance loc_inhabited : Inhabited loc := populate {|loc_car := 0 |}.
 Instance loc_countable : Countable loc.
 Proof. by apply (inj_countable' loc_car (λ i, {| loc_car := i |})); intros []. Qed.
 
-Program Instance loc_infinite : Infinite loc := {|
-  infinite_fresh l := {| loc_car := infinite_fresh (loc_car <$> l) |}
-|}.
-Next Obligation.
-  intros xs Hfresh. unfold fresh in Hfresh.
-  eapply (infinite_is_fresh (loc_car <$> xs)).
-  eapply elem_of_list_fmap. eexists. split; last done.
-  reflexivity.
-Qed.
-Next Obligation.
-  intros xs ys Hperm. unfold fresh. f_equal.
-  eapply infinite_fresh_Permutation. rewrite Hperm //.
-Qed.
+Program Instance loc_infinite : Infinite loc :=
+  inj_infinite (λ p, {| loc_car := p |}) (λ l, Some (loc_car l)) _.
+Next Obligation. done. Qed.
 
 Definition loc_add (l : loc) (off : Z) : loc :=
   {| loc_car := loc_car l + off|}.
