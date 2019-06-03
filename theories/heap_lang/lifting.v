@@ -253,8 +253,8 @@ Qed.
 (** Heap *)
 Lemma wp_allocN s E v n :
   0 < n →
-  {{{ True }}} AllocN ((Val $ LitV $ LitInt $ n)) (Val v) @ s; E
-  {{{ l, RET LitV (LitLoc l); l ↦∗ (replicate (Z.to_nat n) v) }}}.
+  {{{ True }}} AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
+  {{{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v }}}.
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
@@ -268,8 +268,8 @@ Proof.
 Qed.
 Lemma twp_allocN s E v n :
   0 < n →
-  [[{ True }]] AllocN ((Val $ LitV $ LitInt $ n)) (Val v) @ s; E
-  [[{ l, RET LitV (LitLoc l); l ↦∗ (replicate (Z.to_nat n) v) }]].
+  [[{ True }]] AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
+  [[{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v }]].
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
