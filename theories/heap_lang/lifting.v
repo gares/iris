@@ -32,6 +32,11 @@ Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
   (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
 Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
+Definition array `{!heapG Σ} (l : loc) (vs : list val) : iProp Σ :=
+  ([∗ list] i ↦ v ∈ vs, loc_add l i ↦ v)%I.
+Notation "l ↦∗ vs" := (array l vs)
+  (at level 20, format "l  ↦∗  vs") : bi_scope.
+
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
 [head_step]. The tactic will discharge head-reductions starting from values, and
 simplifies hypothesis related to conversions from and to values, and finite map
@@ -206,12 +211,6 @@ Proof.
   iIntros (σ1 κs n) "Hσ !>"; iSplit; first by eauto.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step. by iFrame.
 Qed.
-
-Definition array (l : loc) (vs : list val) : iProp Σ :=
-  ([∗ list] i ↦ v ∈ vs, loc_add l i ↦ v)%I.
-
-Notation "l ↦∗ vs" := (array l vs)
-  (at level 20, format "l  ↦∗  vs") : bi_scope.
 
 Lemma array_nil l : l ↦∗ [] ⊣⊢ emp.
 Proof. by rewrite /array. Qed.
@@ -504,6 +503,3 @@ Proof.
 Qed.
 
 End lifting.
-
-Notation "l ↦∗ vs" := (array l vs)
-  (at level 20, format "l  ↦∗  vs") : bi_scope.
