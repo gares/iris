@@ -29,20 +29,16 @@ Proof. destruct l; rewrite /loc_add /=; f_equal; lia. Qed.
 Instance loc_add_inj l : Inj eq eq (loc_add l).
 Proof. destruct l; rewrite /Inj /loc_add /=; intros; simplify_eq; lia. Qed.
 
-Definition fresh_locs (g : gset loc) (n : Z) : loc :=
-  {| loc_car := set_fold (λ k r, (1 + loc_car k) `max` r)%Z 1%Z g |}.
+Definition fresh_locs (ls : gset loc) (n : Z) : loc :=
+  {| loc_car := set_fold (λ k r, (1 + loc_car k) `max` r)%Z 1%Z ls |}.
 
-Lemma fresh_locs_fresh g n i :
-  (0 ≤ i)%Z → (i < n)%Z → (fresh_locs g n) +ₗ i ∉ g.
+Lemma fresh_locs_fresh ls n i :
+  (0 ≤ i)%Z → (i < n)%Z → fresh_locs ls n +ₗ i ∉ ls.
 Proof.
-  rewrite /fresh_locs /loc_add /=; intros Hil _ Hf; clear n.
-  cut (∀ x, x ∈ g →
-            loc_car x < set_fold (λ k r, ((1 + loc_car k) `max` r)%Z) 1%Z g)%Z.
-  { intros Hlem; apply Hlem in Hf; simpl in *; lia. }
-  clear Hf.
-  eapply (set_fold_ind_L
-            (λ z g, ∀ x : loc, x ∈ g → (loc_car x < z)%Z));
-    try set_solver by eauto with lia.
+  intros Hi _. cut (∀ l, l ∈ ls → loc_car l < loc_car (fresh_locs ls n) + i)%Z.
+  { intros help Hf%help. simpl in *. lia. }
+  apply (set_fold_ind_L (λ r ls, ∀ l, l ∈ ls → (loc_car l < r + i)%Z));
+    set_solver by eauto with lia.
 Qed.
 
 Global Opaque fresh_locs.
