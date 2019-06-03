@@ -14,13 +14,42 @@ Set Default Proof Using "Type".
   useless unless the user let-expands [b].
 
 - For prophecy variables, we annotate the reduction steps with an "observation"
-  and tweak adequacy such that WP knows all future observations.  There is
+  and tweak adequacy such that WP knows all future observations. There is
   another possible choice: Use non-deterministic choice when creating a prophecy
-  variable ([NewProph]), and when resolving it ([ResolveProph]) make the
-  program diverge unless the variable matches.  That, however, requires an
+  variable ([NewProph]), and when resolving it ([Resolve]) make the
+  program diverge unless the variable matches. That, however, requires an
   erasure proof that this endless loop does not make specifications useless.
 
-*)
+The expression [Resolve e p v] attaches a prophecy resolution (for prophecy
+variable [p] to value [v]) to the top-level head-reduction step of [e]. The
+prophecy resolution happens simultaneously with the head-step being taken.
+Furthermore, it is required that the head-step produces a value (otherwise
+the [Resolve] is stuck), and this value is also attached to the resolution.
+A prophecy variable is thus resolved to a pair containing (1) the result
+value of the wrapped expression (called [e] above), and (2) the value that
+was attached by the [Resolve] (called [v] above). This allows, for example,
+to distinguish a resolution originating from a successful [CAS] from one
+originating from a failing [CAS]. For example:
+ - [Resolve (CAS #l #n #(n+1)) #p v] will behave as [CAS #l #n #(n+1)],
+   which means step to a boolean [b] while updating the heap, but in the
+   meantime the prophecy variable [p] will be resolved to [(#b, v)].
+ - [Resolve (! #l) #p v] will behave as [! #l], that is return the value
+   [w] pointed to by [l] on the heap (assuming it was allocated properly),
+   but it will additionally resolve [p] to the pair [(w,v)].
+
+Note that the sub-expressions of [Resolve e p v] (i.e., [e], [p] and [v])
+are reduced as usual, from right to left. However, the evaluation of [e]
+is restricted so that the head-step to which the resolution is attached
+cannot be taken by the context. For example:
+ - [Resolve (CAS #l #n (#n + #1)) #p v] will first be reduced (with by a
+   context-step) to [Resolve (CAS #l #n #(n+1) #p v], and then behave as
+   described above.
+ - However, [Resolve ((λ: "n", CAS #l "n" ("n" + #1)) #n) #p v] is stuck.
+   Indeed, it can only be evaluated using a head-step (it is a β-redex),
+   but the process does not yield a value.
+
+The mechanism described above supports nesting [Resolve] expressions to
+attach several prophecy resolutions to a head-redex. *)
 
 Delimit Scope expr_scope with E.
 Delimit Scope val_scope with V.
@@ -72,7 +101,7 @@ Inductive expr :=
   | FAA (e1 : expr) (e2 : expr)
   (* Prophecy *)
   | NewProph
-  | ResolveProph (e1 : expr) (e2 : expr)
+  | Resolve (e0 : expr) (e1 : expr) (e2 : expr) (* wrapped expr, proph, val *)
 with val :=
   | LitV (l : base_lit)
   | RecV (f x : binder) (e : expr)
@@ -83,7 +112,12 @@ with val :=
 Bind Scope expr_scope with expr.
 Bind Scope val_scope with val.
 
-Definition observation : Set := proph_id * val.
+(** An observation associates a prophecy variable (identifier) to a pair of
+values. The first value is the one that was returned by the (atomic) operation
+during which the prophecy resolution happened (typically, a boolean when the
+wrapped operation is a CAS). The second value is the one that the prophecy
+variable was actually resolved to. *)
+Definition observation : Set := proph_id * (val * val).
 
 Notation of_val := Val (only parsing).
 
@@ -181,8 +215,8 @@ Proof.
      | FAA e1 e2, FAA e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
      | NewProph, NewProph => left _
-     | ResolveProph e1 e2, ResolveProph e1' e2' =>
-        cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
+     | Resolve e0 e1 e2, Resolve e0' e1' e2' =>
+        cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
      | _, _ => right _
      end
    with gov (v1 v2 : val) {struct v1} : Decision (v1 = v2) :=
@@ -255,7 +289,7 @@ Proof.
      | CAS e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
      | FAA e1 e2 => GenNode 17 [go e1; go e2]
      | NewProph => GenNode 18 []
-     | ResolveProph e1 e2 => GenNode 19 [go e1; go e2]
+     | Resolve e0 e1 e2 => GenNode 19 [go e0; go e1; go e2]
      end
    with gov v :=
      match v with
@@ -290,7 +324,7 @@ Proof.
      | GenNode 16 [e0; e1; e2] => CAS (go e0) (go e1) (go e2)
      | GenNode 17 [e1; e2] => FAA (go e1) (go e2)
      | GenNode 18 [] => NewProph
-     | GenNode 19 [e1; e2] => ResolveProph (go e1) (go e2)
+     | GenNode 19 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
      | _ => Val $ LitV LitUnit (* dummy *)
      end
    with gov v :=
@@ -347,10 +381,18 @@ Inductive ectx_item :=
   | CasRCtx (e0 : expr) (e1 : expr)
   | FaaLCtx (v2 : val)
   | FaaRCtx (e1 : expr)
-  | ProphLCtx (v2 : val)
-  | ProphRCtx (e1 : expr).
+  | ResolveLCtx (ctx : ectx_item) (v1 : val) (v2 : val)
+  | ResolveMCtx (e0 : expr) (v2 : val)
+  | ResolveRCtx (e0 : expr) (e1 : expr).
 
-Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
+(** Contextual closure will only reduce [e] in [Resolve e (Val _) (Val _)] if
+the local context of [e] is non-empty. As a consequence, the first argument of
+[Resolve] is not completely evaluated (down to a value) by contextual closure:
+no head steps (i.e., surface reductions) are taken. This means that contextual
+closure will reduce [Resolve (CAS #l #n (#n + #1)) #p #v] into [Resolve (CAS
+#l #n #(n+1)) #p #v], but it cannot context-step any further. *)
+
+Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   match Ki with
   | AppLCtx v2 => App e (of_val v2)
   | AppRCtx e1 => App e1 e
@@ -375,8 +417,9 @@ Definition fill_item (Ki : ectx_item) (e : expr) : expr :=
   | CasRCtx e0 e1 => CAS e0 e1 e
   | FaaLCtx v2 => FAA e (Val v2)
   | FaaRCtx e1 => FAA e1 e
-  | ProphLCtx v2 => ResolveProph e (of_val v2)
-  | ProphRCtx e1 => ResolveProph e1 e
+  | ResolveLCtx K v1 v2 => Resolve (fill_item K e) (Val v1) (Val v2)
+  | ResolveMCtx ex v2 => Resolve ex e (Val v2)
+  | ResolveRCtx ex e1 => Resolve ex e1 e
   end.
 
 (** Substitution *)
@@ -403,7 +446,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | CAS e0 e1 e2 => CAS (subst x v e0) (subst x v e1) (subst x v e2)
   | FAA e1 e2 => FAA (subst x v e1) (subst x v e2)
   | NewProph => NewProph
-  | ResolveProph e1 e2 => ResolveProph (subst x v e1) (subst x v e2)
+  | Resolve ex e1 e2 => Resolve (subst x v ex) (subst x v e1) (subst x v e2)
   end.
 
 Definition subst' (mx : binder) (v : val) : expr → expr :=
@@ -595,30 +638,30 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪) σ)
                []
-  | ResolveProphS p v σ :
-     head_step (ResolveProph (Val $ LitV $ LitProphecy p) (Val v)) σ
-               [(p, v)]
-               (Val $ LitV LitUnit) σ [].
+  | ResolveS p v e σ w σ' κs ts :
+     head_step e σ κs (Val v) σ' ts →
+     head_step (Resolve e (Val $ LitV $ LitProphecy p) (Val w)) σ
+               (κs ++ [(p, (v, w))]) (Val v) σ' ts.
 
 (** Basic properties about the language *)
 Instance fill_item_inj Ki : Inj (=) (=) (fill_item Ki).
-Proof. destruct Ki; intros ???; simplify_eq/=; auto with f_equal. Qed.
+Proof. induction Ki; intros ???; simplify_eq/=; auto with f_equal. Qed.
 
 Lemma fill_item_val Ki e :
   is_Some (to_val (fill_item Ki e)) → is_Some (to_val e).
-Proof. intros [v ?]. destruct Ki; simplify_option_eq; eauto. Qed.
+Proof. intros [v ?]. induction Ki; simplify_option_eq; eauto. Qed.
 
 Lemma val_head_stuck e1 σ1 κ e2 σ2 efs : head_step e1 σ1 κ e2 σ2 efs → to_val e1 = None.
 Proof. destruct 1; naive_solver. Qed.
 
 Lemma head_ctx_step_val Ki e σ1 κ e2 σ2 efs :
   head_step (fill_item Ki e) σ1 κ e2 σ2 efs → is_Some (to_val e).
-Proof. destruct Ki; inversion_clear 1; simplify_option_eq; by eauto. Qed.
+Proof. revert κ e2. induction Ki; inversion_clear 1; simplify_option_eq; eauto. Qed.
 
 Lemma fill_item_no_val_inj Ki1 Ki2 e1 e2 :
   to_val e1 = None → to_val e2 = None →
   fill_item Ki1 e1 = fill_item Ki2 e2 → Ki1 = Ki2.
-Proof. destruct Ki1, Ki2; intros; by simplify_eq. Qed.
+Proof. revert Ki1. induction Ki2, Ki1; naive_solver eauto with f_equal. Qed.
 
 Lemma alloc_fresh v n σ :
   let l := fresh_locs (dom (gset loc) σ.(heap)) n in
@@ -652,6 +695,47 @@ Canonical Structure heap_lang := LanguageOfEctx heap_ectx_lang.
 (* Prefer heap_lang names over ectx_language names. *)
 Export heap_lang.
 
+(* The following lemma is not provable using the axioms of [ectxi_language].
+The proof requires a case analysis over context items ([destruct i] on the
+last line), which in all cases yields a non-value. To prove this lemma for
+[ectxi_language] in general, we would require that a term of the form
+[fill_item i e] is never a value. *)
+Lemma to_val_fill_some K e v : to_val (fill K e) = Some v → K = [] ∧ e = Val v.
+Proof.
+  intro H. destruct K as [|Ki K]; first by apply of_to_val in H. exfalso.
+  assert (to_val e ≠ None) as He.
+  { intro A. by rewrite fill_not_val in H. }
+  assert (∃ w, e = Val w) as [w ->].
+  { destruct e; try done; eauto. }
+  assert (to_val (fill (Ki :: K) (Val w)) = None).
+  { destruct Ki; simpl; apply fill_not_val; done. }
+  by simplify_eq.
+Qed.
+
+Lemma prim_step_to_val_is_head_step e σ1 κs w σ2 efs :
+  prim_step e σ1 κs (Val w) σ2 efs → head_step e σ1 κs (Val w) σ2 efs.
+Proof.
+  intro H. destruct H as [K e1 e2 H1 H2].
+  assert (to_val (fill K e2) = Some w) as H3; first by rewrite -H2.
+  apply to_val_fill_some in H3 as [-> ->]. subst e. done.
+Qed.
+
+Lemma irreducible_resolve e v1 v2 σ :
+  irreducible e σ → irreducible (Resolve e (Val v1) (Val v2)) σ.
+Proof.
+  intros H κs ** [Ks e1' e2' Hfill -> step]. simpl in *.
+  induction Ks as [|K Ks _] using rev_ind; simpl in Hfill.
+  - subst e1'. inversion step. eapply H. by apply head_prim_step.
+  - rewrite fill_app /= in Hfill.
+    destruct K; (inversion Hfill; subst; clear Hfill; try
+      match goal with | H : Val ?v = fill Ks ?e |- _ =>
+        (assert (to_val (fill Ks e) = Some v) as HEq by rewrite -H //);
+        apply to_val_fill_some in HEq; destruct HEq as [-> ->]; inversion step
+      end).
+    apply (H κs (fill_item K (foldl (flip fill_item) e2' Ks)) σ' efs).
+    econstructor 1 with (K := Ks ++ [K]); last done; simpl; by rewrite fill_app.
+Qed.
+
 (** Define some derived forms. *)
 Notation Lam x e := (Rec BAnon x e) (only parsing).
 Notation Let x e1 e2 := (App (Lam x e2) e1) (only parsing).
@@ -665,3 +749,5 @@ Notation Alloc e := (AllocN (Val $ LitV $ LitInt 1) e) (only parsing).
 (* Skip should be atomic, we sometimes open invariants around
    it. Hence, we need to explicitly use LamV instead of e.g., Seq. *)
 Notation Skip := (App (Val $ LamV BAnon (Val $ LitV LitUnit)) (Val $ LitV LitUnit)).
+
+Notation ResolveProph e1 e2 := (Resolve Skip e1 e2) (only parsing).

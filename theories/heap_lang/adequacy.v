@@ -8,10 +8,10 @@ Set Default Proof Using "Type".
 Class heapPreG Σ := HeapPreG {
   heap_preG_iris :> invPreG Σ;
   heap_preG_heap :> gen_heapPreG loc val Σ;
-  heap_preG_proph :> proph_mapPreG proph_id val Σ
+  heap_preG_proph :> proph_mapPreG proph_id (val * val) Σ
 }.
 
-Definition heapΣ : gFunctors := #[invΣ; gen_heapΣ loc val; proph_mapΣ proph_id val].
+Definition heapΣ : gFunctors := #[invΣ; gen_heapΣ loc val; proph_mapΣ proph_id (val * val)].
 Instance subG_heapPreG {Σ} : subG heapΣ Σ → heapPreG Σ.
 Proof. solve_inG. Qed.
 

@@ -12,10 +12,9 @@ Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
   | Rec f x e => is_closed_expr (f :b: x :b: X) e
   | UnOp _ e | Fst e | Snd e | InjL e | InjR e | Fork e | Load e =>
      is_closed_expr X e
-  | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | FAA e1 e2
-  | ResolveProph e1 e2 =>
+  | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | FAA e1 e2 =>
      is_closed_expr X e1 && is_closed_expr X e2
-  | If e0 e1 e2 | Case e0 e1 e2 | CAS e0 e1 e2 =>
+  | If e0 e1 e2 | Case e0 e1 e2 | CAS e0 e1 e2 | Resolve e0 e1 e2 =>
      is_closed_expr X e0 && is_closed_expr X e1 && is_closed_expr X e2
   | NewProph => true
   end
@@ -130,7 +129,7 @@ Lemma head_step_is_closed e1 σ1 obs e2 σ2 es :
   map_Forall (λ _ v, is_closed_val v) σ2.(heap).
 Proof.
   intros Cl1 Clσ1 STEP.
-  destruct STEP; simpl in *; split_and!;
+  induction STEP; simpl in *; split_and!;
     try apply map_Forall_insert_2; try by naive_solver.
   - subst. repeat apply is_closed_subst'; naive_solver.
   - unfold un_op_eval in *. repeat case_match; naive_solver.
@@ -173,7 +172,7 @@ Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   | CAS e0 e1 e2 => CAS (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
   | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
   | NewProph => NewProph
-  | ResolveProph e1 e2 => ResolveProph (subst_map vs e1) (subst_map vs e2)
+  | Resolve e0 e1 e2 => Resolve (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
   end.
 
 Lemma subst_map_empty e : subst_map ∅ e = e.

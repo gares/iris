@@ -1,3 +1,4 @@
+From Coq.Lists Require Import List. (* used for lemma "exists_last" *)
 From iris.algebra Require Import auth gmap.
 From iris.base_logic Require Export gen_heap.
 From iris.base_logic.lib Require Export proph_map.
@@ -12,7 +13,7 @@ Set Default Proof Using "Type".
 Class heapG Σ := HeapG {
   heapG_invG : invG Σ;
   heapG_gen_heapG :> gen_heapG loc val Σ;
-  heapG_proph_mapG :> proph_mapG proph_id val Σ
+  heapG_proph_mapG :> proph_mapG proph_id (val * val) Σ
 }.
 
 Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
@@ -83,8 +84,30 @@ Instance skip_atomic s  : Atomic s Skip.
 Proof. solve_atomic. Qed.
 Instance new_proph_atomic s : Atomic s NewProph.
 Proof. solve_atomic. Qed.
-Instance resolve_proph_atomic s v1 v2 : Atomic s (ResolveProph (Val v1) (Val v2)).
+Instance binop_atomic s op v1 v2 : Atomic s (BinOp op (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
+
+Instance proph_resolve_atomic s e v1 v2 :
+  Atomic s e → Atomic s (Resolve e (Val v1) (Val v2)).
+Proof.
+  rename e into e1. intros H σ1 e2 κ σ2 efs [Ks e1' e2' Hfill -> step].
+  simpl in *. induction Ks as [|K Ks _] using rev_ind; simpl in Hfill.
+  - subst. inversion_clear step. by apply (H σ1 (Val v) κs σ2 efs), head_prim_step.
+  - rewrite fill_app. rewrite fill_app in Hfill.
+    assert (∀ v, Val v = fill Ks e1' → False) as fill_absurd.
+    { intros v Hv. assert (to_val (fill Ks e1') = Some v) as Htv by by rewrite -Hv.
+      apply to_val_fill_some in Htv. destruct Htv as [-> ->]. inversion step. }
+    destruct K; (inversion Hfill; clear Hfill; subst; try
+      match goal with | H : Val ?v = fill Ks e1' |- _ => by apply fill_absurd in H end).
+    refine (_ (H σ1 (fill (Ks ++ [K]) e2') _ σ2 efs _)).
+    + destruct s; intro Hs; simpl in *.
+      * destruct Hs as [v Hs]. apply to_val_fill_some in Hs. by destruct Hs, Ks.
+      * apply irreducible_resolve. by rewrite fill_app in Hs.
+    + econstructor 1 with (K := Ks ++ [K]); try done. simpl. by rewrite fill_app.
+Qed.
+
+Instance resolve_proph_atomic s v1 v2 : Atomic s (ResolveProph (Val v1) (Val v2)).
+Proof. by apply proph_resolve_atomic, skip_atomic. Qed.
 
 Local Ltac solve_exec_safe := intros; subst; do 3 eexists; econstructor; eauto.
 Local Ltac solve_exec_puredet := simpl; intros; by inv_head_step.
@@ -396,18 +419,88 @@ Proof.
   iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
 Qed.
 
+(* In the following, strong atomicity is required due to the fact that [e] must
+be able to make a head step for [Resolve e _ _] not to be (head) stuck. *)
+
+Lemma resolve_reducible e σ p v :
+  Atomic StronglyAtomic e → reducible e σ →
+  reducible (Resolve e (Val (LitV (LitProphecy p))) (Val v)) σ.
+Proof.
+  intros A (κ & e' & σ' & efs & H).
+  exists (κ ++ [(p, (default v (to_val e'), v))]), e', σ', efs.
+  eapply Ectx_step with (K:=[]); try done.
+  assert (∃w, Val w = e') as [w <-].
+  { unfold Atomic in A. apply (A σ e' κ σ' efs) in H. unfold is_Some in H.
+    destruct H as [w H]. exists w. simpl in H. by apply (of_to_val _ _ H). }
+  simpl. constructor. by apply prim_step_to_val_is_head_step.
+Qed.
+
+Lemma step_resolve e p v σ1 κ e2 σ2 efs :
+  Atomic StronglyAtomic e →
+  prim_step (Resolve e (Val p) (Val v)) σ1 κ e2 σ2 efs →
+  head_step (Resolve e (Val p) (Val v)) σ1 κ e2 σ2 efs.
+Proof.
+  intros A [Ks e1' e2' Hfill -> step]. simpl in *.
+  induction Ks as [|K Ks _] using rev_ind.
+  + simpl in *. subst. inversion step. by constructor.
+  + rewrite fill_app /= in Hfill. destruct K; inversion Hfill; subst; clear Hfill.
+    - assert (fill_item K (fill Ks e1') = fill (Ks ++ [K]) e1') as Eq1;
+        first by rewrite fill_app.
+      assert (fill_item K (fill Ks e2') = fill (Ks ++ [K]) e2') as Eq2;
+        first by rewrite fill_app.
+      rewrite fill_app /=. rewrite Eq1 in A.
+      assert (is_Some (to_val (fill (Ks ++ [K]) e2'))) as H.
+      { apply (A σ1 _ κ σ2 efs). eapply Ectx_step with (K0 := Ks ++ [K]); done. }
+      destruct H as [v H]. apply to_val_fill_some in H. by destruct H, Ks.
+    - assert (to_val (fill Ks e1') = Some p); first by rewrite -H1 //.
+      apply to_val_fill_some in H. destruct H as [-> ->]. inversion step.
+    - assert (to_val (fill Ks e1') = Some v); first by rewrite -H2 //.
+      apply to_val_fill_some in H. destruct H as [-> ->]. inversion step.
+Qed.
+
+Lemma wp_resolve s E e Φ p v vs :
+  Atomic StronglyAtomic e →
+  to_val e = None →
+  proph p vs -∗
+  WP e @ s; E {{ r, ∀ vs', ⌜vs = (r, v)::vs'⌝ -∗ proph p vs' -∗ Φ r }} -∗
+  WP Resolve e (Val $ LitV $ LitProphecy p) (Val v) @ s; E {{ Φ }}.
+Proof.
+  (* TODO we should try to use a generic lifting lemma (and avoid [wp_unfold])
+     here, since this breaks the WP abstraction. *)
+  iIntros (A He) "Hp WPe". rewrite !wp_unfold /wp_pre /= He. simpl in *.
+  iIntros (σ1 κ κs n) "[Hσ Hκ]". destruct (decide (κ = [])) as [->|HNeq].
+  - iMod ("WPe" $! σ1 [] κs n with "[$Hσ $Hκ]") as "[Hs WPe]". iModIntro. iSplit.
+    { iDestruct "Hs" as "%". iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
+    iIntros (e2 σ2 efs step). exfalso. apply step_resolve in step; last done.
+    inversion step. match goal with H: ?κs ++ [_] = [] |- _ => by destruct κs end.
+  - apply exists_last in HNeq as [κ' [[p' [w' v']] ->]]. rewrite -app_assoc.
+    iMod ("WPe" $! σ1 _ _ n with "[$Hσ $Hκ]") as "[Hs WPe]". iModIntro. iSplit.
+    { iDestruct "Hs" as "%". iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
+    iIntros (e2 σ2 efs step). apply step_resolve in step; last done. inversion step.
+    match goal with H: _ ++ _ = _ ++ _ |- _ =>
+      apply app_inj_2 in H; last done; destruct H as [-> [=-> -> ->]] end. subst.
+    iMod ("WPe" $! (Val w') σ2 efs with "[%]") as "WPe". { eexists [] _ _; try done. }
+    iModIntro. iNext. iMod "WPe" as "[[$ Hκ] WPe]".
+    iMod (proph_map_resolve_proph p' (w',v') κs with "[$Hκ $Hp]") as (vs' ->) "[$ HPost]".
+    iModIntro. rewrite !wp_unfold /wp_pre /=. iDestruct "WPe" as "[HΦ $]".
+    iMod "HΦ". iModIntro. iApply "HΦ"; [ done | iFrame ].
+Qed.
+
+Lemma wp_skip s E Φ : ▷ Φ (LitV LitUnit) -∗ WP Skip @ s; E {{ Φ }}.
+Proof.
+  iIntros "HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
+  iIntros (σ1 κ κs n) "Hσ". iModIntro. iSplit.
+  - iPureIntro. eexists _, _, _, _. by constructor.
+  - iIntros (e2 σ2 efs step) "!>". inversion step. simplify_eq. by iFrame.
+Qed.
+
 Lemma wp_resolve_proph s E p vs v :
   {{{ proph p vs }}}
     ResolveProph (Val $ LitV $ LitProphecy p) (Val v) @ s; E
-  {{{ vs', RET (LitV LitUnit); ⌜vs = v::vs'⌝ ∗ proph p vs' }}}.
+  {{{ vs', RET (LitV LitUnit); ⌜vs = (LitV LitUnit, v)::vs'⌝ ∗ proph p vs' }}}.
 Proof.
-  iIntros (Φ) "Hp HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs n) "[Hσ HR] !>". iSplit; first by eauto.
-  iNext; iIntros (v2 σ2 efs Hstep). inv_head_step.
-  iMod (proph_map_resolve_proph p v κs with "[HR Hp]") as "HPost"; first by iFrame.
-  iModIntro. iFrame. iSplitR; first done.
-  iDestruct "HPost" as (vs') "[HEq [HR Hp]]". iFrame.
-  iApply "HΦ". iFrame.
+  iIntros (Φ) "Hp HΦ". iApply (wp_resolve with "Hp"); first done.
+  iApply wp_skip. iNext. iIntros (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
 End lifting.
