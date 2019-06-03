@@ -61,10 +61,10 @@ Section coinflip.
     iModIntro. wp_seq. done.
   Qed.
 
-  Definition val_list_to_bool (v : list val) : bool :=
-    match v with
-    | LitV (LitBool b) :: _ => b
-    | _                     => true
+  Definition extract_bool (l : list (val * val)) : bool :=
+    match l with
+    | (_, LitV (LitBool b)) :: _ => b
+    | _                          => true
     end.
 
   Lemma lateChoice_spec (x: loc) :
@@ -81,7 +81,7 @@ Section coinflip.
     iMod "AU" as "[Hl [_ Hclose]]".
     iDestruct "Hl" as (v') "Hl".
     wp_store.
-    iMod ("Hclose" $! (val_list_to_bool v) with "[Hl]") as "HΦ"; first by eauto.
+    iMod ("Hclose" $! (extract_bool v) with "[Hl]") as "HΦ"; first by eauto.
     iModIntro. wp_apply rand_spec; try done.
     iIntros (b') "_".
     wp_apply (wp_resolve_proph with "Hp").
