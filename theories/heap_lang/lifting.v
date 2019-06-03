@@ -1,4 +1,3 @@
-From Coq.Lists Require Import List. (* used for lemma "exists_last" *)
 From iris.algebra Require Import auth gmap.
 From iris.base_logic Require Export gen_heap.
 From iris.base_logic.lib Require Export proph_map.
@@ -467,18 +466,18 @@ Proof.
   (* TODO we should try to use a generic lifting lemma (and avoid [wp_unfold])
      here, since this breaks the WP abstraction. *)
   iIntros (A He) "Hp WPe". rewrite !wp_unfold /wp_pre /= He. simpl in *.
-  iIntros (σ1 κ κs n) "[Hσ Hκ]". destruct (decide (κ = [])) as [->|HNeq].
+  iIntros (σ1 κ κs n) "[Hσ Hκ]". destruct κ as [|[p' [w' v']] κ' _] using rev_ind.
   - iMod ("WPe" $! σ1 [] κs n with "[$Hσ $Hκ]") as "[Hs WPe]". iModIntro. iSplit.
     { iDestruct "Hs" as "%". iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
     iIntros (e2 σ2 efs step). exfalso. apply step_resolve in step; last done.
     inversion step. match goal with H: ?κs ++ [_] = [] |- _ => by destruct κs end.
-  - apply exists_last in HNeq as [κ' [[p' [w' v']] ->]]. rewrite -app_assoc.
+  - rewrite -app_assoc.
     iMod ("WPe" $! σ1 _ _ n with "[$Hσ $Hκ]") as "[Hs WPe]". iModIntro. iSplit.
-    { iDestruct "Hs" as "%". iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
+    { iDestruct "Hs" as %?. iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
     iIntros (e2 σ2 efs step). apply step_resolve in step; last done.
     inversion step; simplify_list_eq.
     iMod ("WPe" $! (Val w') σ2 efs with "[%]") as "WPe".
-    { eexists [] _ _; try done. }
+    { by eexists [] _ _. }
     iModIntro. iNext. iMod "WPe" as "[[$ Hκ] WPe]".
     iMod (proph_map_resolve_proph p' (w',v') κs with "[$Hκ $Hp]") as (vs' ->) "[$ HPost]".
     iModIntro. rewrite !wp_unfold /wp_pre /=. iDestruct "WPe" as "[HΦ $]".
