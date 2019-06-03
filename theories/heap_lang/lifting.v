@@ -475,22 +475,14 @@ Proof.
   - apply exists_last in HNeq as [κ' [[p' [w' v']] ->]]. rewrite -app_assoc.
     iMod ("WPe" $! σ1 _ _ n with "[$Hσ $Hκ]") as "[Hs WPe]". iModIntro. iSplit.
     { iDestruct "Hs" as "%". iPureIntro. destruct s; [ by apply resolve_reducible | done]. }
-    iIntros (e2 σ2 efs step). apply step_resolve in step; last done. inversion step.
-    match goal with H: _ ++ _ = _ ++ _ |- _ =>
-      apply app_inj_2 in H; last done; destruct H as [-> [=-> -> ->]] end. subst.
-    iMod ("WPe" $! (Val w') σ2 efs with "[%]") as "WPe". { eexists [] _ _; try done. }
+    iIntros (e2 σ2 efs step). apply step_resolve in step; last done.
+    inversion step; simplify_list_eq.
+    iMod ("WPe" $! (Val w') σ2 efs with "[%]") as "WPe".
+    { eexists [] _ _; try done. }
     iModIntro. iNext. iMod "WPe" as "[[$ Hκ] WPe]".
     iMod (proph_map_resolve_proph p' (w',v') κs with "[$Hκ $Hp]") as (vs' ->) "[$ HPost]".
     iModIntro. rewrite !wp_unfold /wp_pre /=. iDestruct "WPe" as "[HΦ $]".
-    iMod "HΦ". iModIntro. iApply "HΦ"; [ done | iFrame ].
-Qed.
-
-Lemma wp_skip s E Φ : ▷ Φ (LitV LitUnit) -∗ WP Skip @ s; E {{ Φ }}.
-Proof.
-  iIntros "HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs n) "Hσ". iModIntro. iSplit.
-  - iPureIntro. eexists _, _, _, _. by constructor.
-  - iIntros (e2 σ2 efs step) "!>". inversion step. simplify_eq. by iFrame.
+    iMod "HΦ". iModIntro. by iApply "HΦ".
 Qed.
 
 Lemma wp_resolve_proph s E p vs v :
@@ -499,7 +491,8 @@ Lemma wp_resolve_proph s E p vs v :
   {{{ vs', RET (LitV LitUnit); ⌜vs = (LitV LitUnit, v)::vs'⌝ ∗ proph p vs' }}}.
 Proof.
   iIntros (Φ) "Hp HΦ". iApply (wp_resolve with "Hp"); first done.
-  iApply wp_skip. iNext. iIntros (vs') "HEq Hp". iApply "HΦ". iFrame.
+  iApply wp_pure_step_later=> //=. iApply wp_value.
+  iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
 End lifting.
