@@ -197,6 +197,13 @@ Proof. destruct p; simpl; auto using later_intuitionistically_2. Qed.
 Lemma later_absorbingly P : ▷ <absorb> P ⊣⊢ <absorb> ▷ P.
 Proof. by rewrite /bi_absorbingly later_sep later_True. Qed.
 
+Lemma later_affinely `{!BiAffine PROP} P : ▷ <affine> P ⊣⊢ <affine> ▷ P.
+Proof. by rewrite !affine_affinely. Qed.
+Lemma later_intuitionistically `{!BiAffine PROP} P : ▷ □ P ⊣⊢ □ ▷ P.
+Proof. by rewrite !intuitionistically_into_persistently later_persistently. Qed.
+Lemma later_intuitionistically_if `{!BiAffine PROP} p P : ▷ □?p P ⊣⊢ □?p ▷ P.
+Proof. destruct p; simpl; auto using later_intuitionistically. Qed.
+
 Global Instance later_persistent P : Persistent P → Persistent (▷ P).
 Proof. intros. by rewrite /Persistent -later_persistently {1}(persistent P). Qed.
 Global Instance later_absorbing P : Absorbing P → Absorbing (▷ P).
