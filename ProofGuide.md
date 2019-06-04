@@ -65,14 +65,15 @@ F := gmapURF K (agreeRF (natC * ▶ ∙))
 When using ghost state in Iris, you have to make sure that the resource algebras
 you need are actually available.  Every Iris proof is carried out using a
 universally quantified list `Σ: gFunctors` defining which resource algebras are
-available.  You can think of this as a list of resource algebras, though in
-reality it is a list of locally contractive functors from COFEs to Cameras,
-which are typically defined using the combinators for functors described above.
-The `Σ` is the *global* list of resources that the entire proof can use.  We
-keep the `Σ` universally quantified to enable composition of proofs.  The formal
-side of this is described in §7.4 of
+available.  The `Σ` is the *global* list of resources that the entire proof can
+use.  We keep the `Σ` universally quantified to enable composition of proofs.
+
+You can think of this as a list of resource algebras, though in reality it is a
+list of locally contractive functors from COFEs to Cameras.  This list is used
+to define the parameter `F` of Iris mentioned in the previous section. The
+formal side of this is described in §7.4 of
 [The Iris Documentation](http://plv.mpi-sws.org/iris/appendix-3.1.pdf); here we
-describe the Coq aspects of this approach.
+describe the user-side Coq aspects of this approach.
 
 The assumptions that an Iris proof makes are collected in a type class called
 `somethingG`.  The most common kind of assumptions is `inG`, which says that a
