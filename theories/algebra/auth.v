@@ -403,13 +403,13 @@ Proof. destruct x as [[[]|] ]; by rewrite // /auth_map /= agree_map_id. Qed.
 Lemma auth_map_compose {A B C} (f : A → B) (g : B → C) (x : auth A) :
   auth_map (g ∘ f) x = auth_map g (auth_map f x).
 Proof. destruct x as [[[]|] ];  by rewrite // /auth_map /= agree_map_compose. Qed.
-Lemma auth_map_ext {A B : ofeT} (f g : A → B) `{_ : NonExpansive f} x :
+Lemma auth_map_ext {A B : ofeT} (f g : A → B) `{!NonExpansive f} x :
   (∀ x, f x ≡ g x) → auth_map f x ≡ auth_map g x.
 Proof.
   constructor; simpl; auto.
   apply option_fmap_equiv_ext=> a; by rewrite /prod_map /= agree_map_ext.
 Qed.
-Instance auth_map_ne {A B : ofeT} (f : A -> B) {Hf : NonExpansive f} :
+Instance auth_map_ne {A B : ofeT} (f : A -> B) `{Hf : !NonExpansive f} :
   NonExpansive (auth_map f).
 Proof.
   intros n [??] [??] [??]; split; simpl in *; [|by apply Hf].
@@ -437,45 +437,45 @@ Proof. intros n f f' Hf [[[]|] ]; repeat constructor; try naive_solver;
   apply agreeC_map_ne; auto. Qed.
 
 Program Definition authRF (F : urFunctor) : rFunctor := {|
-  rFunctor_car A B := authR (urFunctor_car F A B);
-  rFunctor_map A1 A2 B1 B2 fg := authC_map (urFunctor_map F fg)
+  rFunctor_car A _ B _ := authR (urFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authC_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 A2 B1 B2 n f g Hfg; apply authC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(auth_map_id x).
-  apply auth_map_ext=>y. apply _. apply urFunctor_id.
+  intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
+  apply (auth_map_ext _ _)=>y; apply urFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -auth_map_compose.
-  apply auth_map_ext=>y. apply _. apply urFunctor_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -auth_map_compose.
+  apply (auth_map_ext _ _)=>y; apply urFunctor_compose.
 Qed.
 
 Instance authRF_contractive F :
   urFunctorContractive F → rFunctorContractive (authRF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply authC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_contractive.
 Qed.
 
 Program Definition authURF (F : urFunctor) : urFunctor := {|
-  urFunctor_car A B := authUR (urFunctor_car F A B);
-  urFunctor_map A1 A2 B1 B2 fg := authC_map (urFunctor_map F fg)
+  urFunctor_car A _ B _ := authUR (urFunctor_car F A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authC_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 A2 B1 B2 n f g Hfg; apply authC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
-  intros F A B x. rewrite /= -{2}(auth_map_id x).
-  apply auth_map_ext=>y. apply _. apply urFunctor_id.
+  intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
+  apply (auth_map_ext _ _)=>y; apply urFunctor_id.
 Qed.
 Next Obligation.
-  intros F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -auth_map_compose.
-  apply auth_map_ext=>y. apply _. apply urFunctor_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -auth_map_compose.
+  apply (auth_map_ext _ _)=>y; apply urFunctor_compose.
 Qed.
 
 Instance authURF_contractive F :
   urFunctorContractive F → urFunctorContractive (authURF F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply authC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_contractive.
 Qed.

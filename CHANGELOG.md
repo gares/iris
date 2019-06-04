@@ -42,6 +42,8 @@ Changes in and extensions of the theory:
   describes the postcondition of each forked-off thread (instead of it being
   `True`). Additionally, there is a stronger variant of the adequacy theorem
   that allows to make use of the postconditions of the forked-off threads.
+* The user-chosen functor used to instantiate the Iris logic now goes from
+  COFEs to Cameras (it was OFEs to Cameras).
 
 Changes in Coq:
 

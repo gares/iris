@@ -88,26 +88,26 @@ Instance vecC_map_ne {A A'} m :
 Proof. intros n f g ? v. by apply vec_map_ext_ne. Qed.
 
 Program Definition vecCF (F : cFunctor) m : cFunctor := {|
-  cFunctor_car A B := vecC (cFunctor_car F A B) m;
-  cFunctor_map A1 A2 B1 B2 fg := vecC_map m (cFunctor_map F fg)
+  cFunctor_car A _ B _ := vecC (cFunctor_car F A B) m;
+  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := vecC_map m (cFunctor_map F fg)
 |}.
 Next Obligation.
-  intros F A1 A2 B1 B2 n m f g Hfg. by apply vecC_map_ne, cFunctor_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n m f g Hfg. by apply vecC_map_ne, cFunctor_ne.
 Qed.
 Next Obligation.
-  intros F m A B l.
+  intros F m A ? B ? l.
   change (vec_to_list (vec_map m (cFunctor_map F (cid, cid)) l) ≡ l).
   rewrite vec_to_list_map. apply listCF.
 Qed.
 Next Obligation.
-  intros F m A1 A2 A3 B1 B2 B3 f g f' g' l.
+  intros F m A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' l.
   change (vec_to_list (vec_map m (cFunctor_map F (f ◎ g, g' ◎ f')) l)
     ≡ vec_map m (cFunctor_map F (g, g')) (vec_map m (cFunctor_map F (f, f')) l)).
-  rewrite !vec_to_list_map. by apply (cFunctor_compose (listCF F)  f g f' g').
+  rewrite !vec_to_list_map. by apply: (cFunctor_compose (listCF F) f g f' g').
 Qed.
 
 Instance vecCF_contractive F m :
   cFunctorContractive F → cFunctorContractive (vecCF F m).
 Proof.
-  by intros ?? A1 A2 B1 B2 n ???; apply vecC_map_ne; first apply cFunctor_contractive.
+  by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecC_map_ne; first apply cFunctor_contractive.
 Qed.

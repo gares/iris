@@ -117,13 +117,14 @@ the construction, this way we are sure we do not use any properties of the
 construction, and also avoid Coq from blindly unfolding it. *)
 Module Type iProp_solution_sig.
   Parameter iPreProp : gFunctors → ofeT.
+  Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ).
+
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ))).
+    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
   Notation iProp Σ := (uPredC (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
   Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
-  Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ).
   Parameter iProp_unfold: ∀ {Σ}, iProp Σ -n> iPreProp Σ.
   Parameter iProp_fold: ∀ {Σ}, iPreProp Σ -n> iProp Σ.
   Parameter iProp_fold_unfold: ∀ {Σ} (P : iProp Σ),
@@ -136,13 +137,13 @@ Module Export iProp_solution : iProp_solution_sig.
   Import cofe_solver.
   Definition iProp_result (Σ : gFunctors) :
     solution (uPredCF (iResF Σ)) := solver.result _.
-
   Definition iPreProp (Σ : gFunctors) : ofeT := iProp_result Σ.
+  Global Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ) := _.
+
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ))).
+    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
   Notation iProp Σ := (uPredC (iResUR Σ)).
 
-  Global Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ) := _.
   Definition iProp_unfold {Σ} : iProp Σ -n> iPreProp Σ :=
     solution_fold (iProp_result Σ).
   Definition iProp_fold {Σ} : iPreProp Σ -n> iProp Σ := solution_unfold _.

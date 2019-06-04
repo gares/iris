@@ -558,43 +558,43 @@ Proof.
 Qed.
 
 Program Definition gmapCF K `{Countable K} (F : cFunctor) : cFunctor := {|
-  cFunctor_car A B := gmapC K (cFunctor_car F A B);
-  cFunctor_map A1 A2 B1 B2 fg := gmapC_map (cFunctor_map F fg)
+  cFunctor_car A _ B _ := gmapC K (cFunctor_car F A B);
+  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapC_map (cFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 A2 B1 B2 n f g Hfg; apply gmapC_map_ne, cFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, cFunctor_ne.
 Qed.
 Next Obligation.
-  intros K ?? F A B x. rewrite /= -{2}(map_fmap_id x).
+  intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
   apply map_fmap_equiv_ext=>y ??; apply cFunctor_id.
 Qed.
 Next Obligation.
-  intros K ?? F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -map_fmap_compose.
+  intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
   apply map_fmap_equiv_ext=>y ??; apply cFunctor_compose.
 Qed.
 Instance gmapCF_contractive K `{Countable K} F :
   cFunctorContractive F → cFunctorContractive (gmapCF K F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply gmapC_map_ne, cFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, cFunctor_contractive.
 Qed.
 
 Program Definition gmapURF K `{Countable K} (F : rFunctor) : urFunctor := {|
-  urFunctor_car A B := gmapUR K (rFunctor_car F A B);
-  urFunctor_map A1 A2 B1 B2 fg := gmapC_map (rFunctor_map F fg)
+  urFunctor_car A _ B _ := gmapUR K (rFunctor_car F A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapC_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 A2 B1 B2 n f g Hfg; apply gmapC_map_ne, rFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
-  intros K ?? F A B x. rewrite /= -{2}(map_fmap_id x).
+  intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
   apply map_fmap_equiv_ext=>y ??; apply rFunctor_id.
 Qed.
 Next Obligation.
-  intros K ?? F A1 A2 A3 B1 B2 B3 f g f' g' x. rewrite /= -map_fmap_compose.
+  intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
   apply map_fmap_equiv_ext=>y ??; apply rFunctor_compose.
 Qed.
 Instance gmapRF_contractive K `{Countable K} F :
   rFunctorContractive F → urFunctorContractive (gmapURF K F).
 Proof.
-  by intros ? A1 A2 B1 B2 n f g Hfg; apply gmapC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, rFunctor_contractive.
 Qed.
