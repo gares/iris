@@ -253,29 +253,29 @@ There are two properties we are looking for: First of all, the postcondition sho
 Second, a proof of a weakest precondition with any postcondition should imply that the program is \emph{safe}, \ie that it does not get stuck.
 
 \begin{defn}[Adequacy]
-  A program $\expr$ in some initial state $\state$ is \emph{adequate} for stuckness  $\stuckness$ and a set $V \subseteq \Val$ of legal return values ($\expr, \state \vDash_\stuckness V$) if for all $\tpool', \state'$ such that $([\expr], \state) \tpstep^\ast (\tpool', \state')$ we have
+  A program $\expr$ in some initial state $\state$ is \emph{adequate} for stuckness  $\stuckness$ and a set $V \subseteq \Val \times \State$ of legal return-value-final-state combinations (written $\expr, \state \vDash_\stuckness V$) if for all $\tpool', \state'$ such that $([\expr], \state) \tpstep^\ast (\tpool', \state')$ we have
 \begin{enumerate}
 \item Safety: If $\stuckness = \NotStuck$, then for any $\expr' \in \tpool'$ we have that either $\expr'$ is a
   value, or \(\red(\expr'_i,\state')\):
   \[ \stuckness = \NotStuck \Ra \All\expr'\in\tpool'. \toval(\expr') \neq \bot \lor \red(\expr', \state') \]
   Notice that this is stronger than saying that the thread pool can reduce; we actually assert that \emph{every} non-finished thread can take a step.
 \item Legal return value: If $\tpool'_1$ (the main thread) is a value $\val'$, then $\val' \in V$:
-  \[ \All \val',\tpool''. \tpool' = [\val'] \dplus \tpool'' \Ra \val' \in V \]
+  \[ \All \val',\tpool''. \tpool' = [\val'] \dplus \tpool'' \Ra (\val',\state') \in V \]
 \end{enumerate}
 \end{defn}
 
 To express the adequacy statement for functional correctness, we assume that the signature $\Sig$ adds a predicate $\pred$ to the logic:
-\[ \pred : \Val \to \Prop \in \SigFn \]
-Furthermore, we assume that the \emph{interpretation} $\Sem\pred$ of $\pred$ reflects some set $V$ of legal return values into the logic (also see \Sref{sec:model}):
+\[ \pred : \Val \times \State \to \Prop \in \SigFn \]
+Furthermore, we assume that the \emph{interpretation} $\Sem\pred$ of $\pred$ reflects some set $V$ of legal return values and final states into the logic (also see \Sref{sec:model}):
 \[\begin{array}{rMcMl}
-  \Sem\pred &:& \Sem{\Val\,} \nfn \Sem\Prop \\
-  \Sem\pred &\eqdef& \Lam \val. \Lam \any. \setComp{n}{v \in V}
+  \Sem\pred &:& \Sem{\Val\times\State\,} \nfn \Sem\Prop \\
+  \Sem\pred &\eqdef& \Lam (\val,\state). \Lam \any. \setComp{n}{(v,\state) \in V}
 \end{array}\]
 The signature can of course state arbitrary additional properties of $\pred$, as long as they are proven sound.
 The adequacy statement now reads as follows:
 \begin{align*}
  &\All \mask, \expr, \val, \state.
- \\&( \TRUE \proves \pvs[\mask] \Exists \stateinterp, \pred_F. \stateinterp(\state,0) * \wpre[\stateinterp;\pred_F]{\expr}[\stuckness;\mask]{x.\; \pred(x)}) \Ra
+ \\&( \TRUE \proves \pvs[\mask] \Exists \stateinterp, \pred_F. \stateinterp(\state,0) * \wpre[\stateinterp;\pred_F]{\expr}[\stuckness;\mask]{x.\; \All \state, m. \stateinterp(\state', m) \vsW[\top][\emptyset] \pred(x,\state')}) \Ra
  \\&\expr, \state \vDash_\stuckness V
 \end{align*}
 Notice that the state invariant $S$ used by the weakest precondition is chosen \emph{after} doing a fancy update, which allows it to depend on the names of ghost variables that are picked in that initial fancy update.

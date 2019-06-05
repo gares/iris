@@ -17,7 +17,7 @@ Changes in and extensions of the theory:
 * [#] Add weakest preconditions for total program correctness.
 * [#] "(Potentially) stuck" weakest preconditions are no longer considered
   experimental.
-* [#] The adequacy statement for weakest preconditions now also involves the
+* The adequacy statement for weakest preconditions now also involves the
   final state.
 * [#] Add the notion of an "observation" to the language interface, so that
   every reduction step can optionally be marked with an event, and an execution
