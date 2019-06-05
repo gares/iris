@@ -7,7 +7,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 Changes in and extensions of the theory:
 
-* [#] Change in the definition of WP, so that there is a fancy update between
+* Change in the definition of WP, so that there is a fancy update between
   the quantification over the next states and the later modality. This makes it
   possible to prove more powerful lifting lemmas: The new versions feature an
   "update that takes a step".
@@ -37,7 +37,7 @@ Changes in and extensions of the theory:
   the reflection mechanism that was needed for proving closedness, atomicity and
   "valueness" of a term. The price to pay is the addition of new
   "administrative" reductions in the operational semantics of the language.
-* [#] Extend the state interpretation with a natural number that keeps track of
+* Extend the state interpretation with a natural number that keeps track of
   the number of forked-off threads, and have a global fixed proposition that
   describes the postcondition of each forked-off thread (instead of it being
   `True`). Additionally, there is a stronger variant of the adequacy theorem

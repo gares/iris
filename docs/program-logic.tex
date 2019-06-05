@@ -156,21 +156,21 @@ Finally, we can define the core piece of the program logic, the proposition that
 
 \paragraph{Defining weakest precondition.}
 We assume that everything making up the definition of the language, \ie values, expressions, states, the conversion functions, reduction relation and all their properties, are suitably reflected into the logic (\ie they are part of the signature $\Sig$).
-We further assume (as a parameter) a predicate $\stateinterp : \State \to \iProp$ that interprets the physical state as an Iris proposition.
+We further assume (as a parameter) a predicate $\stateinterp : \State \times \mathbb N \to \iProp$ that interprets the machine state as an Iris proposition, and a predicate $\pred_F: \Val \to \iProp$ that serves as postcondition for forked-of threads.
+The state interpretation can depend on the current physical state as well as the total number of \emph{forked} threads (that is one less that the total number of threads).
 This can be instantiated, for example, with ownership of an authoritative RA to tie the physical state to fragments that are used for user-level proofs.
 Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, \MaybeStuck}$ indicating whether program execution is allowed to get stuck.
 
 \begin{align*}
-  \textdom{wp}(\stateinterp, \stuckness) \eqdef{}& \MU \textdom{wp\any rec}. \Lam \mask, \expr, \pred. \\
+  \textdom{wp}(\stateinterp, \pred_F, \stuckness) \eqdef{}& \MU \textdom{wp\any rec}. \Lam \mask, \expr, \pred. \\
         & (\Exists\val. \toval(\expr) = \val \land \pvs[\mask] \pred(\val)) \lor {}\\
-        & \Bigl(\toval(\expr) = \bot \land \All \state. \stateinterp(\state) \vsW[\mask][\emptyset] {}\\
-        &\qquad (s = \NotStuck \Ra \red(\expr, \state)) * \later\All \expr', \state', \vec\expr. (\expr, \state \step \expr', \state', \vec\expr) \vsW[\emptyset][\mask] {}\\
-        &\qquad\qquad \stateinterp(\state') * \textdom{wp\any rec}(\mask, \expr', \pred) * \Sep_{\expr'' \in \vec\expr} \textdom{wp\any rec}(\top, \expr'', \Lam \any. \TRUE)\Bigr) \\
-%  (* value case *)
-  \wpre[\stateinterp]\expr[\stuckness;\mask]{\Ret\val. \prop} \eqdef{}& \textdom{wp}(\stateinterp,\stuckness)(\mask, \expr, \Lam\val.\prop)
+        & \Bigl(\toval(\expr) = \bot \land \All \state, n. \stateinterp(\state, n) \vsW[\mask][\emptyset] {}\\
+        &\qquad (s = \NotStuck \Ra \red(\expr, \state)) * \All \expr', \state', \vec\expr. (\expr, \state \step \expr', \state', \vec\expr) \vsW[\emptyset][\emptyset]\later\pvs[\emptyset][\mask] {}\\
+        &\qquad\qquad \stateinterp(\state', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * \Sep_{\expr'' \in \vec\expr} \textdom{wp\any rec}(\top, \expr'', \pred_F)\Bigr) \\
+  \wpre[\stateinterp;\pred_F]\expr[\stuckness;\mask]{\Ret\val. \prop} \eqdef{}& \textdom{wp}(\stateinterp,\pred_F,\stuckness)(\mask, \expr, \Lam\val.\prop)
 \end{align*}
-The $\stateinterp$ will always be set by the context; typically, when instantiating Iris with a language, we also pick the corresponding state interpretation $\stateinterp$.
-All proof rules leave $\stateinterp$ unchanged.
+The $\stateinterp$ and $\pred_F$ will always be set by the context; typically, when instantiating Iris with a language, we also pick the corresponding state interpretation $\stateinterp$ and fork-postcondition $\pred_F$.
+All proof rules leave $\stateinterp$ and $\pred_F$ unchanged.
 If we leave away the mask $\mask$, we assume it to default to $\top$.
 If we leave away the stuckness $\stuckness$, it defaults to $\NotStuck$.
 
@@ -213,7 +213,10 @@ We will also want a rule that connect weakest preconditions to the operational s
   \infer[wp-lift-step]
   {\toval(\expr_1) = \bot}
   { {\begin{inbox} % for some crazy reason, LaTeX is actually sensitive to the space between the "{ {" here and the "} }" below...
-        ~~\All \state_1. \stateinterp(\state_1) \vsW[\mask][\emptyset] (\stuckness = \NotStuck \Ra \red(\expr_1,\state_1)) * {}\\\qquad~~ \later\All \expr_2, \state_2, \vec\expr.  (\expr_1, \state_1 \step \expr_2, \state_2, \vec\expr)  \vsW[\emptyset][\mask] \Bigl(\stateinterp(\state_2) * \wpre[\stateinterp]{\expr_2}[\stuckness;\mask]{\Ret\var.\prop} * \Sep_{\expr_\f \in \vec\expr} \wpre[\stateinterp]{\expr_\f}[\stuckness;\top]{\Ret\any.\TRUE}\Bigr)  {}\\\proves \wpre[\stateinterp]{\expr_1}[\stuckness;\mask]{\Ret\var.\prop}
+        ~~\All \state_1,n. \stateinterp(\state_1,n) \vsW[\mask][\emptyset] (\stuckness = \NotStuck \Ra \red(\expr_1,\state_1)) * {}\\
+        \qquad~~ \All \expr_2, \state_2, \vec\expr.  (\expr_1, \state_1 \step \expr_2, \state_2, \vec\expr)  \vsW[\emptyset][\emptyset]\later\pvs[\emptyset][\mask]
+        \Bigl(\stateinterp(\state_2,n+|\vec\expr|) * \wpre[\stateinterp;\pred_F]{\expr_2}[\stuckness;\mask]{\Ret\var.\prop} * \Sep_{\expr_\f \in \vec\expr} \wpre[\stateinterp\pred_F]{\expr_\f}[\stuckness;\top]{\pred_F}\Bigr)  {}\\
+        \proves \wpre[\stateinterp\pred_F]{\expr_1}[\stuckness;\mask]{\Ret\var.\prop}
       \end{inbox}} }
 \end{mathpar}
 
@@ -272,10 +275,19 @@ The signature can of course state arbitrary additional properties of $\pred$, as
 The adequacy statement now reads as follows:
 \begin{align*}
  &\All \mask, \expr, \val, \state.
- \\&( \TRUE \proves \pvs[\mask] \Exists \stateinterp. \stateinterp(\state) * \wpre[\stateinterp]{\expr}[\stuckness;\mask]{x.\; \pred(x)}) \Ra
+ \\&( \TRUE \proves \pvs[\mask] \Exists \stateinterp, \pred_F. \stateinterp(\state,0) * \wpre[\stateinterp;\pred_F]{\expr}[\stuckness;\mask]{x.\; \pred(x)}) \Ra
  \\&\expr, \state \vDash_\stuckness V
 \end{align*}
 Notice that the state invariant $S$ used by the weakest precondition is chosen \emph{after} doing a fancy update, which allows it to depend on the names of ghost variables that are picked in that initial fancy update.
+
+The following variant of adequacy also allows exploiting the second parameter of $\stateinterp$, the number of threads, but only applies when \emph{all} threads have reduced to a value:
+\begin{align*}
+ &\All \mask, \expr, \val, \state.
+ \\&( \TRUE \proves \pvs[\mask] \Exists \stateinterp, \pred_F. \stateinterp(\state,0) * \wpre[\stateinterp;\pred_F]{\expr}[\stuckness;\mask]%
+      {x.\; \stateinterp(\state',|\vec\val|) * \Sep_{y \in \vec\val} \pred_F(y) \vsW[\top][\emptyset]  \pred(x)}) \Ra
+ \\&([\expr], \state) \tpstep^\ast (\val :: \vec\val, \state') \Ra
+ \\&\val \in V
+\end{align*}
 
 \paragraph{Hoare triples.}
 It turns out that weakest precondition is actually quite convenient to work with, in particular when performing these proofs in Coq.
