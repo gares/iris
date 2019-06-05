@@ -24,10 +24,10 @@ Changes in and extensions of the theory:
   trace has a matching list of events.  Change WP so that it is told the entire
   future trace of observations from the beginning.  Use this in heap_lang to
   implement prophecy variables.
-* [#] The Löb rule is now a derived rule; it follows from later-intro, later
+* The Löb rule is now a derived rule; it follows from later-intro, later
   being contractive and the fact that we can take fixpoints of contractive
   functions.
-* [#] Add atomic updates and logically atomic triples, including tactic support.
+* Add atomic updates and logically atomic triples, including tactic support.
   See `heap_lang/lib/increment.v` for an example.
 * [#] heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
