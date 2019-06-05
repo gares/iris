@@ -14,9 +14,9 @@ Changes in and extensions of the theory:
 * [#] Weaken the semantics of CAS in heap_lang to be efficiently implementable:
   CAS may only be used to compare "unboxed" values that can be represented in a
   single machine word.
-* [#] Add weakest preconditions for total program correctness.
-* [#] "(Potentially) stuck" weakest preconditions are no longer considered
-  experimental.
+* Add weakest preconditions for total program correctness.
+* "(Potentially) stuck" weakest preconditions and the "plainly modality" are no
+  longer considered experimental.
 * The adequacy statement for weakest preconditions now also involves the
   final state.
 * [#] Add the notion of an "observation" to the language interface, so that
