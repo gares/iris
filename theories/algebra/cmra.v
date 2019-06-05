@@ -781,7 +781,7 @@ Record rFunctor := RFunctor {
     CmraMorphism (rFunctor_map fg)
 }.
 Existing Instances rFunctor_ne rFunctor_mor.
-Instance: Params (@rFunctor_map) 5 := {}.
+Instance: Params (@rFunctor_map) 9 := {}.
 
 Delimit Scope rFunctor_scope with RF.
 Bind Scope rFunctor_scope with rFunctor.
@@ -818,7 +818,7 @@ Record urFunctor := URFunctor {
     CmraMorphism (urFunctor_map fg)
 }.
 Existing Instances urFunctor_ne urFunctor_mor.
-Instance: Params (@urFunctor_map) 5 := {}.
+Instance: Params (@urFunctor_map) 9 := {}.
 
 Delimit Scope urFunctor_scope with URF.
 Bind Scope urFunctor_scope with urFunctor.

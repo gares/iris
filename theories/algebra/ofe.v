@@ -676,7 +676,7 @@ Record cFunctor := CFunctor {
     cFunctor_map (f◎g, g'◎f') x ≡ cFunctor_map (g,g') (cFunctor_map (f,f') x)
 }.
 Existing Instance cFunctor_ne.
-Instance: Params (@cFunctor_map) 5 := {}.
+Instance: Params (@cFunctor_map) 9 := {}.
 
 Delimit Scope cFunctor_scope with CF.
 Bind Scope cFunctor_scope with cFunctor.
