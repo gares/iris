@@ -7,8 +7,8 @@
 \RequirePackage{array}
 \RequirePackage{dashbox}
 \RequirePackage{tensor}
+\RequirePackage{xifthen}
 \RequirePackage{xparse}
-\RequirePackage{xstring}
 \RequirePackage{mathtools}
 
 \usetikzlibrary{shapes}
@@ -23,7 +23,7 @@
 
 \newcommand{\nat}{\mathbb{N}}
 
-\newcommand*{\Sep}{\scalerel*{\ast}{\sum}}
+\newcommand*{\Sep}[1][]{\scalerel*{\ast}{\sum}\ifthenelse{\isempty{#1}}{}{_{#1}\;}}
 \newcommand*{\disj}[1][]{\mathrel{\#_{#1}}}
 \newcommand\pord{\sqsubseteq}
 
@@ -141,12 +141,6 @@
 \newcommand{\iPreProp}{\textdom{iPreProp}}
 \newcommand{\Wld}{\textdom{Wld}}
 \newcommand{\Res}{\textdom{Res}}
-\newcommand{\State}{\textdom{State}}
-\newcommand{\Val}{\textdom{Val}}
-\newcommand{\Loc}{\textdom{Loc}}
-\newcommand{\Expr}{\textdom{Expr}}
-\newcommand{\Var}{\textdom{Var}}
-\newcommand{\ThreadPool}{\textdom{ThreadPool}}
 
 % List
 \newcommand{\List}{\ensuremath{\textdom{List}}}
@@ -381,11 +375,21 @@
 \newcommand{\val}{v}
 \newcommand{\valB}{w}
 \newcommand{\state}{\sigma}
-\newcommand{\step}{\ra_{\mathsf{t}}}
-\newcommand{\hstep}{\ra_{\mathsf{h}}}
-\newcommand{\tpstep}{\ra_{\mathsf{tp}}}
+\newcommand{\step}[1][]{\xrightarrow{{#1}}_{\mathsf{t}}}
+\newcommand{\hstep}[1][]{\xrightarrow{{#1}}_{\mathsf{h}}}
+\newcommand{\tpstep}[1][]{\xrightarrow{{#1}}_{\mathsf{tp}}}
+\newcommand{\tpsteps}[1][]{\xrightarrow{{#1}}\mathrel{\vphantom{\to}^{*}_{\mathsf{tp}}}}
 \newcommand{\lctx}{K}
 \newcommand{\Lctx}{\textdom{Ctx}}
+\newcommand{\obs}{\kappa}
+
+\newcommand{\State}{\textdom{State}}
+\newcommand{\Val}{\textdom{Val}}
+\newcommand{\Loc}{\textdom{Loc}}
+\newcommand{\Expr}{\textdom{Expr}}
+\newcommand{\Var}{\textdom{Var}}
+\newcommand{\Obs}{\textdom{Obs}}
+\newcommand{\ThreadPool}{\textdom{ThreadPool}}
 
 \newcommand{\toval}{\mathrm{expr\any to\any val}}
 \newcommand{\ofval}{\mathrm{val\any to\any expr}}

@@ -11,7 +11,7 @@ Changes in and extensions of the theory:
   the quantification over the next states and the later modality. This makes it
   possible to prove more powerful lifting lemmas: The new versions feature an
   "update that takes a step".
-* [#] Weaken the semantics of CAS in heap_lang to be efficiently implementable:
+* Weaken the semantics of CAS in heap_lang to be efficiently implementable:
   CAS may only be used to compare "unboxed" values that can be represented in a
   single machine word.
 * Add weakest preconditions for total program correctness.
@@ -19,7 +19,7 @@ Changes in and extensions of the theory:
   longer considered experimental.
 * The adequacy statement for weakest preconditions now also involves the
   final state.
-* [#] Add the notion of an "observation" to the language interface, so that
+* Add the notion of an "observation" to the language interface, so that
   every reduction step can optionally be marked with an event, and an execution
   trace has a matching list of events.  Change WP so that it is told the entire
   future trace of observations from the beginning.  Use this in heap_lang to
@@ -29,9 +29,9 @@ Changes in and extensions of the theory:
   functions.
 * Add atomic updates and logically atomic triples, including tactic support.
   See `heap_lang/lib/increment.v` for an example.
-* [#] heap_lang now uses right-to-left evaluation order. This makes it
+* heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
-* [#] heap_lang values are now injected in heap_lang expressions via a specific
+* heap_lang values are now injected in heap_lang expressions via a specific
   constructor of the expr inductive type. This simplifies much the tactical
   infrastructure around the language. In particular, this allow us to get rid
   the reflection mechanism that was needed for proving closedness, atomicity and
