@@ -41,8 +41,8 @@ We collect here some important and frequently used derived proof rules.
   {\TRUE \proves \plainly\TRUE}
 \end{mathparpagebreakable}
 
-Noteworthy here is the fact that Löb induction can be derived from $\later$-introduction and the fact that we can take fixed-points of functions where the recursive occurrences are below $\later$.%
-\footnote{See \url{https://en.wikipedia.org/wiki/L\%C3\%B6b\%27s_theorem}.}
+Noteworthy here is the fact that Löb induction can be derived from $\later$-introduction and the fact that we can take fixed-points of functions where the recursive occurrences are below $\later$~\cite{Loeb}.%
+\footnote{Also see \url{https://en.wikipedia.org/wiki/L\%C3\%B6b\%27s_theorem}.}
 Furthermore, $\TRUE \proves \plainly\TRUE$ can be derived via $\plainly$ commuting with universal quantification ranging over the empty type $0$.
 To derive that existential quantifiers commute with separating conjunction requires an intermediate step using a magic wand: From $P * \exists x, Q \vdash \Exists x. P * Q$ we can deduce $\Exists x. Q \vdash P \wand \Exists x. P * Q$ and then proceed via $\exists$-elimination.
 
