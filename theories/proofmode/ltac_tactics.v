@@ -740,10 +740,11 @@ Tactic Notation "iPoseProofCoreLem"
   try iSolveTC.
 
 (** There is some hacky stuff going on here: because of Coq bug #6583, unresolved
-type classes in the arguments `xs` are resolved at arbitrary moments. Tactics
-like `apply`, `split` and `eexists` wrongly trigger type class search to resolve
-these holes. To avoid TC being triggered too eagerly, this tactic uses `refine`
-at most places instead of `apply`. *)
+type classes in e.g. the arguments [xs] of [iSpecializeArgs_go] are resolved at
+arbitrary moments. That is because tactics like [apply], [split] and [eexists]
+wrongly trigger type class search. To avoid TC being triggered too eagerly, the
+tactics below use [notypeclasses refine] instead of [apply], [split] and
+[eexists]. *)
 Local Ltac iSpecializeArgs_go H xs :=
   lazymatch xs with
   | hnil => idtac
@@ -866,7 +867,7 @@ Ltac iSpecializePat_go H1 pats :=
             let Hs' := iMissingHyps Hs' in
             fail "iSpecialize: hypotheses" Hs' "not found"
           | _ =>
-            split;
+            notypeclasses refine (conj _ _);
               [iFrame Hs_frame; solve_done d (*goal*)
               |iSpecializePat_go H1 pats]
           end]
