@@ -5,15 +5,12 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 ## Iris master
 
-Changes in and extensions of the theory:
+Changes in the theory of Iris itself:
 
 * Change in the definition of WP, so that there is a fancy update between
   the quantification over the next states and the later modality. This makes it
   possible to prove more powerful lifting lemmas: The new versions feature an
   "update that takes a step".
-* Weaken the semantics of CAS in heap_lang to be efficiently implementable:
-  CAS may only be used to compare "unboxed" values that can be represented in a
-  single machine word.
 * Add weakest preconditions for total program correctness.
 * "(Potentially) stuck" weakest preconditions and the "plainly modality" are no
   longer considered experimental.
@@ -22,13 +19,26 @@ Changes in and extensions of the theory:
 * Add the notion of an "observation" to the language interface, so that
   every reduction step can optionally be marked with an event, and an execution
   trace has a matching list of events.  Change WP so that it is told the entire
-  future trace of observations from the beginning.  Use this in heap_lang to
-  implement prophecy variables.
+  future trace of observations from the beginning.
 * The Löb rule is now a derived rule; it follows from later-intro, later
   being contractive and the fact that we can take fixpoints of contractive
   functions.
 * Add atomic updates and logically atomic triples, including tactic support.
   See `heap_lang/lib/increment.v` for an example.
+* Extend the state interpretation with a natural number that keeps track of
+  the number of forked-off threads, and have a global fixed proposition that
+  describes the postcondition of each forked-off thread (instead of it being
+  `True`). Additionally, there is a stronger variant of the adequacy theorem
+  that allows to make use of the postconditions of the forked-off threads.
+* The user-chosen functor used to instantiate the Iris logic now goes from
+  COFEs to Cameras (it was OFEs to Cameras).
+
+Changes in heap_lang:
+
+* Weaken the semantics of CAS in heap_lang to be efficiently implementable:
+  CAS may only be used to compare "unboxed" values that can be represented in a
+  single machine word.
+* Implement prophecy variables using the new support for "observations".
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
 * heap_lang values are now injected in heap_lang expressions via a specific
@@ -37,13 +47,8 @@ Changes in and extensions of the theory:
   the reflection mechanism that was needed for proving closedness, atomicity and
   "valueness" of a term. The price to pay is the addition of new
   "administrative" reductions in the operational semantics of the language.
-* Extend the state interpretation with a natural number that keeps track of
-  the number of forked-off threads, and have a global fixed proposition that
-  describes the postcondition of each forked-off thread (instead of it being
-  `True`). Additionally, there is a stronger variant of the adequacy theorem
-  that allows to make use of the postconditions of the forked-off threads.
-* The user-chosen functor used to instantiate the Iris logic now goes from
-  COFEs to Cameras (it was OFEs to Cameras).
+* heap_lang now has support for allocating, accessing and reasoning about arrays
+  (continuously allocated regions of memory).
 
 Changes in Coq:
 
