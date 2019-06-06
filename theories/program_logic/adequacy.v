@@ -212,8 +212,11 @@ Proof.
   iIntros "_". by iApply fupd_mask_weaken.
 Qed.
 
-Theorem wp_strong_all_adequacy Σ Λ `{!invPreG Σ} s e σ1 v vs σ2 φ :
-  (∀ `{Hinv : !invG Σ} κs,
+(* Special adequacy for when *all threads* evaluate to a value.  Here we let the
+user pick the one list of observations for which the proof needs to apply.  If
+you just got an [rtc erased_step], use [erased_steps_nsteps]. *)
+Theorem wp_strong_all_adequacy Σ Λ `{!invPreG Σ} s e σ1 n κs v vs σ2 φ :
+  (∀ `{Hinv : !invG Σ},
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
@@ -221,10 +224,10 @@ Theorem wp_strong_all_adequacy Σ Λ `{!invPreG Σ} s e σ1 v vs σ2 φ :
        stateI σ1 κs 0 ∗ WP e @ s; ⊤ {{ v,
          stateI σ2 [] (length vs) -∗
          ([∗ list] v ∈ vs, fork_post v) ={⊤,∅}=∗ ⌜ φ v ⌝ }})%I) →
-  rtc erased_step ([e], σ1) (of_val <$> v :: vs, σ2) →
+  nsteps n ([e], σ1) κs (of_val <$> v :: vs, σ2) →
   φ v.
 Proof.
-  intros Hwp [n [κs ?]]%erased_steps_nsteps.
+  intros Hwp ?.
   eapply (step_fupdN_soundness' _ (S (S n)))=> Hinv. rewrite Nat_iter_S.
   iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
   iApply step_fupd_intro; first done. iModIntro.
