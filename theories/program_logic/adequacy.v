@@ -1,4 +1,3 @@
-From stdpp Require Import namespaces.
 From iris.program_logic Require Export weakestpre.
 From iris.algebra Require Import gmap auth agree gset coPset.
 From iris.base_logic.lib Require Import wsat.
