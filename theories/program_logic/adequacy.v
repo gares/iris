@@ -166,6 +166,13 @@ Record adequate {Λ} (s : stuckness) (e1 : expr Λ) (σ1 : state Λ)
    e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2)
 }.
 
+Lemma adequate_alt {Λ} s e1 σ1 (φ : val Λ → state Λ → Prop) :
+  adequate s e1 σ1 φ ↔ ∀ t2 σ2,
+    rtc erased_step ([e1], σ1) (t2, σ2) →
+      (∀ v2 t2', t2 = of_val v2 :: t2' → φ v2 σ2) ∧
+      (∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2)).
+Proof. split. intros []; naive_solver. constructor; naive_solver. Qed.
+
 Theorem adequate_tp_safe {Λ} (e1 : expr Λ) t2 σ1 σ2 φ :
   adequate NotStuck e1 σ1 φ →
   rtc erased_step ([e1], σ1) (t2, σ2) →
@@ -190,19 +197,13 @@ Corollary wp_adequacy Σ Λ `{!invPreG Σ} s e σ φ :
        stateI σ κs ∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }})%I) →
   adequate s e σ (λ v _, φ v).
 Proof.
-  intros Hwp. split.
-  - intros t2 σ2 v2 [n [κs ?]]%erased_steps_nsteps.
-    eapply (wp_strong_adequacy Σ _); [|done]=> ?.
-    iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
-    iExists (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
-    iIntros "{$Hσ $Hwp} !>" (e2 t2' [= <- <-] _) "_ H _". rewrite to_of_val /=.
-    by iApply fupd_mask_weaken.
-  - intros t2 σ2 e2 -> [n [κs ?]]%erased_steps_nsteps.
-    eapply (wp_strong_adequacy Σ _); [|done]=> ?.
-    iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
-    iExists (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
-    iIntros "{$Hσ $Hwp} !>" (e2' t2' -> Hsafe) "_ _ _".
-    iApply fupd_mask_weaken; eauto.
+  intros Hwp. apply adequate_alt; intros t2 σ2 [n [κs ?]]%erased_steps_nsteps.
+  eapply (wp_strong_adequacy Σ _); [|done]=> ?.
+  iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
+  iExists (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
+  iIntros "{$Hσ $Hwp} !>" (e2 t2' -> ?) "_ H _".
+  iApply fupd_mask_weaken; [done|]. iSplit; [|done].
+  iIntros (v2 t2'' [= -> <-]). by rewrite to_of_val.
 Qed.
 
 Corollary wp_invariance Σ Λ `{!invPreG Σ} s e σ1 t2 σ2 φ :
