@@ -116,11 +116,16 @@ Section language.
 
   Definition erased_step (ρ1 ρ2 : cfg Λ) := ∃ κ, step ρ1 κ ρ2.
 
+  (** [rtc erased_step] and [nsteps] encode the same thing, just packaged
+      in a different way. *)
   Lemma erased_steps_nsteps ρ1 ρ2 :
-    rtc erased_step ρ1 ρ2 →
+    rtc erased_step ρ1 ρ2 ↔
     ∃ n κs, nsteps n ρ1 κs ρ2.
   Proof.
-    induction 1; firstorder; eauto. (* FIXME: [naive_solver eauto] should be able to handle this *)
+    split.
+    - induction 1; firstorder; eauto. (* FIXME: [naive_solver eauto] should be able to handle this *)
+    - intros (n & κs & Hsteps). induction Hsteps; first done. econstructor; last done.
+      eexists. done.
   Qed.
 
   Lemma of_to_val_flip v e : of_val v = e → to_val e = Some v.
