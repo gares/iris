@@ -14,8 +14,6 @@ Changes in the theory of Iris itself:
 * Add weakest preconditions for total program correctness.
 * "(Potentially) stuck" weakest preconditions and the "plainly modality" are no
   longer considered experimental.
-* The adequacy statement for weakest preconditions now also involves the
-  final state.
 * Add the notion of an "observation" to the language interface, so that
   every reduction step can optionally be marked with an event, and an execution
   trace has a matching list of events.  Change WP so that it is told the entire
@@ -28,8 +26,10 @@ Changes in the theory of Iris itself:
 * Extend the state interpretation with a natural number that keeps track of
   the number of forked-off threads, and have a global fixed proposition that
   describes the postcondition of each forked-off thread (instead of it being
-  `True`). Additionally, there is a stronger variant of the adequacy theorem
-  that allows to make use of the postconditions of the forked-off threads.
+  `True`).
+* `[#]` A stronger adequacy statement for weakest preconditions that involves
+  the final state, involves the post-condition of forked-off threads, and also
+  applies if the main-thread has not terminated.
 * The user-chosen functor used to instantiate the Iris logic now goes from
   COFEs to Cameras (it was OFEs to Cameras).
 
