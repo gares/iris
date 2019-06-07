@@ -154,7 +154,8 @@ Proof.
 Qed.
 
 (** Since the full adequacy statement is quite a mouthful, we prove some more
-intuitive and simpler corollaries. *)
+intuitive and simpler corollaries. These lemmas are morover stated in terms of
+[rtc erased_step] so one does not have to provide the trace. *)
 Record adequate {Λ} (s : stuckness) (e1 : expr Λ) (σ1 : state Λ)
     (φ : val Λ → state Λ → Prop) := {
   adequate_result t2 σ2 v2 :
