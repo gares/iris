@@ -119,13 +119,12 @@ Section language.
   (** [rtc erased_step] and [nsteps] encode the same thing, just packaged
       in a different way. *)
   Lemma erased_steps_nsteps ρ1 ρ2 :
-    rtc erased_step ρ1 ρ2 ↔
-    ∃ n κs, nsteps n ρ1 κs ρ2.
+    rtc erased_step ρ1 ρ2 ↔ ∃ n κs, nsteps n ρ1 κs ρ2.
   Proof.
     split.
-    - induction 1; firstorder; eauto. (* FIXME: [naive_solver eauto] should be able to handle this *)
-    - intros (n & κs & Hsteps). induction Hsteps; first done. econstructor; last done.
-      eexists. done.
+    - induction 1; firstorder eauto. (* FIXME: [naive_solver eauto] should be able to handle this *)
+    - intros (n & κs & Hsteps). unfold erased_step.
+      induction Hsteps; eauto using rtc_refl, rtc_l.
   Qed.
 
   Lemma of_to_val_flip v e : of_val v = e → to_val e = Some v.
