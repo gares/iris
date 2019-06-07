@@ -6,6 +6,57 @@ From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 Import uPred.
 
+(** This file provides a generic mechanism for a point-to connective [l ↦{q} v]
+with fractional permissions (where [l : L] and [v : V] over some abstract type
+[L] for locations and [V] for values). This mechanism can be plugged into a
+language by using the heap invariant [gen_heap_ctx σ] where [σ : gmap L V]. See
+heap-lang for an example.
+
+Next to the point-to connective [l ↦{q} v], which keeps track of the value [v]
+of a location [l], this mechanism allows one to attach "meta" or "ghost" data to
+locations. This is done as follows:
+
+- When one allocates a location, in addition to the point-to connective [l ↦ v],
+  one also obtains the token [meta_token ⊤ l]. This token is an exclusive
+  resource that denotes that no meta data has been associated with the
+  namespaces in the mask [⊤] for the location [l].
+- Meta data tokens can be split w.r.t. namespace masks, i.e.
+  [meta_token l (E1 ∪ E2) ⊣⊢ meta_token l E1 ∗ meta_token l E2] if [E1 ## E2].
+- Meta data can be set using the update [meta_token l E ==∗ meta l N x] provided
+  [↑N ⊆ E], and [x : A] for any countable [A]. The [meta l N x] connective is
+  persistent and denotes the knowledge that the meta data [x] has been
+  associated with namespace [N] to the location [l].
+
+To make the mechanism as flexible as possible, the [x : A] in [meta l N x] can
+be of any countable type [A]. This means that you can associate e.g. single
+ghost names, but also tuples of ghost names, etc.
+
+To further increase flexibility, the [meta l N x] and [meta_token l E]
+connectives are annotated with a namespace [N] and mask [E]. That way, one can
+assign a map of meta information to a location. This is particularly useful when
+building abstractions, then one can gradually assign more ghost information to a
+location instead of having to do all of this at once. We use namespaces so that
+these can be matched up with the invariant namespaces. *)
+
+(** To implement this mechanism, we use three resource algebras:
+
+- An authoritative RA over [gmap L (fracR * agreeR V)], which keeps track of the
+  values of locations.
+- An authoritative RA over [gmap L (agree gname)], which keeps track of the meta
+  information of locations. This RA introduces an indirection, it keeps track of
+  a ghost name for each location.
+- The ghost names in the aforementioned authoritative RA refer to namespace maps
+  [namespace_map (agree positive)], which store the actual meta information.
+  This indirection is needed because we cannot perform frame preserving updates
+  in an authoritative fragment without owning the full authoritative element
+  (in other words, without the indirection [meta_set] would need [gen_heap_ctx]
+  as a premise).
+
+Note that in principle we could have used one big authoritative RA to keep track
+of both values and ghost names for meta information, for example:
+[gmap L (option (fracR * agreeR V) ∗ option (agree gname)]. Due to the [option]s,
+this RA would be quite inconvenient to deal with. *)
+
 Definition gen_heapUR (L V : Type) `{Countable L} : ucmraT :=
   gmapUR L (prodR fracR (agreeR (leibnizC V))).
 Definition gen_metaUR (L : Type) `{Countable L} : ucmraT :=
@@ -47,6 +98,8 @@ Section definitions.
   Context `{Countable L, hG : !gen_heapG L V Σ}.
 
   Definition gen_heap_ctx (σ : gmap L V) : iProp Σ := (∃ m,
+    (* The [⊆] is used to avoid assigning ghost information to the locations in
+    the initial heap (see [gen_heap_init]). *)
     ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∧
     own (gen_heap_name hG) (● (to_gen_heap σ)) ∗
     own (gen_meta_name hG) (● (to_gen_meta m)))%I.
