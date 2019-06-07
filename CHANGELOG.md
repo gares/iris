@@ -143,6 +143,7 @@ Changes in Coq:
 * Add the camera `ufrac` for unbounded fractions (i.e. without fractions that
   can be `> 1`) and the camera `ufrac_auth` for a variant of the authoritative
   fractional camera (`frac_auth`) with unbounded fractions.
+* Changed `frac_auth` notation from `●!`/`◯!` to `●F`/`◯F`.
 
 ## Iris 3.1.0 (released 2017-12-19)
 
