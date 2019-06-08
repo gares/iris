@@ -27,9 +27,9 @@ Changes in the theory of Iris itself:
   the number of forked-off threads, and have a global fixed proposition that
   describes the postcondition of each forked-off thread (instead of it being
   `True`).
-* `[#]` A stronger adequacy statement for weakest preconditions that involves
-  the final state, involves the post-condition of forked-off threads, and also
-  applies if the main-thread has not terminated.
+* A stronger adequacy statement for weakest preconditions that involves
+  the final state, the post-condition of forked-off threads, and also applies if
+  the main-thread has not terminated.
 * The user-chosen functor used to instantiate the Iris logic now goes from
   COFEs to Cameras (it was OFEs to Cameras).
 
