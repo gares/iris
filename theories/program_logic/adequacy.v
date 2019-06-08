@@ -77,24 +77,21 @@ Proof.
   iMod (fupd_plain_mask with "H") as %?; eauto.
 Qed.
 
-Lemma wptp_strong_adequacy Φ φ κs' s n e1 t1 κs e2 t2 σ1 σ2 :
+Lemma wptp_strong_adequacy Φ κs' s n e1 t1 κs e2 t2 σ1 σ2 :
   nsteps n (e1 :: t1, σ1) κs (t2, σ2) →
   state_interp σ1 (κs ++ κs') (length t1) -∗
   WP e1 @ s; ⊤ {{ Φ }} -∗
-  (∀ e2 t2',
-    ⌜ t2 = e2 :: t2' ⌝ -∗
-    ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝ -∗
-    state_interp σ2 κs' (length t2') -∗
-    from_option Φ True (to_val e2) -∗
-    ([∗ list] v ∈ omap to_val t2', fork_post v) ={⊤,∅}=∗ ⌜ φ ⌝) -∗
-  wptp s t1 ={⊤,∅}▷=∗^(S n) ⌜ φ ⌝.
+  wptp s t1 ={⊤,∅}▷=∗^(S n) ∃ e2 t2',
+    ⌜ t2 = e2 :: t2' ⌝ ∗
+    ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝ ∗
+    state_interp σ2 κs' (length t2') ∗
+    from_option Φ True (to_val e2) ∗
+    ([∗ list] v ∈ omap to_val t2', fork_post v).
 Proof.
-  iIntros (Hstep) "Hσ He Hφ Ht". rewrite Nat_iter_S_r.
+  iIntros (Hstep) "Hσ He Ht". rewrite Nat_iter_S_r.
   iDestruct (wptp_steps with "Hσ He Ht") as "Hwp"; first done.
   iApply (step_fupdN_wand with "Hwp").
   iDestruct 1 as (e2' t2' ?) "(Hσ & Hwp & Ht)"; simplify_eq/=.
-  iMod (fupd_plain_mask_empty _ ⌜ φ ⌝%I with "[-]") as %?; last first.
-  { by iApply step_fupd_intro. }
   iMod (fupd_plain_keep_l ⊤
     ⌜ ∀ e2, s = NotStuck → e2 ∈ (e2' :: t2') → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝%I
     (state_interp σ2 κs' (length t2') ∗ WP e2' @ s; ⊤ {{ v, Φ v }} ∗ wptp s t2')%I
@@ -103,7 +100,9 @@ Proof.
     apply elem_of_cons in He' as [<-|(t1''&t2''&->)%elem_of_list_split].
     - iMod (wp_safe with "Hσ Hwp") as "$"; auto.
     - iDestruct "Ht" as "(_ & He' & _)". by iMod (wp_safe with "Hσ He'"). }
-  iApply ("Hφ" with "[//] Hsafe Hσ [>Hwp] [> Hvs]").
+  iApply step_fupd_fupd. iApply step_fupd_intro; first done. iNext.
+  iExists _, _. iSplitL ""; first done. iFrame "Hsafe Hσ".
+  iSplitL "Hwp".
   - destruct (to_val e2') as [v2|] eqn:He2'; last done.
     apply of_to_val in He2' as <-. iApply (wp_value_inv' with "Hwp").
   - clear Hstep. iInduction t2' as [|e t2'] "IH"; csimpl; first by iFrame.
@@ -148,8 +147,12 @@ Proof.
   eapply (step_fupdN_soundness' _ (S (S n)))=> Hinv. rewrite Nat_iter_S.
   iMod Hwp as (stateI Φ fork_post) "(Hσ & Hwp & Hφ)".
   iApply step_fupd_intro; [done|]; iModIntro.
-  iApply (@wptp_strong_adequacy _ _ (IrisG _ _ Hinv stateI fork_post) _ _ []
-    with "[Hσ] Hwp Hφ"); eauto. by rewrite right_id_L.
+  iApply step_fupdN_S_fupd. iApply (step_fupdN_wand with "[-Hφ]").
+  { iApply (@wptp_strong_adequacy _ _ (IrisG _ _ Hinv stateI fork_post) _ []
+    with "[Hσ] Hwp"); eauto; by rewrite right_id_L. }
+  iIntros "Hpost". iDestruct "Hpost" as (e2 t2' ->) "(? & ? & ? & ?)".
+  iApply fupd_plain_mask_empty.
+  iMod ("Hφ" with "[% //] [$] [$] [$] [$]"). done.
 Qed.
 
 (** Since the full adequacy statement is quite a mouthful, we prove some more
