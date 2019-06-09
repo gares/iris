@@ -576,6 +576,26 @@ In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (constr) (tactic)" and
 "iPoseProofCoreHyp (constr) as (constr)", last call failed.
 Tactic failure: iPoseProof: "Hx" not found.
+"iPoseProof_not_found_fail2"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
+"iPoseProofCore (open_constr) as (constr) (constr) (tactic)",
+"iPoseProofCoreLem (constr) as (constr) before_tc (tactic)", 
+"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
+"spec_tac" (bound to
+fun _ =>
+  lazymatch lem with
+  | {| itrm := _; itrm_vars := ?xs; itrm_hyps := ?pat |} => iSpecializeCore
+  {| itrm := Htmp; itrm_vars := xs; itrm_hyps := pat |} as p
+  | _ => idtac
+  end), "iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
+"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
+failed.
+Tactic failure: iSpecialize: hypotheses ["HQ"] not found.
 "iPoseProofCoreHyp_not_found_fail"
      : string
 The command has indeed failed with message:
