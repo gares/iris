@@ -777,6 +777,7 @@ Ltac iSpecializePat_go H1 pats :=
        fail "iSpecialize: cannot solve" Q "using done"
     | false => idtac
     end in
+  let Δ := iGetCtx in
   lazymatch pats with
     | [] => idtac
     | SForall :: ?pats =>
@@ -864,7 +865,7 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reduce;
           lazymatch goal with
           | |- False =>
-            let Hs' := iMissingHyps Hs' in
+            let Hs' := iMissingHypsCore Δ Hs' in
             fail "iSpecialize: hypotheses" Hs' "not found"
           | _ =>
             notypeclasses refine (conj _ _);

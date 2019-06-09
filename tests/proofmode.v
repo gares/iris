@@ -859,6 +859,12 @@ Proof.
   iIntros "H". Fail iPoseProof "Hx" as "H1".
 Abort.
 
+Check "iPoseProof_not_found_fail2".
+Lemma iPoseProof_not_found_fail2 P Q (H: P -∗ Q) : P -∗ Q.
+Proof.
+  iIntros "HP". Fail iPoseProof (H with "[HQ]") as "H".
+Abort.
+
 Check "iPoseProofCoreHyp_not_found_fail".
 Lemma iPoseProofCoreHyp_not_found_fail P : P -∗ P -∗ P.
 Proof.
