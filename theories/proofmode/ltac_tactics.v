@@ -1135,7 +1135,7 @@ Tactic Notation "iSplitL" constr(Hs) :=
   let Δ := iGetCtx in
   eapply tac_sep_split with Left Hs _ _; (* (js:=Hs) *)
     [iSolveTC ||
-     let P := match goal with |- FromSep _ ?P _ _ => P end in
+     let P := match goal with |- FromSep ?P _ _ => P end in
      fail "iSplitL:" P "not a separating conjunction"
     |pm_reduce;
      lazymatch goal with
@@ -1151,7 +1151,7 @@ Tactic Notation "iSplitR" constr(Hs) :=
   let Δ := iGetCtx in
   eapply tac_sep_split with Right Hs _ _; (* (js:=Hs) *)
     [iSolveTC ||
-     let P := match goal with |- FromSep _ ?P _ _ => P end in
+     let P := match goal with |- FromSep ?P _ _ => P end in
      fail "iSplitR:" P "not a separating conjunction"
     |pm_reduce;
      lazymatch goal with
