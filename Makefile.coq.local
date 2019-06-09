@@ -3,6 +3,7 @@ real-all: $(if $(NO_TEST),,test)
 
 # the test suite
 TESTFILES=$(wildcard tests/*.v)
+NORMALIZER=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
 .PHONY: test
@@ -17,7 +18,7 @@ tests/.coqdeps.d: $(TESTFILES)
 	$(HIDE)$(COQDEP) -dyndep var $(COQMF_COQLIBS_NOML) $^ $(redir_if_ok)
 -include tests/.coqdeps.d
 
-$(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref)
+$(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref) $(NORMALIZER)
 	$(HIDE)TEST="$$(basename -s .v $<)" && \
 	  if test -f "tests/$$TEST.$(COQ_MINOR_VERSION).ref"; then \
 	    REF="tests/$$TEST.$(COQ_MINOR_VERSION).ref"; \
@@ -27,6 +28,7 @@ $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref)
 	  echo "COQTEST$(if $(COQ_OLD), [no ref],$(if $(MAKE_REF), [make ref],)) $<$(if $(COQ_OLD),, (ref: $$REF))" && \
 	  TMPFILE="$$(mktemp)" && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
+	  sed -f $(NORMALIZER) -i "$$TMPFILE" && \
 	  $(if $(COQ_OLD),true, \
 	    $(if $(MAKE_REF),mv "$$TMPFILE" "$$REF",diff -u "$$REF" "$$TMPFILE") \
 	  ) && \
