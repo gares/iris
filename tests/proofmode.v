@@ -791,6 +791,20 @@ Proof.
   iIntros "HP1 HP2". Fail iSplitR "HP1 HPx". Fail iSplitR "HPx HP1".
 Abort.
 
+Check "iSplitL_non_splittable".
+Lemma iSplitL_non_splittable P :
+  P.
+Proof.
+  Fail iSplitL "".
+Abort.
+
+Check "iSplitR_non_splittable".
+Lemma iSplitR_non_splittable P :
+  P.
+Proof.
+  Fail iSplitR "".
+Abort.
+
 Check "iCombine_fail".
 Lemma iCombine_fail P:
   P -∗ P -∗ P ∗ P.

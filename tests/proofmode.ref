@@ -472,6 +472,16 @@ Tactic failure: iSplitR: hypotheses ["HPx"] not found.
 The command has indeed failed with message:
 Ltac call to "iSplitR (constr)" failed.
 Tactic failure: iSplitR: hypotheses ["HPx"] not found.
+"iSplitL_non_splittable"
+     : string
+The command has indeed failed with message:
+Ltac call to "iSplitL (constr)" failed.
+Tactic failure: iSplitL: P not a separating conjunction.
+"iSplitR_non_splittable"
+     : string
+The command has indeed failed with message:
+Ltac call to "iSplitR (constr)" failed.
+Tactic failure: iSplitR: P not a separating conjunction.
 "iCombine_fail"
      : string
 The command has indeed failed with message:
