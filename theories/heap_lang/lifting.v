@@ -32,7 +32,7 @@ Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
 Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
 Definition array `{!heapG Σ} (l : loc) (vs : list val) : iProp Σ :=
-  ([∗ list] i ↦ v ∈ vs, loc_add l i ↦ v)%I.
+  ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦ v)%I.
 Notation "l ↦∗ vs" := (array l vs)
   (at level 20, format "l  ↦∗  vs") : bi_scope.
 
@@ -218,7 +218,7 @@ Lemma array_singleton l v : l ↦∗ [v] ⊣⊢ l ↦ v.
 Proof. by rewrite /array /= right_id loc_add_0. Qed.
 
 Lemma array_app l vs ws :
-  l ↦∗ (vs ++ ws) ⊣⊢ l ↦∗ vs ∗ (loc_add l (length vs)) ↦∗ ws.
+  l ↦∗ (vs ++ ws) ⊣⊢ l ↦∗ vs ∗ (l +ₗ length vs) ↦∗ ws.
 Proof.
   rewrite /array big_sepL_app.
   setoid_rewrite Nat2Z.inj_add.
@@ -234,70 +234,82 @@ Proof.
 Qed.
 
 Lemma heap_array_to_array l vs :
-  ([∗ map] i ↦ v ∈ heap_array l vs, i ↦ v)%I -∗ l ↦∗ vs.
+  ([∗ map] l' ↦ v ∈ heap_array l vs, l' ↦ v) -∗ l ↦∗ vs.
 Proof.
-  iIntros "Hvs".
-  iInduction vs as [|v vs] "IH" forall (l); simpl.
-  { by rewrite big_opM_empty /array big_opL_nil. }
+  iIntros "Hvs". iInduction vs as [|v vs] "IH" forall (l); simpl.
+  { by rewrite /array. }
   rewrite big_opM_union; last first.
   { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
     intros (j&?&Hjl&_)%heap_array_lookup.
-    rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl;
-      apply loc_add_inj in Hjl; lia. }
+    rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl. simplify_eq; lia. }
   rewrite array_cons.
   rewrite big_opM_singleton; iDestruct "Hvs" as "[$ Hvs]".
   by iApply "IH".
+Qed.
+
+Lemma heap_array_to_seq_meta l vs n :
+  length vs = n →
+  ([∗ map] l' ↦ _ ∈ heap_array l vs, meta_token l' ⊤) -∗
+  [∗ list] i ∈ seq 0 n, meta_token (l +ₗ (i : nat)) ⊤.
+Proof.
+  iIntros (<-) "Hvs". iInduction vs as [|v vs] "IH" forall (l)=> //=.
+  rewrite big_opM_union; last first.
+  { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
+    intros (j&?&Hjl&_)%heap_array_lookup.
+    rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl. simplify_eq; lia. }
+  rewrite loc_add_0 -fmap_seq big_sepL_fmap.
+  setoid_rewrite Nat2Z.inj_succ. setoid_rewrite <-Z.add_1_l.
+  setoid_rewrite <-loc_add_assoc.
+  rewrite big_opM_singleton; iDestruct "Hvs" as "[$ Hvs]". by iApply "IH".
 Qed.
 
 (** Heap *)
 Lemma wp_allocN s E v n :
   0 < n →
   {{{ True }}} AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
-  {{{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v }}}.
+  {{{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
+         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }}}.
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
-  iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
+  iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by auto with lia.
   iNext; iIntros (v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc_gen with "Hσ") as "[Hσ Hl]".
+  iMod (@gen_heap_alloc_gen with "Hσ") as "(Hσ & Hl & Hm)".
   { apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
     rewrite replicate_length Z2Nat.id; auto with lia. }
-  iModIntro; iSplit; auto.
-  iFrame. iApply "HΦ".
-  by iApply heap_array_to_array.
+  iModIntro; iSplit; first done. iFrame "Hσ Hκs". iApply "HΦ". iSplitL "Hl".
+  - by iApply heap_array_to_array.
+  - iApply (heap_array_to_seq_meta with "Hm"). by rewrite replicate_length.
 Qed.
 Lemma twp_allocN s E v n :
   0 < n →
   [[{ True }]] AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
-  [[{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v }]].
+  [[{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
+         [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }]].
 Proof.
   iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc_gen with "Hσ") as "[Hσ Hl]".
+  iMod (@gen_heap_alloc_gen with "Hσ") as "(Hσ & Hl & Hm)".
   { apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
     rewrite replicate_length Z2Nat.id; auto with lia. }
-  iModIntro; iSplit; auto.
-  iFrame; iSplit; auto. iApply "HΦ".
-  by iApply heap_array_to_array.
+  iModIntro; do 2 (iSplit; first done). iFrame "Hσ Hκs". iApply "HΦ". iSplitL "Hl".
+  - by iApply heap_array_to_array.
+  - iApply (heap_array_to_seq_meta with "Hm"). by rewrite replicate_length.
 Qed.
 
 Lemma wp_alloc s E v :
-  {{{ True }}} Alloc (Val v) @ s; E {{{ l, RET LitV (LitLoc l); l ↦ v }}}.
+  {{{ True }}} Alloc (Val v) @ s; E {{{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l ⊤ }}}.
 Proof.
-  iIntros (Φ) "_ HΦ".
-  iApply wp_allocN; auto with lia.
-  iNext; iIntros (l) "H".
-  iApply "HΦ".
-  by rewrite array_singleton.
+  iIntros (Φ) "_ HΦ". iApply wp_allocN; auto with lia.
+  iIntros "!>" (l) "/= (? & ? & _)".
+  rewrite array_singleton loc_add_0. iApply "HΦ"; iFrame.
 Qed.
 Lemma twp_alloc s E v :
-  [[{ True }]] Alloc (Val v) @ s; E [[{ l, RET LitV (LitLoc l); l ↦ v }]].
+  [[{ True }]] Alloc (Val v) @ s; E [[{ l, RET LitV (LitLoc l); l ↦ v ∗ meta_token l ⊤ }]].
 Proof.
-  iIntros (Φ) "_ HΦ".
-  iApply twp_allocN; auto with lia.
-  iIntros (l) "H".
-  iApply "HΦ".
-  by rewrite array_singleton.
+  iIntros (Φ) "_ HΦ". iApply twp_allocN; auto with lia.
+  iIntros (l) "/= (? & ? & _)".
+  rewrite array_singleton loc_add_0. iApply "HΦ"; iFrame.
 Qed.
 
 Lemma wp_load s E l q v :

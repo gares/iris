@@ -49,6 +49,7 @@ Changes in heap_lang:
   "administrative" reductions in the operational semantics of the language.
 * heap_lang now has support for allocating, accessing and reasoning about arrays
   (continuously allocated regions of memory).
+* One can now assign "meta" data to heap_lang locations.
 
 Changes in Coq:
 

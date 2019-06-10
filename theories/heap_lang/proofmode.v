@@ -189,7 +189,7 @@ Proof.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_allocN.
   rewrite left_id into_laterN_env_sound; apply later_mono, forall_intro=> l.
   destruct (HΔ l) as (Δ''&?&HΔ'). rewrite envs_app_sound //; simpl.
-  by rewrite right_id HΔ'.
+  apply wand_intro_l. by rewrite (sep_elim_l (l ↦∗ _)%I) right_id wand_elim_r.
 Qed.
 Lemma tac_twp_allocN Δ s E j K v n Φ :
   0 < n →
@@ -203,7 +203,7 @@ Proof.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_allocN.
   rewrite left_id. apply forall_intro=> l.
   destruct (HΔ l) as (Δ'&?&HΔ'). rewrite envs_app_sound //; simpl.
-  by rewrite right_id HΔ'.
+  apply wand_intro_l. by rewrite (sep_elim_l (l ↦∗ _)%I) right_id wand_elim_r.
 Qed.
 
 Lemma tac_wp_alloc Δ Δ' s E j K v Φ :
@@ -217,7 +217,7 @@ Proof.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_alloc.
   rewrite left_id into_laterN_env_sound; apply later_mono, forall_intro=> l.
   destruct (HΔ l) as (Δ''&?&HΔ'). rewrite envs_app_sound //; simpl.
-  by rewrite right_id HΔ'.
+  apply wand_intro_l. by rewrite (sep_elim_l (l ↦ v)%I) right_id wand_elim_r.
 Qed.
 Lemma tac_twp_alloc Δ s E j K v Φ :
   (∀ l, ∃ Δ',
@@ -229,7 +229,7 @@ Proof.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_alloc.
   rewrite left_id. apply forall_intro=> l.
   destruct (HΔ l) as (Δ'&?&HΔ'). rewrite envs_app_sound //; simpl.
-  by rewrite right_id HΔ'.
+  apply wand_intro_l. by rewrite (sep_elim_l (l ↦ v)%I) right_id wand_elim_r.
 Qed.
 
 Lemma tac_wp_load Δ Δ' s E i K l q v Φ :
