@@ -67,7 +67,7 @@ Canonical Structure namespace_mapC :=
 
 Global Instance NamespaceMap_discrete a b :
   Discrete a → Discrete b → Discrete (NamespaceMap a b).
-Proof. by intros ?? [??] [??]; split; apply: discrete. Qed.
+Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete. Qed.
 Global Instance namespace_map_ofe_discrete :
   OfeDiscrete A → OfeDiscrete namespace_mapC.
 Proof. intros ? [??]; apply _. Qed.
