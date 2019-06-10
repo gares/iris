@@ -4,6 +4,18 @@ From iris.algebra Require Import updates.
 From iris.algebra Require Import proofmode_classes.
 Set Default Proof Using "Type".
 
+(** The camera [namespace_map A] over a camera [A] provides the connectives
+[namespace_map_data N a], which associates data [a : A] with a namespace [N],
+and [namespace_map_token E], which says that no data has been associated with
+the namespaces in the mask [E]. The important properties of this camera are:
+
+- The lemma [namespace_map_token_union] enables one to split [namespace_map_token]
+  w.r.t. disjoint union. That is, if we have [E1 ## E2], then we get
+  [namespace_map_token (E1 ∪ E2) = namespace_map_token E1 ⋅ namespace_map_token E2]
+- The lemma [namespace_map_alloc_update] provides a frame preserving update to
+  associate data to a namespace [namespace_map_token E ~~> namespace_map_data N a]
+  provided [↑N ⊆ E] and [✓ a]. *)
+
 Record namespace_map (A : Type) := NamespaceMap {
   namespace_map_data_proj : gmap positive A;
   namespace_map_token_proj : coPset_disj
@@ -83,14 +95,18 @@ Proof. intros. apply NamespaceMap_discrete; apply _. Qed.
 Instance namespace_map_valid : Valid (namespace_map A) := λ x,
   match namespace_map_token_proj x with
   | CoPset E =>
-     ✓ (namespace_map_data_proj x) ∧ ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
+     ✓ (namespace_map_data_proj x) ∧
+     (* dom (namespace_map_data_proj x) ⊥ E *)
+     ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_valid !_ /.
 Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
   match namespace_map_token_proj x with
   | CoPset E =>
-     ✓{n} (namespace_map_data_proj x) ∧ ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
+     ✓{n} (namespace_map_data_proj x) ∧
+     (* dom (namespace_map_data_proj x) ⊥ E *)
+     ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_validN !_ /.
