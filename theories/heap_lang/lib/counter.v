@@ -60,8 +60,9 @@ Section mono_proof.
       wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_if. iApply "HΦ"; iExists γ; repeat iSplit; eauto.
-      iApply (own_mono with "Hγf"). apply: auth_frag_mono.
-      by apply mnat_included, le_n_S.
+      iApply (own_mono with "Hγf").
+      (* FIXME: FIXME(Coq #6294): needs new unification *)
+      apply: auth_frag_mono. by apply mnat_included, le_n_S.
     - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_if. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.

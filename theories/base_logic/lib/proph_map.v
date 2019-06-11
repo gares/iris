@@ -134,10 +134,8 @@ Section proph_map.
     rewrite proph_eq /proph_def. iIntros "Hp1 Hp2".
     iCombine "Hp1 Hp2" as "Hp".
     iDestruct (own_valid with "Hp") as %Hp.
-    (* FIXME: [apply auth_frag_valid in Hp] and
-       [rewrite ->auth_frag_valid in Hp] both should work but do not. *)
-    move:Hp. rewrite auth_frag_valid singleton_valid=>Hp.
-    done.
+    (* FIXME: FIXME(Coq #6294): needs new unification *)
+    move:Hp. rewrite auth_frag_valid singleton_valid //.
   Qed.
 
   Lemma proph_map_new_proph p ps pvs :
@@ -169,7 +167,8 @@ Section proph_map.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
     iMod (own_update_2 with "H● Hp") as "[H● H◯]".
-    { eapply auth_update. apply: singleton_local_update.
+    { (* FIXME: FIXME(Coq #6294): needs new unification *)
+      eapply auth_update. apply: singleton_local_update.
       - by rewrite /to_proph_map lookup_fmap HR.
       - by apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizC V)))). }
     rewrite /to_proph_map -fmap_insert.

@@ -118,8 +118,8 @@ Section lifting.
       iModIntro; iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs Hstep).
       iDestruct "Hσκs" as "Hσ". rewrite /ownP.
       iMod (own_update_2 with "Hσ Hσf") as "[Hσ Hσf]".
-      { apply auth_update. apply: option_local_update.
-         by apply: (exclusive_local_update _ (Excl σ2)). }
+      { apply auth_update. apply option_local_update.
+         by apply (exclusive_local_update _ (Excl σ2)). }
       iFrame "Hσ". iApply ("H" with "[]"); eauto with iFrame.
   Qed.
 
