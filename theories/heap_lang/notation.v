@@ -60,6 +60,7 @@ Notation "'ref' e" := (Alloc e%E) (at level 10) : expr_scope.
 Notation "- e" := (UnOp MinusUnOp e%E) : expr_scope.
 
 Notation "e1 + e2" := (BinOp PlusOp e1%E e2%E) : expr_scope.
+Notation "e1 +ₗ e2" := (BinOp OffsetOp e1%E e2%E) : expr_scope.
 Notation "e1 - e2" := (BinOp MinusOp e1%E e2%E) : expr_scope.
 Notation "e1 * e2" := (BinOp MultOp e1%E e2%E) : expr_scope.
 Notation "e1 `quot` e2" := (BinOp QuotOp e1%E e2%E) : expr_scope.
