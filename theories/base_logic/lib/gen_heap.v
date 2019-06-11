@@ -204,6 +204,13 @@ Section gen_heap.
     by intros [_ ?%agree_op_invL'].
   Qed.
 
+  Lemma mapsto_combine l q1 q2 v1 v2 :
+    l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 + q2} v1 ∗ ⌜v1 = v2⌝.
+  Proof.
+    iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
+    iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
+  Qed.
+
   Global Instance ex_mapsto_fractional l : Fractional (λ q, l ↦{q} -)%I.
   Proof.
     intros p q. iSplit.
