@@ -128,6 +128,18 @@ Section proph_map.
   Global Instance proph_timeless p vs : Timeless (proph p vs).
   Proof. rewrite proph_eq /proph_def. apply _. Qed.
 
+  Lemma proph_exclusive p vs1 vs2 :
+    proph p vs1 -∗ proph p vs2 -∗ False.
+  Proof.
+    rewrite proph_eq /proph_def. iIntros "Hp1 Hp2".
+    iCombine "Hp1 Hp2" as "Hp".
+    iDestruct (own_valid with "Hp") as %Hp.
+    (* FIXME: [apply auth_frag_valid in Hp] and
+       [rewrite ->auth_frag_valid in Hp] both should work but do not. *)
+    move:Hp. rewrite auth_frag_valid singleton_valid=>Hp.
+    done.
+  Qed.
+
   Lemma proph_map_new_proph p ps pvs :
     p ∉ ps →
     proph_map_ctx pvs ps ==∗
