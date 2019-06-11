@@ -97,13 +97,13 @@ Section contrib_spec.
   Context `{!heapG Σ, !ccounterG Σ} (N : namespace).
 
   Definition ccounter_inv (γ : gname) (l : loc) : iProp Σ :=
-    (∃ n, own γ (●! n) ∗ l ↦ #n)%I.
+    (∃ n, own γ (●F n) ∗ l ↦ #n)%I.
 
   Definition ccounter_ctx (γ : gname) (l : loc) : iProp Σ :=
     inv N (ccounter_inv γ l).
 
   Definition ccounter (γ : gname) (q : frac) (n : nat) : iProp Σ :=
-    own γ (◯!{q} n).
+    own γ (◯F{q} n).
 
   (** The main proofs. *)
   Lemma ccounter_op γ q1 q2 n1 n2 :
@@ -115,7 +115,7 @@ Section contrib_spec.
     {{{ γ l, RET #l; ccounter_ctx γ l ∗ ccounter γ 1 0 }}}.
   Proof.
     iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
-    iMod (own_alloc (●! O%nat ⋅ ◯! 0%nat)) as (γ) "[Hγ Hγ']";
+    iMod (own_alloc (●F O%nat ⋅ ◯F 0%nat)) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid.
     iMod (inv_alloc N _ (ccounter_inv γ l) with "[Hl Hγ]").
     { iNext. iExists 0%nat. by iFrame. }
