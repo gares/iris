@@ -165,7 +165,7 @@ Proof.
   - split; simpl; [by rewrite cmra_core_l|by rewrite left_id_L].
   - split; simpl; [by rewrite cmra_core_idemp|done].
   - intros ??; rewrite! namespace_map_included; intros [??].
-    by split; simpl; apply: cmra_core_mono. (* FIXME: apply cmra_core_mono. fails *)
+    by split; simpl; apply: cmra_core_mono. (* FIXME: FIXME(Coq #6294): needs new unification *)
   - intros n [m1 [E1|]] [m2 [E2|]]=> //=; rewrite namespace_map_validN_eq /=.
     rewrite {1}/op /cmra_op /=. case_decide; last done.
     intros [Hm Hdisj]; split; first by eauto using cmra_validN_op_l.

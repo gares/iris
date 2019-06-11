@@ -240,7 +240,7 @@ Proof.
   - by split; simpl; rewrite ?cmra_core_l.
   - by split; simpl; rewrite ?cmra_core_idemp.
   - intros ??; rewrite! auth_included; intros [??].
-    by split; simpl; apply: cmra_core_mono. (* FIXME: apply cmra_core_mono. fails *)
+    by split; simpl; apply: cmra_core_mono. (* FIXME: FIXME(Coq #6294): needs new unification *)
   - assert (∀ n (a b1 b2 : A), b1 ⋅ b2 ≼{n} a → b1 ≼{n} a).
     { intros n a b1 b2 <-; apply cmra_includedN_l. }
     intros n [[[q1 a1]|] b1] [[[q2 a2]|] b2]; rewrite auth_validN_eq /=;
