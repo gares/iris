@@ -39,6 +39,7 @@ theories/algebra/deprecated.v
 theories/algebra/proofmode_classes.v
 theories/algebra/ufrac.v
 theories/algebra/namespace_map.v
+theories/algebra/ufrac_auth.v
 theories/bi/notation.v
 theories/bi/interface.v
 theories/bi/derived_connectives.v
