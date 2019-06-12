@@ -55,7 +55,7 @@ Proof.
   iIntros (? κs).
   iMod (own_alloc (● (Excl' σ) ⋅ ◯ (Excl' σ))) as (γσ) "[Hσ Hσf]";
     first by apply auth_both_valid.
-  iModIntro. iExists (λ σ κs, own γσ (● (Excl' σ)))%I.
+  iModIntro. iExists (λ σ κs, own γσ (● (Excl' σ)))%I, (λ _, True%I).
   iFrame "Hσ".
   iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
 Qed.
@@ -68,14 +68,14 @@ Theorem ownP_invariance Σ `{!ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
   φ σ2.
 Proof.
   intros Hwp Hsteps. eapply (wp_invariance Σ Λ s e σ1 t2 σ2 _)=> //.
-  iIntros (? κs κs').
+  iIntros (? κs).
   iMod (own_alloc (● (Excl' σ1) ⋅ ◯ (Excl' σ1))) as (γσ) "[Hσ Hσf]";
     first by apply auth_both_valid.
   iExists (λ σ κs' _, own γσ (● (Excl' σ)))%I, (λ _, True%I).
   iFrame "Hσ".
   iMod (Hwp (OwnPG _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
     first by rewrite /ownP; iFrame.
-  iIntros "!> Hσ". iMod "H" as (σ2') "[Hσf %]". rewrite /ownP.
+  iIntros "!> Hσ". iExists ∅. iMod "H" as (σ2') "[Hσf %]". rewrite /ownP.
   iDestruct (own_valid_2 with "Hσ Hσf")
     as %[Hp%Excl_included _]%auth_both_valid; simplify_eq; auto.
 Qed.
