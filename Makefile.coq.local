@@ -25,11 +25,16 @@ $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref) $(NORMALIZER)
 	    REF="tests/$$TEST.ref"; \
 	  fi && \
 	  echo "COQTEST$(if $(COQ_OLD), [no ref],$(if $(MAKE_REF), [make ref],)) $<$(if $(COQ_OLD),, (ref: $$REF))" && \
+	  # Dump Coq output into temporary file. \
 	  TMPFILE="$$(mktemp)" && \
 	  $(TIMER) $(COQ_TEST) $(COQFLAGS) $(COQLIBS) -load-vernac-source $< > "$$TMPFILE" && \
-	  sed -f $(NORMALIZER) -i "$$TMPFILE" && \
+	  # `sed -i` in a way that also works on macOS. \
+	  sed -f $(NORMALIZER) "$$TMPFILE" > "$$TMPFILE".new && \
+	  mv "$$TMPFILE".new "$$TMPFILE" && \
+	  # Either compare temporary file with reffile or move it there. \
 	  $(if $(COQ_OLD),true, \
 	    $(if $(MAKE_REF),mv "$$TMPFILE" "$$REF",diff -u "$$REF" "$$TMPFILE") \
 	  ) && \
+	  # Cleanup, and mark as done for make. \
 	  rm -f "$$TMPFILE" && \
 	  touch $@
