@@ -612,6 +612,8 @@ Instance from_and_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromAnd P Q1 Q2 → FromAnd (tc_opaque P) Q1 Q2 | 102 := id.
 Instance into_and_tc_opaque {PROP : bi} p (P Q1 Q2 : PROP) :
   IntoAnd p P Q1 Q2 → IntoAnd p (tc_opaque P) Q1 Q2 := id.
+Instance into_sep_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+  IntoSep P Q1 Q2 → IntoSep (tc_opaque P) Q1 Q2 := id.
 Instance from_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromOr P Q1 Q2 → FromOr (tc_opaque P) Q1 Q2 := id.
 Instance into_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
