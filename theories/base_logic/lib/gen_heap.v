@@ -267,6 +267,13 @@ Section gen_heap.
     iIntros "[Hm1 Hm2]". by iApply (meta_token_union_2 with "Hm1 Hm2").
   Qed.
 
+  Lemma meta_token_difference l E1 E2 :
+    E1 ⊆ E2 → meta_token l E2 ⊣⊢ meta_token l E1 ∗ meta_token l (E2 ∖ E1).
+  Proof.
+    intros. rewrite {1}(union_difference_L E1 E2) //.
+    by rewrite meta_token_union; last set_solver.
+  Qed.
+
   Lemma meta_agree `{Countable A} l i (x1 x2 : A) :
     meta l i x1 -∗ meta l i x2 -∗ ⌜x1 = x2⌝.
   Proof.
