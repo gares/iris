@@ -217,7 +217,8 @@ Changes in Coq:
       the direction of this equivalence got swapped for consistency's sake)
     + `always_wand_impl` -> `persistently_impl_wand` (additionally, the
       direction of this equivalence got swapped for consistency's sake)
-  The following `sed` snippet should get you most of the way:
+  The following `sed` snippet should get you most of the way (on macOS you will
+  have to replace `-i` by `-i ''`):
 ```
 sed 's/\bPersistentP\b/Persistent/g; s/\bTimelessP\b/Timeless/g; s/\bCMRADiscrete\b/CmraDiscrete/g; s/\bCMRAT\b/CmraT/g; s/\bCMRAMixin\b/CmraMixin/g; s/\bUCMRAT\b/UcmraT/g; s/\bUCMRAMixin\b/UcmraMixin/g; s/\bSTS\b/Sts/g' -i $(find -name "*.v")
 ```
