@@ -583,11 +583,11 @@ Arguments ElimInv {_} {_} _ _%I _%I _%I _%I _%I _%I : simpl never.
 Arguments elim_inv {_} {_} _ _%I _%I _%I _%I _%I _%I {_}.
 Hint Mode ElimInv + - - ! - - ! ! - : typeclass_instances.
 
-(* We make sure that tactics that perform actions on *specific* hypotheses or
+(** We make sure that tactics that perform actions on *specific* hypotheses or
 parts of the goal look through the [tc_opaque] connective, which is used to make
-definitions opaque for type class search. For example, when using `iDestruct`,
+definitions opaque for type class search. For example, when using [iDestruct],
 an explicit hypothesis is affected, and as such, we should look through opaque
-definitions. However, when using `iFrame` or `iNext`, arbitrary hypotheses or
+definitions. However, when using [iFrame] or [iNext], arbitrary hypotheses or
 parts of the goal are affected, and as such, type class opacity should be
 respected.
 
