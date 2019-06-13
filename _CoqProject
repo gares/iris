@@ -110,7 +110,8 @@ theories/heap_lang/lib/assert.v
 theories/heap_lang/lib/lock.v
 theories/heap_lang/lib/spin_lock.v
 theories/heap_lang/lib/ticket_lock.v
-theories/heap_lang/lib/coin_flip.v
+theories/heap_lang/lib/nondet_bool.v
+theories/heap_lang/lib/lazy_coin.v
 theories/heap_lang/lib/counter.v
 theories/heap_lang/lib/atomic_heap.v
 theories/heap_lang/lib/increment.v
