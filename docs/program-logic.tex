@@ -224,76 +224,108 @@ This basically just copies the second branch (the non-value case) of the definit
 
 \paragraph{Adequacy of weakest precondition.}
 
-\newcommand\traceprop{\Sigma}
+\newcommand\metaprop{p}
+\newcommand\consstate{C}
 
 The purpose of the adequacy statement is to show that our notion of weakest preconditions is \emph{realistic} in the sense that it actually has anything to do with the actual behavior of the program.
-The most general form of the adequacy statement is about proving properties of arbitrary program executions.
-That is, the goal is to prove a statement of the form
-\[
-\All \expr_0, \state_0, \vec\obs, \tpool_1, \state_1. ([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1) \Ra (\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \in \traceprop
-\]
-for some \emph{meta-level} relation $\traceprop$ characterizing the ``trace property'' we are interested in.
+The most general form of the adequacy statement is about proving properties of an arbitrary program execution.
 
-To state the adequacy theorem, we need a way to talk about $\traceprop$ inside Iris.
-To this end, we assume that the signature $\Sig$ contains some predicate $\hat{\traceprop}$:
-\[ \hat{\traceprop} : \Expr \times \State \times \List(\Obs) \times \List(\Expr) \times \State \to \Prop \in \SigFn \]
-Furthermore, we assume that the \emph{interpretation} $\Sem{\hat{\traceprop}}$ of $\hat{\traceprop}$ reflects $\traceprop$ (also see \Sref{sec:model}):
-\[\begin{array}{rMcMl}
-  \Sem{\hat{\traceprop}} &:& \Sem{\Expr \times \State \times \List(\Obs) \times \List(\Expr) \times \State\,} \nfn \Sem\Prop \\
-  \Sem{\hat{\traceprop}} &\eqdef& \Lam (\expr_0, \state_0, \vec\obs, \tpool_1, \state_1). \Lam \any. \setComp{n}{(\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \in \traceprop}
-\end{array}\]
-The signature can of course state arbitrary additional properties of $\hat{\traceprop}$, as long as they are proven sound.
-
-The adequacy statement now reads as follows:
+\begin{thm}[Adequacy]
+  Assume we are given some $\expr_0$, $\state_0$, $\vec\obs$, $\tpool_1$, $\state_1$ such that $([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1)$, and we are also given a \emph{meta-level} property $\metaprop$ that we want to show.
+  To verify that $\metaprop$ holds, it is sufficient to show the following Iris entailment:
 \begin{align*}
- &\All \expr_0, \state_0, \vec\obs, \tpool_1, \state_1.\\
- &( \TRUE \proves \pvs[\top] \Exists \stuckness, \stateinterp, \pred_F, \pred. {}\\
- &\quad\stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{x.\; \pred(x)} * {}\\
- &\quad(\All \expr_1, \tpool_1'. \tpool_1 = [\expr_1] \dplus \tpool_1' \wand {}\\
- &\quad\quad (s = \NotStuck \Ra \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1) ) \wand {}\\
- &\quad\quad \stateinterp(\state_1, (), |\tpool_1'|) \wand{}\\
- &\quad\quad (\toval(\expr_1) \ne \bot \wand \pred(\toval(\expr_1))) \wand{}\\
- &\quad\quad (\Sep[\expr \in \tpool_1'] \toval(\expr) \ne \bot \wand \pred_F(\toval(\expr))) \wand{}\\
- &\quad\quad \pvs[\top,\emptyset] \hat{\traceprop}(\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \\
- &\quad ) \Ra{}\\
- &([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1) \Ra (\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \in \traceprop
+ &\TRUE \proves \pvs[\top] \Exists \stuckness, \stateinterp, \pred, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{x.\; \pred(x)} * \left(\consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \vs[\top][\emptyset] \hat{\metaprop}\right)
 \end{align*}
-In other words, to show that $\traceprop$ holds for all possible executions of the program, we have to prove an entailment in Iris that, starting from the empty context, proves that the initial state interpretation holds, proves a weakest precondition, \emph{and} proves that $\hat{\traceprop}$ holds under the following assumptions:
+where
+\begin{align*}
+ \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \eqdef{}&\Exists \expr_1, \tpool_1'. \tpool_1 = [\expr_1] \dplus \tpool_1' * {}\\
+ &\quad (s = \NotStuck \Ra \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1) ) *{}\\
+ &\quad \stateinterp(\state_1, (), |\tpool_1'|) *{}\\
+ &\quad (\toval(\expr_1) \ne \bot \wand \pred(\toval(\expr_1))) *{}\\
+ &\quad \left(\Sep[\expr \in \tpool_1'] \toval(\expr) \ne \bot \wand \pred_F(\toval(\expr))\right)
+\end{align*}
+The $\hat\metaprop$ here arises because we need a way to talk about $\metaprop$ inside Iris.
+To this end, we assume that the signature $\Sig$ contains some assertion $\hat{\metaprop}$:
+\[ \hat{\metaprop} : \Prop \in \SigFn \]
+Furthermore, we assume that the \emph{interpretation} $\Sem{\hat{\metaprop}}$ of $\hat{\metaprop}$ reflects $\metaprop$ (also see \Sref{sec:model}):
+\[\begin{array}{rMcMl}
+  \Sem{\hat{\metaprop}} &:& \Sem\Prop \\
+  \Sem{\hat{\metaprop}} &\eqdef& \Lam \any. \setComp{n}{\metaprop}
+\end{array}\]
+The signature can of course state arbitrary additional properties of $\hat{\metaprop}$, as long as they are proven sound.
+\end{thm}
+
+In other words, to show that $\metaprop$ holds, we have to prove an entailment in Iris that, starting from the empty context, chooses some state interpretation, postcondition, forked-thread postcondition and stuckness and then proves:
 \begin{itemize}
-\item The final thread-pool $\tpool_1$ contains the final state of the main thread $\expr_1$, and any number of additional threads in $\tpool_1'$.
+  \item the initial state interpretation,
+  \item a weakest-precondition,
+  \item and a view shift showing the desired $\hat\metaprop$ under the extra assumption $\consstate(\tpool_1, \state_1)$.
+\end{itemize}
+Notice that the state interpretation and the postconditions are chosen \emph{after} doing a fancy update, which allows them to depend on the names of ghost variables that are picked in that initial fancy update.
+This gives us a chance to allocate some ``global'' ghost state that state interpretation and postcondition can refer to.
+
+$\consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1)$ says that:
+\begin{itemize}
+\item The final thread-pool $\tpool_1$ contains the final state of the main thread $\expr_1$, and any number of additional forked threads in $\tpool_1'$.
 \item If this is a stuck-free weakest precondition, then all threads in the final thread-pool are either values or are reducible in the final state $\state_1$.
-\item The state interpretation holds for the final state.
+\item The state interpretation $\stateinterp$ holds for the final state.
 \item If the main thread reduced to a value, the post-condition $\pred$ of the weakest precondition holds for that value.
 \item If any other thread reduced to a value, the forked-thread post-condition $\pred_F$ holds for that value.
 \end{itemize}
-Notice also that the adequacy statement quantifies over the program trace only once, so it can be easily specialized to, say, some particular initial state $\state_0$.
-This lets us show properties that only hold for some executions.
-Furthermore, the state invariant $S$ used by the weakest precondition is chosen \emph{after} doing a fancy update, which allows it to depend on the names of ghost variables that are picked in that initial fancy update.
 
-As an example for how to use this adequacy theorem, let us say we wanted to prove that a program $\expr_0$ for which we derived a $\NotStuck$ weakest-precondition cannot get stuck.
-We would pick
+~\par
+
+As an example for how to use this adequacy theorem, let us say we wanted to prove that a program $\expr_0$ for which we derived a $\NotStuck$ weakest-precondition cannot get stuck:
+\begin{cor}[Stuck-freedom]
+  Assume we are given some $\expr_0$ such that the following holds:
 \[
-\traceprop(\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \eqdef \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1)
+\TRUE \proves \All\state_0, \vec\obs. \pvs[\top] \Exists \stateinterp, \pred, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\NotStuck;\top]{x.\; \pred(x)}
 \]
-and we would show the following in Iris:
-\[
-\TRUE \proves \All \state_0, \vec\obs. \pvs[\top] \Exists \stateinterp, \pred_F, \pred. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\NotStuck;\top]{x.\; \pred(x)}
-\]
-The adequacy theorem would then give us:
+  Then it is the case that:
 \[
 \All \state_0, \vec\obs, \tpool_1, \state_1. ([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1) \Ra \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1)
 \]
+\end{cor}
+To prove the conclusion of this corollary, we assume some $\state_0, \vec\obs, \tpool_1, \state_1$ and $([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1)$, and we instantiate the main theorem with this execution and $\metaprop \eqdef \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1)$.
+We can then show the premise of adequacy using the Iris entailment that we assumed in the corollary and:
+\[ \TRUE \proves \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \vs[\top][\emptyset] \metaprop \]
+This proof, just like the following, also exploits that we can freely swap between meta-level universal quantification ($\All x. \TRUE \proves \prop$) and quantification in Iris ($\TRUE \proves \All x. \prop$).
 
-Similarly, if we wanted to show that the final value of the main thread is always in some set $V \subseteq \Val$, we could pick
+~\par
+
+Similarly we could show that the postcondition makes adequate statements about the possible final value of the main thread:
+\begin{cor}[Adequate postcondition]
+  Assume we are given some $\expr_0$ and a set $V \subseteq \Val$ such that the following holds (assuming we can talk about sets like $V$ inside the logic):
 \[
-\traceprop(\expr_0, \state_0, \vec\obs, \tpool_1, \state_1) \eqdef \All\val_1, \tpool_1'. \tpool_1 = [\ofval(\val_1)] \dplus \tpool_1' \Ra \val_1 \in \Val
+\TRUE \proves \All\state_0, \vec\obs. \pvs[\top] \Exists \stuckness, \stateinterp, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{x.\; x \in V}
 \]
-and then we could derive the following from the main adequacy theorem:
-\begin{align*}
- &(\TRUE \proves \All\state_0, \vec\obs. \pvs[\top] \Exists \stuckness, \stateinterp, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{x.\; x \in V}) \Ra{}\\
- &\All \state_0, \vec\obs, \val_1, \tpool_1, \state_1. ([\expr_0], \state_0) \tpsteps[\vec\obs] ([\ofval(\val_1)] \dplus \tpool_1, \state_1) \Ra \val_1 \in V
-\end{align*}
+  Then it is the case that:
+\[
+\All \state_0, \vec\obs, \val_1, \tpool_1, \state_1. ([\expr_0], \state_0) \tpsteps[\vec\obs] ([\ofval(\val_1)] \dplus \tpool_1, \state_1) \Ra \val_1 \in V
+\]
+\end{cor}
+To show this, we assume some $\state_0, \vec\obs, \val_1, \tpool_1, \state_1$ such that $([\expr_0], \state_0) \tpsteps[\vec\obs] ([\ofval(\val_1)] \dplus \tpool_1, \state_1)$, and we instantiate adequacy with this execution and $\metaprop \eqdef \val_1 \in \Val$.
+Then we only have to show:
+$$\TRUE \proves \consstate^{\stateinterp;(\Lam \val. \val \in \Val);\pred_F}_{\stuckness}([\ofval(\val_1)] \dplus \tpool_1, \state_1) \vs[\top][\emptyset] \val_1 \in \Val $$
 
+~\par
+
+As a final example, we could use adequacy to show that the state $\state$ of the program is always in some set $\Sigma \subseteq \State$:
+\begin{cor}[Adequate state interpretation]
+  Assume we are given some $\expr_0$ and a set $\Sigma \subseteq \State$ such that the following holds (assuming we can talk about sets like $\Sigma$ inside the logic):
+\[
+\TRUE \proves \All\state_0, \vec\obs. \pvs[\top] \Exists \stuckness, \stateinterp, \pred, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{\pred} * (\All \state_1, m. \stateinterp(\state_1,(),m) \!\vs[\top][\emptyset] \state_1 \in \Sigma)
+\]
+  Then it is the case that:
+\[
+\All \state_0, \vec\obs, \tpool_1, \state_1. ([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1) \Ra \state_1 \in \Sigma
+\]
+\end{cor}
+To show this, we assume some $\state_0, \vec\obs, \tpool_1, \state_1$ such that $([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1)$, and we instantiate adequacy with this execution and $\metaprop \eqdef \state_1 \in \Sigma$.
+Then we have to show:
+\[
+(\All \state_1, m. \stateinterp(\state_1,(),m) \!\vs[\top][\emptyset] \state_1 \in \Sigma) \proves \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \vs[\top][\emptyset] \state_1 \in \Sigma
+\]
 
 \paragraph{Hoare triples.}
 It turns out that weakest precondition is actually quite convenient to work with, in particular when performing these proofs in Coq.
