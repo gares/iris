@@ -203,7 +203,7 @@ Proof.
   intros Hwp. apply adequate_alt; intros t2 σ2 [n [κs ?]]%erased_steps_nsteps.
   eapply (wp_strong_adequacy Σ _); [|done]=> ?.
   iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
-  iExists _, (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
+  iExists s, (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> ?) "_ H _".
   iApply fupd_mask_weaken; [done|]. iSplit; [|done].
   iIntros (v2 t2'' [= -> <-]). by rewrite to_of_val.
@@ -223,7 +223,7 @@ Proof.
   intros Hwp [n [κs ?]]%erased_steps_nsteps.
   eapply (wp_strong_adequacy Σ _); [|done]=> ?.
   iMod (Hwp _ κs) as (stateI fork_post) "(Hσ & Hwp & Hφ)".
-  iExists _, stateI, (λ _, True)%I, fork_post.
+  iExists s, stateI, (λ _, True)%I, fork_post.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> _) "Hσ _ _ /=".
   iDestruct ("Hφ" with "Hσ") as (E) ">Hφ".
   by iApply fupd_mask_weaken; first set_solver.
