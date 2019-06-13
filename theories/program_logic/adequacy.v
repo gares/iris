@@ -114,9 +114,10 @@ Qed.
 End adequacy.
 
 (** Iris's generic adequacy result *)
-Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} s e σ1 n κs t2 σ2 φ :
+Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e σ1 n κs t2 σ2 φ :
   (∀ `{Hinv : !invG Σ},
      (|={⊤}=> ∃
+         (s: stuckness)
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (Φ fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post in
@@ -145,7 +146,7 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} s e σ1 n κs t2 σ2 φ :
 Proof.
   intros Hwp ?.
   eapply (step_fupdN_soundness' _ (S (S n)))=> Hinv. rewrite Nat_iter_S.
-  iMod Hwp as (stateI Φ fork_post) "(Hσ & Hwp & Hφ)".
+  iMod Hwp as (s stateI Φ fork_post) "(Hσ & Hwp & Hφ)".
   iApply step_fupd_intro; [done|]; iModIntro.
   iApply step_fupdN_S_fupd. iApply (step_fupdN_wand with "[-Hφ]").
   { iApply (@wptp_strong_adequacy _ _ (IrisG _ _ Hinv stateI fork_post) _ []
@@ -202,7 +203,7 @@ Proof.
   intros Hwp. apply adequate_alt; intros t2 σ2 [n [κs ?]]%erased_steps_nsteps.
   eapply (wp_strong_adequacy Σ _); [|done]=> ?.
   iMod Hwp as (stateI fork_post) "[Hσ Hwp]".
-  iExists (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
+  iExists _, (λ σ κs _, stateI σ κs), (λ v, ⌜φ v⌝%I), fork_post.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> ?) "_ H _".
   iApply fupd_mask_weaken; [done|]. iSplit; [|done].
   iIntros (v2 t2'' [= -> <-]). by rewrite to_of_val.
@@ -222,7 +223,7 @@ Proof.
   intros Hwp [n [κs ?]]%erased_steps_nsteps.
   eapply (wp_strong_adequacy Σ _); [|done]=> ?.
   iMod (Hwp _ κs) as (stateI fork_post) "(Hσ & Hwp & Hφ)".
-  iExists stateI, (λ _, True)%I, fork_post.
+  iExists _, stateI, (λ _, True)%I, fork_post.
   iIntros "{$Hσ $Hwp} !>" (e2 t2' -> _) "Hσ _ _ /=".
   iDestruct ("Hφ" with "Hσ") as (E) ">Hφ".
   by iApply fupd_mask_weaken; first set_solver.
