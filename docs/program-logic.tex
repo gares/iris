@@ -222,32 +222,6 @@ This basically just copies the second branch (the non-value case) of the definit
       \end{inbox}} }
 \end{mathpar}
 
-% We can further derive some slightly simpler rules for special cases.
-% \begin{mathparpagebreakable}
-%   \infer[wp-lift-pure-step]
-%   {\All \state_1. \red(\expr_1, \state_1) \and
-%    \All \state_1, \expr_2, \state_2, \vec\expr. \expr_1,\state_1 \step \expr_2,\state_2,\vec\expr \Ra \state_1 = \state_2 }
-%   {\later\All \state, \expr_2, \vec\expr. (\expr_1,\state \step \expr_2, \state,\vec\expr)  \Ra \wpre{\expr_2}[\mask]{\Ret\var.\prop} * \Sep_{\expr_\f \in \vec\expr} \wpre{\expr_\f}[\top]{\Ret\any.\TRUE} \proves \wpre{\expr_1}[\mask]{\Ret\var.\prop}}
-
-%   \infer[wp-lift-atomic-step]
-%   {\atomic(\expr_1) \and
-%    \red(\expr_1, \state_1)}
-%   { {\begin{inbox}~~\later\ownPhys{\state_1} * \later\All \val_2, \state_2, \vec\expr. (\expr_1,\state_1 \step \ofval(\val),\state_2,\vec\expr)  * \ownPhys{\state_2} \wand \prop[\val_2/\var] * \Sep_{\expr_\f \in \vec\expr} \wpre{\expr_\f}[\top]{\Ret\any.\TRUE} {}\\ \proves  \wpre{\expr_1}[\mask_1]{\Ret\var.\prop}
-%   \end{inbox}} }
-
-%   \infer[wp-lift-atomic-det-step]
-%   {\atomic(\expr_1) \and
-%    \red(\expr_1, \state_1) \and
-%    \All \expr'_2, \state'_2, \vec\expr'. \expr_1,\state_1 \step \expr'_2,\state'_2,\vec\expr' \Ra \state_2 = \state_2' \land \toval(\expr_2') = \val_2 \land \vec\expr = \vec\expr'}
-%   {\later\ownPhys{\state_1} * \later \Bigl(\ownPhys{\state_2} \wand \prop[\val_2/\var] * \Sep_{\expr_\f \in \vec\expr} \wpre{\expr_\f}[\top]{\Ret\any.\TRUE} \Bigr) \proves \wpre{\expr_1}[\mask_1]{\Ret\var.\prop}}
-
-%   \infer[wp-lift-pure-det-step]
-%   {\All \state_1. \red(\expr_1, \state_1) \\
-%    \All \state_1, \expr_2', \state'_2, \vec\expr'. \expr_1,\state_1 \step \expr'_2,\state'_2,\vec\expr' \Ra \state_1 = \state'_2 \land \expr_2 = \expr_2' \land \vec\expr = \vec\expr'}
-%   {\later \Bigl( \wpre{\expr_2}[\mask_1]{\Ret\var.\prop} * \Sep_{\expr_\f \in \vec\expr} \wpre{\expr_\f}[\top]{\Ret\any.\TRUE} \Bigr) \proves \wpre{\expr_1}[\mask_1]{\Ret\var.\prop}}
-% \end{mathparpagebreakable}
-
-
 \paragraph{Adequacy of weakest precondition.}
 
 \newcommand\traceprop{\Sigma}
