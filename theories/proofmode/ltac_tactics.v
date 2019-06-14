@@ -1634,7 +1634,7 @@ Tactic Notation "iIntros" constr(p) "(" simple_intropattern(x1)
 
 
 (* Used for generalization in iInduction and iLöb *)
-Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iRevertIntros" constr(Hs) "with" tactic3(tac) :=
   let rec go Hs :=
     lazymatch Hs with
     | [] => tac
@@ -1643,56 +1643,56 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     end in
   try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 
-Tactic Notation "iRevertIntros" "(" ident(x1) ")" constr(Hs) "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1); tac; iIntros (x1)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" constr(Hs)
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2); tac; iIntros (x1 x2)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ")" constr(Hs)
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3); tac; iIntros (x1 x2 x3)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
-    constr(Hs) "with" tactic(tac):=
+    constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4); tac; iIntros (x1 x2 x3 x4)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5); tac; iIntros (x1 x2 x3 x4 x5)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6);
     tac; iIntros (x1 x2 x3 x4 x5 x6)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6 x7);
     tac; iIntros (x1 x2 x3 x4 x5 x6 x7)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6 x7 x8);
     tac; iIntros (x1 x2 x3 x4 x5 x6 x7 x8)).
 
-Tactic Notation "iRevertIntros" "with" tactic(tac) :=
+Tactic Notation "iRevertIntros" "with" tactic3(tac) :=
   iRevertIntros "" with tac.
-Tactic Notation "iRevertIntros" "(" ident(x1) ")" "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ")" "with" tactic3(tac):=
   iRevertIntros (x1) "" with tac.
-Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ")"
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" "with" tactic(tac):=
+    ident(x5) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7 x8) "" with tac.
 
 (** * Destruct tactic *)
@@ -1901,7 +1901,7 @@ Ltac iHypsContaining x :=
   let Γs := lazymatch goal with |- envs_entails (Envs _ ?Γs _) _ => Γs end in
   let Hs := go Γp x (@nil ident) in go Γs x Hs.
 
-Tactic Notation "iInductionRevert" constr(x) constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iInductionRevert" constr(x) constr(Hs) "with" tactic3(tac) :=
   iRevertIntros Hs with (
     iRevertIntros "∗" with (
       idtac;
@@ -2083,7 +2083,7 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      | _ => idtac
      end].
 
-Tactic Notation "iLöbRevert" constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iLöbRevert" constr(Hs) "with" tactic3(tac) :=
   iRevertIntros Hs with (
     iRevertIntros "∗" with tac
   ).
