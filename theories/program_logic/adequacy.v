@@ -114,7 +114,7 @@ Qed.
 End adequacy.
 
 (** Iris's generic adequacy result *)
-Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e σ1 n κs t2 σ2 φ :
+Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e1 σ1 n κs t2 σ2 φ :
   (∀ `{Hinv : !invG Σ},
      (|={⊤}=> ∃
          (s: stuckness)
@@ -122,7 +122,7 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e σ1 n κs t2 σ2 φ :
          (Φ fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post in
        stateI σ1 κs 0 ∗
-       WP e @ s; ⊤ {{ Φ }} ∗
+       WP e1 @ s; ⊤ {{ Φ }} ∗
        (∀ e2 t2',
          (* e2 is the final state of the main thread, t2' the rest *)
          ⌜ t2 = e2 :: t2' ⌝ -∗
@@ -140,7 +140,7 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e σ1 n κs t2 σ2 φ :
          one can use [fupd_intro_mask'] or [fupd_mask_weaken] to introduce the
          fancy update. *)
          |={⊤,∅}=> ⌜ φ ⌝))%I) →
-  nsteps n ([e], σ1) κs (t2, σ2) →
+  nsteps n ([e1], σ1) κs (t2, σ2) →
   (* Then we can conclude [φ] at the meta-level. *)
   φ.
 Proof.
