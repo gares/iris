@@ -1032,7 +1032,7 @@ Tactic Notation "iPoseProofCore" open_constr(lem)
      | true =>
         iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
      | false =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac ()); [..|tac Htmp]
+        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
      end
   end.
 
