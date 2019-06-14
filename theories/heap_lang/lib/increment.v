@@ -68,7 +68,7 @@ Section increment.
     rewrite /atomic_acc /=. iMod "AU" as (w) "[Hl Hclose]".
     iModIntro. iExists _. iFrame "Hl". iSplit.
     { (* abort case *) iDestruct "Hclose" as "[? _]". done. }
-    iIntros "Hl". destruct (decide (#w = #v)) as [[= ->]|Hx].
+    iIntros "Hl". simpl. destruct (decide (#w = #v)) as [[= ->]|Hx].
     - iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
       iIntros "!>". wp_if. by iApply "HΦ".
     - iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
@@ -92,7 +92,7 @@ Section increment.
     iApply (aacc_aupd with "AU"); first done.
     iIntros (x') "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
     iIntros "H↦ !>".
-    destruct (decide (#x' = #x)) as [[= ->]|Hx].
+    simpl. destruct (decide (#x' = #x)) as [[= ->]|Hx].
     - iRight. iFrame. iIntros "HΦ !>".
       wp_if. by iApply "HΦ".
     - iLeft. iFrame. iIntros "AU !>".
