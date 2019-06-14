@@ -156,7 +156,7 @@ Finally, we can define the core piece of the program logic, the proposition that
 
 \paragraph{Defining weakest precondition.}
 We assume that everything making up the definition of the language, \ie values, expressions, states, the conversion functions, reduction relation and all their properties, are suitably reflected into the logic (\ie they are part of the signature $\Sig$).
-We further assume (as a parameter) a predicate $\stateinterp : \State \times \List(\Obs) \times \mathbb N \to \iProp$ that interprets the machine state as an Iris proposition, and a predicate $\pred_F: \Val \to \iProp$ that serves as postcondition for forked-of threads.
+We further assume (as a parameter) a predicate $\stateinterp : \State \times \List(\Obs) \times \mathbb N \to \iProp$ that interprets the machine state as an Iris proposition, and a predicate $\pred_F: \Val \to \iProp$ that serves as postcondition for forked-off threads.
 The state interpretation can depend on the current physical state, the list of \emph{future} observations as well as the total number of \emph{forked} threads (that is one less that the total number of threads).
 This can be instantiated, for example, with ownership of an authoritative RA to tie the physical state to fragments that are used for user-level proofs.
 Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, \MaybeStuck}$ indicating whether program execution is allowed to get stuck.
