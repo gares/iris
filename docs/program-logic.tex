@@ -236,7 +236,7 @@ The most general form of the adequacy statement is about proving properties of a
 \begin{align*}
  &\TRUE \proves \pvs[\top] \Exists \stuckness, \stateinterp, \pred, \pred_F. \stateinterp(\state_0,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_0}[\stuckness;\top]{x.\; \pred(x)} * \left(\consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \vs[\top][\emptyset] \hat{\metaprop}\right)
 \end{align*}
-where
+where $\consstate$ describes states that are consistent with the state interpretation and postconditions:
 \begin{align*}
  \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \eqdef{}&\Exists \expr_1, \tpool_1'. \tpool_1 = [\expr_1] \dplus \tpool_1' * {}\\
  &\quad (s = \NotStuck \Ra \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1) ) *{}\\
