@@ -726,7 +726,7 @@ Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
     end.
 
 Tactic Notation "iPoseProofCoreLem"
-    constr(lem) "as" constr(Hnew) "before_tc" tactic(tac) :=
+    constr(lem) "as" constr(Hnew) "before_tc" tactic3(tac) :=
   eapply tac_pose_proof with Hnew _; (* (j:=H) *)
     [iIntoEmpValid lem
     |pm_reduce;
@@ -1015,7 +1015,7 @@ Both variants of [lazy_tc] are used in other tactics that build on top of
   because it may be not possible to eliminate logical connectives before all
   type class constraints have been resolved. *)
 Tactic Notation "iPoseProofCore" open_constr(lem)
-    "as" constr(p) constr(lazy_tc) tactic(tac) :=
+    "as" constr(p) constr(lazy_tc) tactic3(tac) :=
   iStartProof;
   let Htmp := iFresh in
   let t := lazymatch lem with ITrm ?t ?xs ?pat => t | _ => lem end in
@@ -1710,7 +1710,7 @@ Instance copy_destruct_affinely {PROP : bi} (P : PROP) :
 Instance copy_destruct_persistently {PROP : bi} (P : PROP) :
   CopyDestruct P → CopyDestruct (<pers> P) := {}.
 
-Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic(tac) :=
+Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
   let ident :=
     lazymatch type of lem with
     | ident => constr:(Some lem)
@@ -1869,7 +1869,7 @@ result in the following actions:
 - Introduce the spatial hypotheses and intuitionistic hypotheses involving [x]
 - Introduce the proofmode hypotheses [Hs]
 *)
-Tactic Notation "iInductionCore" tactic(tac) "as" constr(IH) :=
+Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
   let rec fix_ihs rev_tac :=
     lazymatch goal with
     | H : context [envs_entails _ _] |- _ =>
@@ -2144,7 +2144,7 @@ Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ident(x1) ident(x2)
 Boolean or an introduction pattern, which will be coerced into [true] if it
 only contains `#` or `%` patterns at the top-level, and [false] otherwise. *)
 Tactic Notation "iAssertCore" open_constr(Q)
-    "with" constr(Hs) "as" constr(p) tactic(tac) :=
+    "with" constr(Hs) "as" constr(p) tactic3(tac) :=
   iStartProof;
   let pats := spec_pat.parse Hs in
   lazymatch pats with
@@ -2156,7 +2156,7 @@ Tactic Notation "iAssertCore" open_constr(Q)
   [pm_reduce;
    iSpecializeCore H with hnil pats as p; [..|tac H]].
 
-Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic(tac) :=
+Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic3(tac) :=
   let p := intro_pat_intuitionistic p in
   lazymatch p with
   | true => iAssertCore Q with "[#]" as p tac
@@ -2314,7 +2314,7 @@ Tactic Notation "iAssumptionInv" constr(N) :=
 
 (* The argument [select] is the namespace [N] or hypothesis name ["H"] of the
 invariant. *)
-Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(Hclose) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(Hclose) "in" tactic3(tac) :=
   iStartProof;
   let pats := spec_pat.parse pats in
   lazymatch pats with
@@ -2361,13 +2361,13 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
     )].
 
 (* Without closing view shift *)
-Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic3(tac) :=
   iInvCore N with pats as (@None string) in ltac:(tac).
 (* Without pattern *)
-Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic3(tac) :=
   iInvCore N with "[$]" as Hclose in ltac:(tac).
 (* Without both *)
-Tactic Notation "iInvCore" constr(N) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "in" tactic3(tac) :=
   iInvCore N with "[$]" as (@None string) in ltac:(tac).
 
 (* With everything *)
