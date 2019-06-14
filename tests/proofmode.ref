@@ -126,7 +126,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iSimpl in (constr)",
-"iEval (tactic) in (constr)" and "<iris.proofmode.ltac_tactics.iEval_go>",
+"iEval (tactic3) in (constr)" and "<iris.proofmode.ltac_tactics.iEval_go>",
 last call failed.
 Tactic failure: iEval: %: unsupported selection pattern.
 "test_iFrame_later_1"

@@ -195,7 +195,7 @@ Tactic Notation "iClear" "(" ident_list(xs) ")" constr(Hs) :=
   iClear Hs; clear xs.
 
 (** ** Simplification *)
-Tactic Notation "iEval" tactic(t) :=
+Tactic Notation "iEval" tactic3(t) :=
   iStartProof;
   eapply tac_eval;
     [let x := fresh in intros x; t; unfold x; reflexivity
@@ -212,7 +212,7 @@ Local Ltac iEval_go t Hs :=
       |pm_reduce; iEval_go t Hs]
   end.
 
-Tactic Notation "iEval" tactic(t) "in" constr(Hs) :=
+Tactic Notation "iEval" tactic3(t) "in" constr(Hs) :=
   iStartProof; let Hs := iElaborateSelPat Hs in iEval_go t Hs.
 
 Tactic Notation "iSimpl" := iEval (simpl).
