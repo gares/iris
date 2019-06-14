@@ -288,7 +288,7 @@ As an example for how to use this adequacy theorem, let us say we wanted to prov
 \end{cor}
 To prove the conclusion of this corollary, we assume some $\state_0, \vec\obs, \tpool_1, \state_1$ and $([\expr_0], \state_0) \tpsteps[\vec\obs] (\tpool_1, \state_1)$, and we instantiate the main theorem with this execution and $\metaprop \eqdef \All \expr \in \tpool_1. \toval(\expr) \neq \bot \lor \red(\expr, \state_1)$.
 We can then show the premise of adequacy using the Iris entailment that we assumed in the corollary and:
-\[ \TRUE \proves \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_1, \state_1) \vs[\top][\emptyset] \metaprop \]
+\[ \TRUE \proves \consstate^{\stateinterp;\pred;\pred_F}_{\NotStuck}(\tpool_1, \state_1) \vs[\top][\emptyset] \metaprop \]
 This proof, just like the following, also exploits that we can freely swap between meta-level universal quantification ($\All x. \TRUE \proves \prop$) and quantification in Iris ($\TRUE \proves \All x. \prop$).
 
 ~\par
