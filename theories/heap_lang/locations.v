@@ -18,7 +18,8 @@ Next Obligation. done. Qed.
 Definition loc_add (l : loc) (off : Z) : loc :=
   {| loc_car := loc_car l + off|}.
 
-Notation "l +ₗ off" := (loc_add l off) (at level 50, left associativity).
+Notation "l +ₗ off" :=
+  (loc_add l off) (at level 50, left associativity) : stdpp_scope.
 
 Lemma loc_add_assoc l i j : l +ₗ i +ₗ j = l +ₗ (i + j).
 Proof. destruct l; rewrite /loc_add /=; f_equal; lia. Qed.
