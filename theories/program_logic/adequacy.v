@@ -209,15 +209,15 @@ Proof.
   iIntros (v2 t2'' [= -> <-]). by rewrite to_of_val.
 Qed.
 
-Corollary wp_invariance Σ Λ `{!invPreG Σ} s e σ1 t2 σ2 φ :
+Corollary wp_invariance Σ Λ `{!invPreG Σ} s e1 σ1 t2 σ2 φ :
   (∀ `{Hinv : !invG Σ} κs,
      (|={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post in
-       stateI σ1 κs 0 ∗ WP e @ s; ⊤ {{ _, True }} ∗
+       stateI σ1 κs 0 ∗ WP e1 @ s; ⊤ {{ _, True }} ∗
        (stateI σ2 [] (pred (length t2)) -∗ ∃ E, |={⊤,E}=> ⌜φ⌝))%I) →
-  rtc erased_step ([e], σ1) (t2, σ2) →
+  rtc erased_step ([e1], σ1) (t2, σ2) →
   φ.
 Proof.
   intros Hwp [n [κs ?]]%erased_steps_nsteps.
