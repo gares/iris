@@ -195,7 +195,7 @@ Tactic Notation "iClear" "(" ident_list(xs) ")" constr(Hs) :=
   iClear Hs; clear xs.
 
 (** ** Simplification *)
-Tactic Notation "iEval" tactic(t) :=
+Tactic Notation "iEval" tactic3(t) :=
   iStartProof;
   eapply tac_eval;
     [let x := fresh in intros x; t; unfold x; reflexivity
@@ -212,7 +212,7 @@ Local Ltac iEval_go t Hs :=
       |pm_reduce; iEval_go t Hs]
   end.
 
-Tactic Notation "iEval" tactic(t) "in" constr(Hs) :=
+Tactic Notation "iEval" tactic3(t) "in" constr(Hs) :=
   iStartProof; let Hs := iElaborateSelPat Hs in iEval_go t Hs.
 
 Tactic Notation "iSimpl" := iEval (simpl).
@@ -726,7 +726,7 @@ Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
     end.
 
 Tactic Notation "iPoseProofCoreLem"
-    constr(lem) "as" constr(Hnew) "before_tc" tactic(tac) :=
+    constr(lem) "as" constr(Hnew) "before_tc" tactic3(tac) :=
   eapply tac_pose_proof with Hnew _; (* (j:=H) *)
     [iIntoEmpValid lem
     |pm_reduce;
@@ -1015,7 +1015,7 @@ Both variants of [lazy_tc] are used in other tactics that build on top of
   because it may be not possible to eliminate logical connectives before all
   type class constraints have been resolved. *)
 Tactic Notation "iPoseProofCore" open_constr(lem)
-    "as" constr(p) constr(lazy_tc) tactic(tac) :=
+    "as" constr(p) constr(lazy_tc) tactic3(tac) :=
   iStartProof;
   let Htmp := iFresh in
   let t := lazymatch lem with ITrm ?t ?xs ?pat => t | _ => lem end in
@@ -1032,7 +1032,7 @@ Tactic Notation "iPoseProofCore" open_constr(lem)
      | true =>
         iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
      | false =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac ()); [..|tac Htmp]
+        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
      end
   end.
 
@@ -1634,7 +1634,7 @@ Tactic Notation "iIntros" constr(p) "(" simple_intropattern(x1)
 
 
 (* Used for generalization in iInduction and iLöb *)
-Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iRevertIntros" constr(Hs) "with" tactic3(tac) :=
   let rec go Hs :=
     lazymatch Hs with
     | [] => tac
@@ -1643,56 +1643,56 @@ Tactic Notation "iRevertIntros" constr(Hs) "with" tactic(tac) :=
     end in
   try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
 
-Tactic Notation "iRevertIntros" "(" ident(x1) ")" constr(Hs) "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1); tac; iIntros (x1)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" constr(Hs)
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2); tac; iIntros (x1 x2)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ")" constr(Hs)
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3); tac; iIntros (x1 x2 x3)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
-    constr(Hs) "with" tactic(tac):=
+    constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4); tac; iIntros (x1 x2 x3 x4)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5); tac; iIntros (x1 x2 x3 x4 x5)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6);
     tac; iIntros (x1 x2 x3 x4 x5 x6)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6 x7);
     tac; iIntros (x1 x2 x3 x4 x5 x6 x7)).
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1 x2 x3 x4 x5 x6 x7 x8);
     tac; iIntros (x1 x2 x3 x4 x5 x6 x7 x8)).
 
-Tactic Notation "iRevertIntros" "with" tactic(tac) :=
+Tactic Notation "iRevertIntros" "with" tactic3(tac) :=
   iRevertIntros "" with tac.
-Tactic Notation "iRevertIntros" "(" ident(x1) ")" "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ")" "with" tactic3(tac):=
   iRevertIntros (x1) "" with tac.
-Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" "with" tactic(tac):=
+Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ")"
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4) ")"
-    "with" tactic(tac):=
+    "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ")" "with" tactic(tac):=
+    ident(x5) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7) "" with tac.
 Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
-    ident(x5) ident(x6) ident(x7) ident(x8) ")" "with" tactic(tac):=
+    ident(x5) ident(x6) ident(x7) ident(x8) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7 x8) "" with tac.
 
 (** * Destruct tactic *)
@@ -1710,7 +1710,7 @@ Instance copy_destruct_affinely {PROP : bi} (P : PROP) :
 Instance copy_destruct_persistently {PROP : bi} (P : PROP) :
   CopyDestruct P → CopyDestruct (<pers> P) := {}.
 
-Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic(tac) :=
+Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
   let ident :=
     lazymatch type of lem with
     | ident => constr:(Some lem)
@@ -1869,7 +1869,7 @@ result in the following actions:
 - Introduce the spatial hypotheses and intuitionistic hypotheses involving [x]
 - Introduce the proofmode hypotheses [Hs]
 *)
-Tactic Notation "iInductionCore" tactic(tac) "as" constr(IH) :=
+Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
   let rec fix_ihs rev_tac :=
     lazymatch goal with
     | H : context [envs_entails _ _] |- _ =>
@@ -1901,7 +1901,7 @@ Ltac iHypsContaining x :=
   let Γs := lazymatch goal with |- envs_entails (Envs _ ?Γs _) _ => Γs end in
   let Hs := go Γp x (@nil ident) in go Γs x Hs.
 
-Tactic Notation "iInductionRevert" constr(x) constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iInductionRevert" constr(x) constr(Hs) "with" tactic3(tac) :=
   iRevertIntros Hs with (
     iRevertIntros "∗" with (
       idtac;
@@ -2083,7 +2083,7 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      | _ => idtac
      end].
 
-Tactic Notation "iLöbRevert" constr(Hs) "with" tactic(tac) :=
+Tactic Notation "iLöbRevert" constr(Hs) "with" tactic3(tac) :=
   iRevertIntros Hs with (
     iRevertIntros "∗" with tac
   ).
@@ -2144,7 +2144,7 @@ Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ident(x1) ident(x2)
 Boolean or an introduction pattern, which will be coerced into [true] if it
 only contains `#` or `%` patterns at the top-level, and [false] otherwise. *)
 Tactic Notation "iAssertCore" open_constr(Q)
-    "with" constr(Hs) "as" constr(p) tactic(tac) :=
+    "with" constr(Hs) "as" constr(p) tactic3(tac) :=
   iStartProof;
   let pats := spec_pat.parse Hs in
   lazymatch pats with
@@ -2156,7 +2156,7 @@ Tactic Notation "iAssertCore" open_constr(Q)
   [pm_reduce;
    iSpecializeCore H with hnil pats as p; [..|tac H]].
 
-Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic(tac) :=
+Tactic Notation "iAssertCore" open_constr(Q) "as" constr(p) tactic3(tac) :=
   let p := intro_pat_intuitionistic p in
   lazymatch p with
   | true => iAssertCore Q with "[#]" as p tac
@@ -2314,7 +2314,7 @@ Tactic Notation "iAssumptionInv" constr(N) :=
 
 (* The argument [select] is the namespace [N] or hypothesis name ["H"] of the
 invariant. *)
-Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(Hclose) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(Hclose) "in" tactic3(tac) :=
   iStartProof;
   let pats := spec_pat.parse pats in
   lazymatch pats with
@@ -2361,13 +2361,13 @@ Tactic Notation "iInvCore" constr(select) "with" constr(pats) "as" open_constr(H
     )].
 
 (* Without closing view shift *)
-Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "with" constr(pats) "in" tactic3(tac) :=
   iInvCore N with pats as (@None string) in ltac:(tac).
 (* Without pattern *)
-Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "as" constr(Hclose) "in" tactic3(tac) :=
   iInvCore N with "[$]" as Hclose in ltac:(tac).
 (* Without both *)
-Tactic Notation "iInvCore" constr(N) "in" tactic(tac) :=
+Tactic Notation "iInvCore" constr(N) "in" tactic3(tac) :=
   iInvCore N with "[$]" as (@None string) in ltac:(tac).
 
 (* With everything *)

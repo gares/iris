@@ -480,6 +480,13 @@ Proof.
   done.
 Qed.
 
+Lemma test_iEval_precedence : True ⊢ True : PROP.
+Proof.
+  iIntros.
+  (* Ensure that in [iEval (a); b], b is not parsed as part of the argument of [iEval]. *)
+  iEval (rewrite /=); iPureIntro; exact I.
+Qed.
+
 Check "test_iSimpl_in".
 Lemma test_iSimpl_in x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
 Proof. iIntros "H". iSimpl in "H". Show. done. Qed.

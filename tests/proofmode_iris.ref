@@ -111,20 +111,20 @@
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iInv (constr) as (constr)",
-"iInvCore (constr) in (tactic)" and
-"iInvCore (constr) with (constr) as (open_constr) in (tactic)", last call
+"iInvCore (constr) in (tactic3)" and
+"iInvCore (constr) with (constr) as (open_constr) in (tactic3)", last call
 failed.
 Tactic failure: iInv: selector 34 is not of the right type .
 The command has indeed failed with message:
 In nested Ltac calls to "iInv (constr) as (constr)",
-"iInvCore (constr) in (tactic)" and
-"iInvCore (constr) with (constr) as (open_constr) in (tactic)", last call
+"iInvCore (constr) in (tactic3)" and
+"iInvCore (constr) with (constr) as (open_constr) in (tactic3)", last call
 failed.
 Tactic failure: iInv: invariant nroot not found.
 The command has indeed failed with message:
 In nested Ltac calls to "iInv (constr) as (constr)",
-"iInvCore (constr) in (tactic)" and
-"iInvCore (constr) with (constr) as (open_constr) in (tactic)", last call
+"iInvCore (constr) in (tactic3)" and
+"iInvCore (constr) with (constr) as (open_constr) in (tactic3)", last call
 failed.
 Tactic failure: iInv: invariant "H2" not found.
 "test_iInv"
