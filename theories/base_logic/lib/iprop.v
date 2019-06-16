@@ -45,11 +45,11 @@ Definition gFunctors_lookup (Σ : gFunctors) : gid Σ → gFunctor := projT2 Σ.
 Coercion gFunctors_lookup : gFunctors >-> Funclass.
 
 Definition gname := positive.
-Canonical Structure gnameC := leibnizC gname.
+Canonical Structure gnameC := leibnizO gname.
 
 (** The resources functor [iResF Σ A := ∀ i : gid, gname -fin-> (Σ i) A]. *)
 Definition iResF (Σ : gFunctors) : urFunctor :=
-  ofe_funURF (λ i, gmapURF gname (Σ i)).
+  discrete_funURF (λ i, gmapURF gname (Σ i)).
 
 
 (** We define functions for the empty list of functors, the singleton list of
@@ -120,8 +120,8 @@ Module Type iProp_solution_sig.
   Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ).
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
-  Notation iProp Σ := (uPredC (iResUR Σ)).
+    discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
+  Notation iProp Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
   Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
@@ -136,13 +136,13 @@ End iProp_solution_sig.
 Module Export iProp_solution : iProp_solution_sig.
   Import cofe_solver.
   Definition iProp_result (Σ : gFunctors) :
-    solution (uPredCF (iResF Σ)) := solver.result _.
+    solution (uPredOF (iResF Σ)) := solver.result _.
   Definition iPreProp (Σ : gFunctors) : ofeT := iProp_result Σ.
   Global Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ) := _.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    ofe_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
-  Notation iProp Σ := (uPredC (iResUR Σ)).
+    discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
+  Notation iProp Σ := (uPredO (iResUR Σ)).
 
   Definition iProp_unfold {Σ} : iProp Σ -n> iPreProp Σ :=
     solution_fold (iProp_result Σ).

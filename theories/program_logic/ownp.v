@@ -16,7 +16,7 @@ union.
 
 Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
   ownP_invG : invG Σ;
-  ownP_inG :> inG Σ (authR (optionUR (exclR (stateC Λ))));
+  ownP_inG :> inG Σ (authR (optionUR (exclR (stateO Λ))));
   ownP_name : gname;
 }.
 
@@ -29,11 +29,11 @@ Global Opaque iris_invG.
 
 Definition ownPΣ (Λ : language) : gFunctors :=
   #[invΣ;
-    GFunctor (authR (optionUR (exclR (stateC Λ))))].
+    GFunctor (authR (optionUR (exclR (stateO Λ))))].
 
 Class ownPPreG (Λ : language) (Σ : gFunctors) : Set := IrisPreG {
   ownPPre_invG :> invPreG Σ;
-  ownPPre_state_inG :> inG Σ (authR (optionUR (exclR (stateC Λ))))
+  ownPPre_state_inG :> inG Σ (authR (optionUR (exclR (stateO Λ))))
 }.
 
 Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.

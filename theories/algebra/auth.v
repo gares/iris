@@ -62,16 +62,16 @@ Proof. by destruct 1. Qed.
 
 Definition auth_ofe_mixin : OfeMixin (auth A).
 Proof. by apply (iso_ofe_mixin (λ x, (auth_auth_proj x, auth_frag_proj x))). Qed.
-Canonical Structure authC := OfeT (auth A) auth_ofe_mixin.
+Canonical Structure authO := OfeT (auth A) auth_ofe_mixin.
 
 Global Instance Auth_discrete a b :
   Discrete a → Discrete b → Discrete (Auth a b).
 Proof. by intros ?? [??] [??]; split; apply: discrete. Qed.
-Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete authC.
+Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete authO.
 Proof. intros ? [??]; apply _. Qed.
 End ofe.
 
-Arguments authC : clear implicits.
+Arguments authO : clear implicits.
 
 (* Camera *)
 Section cmra.
@@ -430,18 +430,18 @@ Proof.
   - intros [[[??]|]?] [[[??]|]?]; try apply Auth_proper=>//=; try by rewrite cmra_morphism_op.
     by rewrite -Some_op pair_op cmra_morphism_op.
 Qed.
-Definition authC_map {A B} (f : A -n> B) : authC A -n> authC B :=
-  CofeMor (auth_map f).
-Lemma authC_map_ne A B : NonExpansive (@authC_map A B).
+Definition authO_map {A B} (f : A -n> B) : authO A -n> authO B :=
+  OfeMor (auth_map f).
+Lemma authO_map_ne A B : NonExpansive (@authO_map A B).
 Proof. intros n f f' Hf [[[]|] ]; repeat constructor; try naive_solver;
-  apply agreeC_map_ne; auto. Qed.
+  apply agreeO_map_ne; auto. Qed.
 
 Program Definition authRF (F : urFunctor) : rFunctor := {|
   rFunctor_car A _ B _ := authR (urFunctor_car F A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authC_map (urFunctor_map F fg)
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authO_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
@@ -455,15 +455,15 @@ Qed.
 Instance authRF_contractive F :
   urFunctorContractive F → rFunctorContractive (authRF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_contractive.
 Qed.
 
 Program Definition authURF (F : urFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := authUR (urFunctor_car F A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authC_map (urFunctor_map F fg)
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authO_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
@@ -477,5 +477,5 @@ Qed.
 Instance authURF_contractive F :
   urFunctorContractive F → urFunctorContractive (authURF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_contractive.
 Qed.

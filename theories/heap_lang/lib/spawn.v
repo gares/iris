@@ -19,8 +19,8 @@ Definition join : val :=
 
 (** The CMRA & functor we need. *)
 (* Not bundling heapG, as it may be shared with other users. *)
-Class spawnG Σ := SpawnG { spawn_tokG :> inG Σ (exclR unitC) }.
-Definition spawnΣ : gFunctors := #[GFunctor (exclR unitC)].
+Class spawnG Σ := SpawnG { spawn_tokG :> inG Σ (exclR unitO) }.
+Definition spawnΣ : gFunctors := #[GFunctor (exclR unitO)].
 
 Instance subG_spawnΣ {Σ} : subG spawnΣ Σ → spawnG Σ.
 Proof. solve_inG. Qed.

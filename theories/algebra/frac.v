@@ -14,7 +14,7 @@ Set Default Proof Using "Type".
 Notation frac := Qp (only parsing).
 
 Section frac.
-Canonical Structure fracC := leibnizC frac.
+Canonical Structure fracO := leibnizO frac.
 
 Instance frac_valid : Valid frac := λ x, (x ≤ 1)%Qc.
 Instance frac_pcore : PCore frac := λ _, None.

@@ -73,21 +73,21 @@ Proof.
     + destruct 1; inversion_clear 1; constructor; etrans; eauto.
   - by inversion_clear 1; constructor; apply dist_S.
 Qed.
-Canonical Structure csumC : ofeT := OfeT (csum A B) csum_ofe_mixin.
+Canonical Structure csumO : ofeT := OfeT (csum A B) csum_ofe_mixin.
 
-Program Definition csum_chain_l (c : chain csumC) (a : A) : chain A :=
+Program Definition csum_chain_l (c : chain csumO) (a : A) : chain A :=
   {| chain_car n := match c n return _ with Cinl a' => a' | _ => a end |}.
 Next Obligation. intros c a n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
-Program Definition csum_chain_r (c : chain csumC) (b : B) : chain B :=
+Program Definition csum_chain_r (c : chain csumO) (b : B) : chain B :=
   {| chain_car n := match c n return _ with Cinr b' => b' | _ => b end |}.
 Next Obligation. intros c b n i ?; simpl. by destruct (chain_cauchy c n i). Qed.
-Definition csum_compl `{Cofe A, Cofe B} : Compl csumC := λ c,
+Definition csum_compl `{Cofe A, Cofe B} : Compl csumO := λ c,
   match c 0 with
   | Cinl a => Cinl (compl (csum_chain_l c a))
   | Cinr b => Cinr (compl (csum_chain_r c b))
   | CsumBot => CsumBot
   end.
-Global Program Instance csum_cofe `{Cofe A, Cofe B} : Cofe csumC :=
+Global Program Instance csum_cofe `{Cofe A, Cofe B} : Cofe csumO :=
   {| compl := csum_compl |}.
 Next Obligation.
   intros ?? n c; rewrite /compl /csum_compl.
@@ -97,10 +97,10 @@ Next Obligation.
 Qed.
 
 Global Instance csum_ofe_discrete :
-  OfeDiscrete A → OfeDiscrete B → OfeDiscrete csumC.
+  OfeDiscrete A → OfeDiscrete B → OfeDiscrete csumO.
 Proof. by inversion_clear 3; constructor; apply (discrete _). Qed.
 Global Instance csum_leibniz :
-  LeibnizEquiv A → LeibnizEquiv B → LeibnizEquiv csumC.
+  LeibnizEquiv A → LeibnizEquiv B → LeibnizEquiv csumO.
 Proof. by destruct 3; f_equal; apply leibniz_equiv. Qed.
 
 Global Instance Cinl_discrete a : Discrete a → Discrete (Cinl a).
@@ -109,7 +109,7 @@ Global Instance Cinr_discrete b : Discrete b → Discrete (Cinr b).
 Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
 End cofe.
 
-Arguments csumC : clear implicits.
+Arguments csumO : clear implicits.
 
 (* Functor on COFEs *)
 Definition csum_map {A A' B B'} (fA : A → A') (fB : B → B')
@@ -134,11 +134,11 @@ Instance csum_map_cmra_ne {A A' B B' : ofeT} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==> dist n ==> dist n)
          (@csum_map A A' B B').
 Proof. intros f f' Hf g g' Hg []; destruct 1; constructor; by apply Hf || apply Hg. Qed.
-Definition csumC_map {A A' B B'} (f : A -n> A') (g : B -n> B') :
-  csumC A B -n> csumC A' B' :=
-  CofeMor (csum_map f g).
-Instance csumC_map_ne A A' B B' :
-  NonExpansive2 (@csumC_map A A' B B').
+Definition csumO_map {A A' B B'} (f : A -n> A') (g : B -n> B') :
+  csumO A B -n> csumO A' B' :=
+  OfeMor (csum_map f g).
+Instance csumO_map_ne A A' B B' :
+  NonExpansive2 (@csumO_map A A' B B').
 Proof. by intros n f f' Hf g g' Hg []; constructor. Qed.
 
 Section cmra.
@@ -368,10 +368,10 @@ Qed.
 
 Program Definition csumRF (Fa Fb : rFunctor) : rFunctor := {|
   rFunctor_car A _ B _ := csumR (rFunctor_car Fa A B) (rFunctor_car Fb A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := csumC_map (rFunctor_map Fa fg) (rFunctor_map Fb fg)
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := csumO_map (rFunctor_map Fa fg) (rFunctor_map Fb fg)
 |}.
 Next Obligation.
-  by intros Fa Fb A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply csumC_map_ne; try apply rFunctor_ne.
+  by intros Fa Fb A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply csumO_map_ne; try apply rFunctor_ne.
 Qed.
 Next Obligation.
   intros Fa Fb A ? B ? x. rewrite /= -{2}(csum_map_id x).
@@ -387,5 +387,5 @@ Instance csumRF_contractive Fa Fb :
   rFunctorContractive (csumRF Fa Fb).
 Proof.
   intros ?? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
-  by apply csumC_map_ne; try apply rFunctor_contractive.
+  by apply csumO_map_ne; try apply rFunctor_contractive.
 Qed.

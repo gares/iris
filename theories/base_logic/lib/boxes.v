@@ -7,10 +7,10 @@ Import uPred.
 (** The CMRAs we need. *)
 Class boxG Σ :=
   boxG_inG :> inG Σ (prodR
-    (authR (optionUR (exclR boolC)))
-    (optionR (agreeR (laterC (iPreProp Σ))))).
+    (authR (optionUR (exclR boolO)))
+    (optionR (agreeR (laterO (iPreProp Σ))))).
 
-Definition boxΣ : gFunctors := #[ GFunctor (authR (optionUR (exclR boolC)) *
+Definition boxΣ : gFunctors := #[ GFunctor (authR (optionUR (exclR boolO)) *
                                             optionRF (agreeRF (▶ ∙)) ) ].
 
 Instance subG_boxΣ Σ : subG boxΣ Σ → boxG Σ.

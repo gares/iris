@@ -8,7 +8,7 @@ Section gmultiset.
   Context `{Countable K}.
   Implicit Types X Y : gmultiset K.
 
-  Canonical Structure gmultisetC := discreteC (gmultiset K).
+  Canonical Structure gmultisetO := discreteO (gmultiset K).
 
   Instance gmultiset_valid : Valid (gmultiset K) := λ _, True.
   Instance gmultiset_validN : ValidN (gmultiset K) := λ _ _, True.
@@ -79,6 +79,6 @@ Section gmultiset.
   Qed.
 End gmultiset.
 
-Arguments gmultisetC _ {_ _}.
+Arguments gmultisetO _ {_ _}.
 Arguments gmultisetR _ {_ _}.
 Arguments gmultisetUR _ {_ _}.

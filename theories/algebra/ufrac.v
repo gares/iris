@@ -11,7 +11,7 @@ infers the [frac] camera by default when using the [Qp] type. *)
 Definition ufrac := Qp.
 
 Section ufrac.
-Canonical Structure ufracC := leibnizC ufrac.
+Canonical Structure ufracO := leibnizO ufrac.
 
 Instance ufrac_valid : Valid ufrac := λ x, True.
 Instance ufrac_pcore : PCore ufrac := λ _, None.

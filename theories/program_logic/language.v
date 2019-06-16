@@ -37,9 +37,9 @@ Arguments of_val {_} _.
 Arguments to_val {_} _.
 Arguments prim_step {_} _ _ _ _ _ _.
 
-Canonical Structure stateC Λ := leibnizC (state Λ).
-Canonical Structure valC Λ := leibnizC (val Λ).
-Canonical Structure exprC Λ := leibnizC (expr Λ).
+Canonical Structure stateO Λ := leibnizO (state Λ).
+Canonical Structure valO Λ := leibnizO (val Λ).
+Canonical Structure exprO Λ := leibnizO (expr Λ).
 
 Definition cfg (Λ : language) := (list (expr Λ) * state Λ)%type.
 

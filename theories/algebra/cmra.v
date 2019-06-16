@@ -98,8 +98,8 @@ Hint Extern 0 (PCore _) => eapply (@cmra_pcore _) : typeclass_instances.
 Hint Extern 0 (Op _) => eapply (@cmra_op _) : typeclass_instances.
 Hint Extern 0 (Valid _) => eapply (@cmra_valid _) : typeclass_instances.
 Hint Extern 0 (ValidN _) => eapply (@cmra_validN _) : typeclass_instances.
-Coercion cmra_ofeC (A : cmraT) : ofeT := OfeT A (cmra_ofe_mixin A).
-Canonical Structure cmra_ofeC.
+Coercion cmra_ofeO (A : cmraT) : ofeT := OfeT A (cmra_ofe_mixin A).
+Canonical Structure cmra_ofeO.
 
 Definition cmra_mixin_of' A {Ac : cmraT} (f : Ac → A) : CmraMixin Ac := cmra_mixin Ac.
 Notation cmra_mixin_of A :=
@@ -221,8 +221,8 @@ Arguments ucmra_cmra_mixin : simpl never.
 Arguments ucmra_mixin : simpl never.
 Add Printing Constructor ucmraT.
 Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
-Coercion ucmra_ofeC (A : ucmraT) : ofeT := OfeT A (ucmra_ofe_mixin A).
-Canonical Structure ucmra_ofeC.
+Coercion ucmra_ofeO (A : ucmraT) : ofeT := OfeT A (ucmra_ofe_mixin A).
+Canonical Structure ucmra_ofeO.
 Coercion ucmra_cmraR (A : ucmraT) : cmraT :=
   CmraT' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A) A.
 Canonical Structure ucmra_cmraR.
@@ -1199,10 +1199,10 @@ Qed.
 Program Definition prodRF (F1 F2 : rFunctor) : rFunctor := {|
   rFunctor_car A _ B _ := prodR (rFunctor_car F1 A B) (rFunctor_car F2 A B);
   rFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
-    prodC_map (rFunctor_map F1 fg) (rFunctor_map F2 fg)
+    prodO_map (rFunctor_map F1 fg) (rFunctor_map F2 fg)
 |}.
 Next Obligation.
-  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodC_map_ne; apply rFunctor_ne.
+  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodO_map_ne; apply rFunctor_ne.
 Qed.
 Next Obligation. by intros F1 F2 A ? B ? [??]; rewrite /= !rFunctor_id. Qed.
 Next Obligation.
@@ -1216,16 +1216,16 @@ Instance prodRF_contractive F1 F2 :
   rFunctorContractive (prodRF F1 F2).
 Proof.
   intros ?? A1 ? A2 ? B1 ? B2 ? n ???;
-    by apply prodC_map_ne; apply rFunctor_contractive.
+    by apply prodO_map_ne; apply rFunctor_contractive.
 Qed.
 
 Program Definition prodURF (F1 F2 : urFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := prodUR (urFunctor_car F1 A B) (urFunctor_car F2 A B);
   urFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
-    prodC_map (urFunctor_map F1 fg) (urFunctor_map F2 fg)
+    prodO_map (urFunctor_map F1 fg) (urFunctor_map F2 fg)
 |}.
 Next Obligation.
-  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodC_map_ne; apply urFunctor_ne.
+  intros F1 F2 A1 ? A2 ? B1 ? B2 ? n ???. by apply prodO_map_ne; apply urFunctor_ne.
 Qed.
 Next Obligation. by intros F1 F2 A ? B ? [??]; rewrite /= !urFunctor_id. Qed.
 Next Obligation.
@@ -1239,7 +1239,7 @@ Instance prodURF_contractive F1 F2 :
   urFunctorContractive (prodURF F1 F2).
 Proof.
   intros ?? A1 ? A2 ? B1 ? B2 ? n ???;
-    by apply prodC_map_ne; apply urFunctor_contractive.
+    by apply prodO_map_ne; apply urFunctor_contractive.
 Qed.
 
 (** ** CMRA for the option type *)
@@ -1459,10 +1459,10 @@ Qed.
 
 Program Definition optionRF (F : rFunctor) : rFunctor := {|
   rFunctor_car A _ B _ := optionR (rFunctor_car F A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionC_map (rFunctor_map F fg)
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionO_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(option_fmap_id x).
@@ -1476,15 +1476,15 @@ Qed.
 Instance optionRF_contractive F :
   rFunctorContractive F → rFunctorContractive (optionRF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_contractive.
 Qed.
 
 Program Definition optionURF (F : rFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := optionUR (rFunctor_car F A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionC_map (rFunctor_map F fg)
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionO_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(option_fmap_id x).
@@ -1498,106 +1498,106 @@ Qed.
 Instance optionURF_contractive F :
   rFunctorContractive F → urFunctorContractive (optionURF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_contractive.
 Qed.
 
 (* Dependently-typed functions over a discrete domain *)
-Section ofe_fun_cmra.
+Section discrete_fun_cmra.
   Context `{B : A → ucmraT}.
-  Implicit Types f g : ofe_fun B.
+  Implicit Types f g : discrete_fun B.
 
-  Instance ofe_fun_op : Op (ofe_fun B) := λ f g x, f x ⋅ g x.
-  Instance ofe_fun_pcore : PCore (ofe_fun B) := λ f, Some (λ x, core (f x)).
-  Instance ofe_fun_valid : Valid (ofe_fun B) := λ f, ∀ x, ✓ f x.
-  Instance ofe_fun_validN : ValidN (ofe_fun B) := λ n f, ∀ x, ✓{n} f x.
+  Instance discrete_fun_op : Op (discrete_fun B) := λ f g x, f x ⋅ g x.
+  Instance discrete_fun_pcore : PCore (discrete_fun B) := λ f, Some (λ x, core (f x)).
+  Instance discrete_fun_valid : Valid (discrete_fun B) := λ f, ∀ x, ✓ f x.
+  Instance discrete_fun_validN : ValidN (discrete_fun B) := λ n f, ∀ x, ✓{n} f x.
 
-  Definition ofe_fun_lookup_op f g x : (f ⋅ g) x = f x ⋅ g x := eq_refl.
-  Definition ofe_fun_lookup_core f x : (core f) x = core (f x) := eq_refl.
+  Definition discrete_fun_lookup_op f g x : (f ⋅ g) x = f x ⋅ g x := eq_refl.
+  Definition discrete_fun_lookup_core f x : (core f) x = core (f x) := eq_refl.
 
-  Lemma ofe_fun_included_spec_1 (f g : ofe_fun B) x : f ≼ g → f x ≼ g x.
-  Proof. by intros [h Hh]; exists (h x); rewrite /op /ofe_fun_op (Hh x). Qed.
+  Lemma discrete_fun_included_spec_1 (f g : discrete_fun B) x : f ≼ g → f x ≼ g x.
+  Proof. by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op (Hh x). Qed.
 
-  Lemma ofe_fun_included_spec `{Hfin : Finite A} (f g : ofe_fun B) : f ≼ g ↔ ∀ x, f x ≼ g x.
+  Lemma discrete_fun_included_spec `{Hfin : Finite A} (f g : discrete_fun B) : f ≼ g ↔ ∀ x, f x ≼ g x.
   Proof.
-    split; [by intros; apply ofe_fun_included_spec_1|].
+    split; [by intros; apply discrete_fun_included_spec_1|].
     intros [h ?]%finite_choice; by exists h.
   Qed.
 
-  Lemma ofe_fun_cmra_mixin : CmraMixin (ofe_fun B).
+  Lemma discrete_fun_cmra_mixin : CmraMixin (discrete_fun B).
   Proof.
     apply cmra_total_mixin.
     - eauto.
-    - by intros n f1 f2 f3 Hf x; rewrite ofe_fun_lookup_op (Hf x).
-    - by intros n f1 f2 Hf x; rewrite ofe_fun_lookup_core (Hf x).
+    - by intros n f1 f2 f3 Hf x; rewrite discrete_fun_lookup_op (Hf x).
+    - by intros n f1 f2 Hf x; rewrite discrete_fun_lookup_core (Hf x).
     - by intros n f1 f2 Hf ? x; rewrite -(Hf x).
     - intros g; split.
       + intros Hg n i; apply cmra_valid_validN, Hg.
       + intros Hg i; apply cmra_valid_validN=> n; apply Hg.
     - intros n f Hf x; apply cmra_validN_S, Hf.
-    - by intros f1 f2 f3 x; rewrite ofe_fun_lookup_op assoc.
-    - by intros f1 f2 x; rewrite ofe_fun_lookup_op comm.
-    - by intros f x; rewrite ofe_fun_lookup_op ofe_fun_lookup_core cmra_core_l.
-    - by intros f x; rewrite ofe_fun_lookup_core cmra_core_idemp.
-    - intros f1 f2 Hf12. exists (core f2)=>x. rewrite ofe_fun_lookup_op.
-      apply (ofe_fun_included_spec_1 _ _ x), (cmra_core_mono (f1 x)) in Hf12.
-      rewrite !ofe_fun_lookup_core. destruct Hf12 as [? ->].
+    - by intros f1 f2 f3 x; rewrite discrete_fun_lookup_op assoc.
+    - by intros f1 f2 x; rewrite discrete_fun_lookup_op comm.
+    - by intros f x; rewrite discrete_fun_lookup_op discrete_fun_lookup_core cmra_core_l.
+    - by intros f x; rewrite discrete_fun_lookup_core cmra_core_idemp.
+    - intros f1 f2 Hf12. exists (core f2)=>x. rewrite discrete_fun_lookup_op.
+      apply (discrete_fun_included_spec_1 _ _ x), (cmra_core_mono (f1 x)) in Hf12.
+      rewrite !discrete_fun_lookup_core. destruct Hf12 as [? ->].
       rewrite assoc -cmra_core_dup //.
     - intros n f1 f2 Hf x; apply cmra_validN_op_l with (f2 x), Hf.
     - intros n f f1 f2 Hf Hf12.
       assert (FUN := λ x, cmra_extend n (f x) (f1 x) (f2 x) (Hf x) (Hf12 x)).
       exists (λ x, projT1 (FUN x)), (λ x, proj1_sig (projT2 (FUN x))).
-      split; [|split]=>x; [rewrite ofe_fun_lookup_op| |];
+      split; [|split]=>x; [rewrite discrete_fun_lookup_op| |];
       by destruct (FUN x) as (?&?&?&?&?).
   Qed.
-  Canonical Structure ofe_funR := CmraT (ofe_fun B) ofe_fun_cmra_mixin.
+  Canonical Structure discrete_funR := CmraT (discrete_fun B) discrete_fun_cmra_mixin.
 
-  Instance ofe_fun_unit : Unit (ofe_fun B) := λ x, ε.
-  Definition ofe_fun_lookup_empty x : ε x = ε := eq_refl.
+  Instance discrete_fun_unit : Unit (discrete_fun B) := λ x, ε.
+  Definition discrete_fun_lookup_empty x : ε x = ε := eq_refl.
 
-  Lemma ofe_fun_ucmra_mixin : UcmraMixin (ofe_fun B).
+  Lemma discrete_fun_ucmra_mixin : UcmraMixin (discrete_fun B).
   Proof.
     split.
     - intros x; apply ucmra_unit_valid.
-    - by intros f x; rewrite ofe_fun_lookup_op left_id.
+    - by intros f x; rewrite discrete_fun_lookup_op left_id.
     - constructor=> x. apply core_id_core, _.
   Qed.
-  Canonical Structure ofe_funUR := UcmraT (ofe_fun B) ofe_fun_ucmra_mixin.
+  Canonical Structure discrete_funUR := UcmraT (discrete_fun B) discrete_fun_ucmra_mixin.
 
-  Global Instance ofe_fun_unit_discrete :
-    (∀ i, Discrete (ε : B i)) → Discrete (ε : ofe_fun B).
+  Global Instance discrete_fun_unit_discrete :
+    (∀ i, Discrete (ε : B i)) → Discrete (ε : discrete_fun B).
   Proof. intros ? f Hf x. by apply: discrete. Qed.
-End ofe_fun_cmra.
+End discrete_fun_cmra.
 
-Arguments ofe_funR {_} _.
-Arguments ofe_funUR {_} _.
+Arguments discrete_funR {_} _.
+Arguments discrete_funUR {_} _.
 
-Instance ofe_fun_map_cmra_morphism {A} {B1 B2 : A → ucmraT} (f : ∀ x, B1 x → B2 x) :
-  (∀ x, CmraMorphism (f x)) → CmraMorphism (ofe_fun_map f).
+Instance discrete_fun_map_cmra_morphism {A} {B1 B2 : A → ucmraT} (f : ∀ x, B1 x → B2 x) :
+  (∀ x, CmraMorphism (f x)) → CmraMorphism (discrete_fun_map f).
 Proof.
   split; first apply _.
-  - intros n g Hg x; rewrite /ofe_fun_map; apply (cmra_morphism_validN (f _)), Hg.
+  - intros n g Hg x; rewrite /discrete_fun_map; apply (cmra_morphism_validN (f _)), Hg.
   - intros. apply Some_proper=>i. apply (cmra_morphism_core (f i)).
-  - intros g1 g2 i. by rewrite /ofe_fun_map ofe_fun_lookup_op cmra_morphism_op.
+  - intros g1 g2 i. by rewrite /discrete_fun_map discrete_fun_lookup_op cmra_morphism_op.
 Qed.
 
-Program Definition ofe_funURF {C} (F : C → urFunctor) : urFunctor := {|
-  urFunctor_car A _ B _ := ofe_funUR (λ c, urFunctor_car (F c) A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := ofe_funC_map (λ c, urFunctor_map (F c) fg)
+Program Definition discrete_funURF {C} (F : C → urFunctor) : urFunctor := {|
+  urFunctor_car A _ B _ := discrete_funUR (λ c, urFunctor_car (F c) A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := discrete_funO_map (λ c, urFunctor_map (F c) fg)
 |}.
 Next Obligation.
-  intros C F A1 ? A2 ? B1 ? B2 ? n ?? g. by apply ofe_funC_map_ne=>?; apply urFunctor_ne.
+  intros C F A1 ? A2 ? B1 ? B2 ? n ?? g. by apply discrete_funO_map_ne=>?; apply urFunctor_ne.
 Qed.
 Next Obligation.
-  intros C F A ? B ? g; simpl. rewrite -{2}(ofe_fun_map_id g).
-  apply ofe_fun_map_ext=> y; apply urFunctor_id.
+  intros C F A ? B ? g; simpl. rewrite -{2}(discrete_fun_map_id g).
+  apply discrete_fun_map_ext=> y; apply urFunctor_id.
 Qed.
 Next Obligation.
-  intros C F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f1 f2 f1' f2' g. rewrite /=-ofe_fun_map_compose.
-  apply ofe_fun_map_ext=>y; apply urFunctor_compose.
+  intros C F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f1 f2 f1' f2' g. rewrite /=-discrete_fun_map_compose.
+  apply discrete_fun_map_ext=>y; apply urFunctor_compose.
 Qed.
-Instance ofe_funURF_contractive {C} (F : C → urFunctor) :
-  (∀ c, urFunctorContractive (F c)) → urFunctorContractive (ofe_funURF F).
+Instance discrete_funURF_contractive {C} (F : C → urFunctor) :
+  (∀ c, urFunctorContractive (F c)) → urFunctorContractive (discrete_funURF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n ?? g.
-  by apply ofe_funC_map_ne=>c; apply urFunctor_contractive.
+  by apply discrete_funO_map_ne=>c; apply urFunctor_contractive.
 Qed.

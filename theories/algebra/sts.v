@@ -272,7 +272,7 @@ End sts_dra.
 
 (** * The STS Resource Algebra *)
 (** Finally, the general theory of STS that should be used by users *)
-Notation stsC sts := (validityC (stsDR sts)).
+Notation stsC sts := (validityO (stsDR sts)).
 Notation stsR sts := (validityR (stsDR sts)).
 
 Section sts_definitions.
