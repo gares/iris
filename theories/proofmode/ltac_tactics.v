@@ -1027,13 +1027,7 @@ Tactic Notation "iPoseProofCore" open_constr(lem)
     end in
   lazymatch type of t with
   | ident => iPoseProofCoreHyp t as Htmp; spec_tac (); [..|tac Htmp]
-  | _ =>
-     lazymatch eval compute in lazy_tc with
-     | true =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
-     | false =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
-     end
+  | _ => iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
   end.
 
 (** * The apply tactic *)
