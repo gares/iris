@@ -20,7 +20,7 @@ Definition newlock : val :=
 Definition acquire : val :=
   rec: "acquire" "lk" :=
     let: "n" := !(Snd "lk") in
-    if: CAS (Snd "lk") "n" ("n" + #1)
+    if: CAS (Snd "lk") "n" ("n" + #1) = "n"
       then wait_loop "n" "lk"
       else "acquire" "lk".
 
@@ -122,14 +122,14 @@ Section proof.
       wp_cas_suc. iModIntro. iSplitL "Hlo' Hln' Haown Hauth".
       { iNext. iExists o', (S n).
         rewrite Nat2Z.inj_succ -Z.add_1_r. by iFrame. }
-      wp_if.
+      wp_op. rewrite bool_decide_true //. wp_if.
       iApply (wait_loop_spec γ (#lo, #ln) with "[-HΦ]").
       + iFrame. rewrite /is_lock; eauto 10.
       + by iNext.
     - wp_cas_fail. iModIntro.
       iSplitL "Hlo' Hln' Hauth Haown".
       { iNext. iExists o', n'. by iFrame. }
-      wp_if. by iApply "IH"; auto.
+      wp_op. rewrite bool_decide_false //. wp_if. by iApply "IH"; auto.
   Qed.
 
   Lemma release_spec γ lk R :

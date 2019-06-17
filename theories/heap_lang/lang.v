@@ -97,8 +97,8 @@ Inductive expr :=
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
-  | CAS (e0 : expr) (e1 : expr) (e2 : expr)
-  | FAA (e1 : expr) (e2 : expr)
+  | CAS (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-and-swap (NOT compare-and-set!) *)
+  | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
   (* Prophecy *)
   | NewProph
   | Resolve (e0 : expr) (e1 : expr) (e2 : expr) (* wrapped expr, proph, val *)
@@ -518,6 +518,7 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
 
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
   if decide (op = EqOp) then
+    (* Crucially, this compares the same way as [CAS]! *)
     Some $ LitV $ LitBool $ bool_decide (val_for_compare v1 = val_for_compare v2)
   else
     match v1, v2 with
@@ -633,19 +634,13 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
-  | CasFailS l v1 v2 vl σ :
+  | CasS l v1 v2 vl σ :
      vals_cas_compare_safe vl v1 →
      σ.(heap) !! l = Some vl →
-     val_for_compare vl ≠ val_for_compare v1 →
-     head_step (CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ []
-               (Val $ LitV $ LitBool false) σ []
-  | CasSucS l v1 v2 vl σ :
-     vals_cas_compare_safe vl v1 →
-     σ.(heap) !! l = Some vl →
-     val_for_compare vl = val_for_compare v1 →
      head_step (CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
-               (Val $ LitV $ LitBool true) (state_upd_heap <[l:=v2]> σ)
+               (* Crucially, this compares the same way as [EqOp]! *)
+               (Val vl) (if decide (val_for_compare vl = val_for_compare v1) then state_upd_heap <[l:=v2]> σ else σ)
                []
   | FaaS l i1 i2 σ :
      σ.(heap) !! l = Some (LitV (LitInt i1)) →

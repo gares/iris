@@ -56,8 +56,7 @@ Local Hint Extern 0 (head_reducible_no_obs _ _) => eexists _, _, _; simpl : core
 
 (* [simpl apply] is too stupid, so we need extern hints here. *)
 Local Hint Extern 1 (head_step _ _ _ _ _ _) => econstructor : core.
-Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasSucS : core.
-Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasFailS : core.
+Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasS : core.
 Local Hint Extern 0 (head_step (AllocN _ _) _ _ _ _ _) => apply alloc_fresh : core.
 Local Hint Extern 0 (head_step NewProph _ _ _ _ _) => apply new_proph_id_fresh : core.
 Local Hint Resolve to_of_val : core.
@@ -378,7 +377,7 @@ Qed.
 Lemma wp_cas_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦{q} v' }}} CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET LitV (LitBool false); l ↦{q} v' }}}.
+  {{{ RET v'; l ↦{q} v' }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -388,7 +387,7 @@ Qed.
 Lemma twp_cas_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
   [[{ l ↦{q} v' }]] CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET LitV (LitBool false); l ↦{q} v' }]].
+  [[{ RET v'; l ↦{q} v' }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -399,7 +398,7 @@ Qed.
 Lemma wp_cas_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦ v' }}} CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET LitV (LitBool true); l ↦ v2 }}}.
+  {{{ RET v'; l ↦ v2 }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -410,7 +409,7 @@ Qed.
 Lemma twp_cas_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cas_compare_safe v' v1 →
   [[{ l ↦ v' }]] CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET LitV (LitBool true); l ↦ v2 }]].
+  [[{ RET v'; l ↦ v2 }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -578,7 +577,7 @@ Lemma wp_cas_suc_offset s E l off vs v' v1 v2 :
   vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET #true; l ↦∗ <[off:=v2]> vs }}}.
+  {{{ RET v'; l ↦∗ <[off:=v2]> vs }}}.
 Proof.
   iIntros (Hlookup ?? Φ) "Hl HΦ".
   iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -591,7 +590,7 @@ Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET #true; l ↦∗ vinsert off v2 vs }}}.
+  {{{ RET (vs !!! off); l ↦∗ vinsert off v2 vs }}}.
 Proof.
   intros. setoid_rewrite vec_to_list_insert. eapply wp_cas_suc_offset=> //.
   by apply vlookup_lookup.
@@ -603,7 +602,7 @@ Lemma wp_cas_fail_offset s E l off vs v0 v1 v2 :
   vals_cas_compare_safe v0 v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET #false; l ↦∗ vs }}}.
+  {{{ RET v0; l ↦∗ vs }}}.
 Proof.
   iIntros (Hlookup HNEq Hcmp Φ) ">Hl HΦ".
   iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -618,7 +617,7 @@ Lemma wp_cas_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET #false; l ↦∗ vs }}}.
+  {{{ RET (vs !!! off); l ↦∗ vs }}}.
 Proof. intros. eapply wp_cas_fail_offset=> //. by apply vlookup_lookup. Qed.
 
 Lemma wp_faa_offset s E l off vs (i1 i2 : Z) :

@@ -15,7 +15,7 @@ Section tests.
     vals_cas_compare_safe v1 v1 →
     {{{ proph p vs ∗ ▷ l ↦ v1 }}}
       CAS_resolve #l v1 v2 #p v @ s; E
-    {{{ RET #true ; ∃ vs', ⌜vs = (#true, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v2 }}}.
+    {{{ RET v1 ; ∃ vs', ⌜vs = (v1, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v2 }}}.
   Proof.
     iIntros (Hcmp Φ) "[Hp Hl] HΦ".
     wp_apply (wp_resolve with "Hp"); first done.
@@ -28,7 +28,7 @@ Section tests.
     val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
     {{{ proph p vs ∗ ▷ l ↦ v' }}}
       CAS_resolve #l v1 v2 #p v @ s; E
-    {{{ RET #false ; ∃ vs', ⌜vs = (#false, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v' }}}.
+    {{{ RET v' ; ∃ vs', ⌜vs = (v', v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v' }}}.
   Proof.
     iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
     wp_apply (wp_resolve with "Hp"); first done.
@@ -39,7 +39,7 @@ Section tests.
   Lemma test_resolve1 E (l : loc) (n : Z) (p : proph_id) (vs : list (val * val)) (v : val) :
     l ↦ #n -∗
     proph p vs -∗
-    WP Resolve (CAS #l #n (#n + #1)) #p v @ E {{ v, ⌜v = #true⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
+    WP Resolve (CAS #l #n (#n + #1)) #p v @ E {{ v, ⌜v = #n⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_cas_suc. iIntros (ws ->) "Hp". eauto with iFrame.

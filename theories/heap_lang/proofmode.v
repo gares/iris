@@ -284,9 +284,9 @@ Lemma tac_wp_cas Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   vals_cas_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ'' (WP fill K (Val $ LitV true) @ s; E {{ Φ }})) →
+   envs_entails Δ'' (WP fill K (Val v) @ s; E {{ Φ }})) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val $ LitV false) @ s; E {{ Φ }})) →
+   envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }})) →
   envs_entails Δ (WP fill K (CAS (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ???? Hsuc Hfail.
@@ -305,9 +305,9 @@ Lemma tac_twp_cas Δ Δ' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   vals_cas_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val $ LitV true) @ s; E [{ Φ }])) →
+   envs_entails Δ' (WP fill K (Val v) @ s; E [{ Φ }])) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ (WP fill K (Val $ LitV false) @ s; E [{ Φ }])) →
+   envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }])) →
   envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ??? Hsuc Hfail.
@@ -326,7 +326,7 @@ Lemma tac_wp_cas_fail Δ Δ' s E i K l q v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val $ LitV false) @ s; E {{ Φ }}) →
+  envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ?????.
@@ -337,7 +337,7 @@ Qed.
 Lemma tac_twp_cas_fail Δ s E i K l q v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ (WP fill K (Val $ LitV false) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq. intros. rewrite -twp_bind.
@@ -350,7 +350,7 @@ Lemma tac_wp_cas_suc Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ'' (WP fill K (Val $ LitV true) @ s; E {{ Φ }}) →
+  envs_entails Δ'' (WP fill K (Val v) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ??????; subst.
@@ -363,7 +363,7 @@ Lemma tac_twp_cas_suc Δ Δ' s E i K l v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val $ LitV true) @ s; E [{ Φ }]) →
+  envs_entails Δ' (WP fill K (Val v) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=>?????; subst.
@@ -627,7 +627,7 @@ Tactic Notation "wp_faa" :=
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_wp_faa _ _ _ _ _ _ K))
-      |fail 1 "wp_faa: cannot find 'CAS' in" e];
+      |fail 1 "wp_faa: cannot find 'FAA' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
@@ -635,7 +635,7 @@ Tactic Notation "wp_faa" :=
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_faa _ _ _ _ _ K))
-      |fail 1 "wp_faa: cannot find 'CAS' in" e];
+      |fail 1 "wp_faa: cannot find 'FAA' in" e];
     [solve_mapsto ()
     |pm_reflexivity
     |wp_finish]

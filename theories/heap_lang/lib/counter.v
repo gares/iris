@@ -9,7 +9,7 @@ Set Default Proof Using "Type".
 Definition newcounter : val := λ: <>, ref #0.
 Definition incr : val := rec: "incr" "l" :=
     let: "n" := !"l" in
-    if: CAS "l" "n" (#1 + "n") then #() else "incr" "l".
+    if: CAS "l" "n" (#1 + "n") = "n" then #() else "incr" "l".
 Definition read : val := λ: "l", !"l".
 
 (** Monotone counter *)
@@ -59,13 +59,16 @@ Section mono_proof.
       { apply auth_update, (mnat_local_update _ _ (S c)); auto. }
       wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
-      wp_if. iApply "HΦ"; iExists γ; repeat iSplit; eauto.
+      wp_op. rewrite bool_decide_true //. wp_if.
+      iApply "HΦ"; iExists γ; repeat iSplit; eauto.
       iApply (own_mono with "Hγf").
       (* FIXME: FIXME(Coq #6294): needs new unification *)
       apply: auth_frag_mono. by apply mnat_included, le_n_S.
-    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
+    - assert (#c ≠ #c') by by intros [= ?%Nat2Z.inj].
+      wp_cas_fail. iModIntro.
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
-      wp_if. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
+      wp_op. rewrite bool_decide_false //. wp_if.
+      iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
       rewrite {3}/mcounter; eauto 10.
   Qed.
 
@@ -136,10 +139,11 @@ Section contrib_spec.
       { apply frac_auth_update, (nat_local_update _ _ (S c) (S n)); lia. }
       wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
-      wp_if. by iApply "HΦ".
-    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]).
+      wp_op. rewrite bool_decide_true //. wp_if. by iApply "HΦ".
+    - assert (#c ≠ #c') by by intros [= ?%Nat2Z.inj]. wp_cas_fail.
       iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
-      wp_if. by iApply ("IH" with "[Hγf] [HΦ]"); auto.
+      wp_op. rewrite bool_decide_false //. wp_if.
+      by iApply ("IH" with "[Hγf] [HΦ]"); auto.
   Qed.
 
   Lemma read_contrib_spec γ l q n :

@@ -9,7 +9,7 @@ Set Default Proof Using "Type".
 Definition one_shot_example : val := λ: <>,
   let: "x" := ref NONE in (
   (* tryset *) (λ: "n",
-    CAS "x" NONE (SOME "n")),
+    CAS "x" NONE (SOME "n") = NONE),
   (* check  *) (λ: <>,
     let: "y" := !"x" in λ: <>,
     match: "y" with
@@ -49,13 +49,15 @@ Proof.
   iMod (inv_alloc N _ (one_shot_inv γ l) with "[Hl Hγ]") as "#HN".
   { iNext. iLeft. by iSplitL "Hl". }
   wp_pures. iModIntro. iApply "Hf"; iSplit.
-  - iIntros (n) "!#". wp_lam. wp_pures.
+  - iIntros (n) "!#". wp_lam. wp_pures. wp_bind (CAS _ _ _).
     iInv N as ">[[Hl Hγ]|H]"; last iDestruct "H" as (m) "[Hl Hγ]".
     + iMod (own_update with "Hγ") as "Hγ".
       { by apply cmra_update_exclusive with (y:=Shot n). }
-      wp_cas_suc. iSplitL; last eauto.
-      iModIntro. iNext; iRight; iExists n; by iFrame.
-    + wp_cas_fail. iSplitL; last eauto.
+      wp_cas_suc. iSplitL; iModIntro; last first.
+      { wp_pures. eauto. }
+      iNext; iRight; iExists n; by iFrame.
+    + wp_cas_fail. iSplitL; iModIntro; last first.
+      { wp_pures. eauto. }
       rewrite /one_shot_inv; eauto 10.
   - iIntros "!# /=". wp_lam. wp_bind (! _)%E.
     iInv N as ">Hγ".

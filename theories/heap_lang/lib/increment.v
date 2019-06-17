@@ -16,7 +16,7 @@ Section increment_physical.
   Definition incr_phy : val :=
     rec: "incr" "l" :=
        let: "oldv" := !"l" in
-       if: CAS "l" "oldv" ("oldv" + #1)
+       if: CAS "l" "oldv" ("oldv" + #1) = "oldv"
          then "oldv" (* return old value if success *)
          else "incr" "l".
 
@@ -29,9 +29,9 @@ Section increment_physical.
     wp_pures. wp_bind (CAS _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
     destruct (decide (#v = #w)) as [[= ->]|Hx].
     - wp_cas_suc. iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
-      iModIntro. wp_if. done.
+      iModIntro. wp_op. rewrite bool_decide_true //. wp_if. done.
     - wp_cas_fail. iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
-      iModIntro. wp_if. iApply "IH". done.
+      iModIntro. wp_op. rewrite bool_decide_false //. wp_if. iApply "IH". done.
   Qed.
 End increment_physical.
 
@@ -45,7 +45,7 @@ Section increment.
   Definition incr : val :=
     rec: "incr" "l" :=
        let: "oldv" := !"l" in
-       if: CAS "l" "oldv" ("oldv" + #1)
+       if: CAS "l" "oldv" ("oldv" + #1) = "oldv"
          then "oldv" (* return old value if success *)
          else "incr" "l".
 
@@ -70,9 +70,9 @@ Section increment.
     { (* abort case *) iDestruct "Hclose" as "[? _]". done. }
     iIntros "Hl". simpl. destruct (decide (#w = #v)) as [[= ->]|Hx].
     - iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
-      iIntros "!>". wp_if. by iApply "HΦ".
+      iIntros "!>". wp_op. rewrite bool_decide_true //. wp_if. by iApply "HΦ".
     - iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
-      iIntros "!>". wp_if. iApply "IH". done.
+      iIntros "!>". wp_op. rewrite bool_decide_false //. wp_if. iApply "IH". done.
   Qed.
 
   (** A proof of the incr specification that uses lemmas to avoid reasining
@@ -94,9 +94,9 @@ Section increment.
     iIntros "H↦ !>".
     simpl. destruct (decide (#x' = #x)) as [[= ->]|Hx].
     - iRight. iFrame. iIntros "HΦ !>".
-      wp_if. by iApply "HΦ".
+      wp_op. rewrite bool_decide_true //. wp_if. by iApply "HΦ".
     - iLeft. iFrame. iIntros "AU !>".
-      wp_if. iApply "IH". done.
+      wp_op. rewrite bool_decide_false //. wp_if. iApply "IH". done.
   Qed.
 
   (** A "weak increment": assumes that there is no race *)

@@ -135,6 +135,7 @@ Proof.
   - unfold un_op_eval in *. repeat case_match; naive_solver.
   - eapply bin_op_eval_closed; eauto; naive_solver.
   - by apply heap_closed_alloc.
+  - case_match; try apply map_Forall_insert_2; by naive_solver.
 Qed.
 
 (* Parallel substitution with maps of values indexed by strings *)

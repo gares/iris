@@ -36,7 +36,7 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
     val_is_unboxed w1 →
     <<< ∀ v, mapsto l 1 v >>> cas #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
-        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>;
+        RET v >>>;
 }.
 Arguments atomic_heap _ {_}.
 
@@ -100,7 +100,7 @@ Section proof.
     <<< ∀ (v : val), l ↦ v >>>
       primitive_cas #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then l ↦ w2 else l ↦ v,
-        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>.
+        RET v >>>.
   Proof.
     iIntros (? Φ) "AU". wp_lam. wp_let. wp_let.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
