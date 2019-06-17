@@ -518,6 +518,7 @@ Proof.
     iMod "HΦ". iModIntro. by iApply "HΦ".
 Qed.
 
+(** Lemmas for some particular expression inside the [Resolve]. *)
 Lemma wp_resolve_proph s E p pvs v :
   {{{ proph p pvs }}}
     ResolveProph (Val $ LitV $ LitProphecy p) (Val v) @ s; E
@@ -528,6 +529,32 @@ Proof.
   iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
+Lemma wp_resolve_cas_suc s E (l : loc) (p : proph_id) (pvs : list (val * val)) (v1 v2 v : val) :
+  vals_cas_compare_safe v1 v1 →
+  {{{ proph p pvs ∗ ▷ l ↦ v1 }}}
+    Resolve (CAS #l v1 v2) #p v @ s; E
+  {{{ RET v1 ; ∃ pvs', ⌜pvs = (v1, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦ v2 }}}.
+Proof.
+  iIntros (Hcmp Φ) "[Hp Hl] HΦ".
+  iApply (wp_resolve with "Hp"); first done.
+  assert (val_is_unboxed v1) as Hv1; first by destruct Hcmp.
+  iApply (wp_cas_suc with "Hl"); [done..|]. iIntros "!> Hl".
+  iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
+Qed.
+
+Lemma wp_resolve_cas_fail s E (l : loc) (p : proph_id) (pvs : list (val * val)) q (v' v1 v2 v : val) :
+  val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
+  {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
+    Resolve (CAS #l v1 v2) #p v @ s; E
+  {{{ RET v' ; ∃ pvs', ⌜pvs = (v', v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
+Proof.
+  iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
+  iApply (wp_resolve with "Hp"); first done.
+  iApply (wp_cas_fail with "Hl"); [done..|]. iIntros "!> Hl".
+  iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
+Qed.
+
+(** Array lemmas *)
 Lemma wp_allocN_vec s E v n :
   0 < n →
   {{{ True }}}
