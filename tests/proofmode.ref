@@ -553,13 +553,13 @@ Tactic failure: iStartProof: not a BI assertion.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)",
+"iPoseProofCore (open_constr) as (constr) (tactic3)",
 "iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)" and
 "<iris.proofmode.ltac_tactics.iIntoEmpValid>", last call failed.
 Tactic failure: iPoseProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)",
+"iPoseProofCore (open_constr) as (constr) (tactic3)",
 "iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)", 
 "tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
 "tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
@@ -573,14 +573,14 @@ Tactic failure: iRename: "H" not fresh.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)" and
+"iPoseProofCore (open_constr) as (constr) (tactic3)" and
 "iPoseProofCoreHyp (constr) as (constr)", last call failed.
 Tactic failure: iPoseProof: "Hx" not found.
 "iPoseProof_not_found_fail2"
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)",
+"iPoseProofCore (open_constr) as (constr) (tactic3)",
 "iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)", 
 "tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
 "tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
@@ -648,7 +648,7 @@ Tactic failure: iOrDestruct: "H1" or "H'" not fresh.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)", 
+"iPoseProofCore (open_constr) as (constr) (tactic3)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: cannot apply P.
@@ -656,7 +656,7 @@ Tactic failure: iApply: cannot apply P.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)", 
+"iPoseProofCore (open_constr) as (constr) (tactic3)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: Q
@@ -665,7 +665,7 @@ not absorbing and the remaining hypotheses not affine.
      : string
 The command has indeed failed with message:
 In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (constr) (tactic3)", 
+"iPoseProofCore (open_constr) as (constr) (tactic3)", 
 "tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
 failed.
 Tactic failure: iApply: Q

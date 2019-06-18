@@ -992,30 +992,15 @@ Tactic Notation "iSpecialize" open_constr(t) :=
 Tactic Notation "iSpecialize" open_constr(t) "as" "#" :=
   iSpecializeCore t as true.
 
-(** The tactic [iPoseProofCore lem as p lazy_tc tac] inserts the resource
+(** The tactic [iPoseProofCore lem as p tac] inserts the resource
 described by [lem] into the context. The tactic takes a continuation [tac] as
 its argument, which is called with a temporary fresh name [H] that refers to
 the hypothesis containing [lem].
 
-There are a couple of additional arguments:
-
-- The argument [p] is like that of [iSpecialize]. It is a Boolean that denotes
-  whether the conclusion of the specialized term [lem] is persistent.
-- The argument [lazy_tc] denotes whether type class inference on the premises
-  of [lem] should be performed before (if [lazy_tc = false]) or after (if
-  [lazy_tc = true]) [tac H] is called.
-
-Both variants of [lazy_tc] are used in other tactics that build on top of
-[iPoseProofCore]:
-
-- The tactic [iApply] uses lazy type class inference (i.e. [lazy_tc = true]),
-  so that evars can first be matched against the goal before being solved by
-  type class inference.
-- The tactic [iDestruct] uses eager type class inference (i.e. [lazy_tc = false])
-  because it may be not possible to eliminate logical connectives before all
-  type class constraints have been resolved. *)
+The argument [p] is like that of [iSpecialize]. It is a Boolean that denotes
+whether the conclusion of the specialized term [lem] is persistent. *)
 Tactic Notation "iPoseProofCore" open_constr(lem)
-    "as" constr(p) constr(lazy_tc) tactic3(tac) :=
+    "as" constr(p) tactic3(tac) :=
   iStartProof;
   let Htmp := iFresh in
   let t := lazymatch lem with ITrm ?t ?xs ?pat => t | _ => lem end in
@@ -1027,13 +1012,7 @@ Tactic Notation "iPoseProofCore" open_constr(lem)
     end in
   lazymatch type of t with
   | ident => iPoseProofCoreHyp t as Htmp; spec_tac (); [..|tac Htmp]
-  | _ =>
-     lazymatch eval compute in lazy_tc with
-     | true =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
-     | false =>
-        iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
-     end
+  | _ => iPoseProofCoreLem t as Htmp before_tc (spec_tac (); [..|tac Htmp])
   end.
 
 (** * The apply tactic *)
@@ -1084,7 +1063,7 @@ Tactic Notation "iApplyHyp" constr(H) :=
      end].
 
 Tactic Notation "iApply" open_constr(lem) :=
-  iPoseProofCore lem as false true (fun H => iApplyHyp H).
+  iPoseProofCore lem as false (fun H => iApplyHyp H).
 
 (** * Disjunction *)
 Tactic Notation "iLeft" :=
@@ -1743,7 +1722,7 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
      (which cannot be kept). *)
      iStartProof;
      lazymatch ident with
-     | None => iPoseProofCore lem as p false tac
+     | None => iPoseProofCore lem as p tac
      | Some ?H =>
         lazymatch iTypeOf H with
         | None =>
@@ -1752,7 +1731,7 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
         | Some (true, ?P) =>
            (* intuitionistic hypothesis, check for a CopyDestruct instance *)
            tryif (let dummy := constr:(_ : CopyDestruct P) in idtac)
-           then (iPoseProofCore lem as p false tac)
+           then (iPoseProofCore lem as p tac)
            else (iSpecializeCore lem as p; [..| tac H])
         | Some (false, ?P) =>
            (* spatial hypothesis, cannot copy *)
@@ -1810,49 +1789,49 @@ Tactic Notation "iDestruct" open_constr(lem) "as" "%" simple_intropattern(pat) :
   iDestructCore lem as true (fun H => iPure H as pat).
 
 Tactic Notation "iPoseProof" open_constr(lem) "as" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1) ")"
     constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4) ")"
     constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7) ")"
     constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
     simple_intropattern(x8) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
     simple_intropattern(x8) simple_intropattern(x9) ")" constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 ) pat).
 Tactic Notation "iPoseProof" open_constr(lem) "as" "(" simple_intropattern(x1)
     simple_intropattern(x2) simple_intropattern(x3) simple_intropattern(x4)
     simple_intropattern(x5) simple_intropattern(x6) simple_intropattern(x7)
     simple_intropattern(x8) simple_intropattern(x9) simple_intropattern(x10) ")"
     constr(pat) :=
-  iPoseProofCore lem as pat false (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 ) pat).
+  iPoseProofCore lem as pat (fun H => iDestructHyp H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 ) pat).
 
 (** * Induction *)
 (* An invocation of [iInduction (x) as pat IH forall (x1...xn) Hs] will
@@ -2212,7 +2191,7 @@ Local Ltac iRewriteFindPred :=
   end.
 
 Local Tactic Notation "iRewriteCore" constr(lr) open_constr(lem) :=
-  iPoseProofCore lem as true true (fun Heq =>
+  iPoseProofCore lem as true (fun Heq =>
     eapply (tac_rewrite _ Heq _ _ lr);
       [pm_reflexivity ||
        let Heq := pretty_ident Heq in
@@ -2227,7 +2206,7 @@ Tactic Notation "iRewrite" open_constr(lem) := iRewriteCore Right lem.
 Tactic Notation "iRewrite" "-" open_constr(lem) := iRewriteCore Left lem.
 
 Local Tactic Notation "iRewriteCore" constr(lr) open_constr(lem) "in" constr(H) :=
-  iPoseProofCore lem as true true (fun Heq =>
+  iPoseProofCore lem as true (fun Heq =>
     eapply (tac_rewrite_in _ Heq _ _ H _ _ lr);
       [pm_reflexivity ||
        let Heq := pretty_ident Heq in

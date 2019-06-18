@@ -396,7 +396,7 @@ End heap.
 happens *after* [tac H] got executed. *)
 Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
   wp_pures;
-  iPoseProofCore lem as false true (fun H =>
+  iPoseProofCore lem as false (fun H =>
     lazymatch goal with
     | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
       reshape_expr e ltac:(fun K e' =>
