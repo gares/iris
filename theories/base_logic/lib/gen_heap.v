@@ -60,7 +60,7 @@ this RA would be quite inconvenient to deal with. *)
 Definition gen_heapUR (L V : Type) `{Countable L} : ucmraT :=
   gmapUR L (prodR fracR (agreeR (leibnizO V))).
 Definition gen_metaUR (L : Type) `{Countable L} : ucmraT :=
-  gmapUR L (agreeR gnameC).
+  gmapUR L (agreeR gnameO).
 
 Definition to_gen_heap {L V} `{Countable L} : gmap L V → gen_heapUR L V :=
   fmap (λ v, (1%Qp, to_agree (v : leibnizO V))).

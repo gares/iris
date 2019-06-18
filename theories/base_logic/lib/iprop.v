@@ -45,7 +45,7 @@ Definition gFunctors_lookup (Σ : gFunctors) : gid Σ → gFunctor := projT2 Σ.
 Coercion gFunctors_lookup : gFunctors >-> Funclass.
 
 Definition gname := positive.
-Canonical Structure gnameC := leibnizO gname.
+Canonical Structure gnameO := leibnizO gname.
 
 (** The resources functor [iResF Σ A := ∀ i : gid, gname -fin-> (Σ i) A]. *)
 Definition iResF (Σ : gFunctors) : urFunctor :=

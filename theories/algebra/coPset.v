@@ -67,7 +67,7 @@ Inductive coPset_disj :=
 
 Section coPset_disj.
   Arguments op _ _ !_ !_ /.
-  Canonical Structure coPset_disjC := leibnizO coPset_disj.
+  Canonical Structure coPset_disjO := leibnizO coPset_disj.
 
   Instance coPset_disj_valid : Valid coPset_disj := λ X,
     match X with CoPset _ => True | CoPsetBot => False end.

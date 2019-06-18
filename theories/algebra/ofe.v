@@ -1107,7 +1107,7 @@ Qed.
 (** We make [discrete_fun] a definition so that we can register it as a
 canonical structure. Note that non-dependent functions over a discrete domain,
 [discrete_fun (λ _, A) B] (or [A -d> B] following the notation we introduce
-below) are isomorphic to [leibnizC A -n> B]. In other words, since the domain
+below) are isomorphic to [leibnizO A -n> B]. In other words, since the domain
 is discrete, we get non-expansiveness for free. *)
 Definition discrete_fun {A} (B : A → ofeT) := ∀ x : A, B x.
 
