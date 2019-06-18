@@ -145,6 +145,64 @@ Changes in Coq:
   fractional camera (`frac_auth`) with unbounded fractions.
 * Changed `frac_auth` notation from `●!`/`◯!` to `●F`/`◯F`. sed script:
   `s/◯!/◯F/g; s/●!/●F/g;`.
+* Rename `C` suffixes into `O` since we no longer use COFEs but OFEs. Also
+  rename `ofe_fun` into `discrete_fun` and the corresponding notation `-c>`
+  into `-d>`. The renaming can be automatically done using the following script:
+```
+sed '
+s/\bCofeMor/OfeMor/g;
+s/\-c>/\-d>/g;
+s/\bcFunctor/oFunctor/g;
+s/\bCFunctor/OFunctor/g;
+s/\b\%CF/\%OF/g;
+s/\bconstCF/constOF/g;
+s/\bidCF/idOF/g
+s/\bdiscreteC/discreteO/g;
+s/\bleibnizC/leibnizO/g;
+s/\bunitC/unitO/g;
+s/\bprodC/prodO/g;
+s/\bsumC/sumO/g;
+s/\bboolC/boolO/g;
+s/\bnatC/natO/g;
+s/\bpositiveC/positiveO/g;
+s/\bNC/NO/g;
+s/\bZC/ZO/g;
+s/\boptionC/optionO/g;
+s/\blaterC/laterO/g;
+s/\bofe\_fun/discrete\_fun/g;
+s/\bdiscrete\_funC/discrete\_funO/g;
+s/\bofe\_morC/ofe\_morO/g;
+s/\bsigC/sigO/g;
+s/\buPredC/uPredO/g;
+s/\bcsumC/csumO/g;
+s/\bagreeC/agreeO/g;
+s/\bauthC/authO/g;
+s/\bnamespace_mapC/namespace\_mapO/g;
+s/\bcmra\_ofeC/cmra\_ofeO/g;
+s/\bucmra\_ofeC/ucmra\_ofeO/g;
+s/\bexclC/exclO/g;
+s/\bgmapC/gmapO/g;
+s/\blistC/listO/g;
+s/\bvecC/vecO/g;
+s/\bgsetC/gsetO/g;
+s/\bgset\_disjC/gset\_disjO/g;
+s/\bcoPsetC/coPsetO/g;
+s/\bgmultisetC/gmultisetO/g;
+s/\bufracC/ufracO/g
+s/\bfracC/fracO/g;
+s/\bvalidityC/validityO/g;
+s/\bbi\_ofeC/bi\_ofeO/g;
+s/\bsbi\_ofeC/sbi\_ofeO/g;
+s/\bmonPredC/monPredO/g;
+s/\bstateC/stateO/g;
+s/\bvalC/valO/g;
+s/\bexprC/exprO/g;
+s/\blocC/locO/g;
+s/\bdec\_agreeC/dec\_agreeO/g;
+s/\bgnameC/gnameO/g;
+s/\bcoPset\_disjC/coPset\_disjO/g;
+' -i $(find theories -name "*.v")
+```
 
 ## Iris 3.1.0 (released 2017-12-19)
 
