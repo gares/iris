@@ -530,6 +530,12 @@ Tactic Notation "wp_store" :=
   | _ => fail "wp_store: not a 'wp'"
   end.
 
+Local Ltac solve_vals_cas_compare_safe :=
+  (* The first branch is for when we have [vals_cas_compare_safe] in the context.
+     The other two branches are for when either one of the branches reduces to
+     [True] or we have it in the context. *)
+  fast_done || (left; fast_done) || (right; fast_done).
+
 Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2) :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
@@ -543,9 +549,7 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |intros H1; wp_finish
     |intros H2; wp_finish]
   | |- envs_entails _ (twp ?E ?e ?Q) =>
@@ -554,9 +558,7 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
       |fail 1 "wp_cas: cannot find 'CAS' in" e];
     [solve_mapsto ()
     |pm_reflexivity
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |intros H1; wp_finish
     |intros H2; wp_finish]
   | _ => fail "wp_cas: not a 'wp'"
@@ -575,9 +577,7 @@ Tactic Notation "wp_cas_fail" :=
     [iSolveTC
     |solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
@@ -585,9 +585,7 @@ Tactic Notation "wp_cas_fail" :=
       |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
     [solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |wp_finish]
   | _ => fail "wp_cas_fail: not a 'wp'"
   end.
@@ -606,9 +604,7 @@ Tactic Notation "wp_cas_suc" :=
     |solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
@@ -617,9 +613,7 @@ Tactic Notation "wp_cas_suc" :=
     [solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
-     [True ∨ False] we need to call [left]/[right]. *)
-     try (fast_done || (left; fast_done) || (right; fast_done))
+    |try solve_vals_cas_compare_safe
     |wp_finish]
   | _ => fail "wp_cas_suc: not a 'wp'"
   end.
