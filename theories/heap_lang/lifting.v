@@ -586,10 +586,9 @@ Proof.
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
 
-Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v' v1 v2 :
-  vs !!! off = v' →
-  val_for_compare v' = val_for_compare v1 →
-  vals_cas_compare_safe v' v1 →
+Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
+  val_for_compare (vs !!! off) = val_for_compare v1 →
+  vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
   {{{ RET #true; l ↦∗ vinsert off v2 vs }}}.
