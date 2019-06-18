@@ -572,33 +572,35 @@ Proof.
   eexists. by apply vlookup_lookup.
 Qed.
 
-Lemma wp_cas_suc_offset s E l off vs v1 v2 :
-  vs !! off = Some v1 →
-  vals_cas_compare_safe v1 v1 →
+Lemma wp_cas_suc_offset s E l off vs v' v1 v2 :
+  vs !! off = Some v' →
+  val_for_compare v' = val_for_compare v1 →
+  vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
   {{{ RET #true; l ↦∗ <[off:=v2]> vs }}}.
 Proof.
-  iIntros (Hlookup Hcmp Φ) "Hl HΦ".
+  iIntros (Hlookup ?? Φ) "Hl HΦ".
   iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
-  iApply (wp_cas_suc with "Hl1"). { left. by destruct Hcmp. }
+  iApply (wp_cas_suc with "Hl1"); [done..|].
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
 
-Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  vs !!! off = v1 →
-  vals_cas_compare_safe v1 v1 →
+Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v' v1 v2 :
+  vs !!! off = v' →
+  val_for_compare v' = val_for_compare v1 →
+  vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
   {{{ RET #true; l ↦∗ vinsert off v2 vs }}}.
 Proof.
-  intros. setoid_rewrite vec_to_list_insert. apply wp_cas_suc_offset=> //.
+  intros. setoid_rewrite vec_to_list_insert. eapply wp_cas_suc_offset=> //.
   by apply vlookup_lookup.
 Qed.
 
 Lemma wp_cas_fail_offset s E l off vs v0 v1 v2 :
   vs !! off = Some v0 →
-  v0 ≠ v1 →
+  val_for_compare v0 ≠ val_for_compare v1 →
   vals_cas_compare_safe v0 v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
@@ -613,7 +615,7 @@ Proof.
 Qed.
 
 Lemma wp_cas_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  vs !!! off ≠ v1 →
+  val_for_compare (vs !!! off) ≠ val_for_compare v1 →
   vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CAS #(l +ₗ off) v1 v2 @ s; E
