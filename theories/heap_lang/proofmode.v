@@ -543,7 +543,9 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |intros H1; wp_finish
     |intros H2; wp_finish]
   | |- envs_entails _ (twp ?E ?e ?Q) =>
@@ -552,7 +554,9 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
       |fail 1 "wp_cas: cannot find 'CAS' in" e];
     [solve_mapsto ()
     |pm_reflexivity
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |intros H1; wp_finish
     |intros H2; wp_finish]
   | _ => fail "wp_cas: not a 'wp'"
@@ -571,7 +575,9 @@ Tactic Notation "wp_cas_fail" :=
     [iSolveTC
     |solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
@@ -579,7 +585,9 @@ Tactic Notation "wp_cas_fail" :=
       |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
     [solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |wp_finish]
   | _ => fail "wp_cas_fail: not a 'wp'"
   end.
@@ -598,7 +606,9 @@ Tactic Notation "wp_cas_suc" :=
     |solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
@@ -607,7 +617,9 @@ Tactic Notation "wp_cas_suc" :=
     [solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |try (fast_done || (left; fast_done) || (right; fast_done)) (* vals_cas_compare_safe *)
+    |(* vals_cas_compare_safe. This is a disjunction, so to solve cases like
+     [True ∨ False] we need to call [left]/[right]. *)
+     try (fast_done || (left; fast_done) || (right; fast_done))
     |wp_finish]
   | _ => fail "wp_cas_suc: not a 'wp'"
   end.
