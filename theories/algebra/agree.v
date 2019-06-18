@@ -75,7 +75,7 @@ Proof.
         destruct (H1' b) as (c&?&?); eauto. by exists c; split; last etrans.
   - intros n x y [??]; split; naive_solver eauto using dist_S.
 Qed.
-Canonical Structure agreeC := OfeT (agree A) agree_ofe_mixin.
+Canonical Structure agreeO := OfeT (agree A) agree_ofe_mixin.
 
 (* CMRA *)
 (* agree_validN is carefully written such that, when applied to a singleton, it
@@ -251,7 +251,7 @@ Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 End agree.
 
 Instance: Params (@to_agree) 1 := {}.
-Arguments agreeC : clear implicits.
+Arguments agreeO : clear implicits.
 Arguments agreeR : clear implicits.
 
 Program Definition agree_map {A B} (f : A → B) (x : agree A) : agree B :=
@@ -297,33 +297,33 @@ Section agree_map.
   Qed.
 End agree_map.
 
-Definition agreeC_map {A B} (f : A -n> B) : agreeC A -n> agreeC B :=
-  CofeMor (agree_map f : agreeC A → agreeC B).
-Instance agreeC_map_ne A B : NonExpansive (@agreeC_map A B).
+Definition agreeO_map {A B} (f : A -n> B) : agreeO A -n> agreeO B :=
+  OfeMor (agree_map f : agreeO A → agreeO B).
+Instance agreeO_map_ne A B : NonExpansive (@agreeO_map A B).
 Proof.
   intros n f g Hfg x; split=> b /=;
     setoid_rewrite elem_of_list_fmap; naive_solver.
 Qed.
 
-Program Definition agreeRF (F : cFunctor) : rFunctor := {|
-  rFunctor_car A _ B _ := agreeR (cFunctor_car F A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := agreeC_map (cFunctor_map F fg)
+Program Definition agreeRF (F : oFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := agreeR (oFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := agreeO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl. by apply agreeC_map_ne, cFunctor_ne.
+  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl. by apply agreeO_map_ne, oFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x; simpl. rewrite -{2}(agree_map_id x).
-  apply (agree_map_ext _)=>y. by rewrite cFunctor_id.
+  apply (agree_map_ext _)=>y. by rewrite oFunctor_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl. rewrite -agree_map_compose.
-  apply (agree_map_ext _)=>y; apply cFunctor_compose.
+  apply (agree_map_ext _)=>y; apply oFunctor_compose.
 Qed.
 
 Instance agreeRF_contractive F :
-  cFunctorContractive F → rFunctorContractive (agreeRF F).
+  oFunctorContractive F → rFunctorContractive (agreeRF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl.
-  by apply agreeC_map_ne, cFunctor_contractive.
+  by apply agreeO_map_ne, oFunctor_contractive.
 Qed.

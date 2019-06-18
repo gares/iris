@@ -8,10 +8,10 @@ Local Notation proph_map P V := (gmap P (list V)).
 Definition proph_val_list (P V : Type) := list (P * V).
 
 Definition proph_mapUR (P V : Type) `{Countable P} : ucmraT :=
-  gmapUR P $ exclR $ listC $ leibnizC V.
+  gmapUR P $ exclR $ listO $ leibnizO V.
 
 Definition to_proph_map {P V} `{Countable P} (pvs : proph_map P V) : proph_mapUR P V :=
-  fmap (λ vs, Excl (vs : list (leibnizC V))) pvs.
+  fmap (λ vs, Excl (vs : list (leibnizO V))) pvs.
 
 (** The CMRA we need. *)
 Class proph_mapG (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapG {
@@ -88,7 +88,7 @@ Section to_proph_map.
   Proof. intros l. rewrite lookup_fmap. by case (R !! l). Qed.
 
   Lemma to_proph_map_insert p vs R :
-    to_proph_map (<[p := vs]> R) = <[p := Excl (vs: list (leibnizC V))]> (to_proph_map R).
+    to_proph_map (<[p := vs]> R) = <[p := Excl (vs: list (leibnizO V))]> (to_proph_map R).
   Proof. by rewrite /to_proph_map fmap_insert. Qed.
 
   Lemma to_proph_map_delete p R :
@@ -170,7 +170,7 @@ Section proph_map.
     { (* FIXME: FIXME(Coq #6294): needs new unification *)
       eapply auth_update. apply: singleton_local_update.
       - by rewrite /to_proph_map lookup_fmap HR.
-      - by apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizC V)))). }
+      - by apply (exclusive_local_update _ (Excl (proph_list_resolves pvs p : list (leibnizO V)))). }
     rewrite /to_proph_map -fmap_insert.
     iModIntro. iExists (proph_list_resolves pvs p). iFrame. iSplitR.
     - iPureIntro. done.

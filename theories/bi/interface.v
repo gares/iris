@@ -125,7 +125,7 @@ Section bi_mixin.
     sbi_mixin_internal_eq_refl {A : ofeT} P (a : A) : P ⊢ a ≡ a;
     sbi_mixin_internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
       NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b;
-    sbi_mixin_fun_ext {A} {B : A → ofeT} (f g : ofe_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g;
+    sbi_mixin_fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g;
     sbi_mixin_sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y;
     sbi_mixin_discrete_eq_1 {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝;
 
@@ -168,8 +168,8 @@ Structure bi := Bi {
                         bi_exist bi_sep bi_wand bi_persistently;
 }.
 
-Coercion bi_ofeC (PROP : bi) : ofeT := OfeT PROP (bi_ofe_mixin PROP).
-Canonical Structure bi_ofeC.
+Coercion bi_ofeO (PROP : bi) : ofeT := OfeT PROP (bi_ofe_mixin PROP).
+Canonical Structure bi_ofeO.
 
 Instance: Params (@bi_entails) 1 := {}.
 Instance: Params (@bi_emp) 1 := {}.
@@ -230,8 +230,8 @@ Instance: Params (@sbi_internal_eq) 1 := {}.
 Arguments sbi_later {PROP} _%I : simpl never, rename.
 Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
 
-Coercion sbi_ofeC (PROP : sbi) : ofeT := OfeT PROP (sbi_ofe_mixin PROP).
-Canonical Structure sbi_ofeC.
+Coercion sbi_ofeO (PROP : sbi) : ofeT := OfeT PROP (sbi_ofe_mixin PROP).
+Canonical Structure sbi_ofeO.
 Coercion sbi_bi (PROP : sbi) : bi :=
   {| bi_ofe_mixin := sbi_ofe_mixin PROP; bi_bi_mixin := sbi_bi_mixin PROP |}.
 Canonical Structure sbi_bi.
@@ -423,7 +423,7 @@ Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
 Proof. eapply sbi_mixin_internal_eq_rewrite, sbi_sbi_mixin. Qed.
 
-Lemma fun_ext {A} {B : A → ofeT} (f g : ofe_fun B) :
+Lemma fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) :
   (∀ x, f x ≡ g x) ⊢@{PROP} f ≡ g.
 Proof. eapply sbi_mixin_fun_ext, sbi_sbi_mixin. Qed.
 Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) :

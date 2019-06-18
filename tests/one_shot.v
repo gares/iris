@@ -21,7 +21,7 @@ Definition one_shot_example : val := λ: <>,
        end
     end)).
 
-Definition one_shotR := csumR (exclR unitC) (agreeR ZC).
+Definition one_shotR := csumR (exclR unitO) (agreeR ZO).
 Definition Pending : one_shotR := Cinl (Excl ()).
 Definition Shot (n : Z) : one_shotR := Cinr (to_agree n).
 

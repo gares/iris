@@ -9,7 +9,7 @@ generalize the construction without breaking canonical structures. *)
 Section coPset.
   Implicit Types X Y : coPset.
 
-  Canonical Structure coPsetC := discreteC coPset.
+  Canonical Structure coPsetO := discreteO coPset.
 
   Instance coPset_valid : Valid coPset := λ _, True.
   Instance coPset_unit : Unit coPset := (∅ : coPset).
@@ -67,7 +67,7 @@ Inductive coPset_disj :=
 
 Section coPset_disj.
   Arguments op _ _ !_ !_ /.
-  Canonical Structure coPset_disjC := leibnizC coPset_disj.
+  Canonical Structure coPset_disjC := leibnizO coPset_disj.
 
   Instance coPset_disj_valid : Valid coPset_disj := λ X,
     match X with CoPset _ => True | CoPsetBot => False end.

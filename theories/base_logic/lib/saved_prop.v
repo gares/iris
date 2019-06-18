@@ -8,20 +8,20 @@ Import uPred.
 (* "Saved anything" -- this can give you saved propositions, saved predicates,
    saved whatever-you-like. *)
 
-Class savedAnythingG (Σ : gFunctors) (F : cFunctor) := SavedAnythingG {
+Class savedAnythingG (Σ : gFunctors) (F : oFunctor) := SavedAnythingG {
   saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ) _));
-  saved_anything_contractive : cFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
+  saved_anything_contractive : oFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
 }.
-Definition savedAnythingΣ (F : cFunctor) `{!cFunctorContractive F} : gFunctors :=
+Definition savedAnythingΣ (F : oFunctor) `{!oFunctorContractive F} : gFunctors :=
   #[ GFunctor (agreeRF F) ].
 
-Instance subG_savedAnythingΣ {Σ F} `{!cFunctorContractive F} :
+Instance subG_savedAnythingΣ {Σ F} `{!oFunctorContractive F} :
   subG (savedAnythingΣ F) Σ → savedAnythingG Σ F.
 Proof. solve_inG. Qed.
 
 Definition saved_anything_own `{!savedAnythingG Σ F}
     (γ : gname) (x : F (iProp Σ) _) : iProp Σ :=
-  own γ (to_agree $ (cFunctor_map F (iProp_fold, iProp_unfold) x)).
+  own γ (to_agree $ (oFunctor_map F (iProp_fold, iProp_unfold) x)).
 Typeclasses Opaque saved_anything_own.
 Instance: Params (@saved_anything_own) 4 := {}.
 
@@ -57,11 +57,11 @@ Section saved_anything.
     iIntros "Hx Hy". rewrite /saved_anything_own.
     iDestruct (own_valid_2 with "Hx Hy") as "Hv".
     rewrite agree_validI agree_equivI.
-    set (G1 := cFunctor_map F (iProp_fold, iProp_unfold)).
-    set (G2 := cFunctor_map F (@iProp_unfold Σ, @iProp_fold Σ)).
+    set (G1 := oFunctor_map F (iProp_fold, iProp_unfold)).
+    set (G2 := oFunctor_map F (@iProp_unfold Σ, @iProp_fold Σ)).
     assert (∀ z, G2 (G1 z) ≡ z) as help.
-    { intros z. rewrite /G1 /G2 -cFunctor_compose -{2}[z]cFunctor_id.
-      apply (ne_proper (cFunctor_map F)); split=>?; apply iProp_fold_unfold. }
+    { intros z. rewrite /G1 /G2 -oFunctor_compose -{2}[z]oFunctor_id.
+      apply (ne_proper (oFunctor_map F)); split=>?; apply iProp_fold_unfold. }
     rewrite -{2}[x]help -{2}[y]help. by iApply f_equiv.
   Qed.
 End saved_anything.
@@ -99,14 +99,14 @@ Proof.
 Qed.
 
 (* Saved predicates. *)
-Notation savedPredG Σ A := (savedAnythingG Σ (A -c> ▶ ∙)).
-Notation savedPredΣ A := (savedAnythingΣ (A -c> ▶ ∙)).
+Notation savedPredG Σ A := (savedAnythingG Σ (A -d> ▶ ∙)).
+Notation savedPredΣ A := (savedAnythingΣ (A -d> ▶ ∙)).
 
 Definition saved_pred_own `{!savedPredG Σ A} (γ : gname) (Φ : A → iProp Σ) :=
-  saved_anything_own (F := A -c> ▶ ∙) γ (CofeMor Next ∘ Φ).
+  saved_anything_own (F := A -d> ▶ ∙) γ (OfeMor Next ∘ Φ).
 
 Instance saved_pred_own_contractive `{!savedPredG Σ A} γ :
-  Contractive (saved_pred_own γ : (A -c> iProp Σ) → iProp Σ).
+  Contractive (saved_pred_own γ : (A -d> iProp Σ) → iProp Σ).
 Proof.
   solve_proper_core ltac:(fun _ => first [ intros ?; progress simpl | by auto | f_contractive | f_equiv ]).
 Qed.
@@ -130,5 +130,5 @@ Lemma saved_pred_agree `{!savedPredG Σ A} γ Φ Ψ x :
 Proof.
   unfold saved_pred_own. iIntros "#HΦ #HΨ /=". iApply later_equivI.
   iDestruct (saved_anything_agree with "HΦ HΨ") as "Heq".
-  by iDestruct (ofe_fun_equivI with "Heq") as "?".
+  by iDestruct (discrete_fun_equivI with "Heq") as "?".
 Qed.

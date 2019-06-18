@@ -40,10 +40,10 @@ Section Ofe_Cofe_def.
     { monPred_in_dist i : P i ≡{n}≡ Q i }.
   Instance monPred_dist : Dist monPred := monPred_dist'.
 
-  Definition monPred_sig P : { f : I -c> PROP | Proper ((⊑) ==> (⊢)) f } :=
+  Definition monPred_sig P : { f : I -d> PROP | Proper ((⊑) ==> (⊢)) f } :=
     exist _ (monPred_at P) (monPred_mono P).
 
-  Definition sig_monPred (P' : { f : I -c> PROP | Proper ((⊑) ==> (⊢)) f })
+  Definition sig_monPred (P' : { f : I -d> PROP | Proper ((⊑) ==> (⊢)) f })
     : monPred :=
     MonPred (proj1_sig P') (proj2_sig P').
 
@@ -60,18 +60,18 @@ Section Ofe_Cofe_def.
   Definition monPred_ofe_mixin : OfeMixin monPred.
   Proof. by apply (iso_ofe_mixin monPred_sig monPred_sig_equiv monPred_sig_dist). Qed.
 
-  Canonical Structure monPredC := OfeT monPred monPred_ofe_mixin.
+  Canonical Structure monPredO := OfeT monPred monPred_ofe_mixin.
 
-  Global Instance monPred_cofe `{Cofe PROP} : Cofe monPredC.
+  Global Instance monPred_cofe `{Cofe PROP} : Cofe monPredO.
   Proof.
-    unshelve refine (iso_cofe_subtype (A:=I-c>PROP) _ MonPred monPred_at _ _ _);
+    unshelve refine (iso_cofe_subtype (A:=I-d>PROP) _ MonPred monPred_at _ _ _);
       [apply _|by apply monPred_sig_dist|done|].
     intros c i j Hij. apply @limit_preserving;
       [by apply bi.limit_preserving_entails; intros ??|]=>n. by rewrite Hij.
   Qed.
 End Ofe_Cofe_def.
 
-Lemma monPred_sig_monPred (P' : { f : I -c> PROP | Proper ((⊑) ==> (⊢)) f }) :
+Lemma monPred_sig_monPred (P' : { f : I -d> PROP | Proper ((⊑) ==> (⊢)) f }) :
   monPred_sig (sig_monPred P') ≡ P'.
 Proof. by change (P' ≡ P'). Qed.
 Lemma sig_monPred_sig P : sig_monPred (monPred_sig P) ≡ P.
@@ -107,7 +107,7 @@ End Ofe_Cofe.
 Arguments monPred _ _ : clear implicits.
 Arguments monPred_at {_ _} _%I _.
 Local Existing Instance monPred_mono.
-Arguments monPredC _ _ : clear implicits.
+Arguments monPredO _ _ : clear implicits.
 
 (** BI and SBI structures. *)
 
@@ -840,7 +840,7 @@ Proof.
   apply bi.equiv_spec. split.
   - apply bi.forall_intro=>?. apply (bi.f_equiv (flip monPred_at _)).
   - by rewrite -{2}(sig_monPred_sig P) -{2}(sig_monPred_sig Q)
-               -bi.f_equiv -bi.sig_equivI !bi.ofe_fun_equivI.
+               -bi.f_equiv -bi.sig_equivI !bi.discrete_fun_equivI.
 Qed.
 
 (** Objective  *)

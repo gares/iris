@@ -9,7 +9,7 @@ exception of what's in the [invG] module. The module [invG] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
 Module invG.
   Class invG (Σ : gFunctors) : Set := WsatG {
-    inv_inG :> inG Σ (authR (gmapUR positive (agreeR (laterC (iPreProp Σ)))));
+    inv_inG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPreProp Σ)))));
     enabled_inG :> inG Σ coPset_disjR;
     disabled_inG :> inG Σ (gset_disjR positive);
     invariant_name : gname;
@@ -18,12 +18,12 @@ Module invG.
   }.
 
   Definition invΣ : gFunctors :=
-    #[GFunctor (authRF (gmapURF positive (agreeRF (laterCF idCF))));
+    #[GFunctor (authRF (gmapURF positive (agreeRF (laterOF idOF))));
       GFunctor coPset_disjUR;
       GFunctor (gset_disjUR positive)].
 
   Class invPreG (Σ : gFunctors) : Set := WsatPreG {
-    inv_inPreG :> inG Σ (authR (gmapUR positive (agreeR (laterC (iPreProp Σ)))));
+    inv_inPreG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPreProp Σ)))));
     enabled_inPreG :> inG Σ coPset_disjR;
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.

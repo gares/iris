@@ -80,23 +80,23 @@ Section cofe.
         by trans (Q i x);[apply HP|apply HQ].
     - intros n P Q HPQ; split=> i x ??; apply HPQ; auto.
   Qed.
-  Canonical Structure uPredC : ofeT := OfeT (uPred M) uPred_ofe_mixin.
+  Canonical Structure uPredO : ofeT := OfeT (uPred M) uPred_ofe_mixin.
 
-  Program Definition uPred_compl : Compl uPredC := λ c,
+  Program Definition uPred_compl : Compl uPredO := λ c,
     {| uPred_holds n x := ∀ n', n' ≤ n → ✓{n'}x → c n' n' x |}.
   Next Obligation.
     move=> /= c n1 n2 x1 x2 HP Hx12 Hn12 n3 Hn23 Hv. eapply uPred_mono.
     eapply HP, cmra_validN_includedN, cmra_includedN_le=>//; lia.
     eapply cmra_includedN_le=>//; lia. done.
   Qed.
-  Global Program Instance uPred_cofe : Cofe uPredC := {| compl := uPred_compl |}.
+  Global Program Instance uPred_cofe : Cofe uPredO := {| compl := uPred_compl |}.
   Next Obligation.
     intros n c; split=>i x Hin Hv.
     etrans; [|by symmetry; apply (chain_cauchy c i n)]. split=>H; [by apply H|].
     repeat intro. apply (chain_cauchy c n' i)=>//. by eapply uPred_mono.
   Qed.
 End cofe.
-Arguments uPredC : clear implicits.
+Arguments uPredO : clear implicits.
 
 Instance uPred_ne {M} (P : uPred M) n : Proper (dist n ==> iff) (P n).
 Proof.
@@ -150,23 +150,23 @@ Lemma uPred_map_ext {M1 M2 : ucmraT} (f g : M1 -n> M2)
       `{!CmraMorphism f} `{!CmraMorphism g}:
   (∀ x, f x ≡ g x) → ∀ x, uPred_map f x ≡ uPred_map g x.
 Proof. intros Hf P; split=> n x Hx /=; by rewrite /uPred_holds /= Hf. Qed.
-Definition uPredC_map {M1 M2 : ucmraT} (f : M2 -n> M1) `{!CmraMorphism f} :
-  uPredC M1 -n> uPredC M2 := CofeMor (uPred_map f : uPredC M1 → uPredC M2).
-Lemma uPredC_map_ne {M1 M2 : ucmraT} (f g : M2 -n> M1)
+Definition uPredO_map {M1 M2 : ucmraT} (f : M2 -n> M1) `{!CmraMorphism f} :
+  uPredO M1 -n> uPredO M2 := OfeMor (uPred_map f : uPredO M1 → uPredO M2).
+Lemma uPredO_map_ne {M1 M2 : ucmraT} (f g : M2 -n> M1)
     `{!CmraMorphism f, !CmraMorphism g} n :
-  f ≡{n}≡ g → uPredC_map f ≡{n}≡ uPredC_map g.
+  f ≡{n}≡ g → uPredO_map f ≡{n}≡ uPredO_map g.
 Proof.
   by intros Hfg P; split=> n' y ??;
     rewrite /uPred_holds /= (dist_le _ _ _ _(Hfg y)); last lia.
 Qed.
 
-Program Definition uPredCF (F : urFunctor) : cFunctor := {|
-  cFunctor_car A _ B _ := uPredC (urFunctor_car F B A);
-  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := uPredC_map (urFunctor_map F (fg.2, fg.1))
+Program Definition uPredOF (F : urFunctor) : oFunctor := {|
+  oFunctor_car A _ B _ := uPredO (urFunctor_car F B A);
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := uPredO_map (urFunctor_map F (fg.2, fg.1))
 |}.
 Next Obligation.
   intros F A1 ? A2 ? B1 ? B2 ? n P Q HPQ.
-  apply uPredC_map_ne, urFunctor_ne; split; by apply HPQ.
+  apply uPredO_map_ne, urFunctor_ne; split; by apply HPQ.
 Qed.
 Next Obligation.
   intros F A ? B ? P; simpl. rewrite -{2}(uPred_map_id P).
@@ -177,10 +177,10 @@ Next Obligation.
   apply uPred_map_ext=>y; apply urFunctor_compose.
 Qed.
 
-Instance uPredCF_contractive F :
-  urFunctorContractive F → cFunctorContractive (uPredCF F).
+Instance uPredOF_contractive F :
+  urFunctorContractive F → oFunctorContractive (uPredOF F).
 Proof.
-  intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ. apply uPredC_map_ne, urFunctor_contractive.
+  intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ. apply uPredO_map_ne, urFunctor_contractive.
   destruct n; split; by apply HPQ.
 Qed.
 
@@ -398,7 +398,7 @@ Proof.
   - intros HPQ; split; split=> x i; apply HPQ.
   - intros [??]. exact: entails_anti_sym.
 Qed.
-Lemma entails_lim (cP cQ : chain (uPredC M)) :
+Lemma entails_lim (cP cQ : chain (uPredO M)) :
   (∀ n, cP n ⊢ cQ n) → compl cP ⊢ compl cQ.
 Proof.
   intros Hlim; split=> n m ? HP.
@@ -693,10 +693,10 @@ Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → uPred M) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
 Proof. intros HΨ. unseal; split=> n x ?? n' x' ??? Ha. by apply HΨ with n a. Qed.
 
-Lemma fun_ext {A} {B : A → ofeT} (g1 g2 : ofe_fun B) :
+Lemma fun_ext {A} {B : A → ofeT} (g1 g2 : discrete_fun B) :
   (∀ i, g1 i ≡ g2 i) ⊢ g1 ≡ g2.
 Proof. by unseal. Qed.
-Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sigC P) :
+Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sigO P) :
   proj1_sig x ≡ proj1_sig y ⊢ x ≡ y.
 Proof. by unseal. Qed.
 
@@ -797,7 +797,7 @@ Proof. unseal. by destruct mx. Qed.
 Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
 
-Lemma ofe_fun_validI {A} {B : A → ucmraT} (g : ofe_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
+Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. by unseal. Qed.
 
 (** Consistency/soundness statement *)

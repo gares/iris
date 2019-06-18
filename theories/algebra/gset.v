@@ -8,7 +8,7 @@ Section gset.
   Context `{Countable K}.
   Implicit Types X Y : gset K.
 
-  Canonical Structure gsetC := discreteC (gset K).
+  Canonical Structure gsetO := discreteO (gset K).
 
   Instance gset_valid : Valid (gset K) := λ _, True.
   Instance gset_unit : Unit (gset K) := (∅ : gset K).
@@ -62,7 +62,7 @@ Section gset.
   Proof. by apply core_id_total; rewrite gset_core_self. Qed.
 End gset.
 
-Arguments gsetC _ {_ _}.
+Arguments gsetO _ {_ _}.
 Arguments gsetR _ {_ _}.
 Arguments gsetUR _ {_ _}.
 
@@ -79,7 +79,7 @@ Section gset_disj.
   Arguments cmra_op _ !_ !_ /.
   Arguments ucmra_op _ !_ !_ /.
 
-  Canonical Structure gset_disjC := leibnizC (gset_disj K).
+  Canonical Structure gset_disjO := leibnizO (gset_disj K).
 
   Instance gset_disj_valid : Valid (gset_disj K) := λ X,
     match X with GSet _ => True | GSetBot => False end.
@@ -227,6 +227,6 @@ Section gset_disj.
   Qed.
 End gset_disj.
 
-Arguments gset_disjC _ {_ _}.
+Arguments gset_disjO _ {_ _}.
 Arguments gset_disjR _ {_ _}.
 Arguments gset_disjUR _ {_ _}.

@@ -351,10 +351,10 @@ Instance state_inhabited : Inhabited state :=
 Instance val_inhabited : Inhabited val := populate (LitV LitUnit).
 Instance expr_inhabited : Inhabited expr := populate (Val inhabitant).
 
-Canonical Structure stateC := leibnizC state.
-Canonical Structure locC := leibnizC loc.
-Canonical Structure valC := leibnizC val.
-Canonical Structure exprC := leibnizC expr.
+Canonical Structure stateO := leibnizO state.
+Canonical Structure locO := leibnizO loc.
+Canonical Structure valO := leibnizO val.
+Canonical Structure exprO := leibnizO expr.
 
 (** Evaluation contexts *)
 Inductive ectx_item :=

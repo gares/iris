@@ -84,21 +84,21 @@ Qed.
 Lemma sig_equivI {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
 Proof. apply (anti_symm _). apply sig_eq. apply f_equiv, _. Qed.
 
-Lemma ofe_fun_equivI {A} {B : A → ofeT} (f g : ofe_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
+Lemma discrete_fun_equivI {A} {B : A → ofeT} (f g : discrete_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
 Proof.
   apply (anti_symm _); auto using fun_ext.
   apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
   intros n h h' Hh; apply forall_ne=> x; apply internal_eq_ne; auto.
 Qed.
-Lemma ofe_morC_equivI {A B : ofeT} (f g : A -n> B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
+Lemma ofe_morO_equivI {A B : ofeT} (f g : A -n> B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
 Proof.
   apply (anti_symm _).
   - apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
-  - rewrite -(ofe_fun_equivI (ofe_mor_car _ _ f) (ofe_mor_car _ _ g)).
+  - rewrite -(discrete_fun_equivI (ofe_mor_car _ _ f) (ofe_mor_car _ _ g)).
     set (h1 (f : A -n> B) :=
-      exist (λ f : A -c> B, NonExpansive (f : A → B)) f (ofe_mor_ne A B f)).
-    set (h2 (f : sigC (λ f : A -c> B, NonExpansive (f : A → B))) :=
-      @CofeMor A B (`f) (proj2_sig f)).
+      exist (λ f : A -d> B, NonExpansive (f : A → B)) f (ofe_mor_ne A B f)).
+    set (h2 (f : sigO (λ f : A -d> B, NonExpansive (f : A → B))) :=
+      @OfeMor A B (`f) (proj2_sig f)).
     assert (∀ f, h2 (h1 f) = f) as Hh by (by intros []).
     assert (NonExpansive h2) by (intros ??? EQ; apply EQ).
     by rewrite -{2}[f]Hh -{2}[g]Hh -f_equiv -sig_equivI.

@@ -58,12 +58,12 @@ of both values and ghost names for meta information, for example:
 this RA would be quite inconvenient to deal with. *)
 
 Definition gen_heapUR (L V : Type) `{Countable L} : ucmraT :=
-  gmapUR L (prodR fracR (agreeR (leibnizC V))).
+  gmapUR L (prodR fracR (agreeR (leibnizO V))).
 Definition gen_metaUR (L : Type) `{Countable L} : ucmraT :=
   gmapUR L (agreeR gnameC).
 
 Definition to_gen_heap {L V} `{Countable L} : gmap L V → gen_heapUR L V :=
-  fmap (λ v, (1%Qp, to_agree (v : leibnizC V))).
+  fmap (λ v, (1%Qp, to_agree (v : leibnizO V))).
 Definition to_gen_meta `{Countable L} : gmap L gname → gen_metaUR L :=
   fmap to_agree.
 
@@ -71,7 +71,7 @@ Definition to_gen_meta `{Countable L} : gmap L gname → gen_metaUR L :=
 Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
   gen_heap_inG :> inG Σ (authR (gen_heapUR L V));
   gen_meta_inG :> inG Σ (authR (gen_metaUR L));
-  gen_meta_data_inG :> inG Σ (namespace_mapR (agreeR positiveC));
+  gen_meta_data_inG :> inG Σ (namespace_mapR (agreeR positiveO));
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
@@ -81,13 +81,13 @@ Arguments gen_meta_name {_ _ _ _ _} _ : assert.
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V));
   gen_meta_preG_inG :> inG Σ (authR (gen_metaUR L));
-  gen_meta_data_preG_inG :> inG Σ (namespace_mapR (agreeR positiveC));
+  gen_meta_data_preG_inG :> inG Σ (namespace_mapR (agreeR positiveO));
 }.
 
 Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
   GFunctor (authR (gen_heapUR L V));
   GFunctor (authR (gen_metaUR L));
-  GFunctor (namespace_mapR (agreeR positiveC))
+  GFunctor (namespace_mapR (agreeR positiveO))
 ].
 
 Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
@@ -105,7 +105,7 @@ Section definitions.
     own (gen_meta_name hG) (● (to_gen_meta m)))%I.
 
   Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
-    own (gen_heap_name hG) (◯ {[ l := (q, to_agree (v : leibnizC V)) ]}).
+    own (gen_heap_name hG) (◯ {[ l := (q, to_agree (v : leibnizO V)) ]}).
   Definition mapsto_aux : seal (@mapsto_def). by eexists. Qed.
   Definition mapsto := mapsto_aux.(unseal).
   Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
@@ -151,7 +151,7 @@ Section to_gen_heap.
     move=> /Some_pair_included_total_2 [_] /to_agree_included /leibniz_equiv_iff -> //.
   Qed.
   Lemma to_gen_heap_insert l v σ :
-    to_gen_heap (<[l:=v]> σ) = <[l:=(1%Qp, to_agree (v:leibnizC V))]> (to_gen_heap σ).
+    to_gen_heap (<[l:=v]> σ) = <[l:=(1%Qp, to_agree (v:leibnizO V))]> (to_gen_heap σ).
   Proof. by rewrite /to_gen_heap fmap_insert. Qed.
 
   Lemma to_gen_meta_valid m : ✓ to_gen_meta m.
@@ -304,7 +304,7 @@ Section gen_heap.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iMod (own_update with "Hσ") as "[Hσ Hl]".
     { eapply auth_update_alloc,
-        (alloc_singleton_local_update _ _ (1%Qp, to_agree (v:leibnizC _)))=> //.
+        (alloc_singleton_local_update _ _ (1%Qp, to_agree (v:leibnizO _)))=> //.
       by apply lookup_to_gen_heap_None. }
     iMod (own_alloc (namespace_map_token ⊤)) as (γm) "Hγm".
     { apply namespace_map_token_valid. }
@@ -350,7 +350,7 @@ Section gen_heap.
       as %[Hl%gen_heap_singleton_included _]%auth_both_valid.
     iMod (own_update_2 with "Hσ Hl") as "[Hσ Hl]".
     { eapply auth_update, singleton_local_update,
-        (exclusive_local_update _ (1%Qp, to_agree (v2:leibnizC _)))=> //.
+        (exclusive_local_update _ (1%Qp, to_agree (v2:leibnizO _)))=> //.
       by rewrite /to_gen_heap lookup_fmap Hl. }
     iModIntro. iFrame "Hl". iExists m. rewrite to_gen_heap_insert. iFrame.
     iPureIntro. apply (elem_of_dom_2 (D:=gset L)) in Hl.

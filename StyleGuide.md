@@ -36,8 +36,8 @@ is used by clients.
 
 ### small letters
 
-* a : A = cmraT or cofeT
-* b : B = cmraT or cofeT
+* a : A = cmraT or ofeT
+* b : B = cmraT or ofeT
 * c
 * d
 * e : expr = expressions
@@ -67,8 +67,8 @@ is used by clients.
 
 ### capital letters
 
-* A : Type, cmraT or cofeT
-* B : Type, cmraT or cofeT
+* A : Type, cmraT or ofeT
+* B : Type, cmraT or ofeT
 * C
 * D   
 * E : coPset = Viewshift masks
@@ -110,9 +110,9 @@ is used by clients.
 
 ### Suffixes
 
-* C: OFEs
+* O: OFEs
 * R: cameras
 * UR: unital cameras or resources algebras
-* F: functors (can be combined with all of the above, e.g. CF is an OFE functor)
+* F: functors (can be combined with all of the above, e.g. OF is an OFE functor)
 * G: global camera functor management
 * T: canonical structurs for algebraic classes (for example ofeT for OFEs, cmraT for cameras)

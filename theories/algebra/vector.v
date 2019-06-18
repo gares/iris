@@ -11,9 +11,9 @@ Section ofe.
 
   Definition vec_ofe_mixin m : OfeMixin (vec A m).
   Proof. by apply (iso_ofe_mixin vec_to_list). Qed.
-  Canonical Structure vecC m : ofeT := OfeT (vec A m) (vec_ofe_mixin m).
+  Canonical Structure vecO m : ofeT := OfeT (vec A m) (vec_ofe_mixin m).
 
-  Global Instance list_cofe `{Cofe A} m : Cofe (vecC m).
+  Global Instance list_cofe `{Cofe A} m : Cofe (vecO m).
   Proof.
     apply: (iso_cofe_subtype (λ l : list A, length l = m)
       (λ l, eq_rect _ (vec A) (list_to_vec l) m) vec_to_list)=> //.
@@ -29,11 +29,11 @@ Section ofe.
     intros ?? v' ?. inv_vec v'=>x' v'. inversion_clear 1.
     constructor. by apply discrete. change (v ≡ v'). by apply discrete.
   Qed.
-  Global Instance vec_ofe_discrete m : OfeDiscrete A → OfeDiscrete (vecC m).
+  Global Instance vec_ofe_discrete m : OfeDiscrete A → OfeDiscrete (vecO m).
   Proof. intros ? v. induction v; apply _. Qed.
 End ofe.
 
-Arguments vecC : clear implicits.
+Arguments vecO : clear implicits.
 Typeclasses Opaque vec_dist.
 
 Section proper.
@@ -66,7 +66,7 @@ Section proper.
 End proper.
 
 (** Functor *)
-Definition vec_map {A B : ofeT} m (f : A → B) : vecC A m → vecC B m :=
+Definition vec_map {A B : ofeT} m (f : A → B) : vecO A m → vecO B m :=
   @vmap A B f m.
 Lemma vec_map_ext_ne {A B : ofeT} m (f g : A → B) (v : vec A m) n :
   (∀ x, f x ≡{n}≡ g x) → vec_map m f v ≡{n}≡ vec_map m g v.
@@ -81,33 +81,33 @@ Proof.
   intros ? v v' H. eapply list_fmap_ne in H; last done.
   by rewrite -!vec_to_list_map in H.
 Qed.
-Definition vecC_map {A B : ofeT} m (f : A -n> B) : vecC A m -n> vecC B m :=
-  CofeMor (vec_map m f).
-Instance vecC_map_ne {A A'} m :
-  NonExpansive (@vecC_map A A' m).
+Definition vecO_map {A B : ofeT} m (f : A -n> B) : vecO A m -n> vecO B m :=
+  OfeMor (vec_map m f).
+Instance vecO_map_ne {A A'} m :
+  NonExpansive (@vecO_map A A' m).
 Proof. intros n f g ? v. by apply vec_map_ext_ne. Qed.
 
-Program Definition vecCF (F : cFunctor) m : cFunctor := {|
-  cFunctor_car A _ B _ := vecC (cFunctor_car F A B) m;
-  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := vecC_map m (cFunctor_map F fg)
+Program Definition vecOF (F : oFunctor) m : oFunctor := {|
+  oFunctor_car A _ B _ := vecO (oFunctor_car F A B) m;
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := vecO_map m (oFunctor_map F fg)
 |}.
 Next Obligation.
-  intros F A1 ? A2 ? B1 ? B2 ? n m f g Hfg. by apply vecC_map_ne, cFunctor_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n m f g Hfg. by apply vecO_map_ne, oFunctor_ne.
 Qed.
 Next Obligation.
   intros F m A ? B ? l.
-  change (vec_to_list (vec_map m (cFunctor_map F (cid, cid)) l) ≡ l).
-  rewrite vec_to_list_map. apply listCF.
+  change (vec_to_list (vec_map m (oFunctor_map F (cid, cid)) l) ≡ l).
+  rewrite vec_to_list_map. apply listOF.
 Qed.
 Next Obligation.
   intros F m A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' l.
-  change (vec_to_list (vec_map m (cFunctor_map F (f ◎ g, g' ◎ f')) l)
-    ≡ vec_map m (cFunctor_map F (g, g')) (vec_map m (cFunctor_map F (f, f')) l)).
-  rewrite !vec_to_list_map. by apply: (cFunctor_compose (listCF F) f g f' g').
+  change (vec_to_list (vec_map m (oFunctor_map F (f ◎ g, g' ◎ f')) l)
+    ≡ vec_map m (oFunctor_map F (g, g')) (vec_map m (oFunctor_map F (f, f')) l)).
+  rewrite !vec_to_list_map. by apply: (oFunctor_compose (listOF F) f g f' g').
 Qed.
 
-Instance vecCF_contractive F m :
-  cFunctorContractive F → cFunctorContractive (vecCF F m).
+Instance vecOF_contractive F m :
+  oFunctorContractive F → oFunctorContractive (vecOF F m).
 Proof.
-  by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecC_map_ne; first apply cFunctor_contractive.
+  by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecO_map_ne; first apply oFunctor_contractive.
 Qed.

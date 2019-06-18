@@ -62,18 +62,18 @@ Proof.
   by apply (iso_ofe_mixin
     (λ x, (namespace_map_data_proj x, namespace_map_token_proj x))).
 Qed.
-Canonical Structure namespace_mapC :=
+Canonical Structure namespace_mapO :=
   OfeT (namespace_map A) namespace_map_ofe_mixin.
 
 Global Instance NamespaceMap_discrete a b :
   Discrete a → Discrete b → Discrete (NamespaceMap a b).
 Proof. intros ?? [??] [??]; split; unfold_leibniz; by eapply discrete. Qed.
 Global Instance namespace_map_ofe_discrete :
-  OfeDiscrete A → OfeDiscrete namespace_mapC.
+  OfeDiscrete A → OfeDiscrete namespace_mapO.
 Proof. intros ? [??]; apply _. Qed.
 End ofe.
 
-Arguments namespace_mapC : clear implicits.
+Arguments namespace_mapO : clear implicits.
 
 (* Camera *)
 Section cmra.

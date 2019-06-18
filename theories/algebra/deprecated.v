@@ -29,7 +29,7 @@ Implicit Types x y : dec_agree A.
 
 Instance dec_agree_valid : Valid (dec_agree A) := λ x,
   if x is DecAgree _ then True else False.
-Canonical Structure dec_agreeC : ofeT := leibnizC (dec_agree A).
+Canonical Structure dec_agreeC : ofeT := leibnizO (dec_agree A).
 
 Instance dec_agree_op : Op (dec_agree A) := λ x y,
   match x, y with

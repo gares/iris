@@ -24,14 +24,14 @@ Proof.
     + by intros m1 m2 m3 ?? k; trans (m2 !! k).
   - by intros n m1 m2 ? k; apply dist_S.
 Qed.
-Canonical Structure gmapC : ofeT := OfeT (gmap K A) gmap_ofe_mixin.
+Canonical Structure gmapO : ofeT := OfeT (gmap K A) gmap_ofe_mixin.
 
-Program Definition gmap_chain (c : chain gmapC)
-  (k : K) : chain (optionC A) := {| chain_car n := c n !! k |}.
+Program Definition gmap_chain (c : chain gmapO)
+  (k : K) : chain (optionO A) := {| chain_car n := c n !! k |}.
 Next Obligation. by intros c k n i ?; apply (chain_cauchy c). Qed.
-Definition gmap_compl `{Cofe A} : Compl gmapC := λ c,
+Definition gmap_compl `{Cofe A} : Compl gmapO := λ c,
   map_imap (λ i _, compl (gmap_chain c i)) (c 0).
-Global Program Instance gmap_cofe `{Cofe A} : Cofe gmapC :=
+Global Program Instance gmap_cofe `{Cofe A} : Cofe gmapO :=
   {| compl := gmap_compl |}.
 Next Obligation.
   intros ? n c k. rewrite /compl /gmap_compl lookup_imap.
@@ -39,10 +39,10 @@ Next Obligation.
   by rewrite conv_compl /=; apply reflexive_eq.
 Qed.
 
-Global Instance gmap_ofe_discrete : OfeDiscrete A → OfeDiscrete gmapC.
+Global Instance gmap_ofe_discrete : OfeDiscrete A → OfeDiscrete gmapO.
 Proof. intros ? m m' ? i. by apply (discrete _). Qed.
 (* why doesn't this go automatic? *)
-Global Instance gmapC_leibniz: LeibnizEquiv A → LeibnizEquiv gmapC.
+Global Instance gmapO_leibniz: LeibnizEquiv A → LeibnizEquiv gmapO.
 Proof. intros; change (LeibnizEquiv (gmap K A)); apply _. Qed.
 
 Global Instance lookup_ne k :
@@ -98,7 +98,7 @@ Lemma insert_idN n m i x :
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 End cofe.
 
-Arguments gmapC _ {_ _} _.
+Arguments gmapO _ {_ _} _.
 
 (* CMRA *)
 Section cmra.
@@ -548,42 +548,42 @@ Proof.
     case: (m!!i)=>//= ?. apply cmra_morphism_pcore, _.
   - intros m1 m2 i. by rewrite lookup_op !lookup_fmap lookup_op cmra_morphism_op.
 Qed.
-Definition gmapC_map `{Countable K} {A B} (f: A -n> B) :
-  gmapC K A -n> gmapC K B := CofeMor (fmap f : gmapC K A → gmapC K B).
-Instance gmapC_map_ne `{Countable K} {A B} :
-  NonExpansive (@gmapC_map K _ _ A B).
+Definition gmapO_map `{Countable K} {A B} (f: A -n> B) :
+  gmapO K A -n> gmapO K B := OfeMor (fmap f : gmapO K A → gmapO K B).
+Instance gmapO_map_ne `{Countable K} {A B} :
+  NonExpansive (@gmapO_map K _ _ A B).
 Proof.
   intros n f g Hf m k; rewrite /= !lookup_fmap.
   destruct (_ !! k) eqn:?; simpl; constructor; apply Hf.
 Qed.
 
-Program Definition gmapCF K `{Countable K} (F : cFunctor) : cFunctor := {|
-  cFunctor_car A _ B _ := gmapC K (cFunctor_car F A B);
-  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapC_map (cFunctor_map F fg)
+Program Definition gmapOF K `{Countable K} (F : oFunctor) : oFunctor := {|
+  oFunctor_car A _ B _ := gmapO K (oFunctor_car F A B);
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, cFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_ne.
 Qed.
 Next Obligation.
   intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
-  apply map_fmap_equiv_ext=>y ??; apply cFunctor_id.
+  apply map_fmap_equiv_ext=>y ??; apply oFunctor_id.
 Qed.
 Next Obligation.
   intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
-  apply map_fmap_equiv_ext=>y ??; apply cFunctor_compose.
+  apply map_fmap_equiv_ext=>y ??; apply oFunctor_compose.
 Qed.
-Instance gmapCF_contractive K `{Countable K} F :
-  cFunctorContractive F → cFunctorContractive (gmapCF K F).
+Instance gmapOF_contractive K `{Countable K} F :
+  oFunctorContractive F → oFunctorContractive (gmapOF K F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, cFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_contractive.
 Qed.
 
 Program Definition gmapURF K `{Countable K} (F : rFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := gmapUR K (rFunctor_car F A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapC_map (rFunctor_map F fg)
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapO_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, rFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_ne.
 Qed.
 Next Obligation.
   intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
@@ -596,5 +596,5 @@ Qed.
 Instance gmapRF_contractive K `{Countable K} F :
   rFunctorContractive F → urFunctorContractive (gmapURF K F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapC_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_contractive.
 Qed.

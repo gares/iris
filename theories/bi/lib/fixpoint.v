@@ -44,7 +44,7 @@ Section least.
   Lemma least_fixpoint_unfold_1 x :
     bi_least_fixpoint F x ⊢ F (bi_least_fixpoint F) x.
   Proof.
-    iIntros "HF". iApply ("HF" $! (CofeMor (F (bi_least_fixpoint F))) with "[#]").
+    iIntros "HF". iApply ("HF" $! (OfeMor (F (bi_least_fixpoint F))) with "[#]").
     iIntros "!#" (y) "Hy /=". iApply (bi_mono_pred with "[#]"); last done.
     iIntros "!#" (z) "?". by iApply least_fixpoint_unfold_2.
   Qed.
@@ -58,7 +58,7 @@ Section least.
   Lemma least_fixpoint_ind (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, F Φ y -∗ Φ y) -∗ ∀ x, bi_least_fixpoint F x -∗ Φ x.
   Proof.
-    iIntros "#HΦ" (x) "HF". by iApply ("HF" $! (CofeMor Φ) with "[#]").
+    iIntros "#HΦ" (x) "HF". by iApply ("HF" $! (OfeMor Φ) with "[#]").
   Qed.
 
   Lemma least_fixpoint_strong_ind (Φ : A → PROP) `{!NonExpansive Φ} :
@@ -107,7 +107,7 @@ Section greatest.
   Lemma greatest_fixpoint_unfold_2 x :
     F (bi_greatest_fixpoint F) x ⊢ bi_greatest_fixpoint F x.
   Proof.
-    iIntros "HF". iExists (CofeMor (F (bi_greatest_fixpoint F))).
+    iIntros "HF". iExists (OfeMor (F (bi_greatest_fixpoint F))).
     iSplit; last done. iIntros "!#" (y) "Hy". iApply (bi_mono_pred with "[#] Hy").
     iIntros "!#" (z) "?". by iApply greatest_fixpoint_unfold_1.
   Qed.
@@ -120,5 +120,5 @@ Section greatest.
 
   Lemma greatest_fixpoint_coind (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, Φ y -∗ F Φ y) -∗ ∀ x, Φ x -∗ bi_greatest_fixpoint F x.
-  Proof. iIntros "#HΦ" (x) "Hx". iExists (CofeMor Φ). auto. Qed.
+  Proof. iIntros "#HΦ" (x) "Hx". iExists (OfeMor Φ). auto. Qed.
 End greatest.

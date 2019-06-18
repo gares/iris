@@ -61,7 +61,7 @@ Proof.
   - apply _.
   - rewrite /dist /list_dist. eauto using Forall2_impl, dist_S.
 Qed.
-Canonical Structure listC := OfeT (list A) list_ofe_mixin.
+Canonical Structure listO := OfeT (list A) list_ofe_mixin.
 
 (** To define [compl : chain (list A) → list A] we make use of the fact that
 given a given chain [c0, c1, c2, ...] of lists, the list [c0] completely
@@ -69,13 +69,13 @@ determines the shape (i.e. the length) of all lists in the chain. So, the
 [compl] operation is defined by structural recursion on [c0], and takes the
 completion of the elements of all lists in the chain point-wise. We use [head]
 and [tail] as the inverse of [cons]. *)
-Fixpoint list_compl_go `{!Cofe A} (c0 : list A) (c : chain listC) : listC :=
+Fixpoint list_compl_go `{!Cofe A} (c0 : list A) (c : chain listO) : listO :=
   match c0 with
   | [] => []
   | x :: c0 => compl (chain_map (default x ∘ head) c) :: list_compl_go c0 (chain_map tail c)
   end.
 
-Global Program Instance list_cofe `{!Cofe A} : Cofe listC :=
+Global Program Instance list_cofe `{!Cofe A} : Cofe listO :=
   {| compl c := list_compl_go (c 0) c |}.
 Next Obligation.
   intros ? n c; rewrite /compl.
@@ -89,7 +89,7 @@ Next Obligation.
   - rewrite IH /= ?Hcn //.
 Qed.
 
-Global Instance list_ofe_discrete : OfeDiscrete A → OfeDiscrete listC.
+Global Instance list_ofe_discrete : OfeDiscrete A → OfeDiscrete listO.
 Proof. induction 2; constructor; try apply (discrete _); auto. Qed.
 
 Global Instance nil_discrete : Discrete (@nil A).
@@ -98,7 +98,7 @@ Global Instance cons_discrete x l : Discrete x → Discrete l → Discrete (x ::
 Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
 End cofe.
 
-Arguments listC : clear implicits.
+Arguments listO : clear implicits.
 
 (** Functor *)
 Lemma list_fmap_ext_ne {A} {B : ofeT} (f g : A → B) (l : list A) n :
@@ -107,31 +107,31 @@ Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2, Forall_true. Qed.
 Instance list_fmap_ne {A B : ofeT} (f : A → B) n:
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
 Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
-Definition listC_map {A B} (f : A -n> B) : listC A -n> listC B :=
-  CofeMor (fmap f : listC A → listC B).
-Instance listC_map_ne A B : NonExpansive (@listC_map A B).
+Definition listO_map {A B} (f : A -n> B) : listO A -n> listO B :=
+  OfeMor (fmap f : listO A → listO B).
+Instance listO_map_ne A B : NonExpansive (@listO_map A B).
 Proof. intros n f g ? l. by apply list_fmap_ext_ne. Qed.
 
-Program Definition listCF (F : cFunctor) : cFunctor := {|
-  cFunctor_car A _ B _ := listC (cFunctor_car F A B);
-  cFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listC_map (cFunctor_map F fg)
+Program Definition listOF (F : oFunctor) : oFunctor := {|
+  oFunctor_car A _ B _ := listO (oFunctor_car F A B);
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, cFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, oFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(list_fmap_id x).
-  apply list_fmap_equiv_ext=>y. apply cFunctor_id.
+  apply list_fmap_equiv_ext=>y. apply oFunctor_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -list_fmap_compose.
-  apply list_fmap_equiv_ext=>y; apply cFunctor_compose.
+  apply list_fmap_equiv_ext=>y; apply oFunctor_compose.
 Qed.
 
-Instance listCF_contractive F :
-  cFunctorContractive F → cFunctorContractive (listCF F).
+Instance listOF_contractive F :
+  oFunctorContractive F → oFunctorContractive (listOF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, cFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, oFunctor_contractive.
 Qed.
 
 (* CMRA *)
@@ -463,10 +463,10 @@ Qed.
 
 Program Definition listURF (F : urFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := listUR (urFunctor_car F A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listC_map (urFunctor_map F fg)
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listO_map (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, urFunctor_ne.
+  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, urFunctor_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x. rewrite /= -{2}(list_fmap_id x).
@@ -480,5 +480,5 @@ Qed.
 Instance listURF_contractive F :
   urFunctorContractive F → urFunctorContractive (listURF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listC_map_ne, urFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, urFunctor_contractive.
 Qed.
