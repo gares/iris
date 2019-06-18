@@ -530,7 +530,7 @@ Tactic Notation "wp_store" :=
   | _ => fail "wp_store: not a 'wp'"
   end.
 
-Local Ltac solve_vals_cas_compare_safe :=
+Ltac solve_vals_cas_compare_safe :=
   (* The first branch is for when we have [vals_cas_compare_safe] in the context.
      The other two branches are for when either one of the branches reduces to
      [True] or we have it in the context. *)
