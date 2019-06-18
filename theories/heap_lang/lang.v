@@ -159,6 +159,31 @@ Definition val_is_unboxed (v : val) : Prop :=
   | _ => False
   end.
 
+(** CAS just compares the word-sized representation of two values, it cannot
+look into boxed data.  This works out fine if at least one of the to-be-compared
+values is unboxed (exploiting the fact that an unboxed and a boxed value can
+never be equal because these are disjoint sets). *)
+Definition vals_cas_compare_safe (vl v1 : val) : Prop :=
+  val_is_unboxed vl ∨ val_is_unboxed v1.
+Arguments vals_cas_compare_safe !_ !_ /.
+
+(** We don't compare the logical program values, but we first normalize them
+to make sure that prophecies are treated like unit.
+Also all functions become the same, but still distinct from anything else. *)
+Definition lit_for_compare (l : base_lit) : base_lit :=
+  match l with
+  | LitProphecy p => LitUnit
+  | l => l
+  end.
+Fixpoint val_for_compare (v : val) : val :=
+  match v with
+  | LitV l => LitV (lit_for_compare l)
+  | PairV v1 v2 => PairV (val_for_compare v1) (val_for_compare v2)
+  | InjLV v => InjLV (val_for_compare v)
+  | InjRV v => InjRV (val_for_compare v)
+  | RecV f x e => RecV BAnon BAnon (Val $ LitV $ LitUnit)
+  end.
+
 (** The state: heaps of vals. *)
 Record state : Type := {
   heap: gmap loc val;
@@ -492,21 +517,15 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
   end.
 
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
-  if decide (op = EqOp) then Some $ LitV $ LitBool $ bool_decide (v1 = v2) else
-  match v1, v2 with
-  | LitV (LitInt n1), LitV (LitInt n2) => LitV <$> bin_op_eval_int op n1 n2
-  | LitV (LitBool b1), LitV (LitBool b2) => LitV <$> bin_op_eval_bool op b1 b2
-  | LitV (LitLoc l), LitV (LitInt off) => Some $ LitV $ LitLoc (l +ₗ off)
-  | _, _ => None
-  end.
-
-(** CAS just compares the word-sized representation of the two values, it cannot
-look into boxed data.  This works out fine if at least one of the to-be-compared
-values is unboxed (exploiting the fact that an unboxed and a boxed value can
-never be equal because these are disjoint sets).  *)
-Definition vals_cas_compare_safe (vl v1 : val) : Prop :=
-  val_is_unboxed vl ∨ val_is_unboxed v1.
-Arguments vals_cas_compare_safe !_ !_ /.
+  if decide (op = EqOp) then
+    Some $ LitV $ LitBool $ bool_decide (val_for_compare v1 = val_for_compare v2)
+  else
+    match v1, v2 with
+    | LitV (LitInt n1), LitV (LitInt n2) => LitV <$> bin_op_eval_int op n1 n2
+    | LitV (LitBool b1), LitV (LitBool b2) => LitV <$> bin_op_eval_bool op b1 b2
+    | LitV (LitLoc l), LitV (LitInt off) => Some $ LitV $ LitLoc (l +ₗ off)
+    | _, _ => None
+    end.
 
 Definition state_upd_heap (f: gmap loc val → gmap loc val) (σ: state) : state :=
   {| heap := f σ.(heap); used_proph_id := σ.(used_proph_id) |}.
@@ -615,13 +634,15 @@ Inductive head_step : expr → state → list observation → expr → state →
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
   | CasFailS l v1 v2 vl σ :
-     σ.(heap) !! l = Some vl → vl ≠ v1 →
      vals_cas_compare_safe vl v1 →
+     σ.(heap) !! l = Some vl →
+     val_for_compare vl ≠ val_for_compare v1 →
      head_step (CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ []
                (Val $ LitV $ LitBool false) σ []
-  | CasSucS l v1 v2 σ :
-     σ.(heap) !! l = Some v1 →
-     vals_cas_compare_safe v1 v1 →
+  | CasSucS l v1 v2 vl σ :
+     vals_cas_compare_safe vl v1 →
+     σ.(heap) !! l = Some vl →
+     val_for_compare vl = val_for_compare v1 →
      head_step (CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
                (Val $ LitV $ LitBool true) (state_upd_heap <[l:=v2]> σ)

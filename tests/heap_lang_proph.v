@@ -25,7 +25,7 @@ Section tests.
   Qed.
 
   Lemma wp_cas_fail_resolve s E (l : loc) (p : proph_id) (vs : list (val * val)) (v' v1 v2 v : val) :
-    v' ≠ v1 → vals_cas_compare_safe v' v1 →
+    val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
     {{{ proph p vs ∗ ▷ l ↦ v' }}}
       CAS_resolve #l v1 v2 #p v @ s; E
     {{{ RET #false ; ∃ vs', ⌜vs = (#false, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v' }}}.
