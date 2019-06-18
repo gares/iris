@@ -13,12 +13,22 @@ if not "GITLAB_TOKEN" in os.environ:
     print("You can create such tokens at <https://gitlab.mpi-sws.org/profile/personal_access_tokens>.")
     print("Make sure you grant access to the 'api' scope.")
     sys.exit(1)
+if not "IRIS_REV" in os.environ:
+    print("Please set IRIS_REV, STDPP_REV, ORC11_REV and GPFSL_REV environment variables to the branch/tag/commit of the respective project that you want to use.")
+    print("Only IRIS_REV is mandatory, the rest defaults to 'master'.")
+    sys.exit(1)
 
 GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
 PROJECTS = [
+    { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'lambda-rust', 'branch': 'ci/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] },
+    { 'name': 'lambda-rust', 'branch': 'ci/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
     { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'fairis', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'ora', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'c', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'tutorial-popl18', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
 ]
 
 for project in PROJECTS:
