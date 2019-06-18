@@ -554,17 +554,16 @@ Tactic failure: iStartProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)" and
+"iPoseProofCoreLem (constr) as (tactic3)" and
 "<iris.proofmode.ltac_tactics.iIntoEmpValid>", last call failed.
 Tactic failure: iPoseProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)", 
-"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
-"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
-"tac" (bound to fun H => iDestructHyp H as pat),
-"iDestructHyp (constr) as (constr)",
+"iPoseProofCoreLem (constr) as (tactic3)", "tac" (bound to
+fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
+fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
+fun H => iDestructHyp H as pat), "iDestructHyp (constr) as (constr)",
 "<iris.proofmode.ltac_tactics.iDestructHypFindPat>",
 "<iris.proofmode.ltac_tactics.iDestructHypGo>" and
 "iRename (constr) into (constr)", last call failed.
@@ -581,11 +580,10 @@ Tactic failure: iPoseProof: "Hx" not found.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (constr) before_tc (tactic3)", 
-"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
-"tac" (bound to spec_tac ltac:(()); [ .. | tac Htmp ]), 
-"spec_tac" (bound to
-fun _ =>
+"iPoseProofCoreLem (constr) as (tactic3)", "tac" (bound to
+fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
+fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "spec_tac" (bound to
+fun Htmp =>
   lazymatch lem with
   | {| itrm := _; itrm_vars := ?xs; itrm_hyps := ?pat |} => iSpecializeCore
   {| itrm := Htmp; itrm_vars := xs; itrm_hyps := pat |} as p
