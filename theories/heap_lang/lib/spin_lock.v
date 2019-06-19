@@ -7,7 +7,7 @@ From iris.heap_lang.lib Require Import lock.
 Set Default Proof Using "Type".
 
 Definition newlock : val := λ: <>, ref #false.
-Definition try_acquire : val := λ: "l", CAS "l" #false #true = #false.
+Definition try_acquire : val := λ: "l", CAS "l" #false #true.
 Definition acquire : val :=
   rec: "acquire" "l" := if: try_acquire "l" then #() else "acquire" "l".
 Definition release : val := λ: "l", "l" <- #false.
@@ -61,7 +61,7 @@ Section proof.
     {{{ b, RET #b; if b is true then locked γ ∗ R else True }}}.
   Proof.
     iIntros (Φ) "#Hl HΦ". iDestruct "Hl" as (l ->) "#Hinv".
-    wp_rec. wp_bind (CAS _ _ _). iInv N as ([]) "[Hl HR]".
+    wp_rec. wp_bind (CompareExchange _ _ _). iInv N as ([]) "[Hl HR]".
     - wp_cas_fail. iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
       wp_pures. iApply ("HΦ" $! false). done.
     - wp_cas_suc. iDestruct "HR" as "[Hγ HR]".

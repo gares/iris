@@ -40,7 +40,7 @@
   ============================
   _ : ▷ l ↦ #0
   --------------------------------------∗
-  WP CAS #l #0 #1 {{ _, l ↦ #1 }}
+  WP CompareExchange #l #0 #1 {{ _, l ↦ #1 }}
   
 1 subgoal
   
@@ -148,4 +148,5 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
      : string
 The command has indeed failed with message:
 Ltac call to "wp_cas_suc" failed.
-Tactic failure: wp_cas_suc: cannot find 'CAS' in (#() #()).
+Tactic failure: wp_cas_suc: cannot find 'CompareExchange' in 
+(#() #()).

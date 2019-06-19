@@ -97,7 +97,7 @@ Inductive expr :=
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
-  | CAS (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-and-swap (NOT compare-and-set!) *)
+  | CompareExchange (e0 : expr) (e1 : expr) (e2 : expr)
   | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
   (* Prophecy *)
   | NewProph
@@ -235,7 +235,7 @@ Proof.
      | Load e, Load e' => cast_if (decide (e = e'))
      | Store e1 e2, Store e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
-     | CAS e0 e1 e2, CAS e0' e1' e2' =>
+     | CompareExchange e0 e1 e2, CompareExchange e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
      | FAA e1 e2, FAA e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
@@ -311,7 +311,7 @@ Proof.
      | AllocN e1 e2 => GenNode 13 [go e1; go e2]
      | Load e => GenNode 14 [go e]
      | Store e1 e2 => GenNode 15 [go e1; go e2]
-     | CAS e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
+     | CompareExchange e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
      | FAA e1 e2 => GenNode 17 [go e1; go e2]
      | NewProph => GenNode 18 []
      | Resolve e0 e1 e2 => GenNode 19 [go e0; go e1; go e2]
@@ -346,7 +346,7 @@ Proof.
      | GenNode 13 [e1; e2] => AllocN (go e1) (go e2)
      | GenNode 14 [e] => Load (go e)
      | GenNode 15 [e1; e2] => Store (go e1) (go e2)
-     | GenNode 16 [e0; e1; e2] => CAS (go e0) (go e1) (go e2)
+     | GenNode 16 [e0; e1; e2] => CompareExchange (go e0) (go e1) (go e2)
      | GenNode 17 [e1; e2] => FAA (go e1) (go e2)
      | GenNode 18 [] => NewProph
      | GenNode 19 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
@@ -401,9 +401,9 @@ Inductive ectx_item :=
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
-  | CasLCtx (v1 : val) (v2 : val)
-  | CasMCtx (e0 : expr) (v2 : val)
-  | CasRCtx (e0 : expr) (e1 : expr)
+  | CompareExchangeLCtx (v1 : val) (v2 : val)
+  | CompareExchangeMCtx (e0 : expr) (v2 : val)
+  | CompareExchangeRCtx (e0 : expr) (e1 : expr)
   | FaaLCtx (v2 : val)
   | FaaRCtx (e1 : expr)
   | ResolveLCtx (ctx : ectx_item) (v1 : val) (v2 : val)
@@ -437,9 +437,9 @@ Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
-  | CasLCtx v1 v2 => CAS e (Val v1) (Val v2)
-  | CasMCtx e0 v2 => CAS e0 e (Val v2)
-  | CasRCtx e0 e1 => CAS e0 e1 e
+  | CompareExchangeLCtx v1 v2 => CompareExchange e (Val v1) (Val v2)
+  | CompareExchangeMCtx e0 v2 => CompareExchange e0 e (Val v2)
+  | CompareExchangeRCtx e0 e1 => CompareExchange e0 e1 e
   | FaaLCtx v2 => FAA e (Val v2)
   | FaaRCtx e1 => FAA e1 e
   | ResolveLCtx K v1 v2 => Resolve (fill_item K e) (Val v1) (Val v2)
@@ -468,7 +468,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
   | Load e => Load (subst x v e)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
-  | CAS e0 e1 e2 => CAS (subst x v e0) (subst x v e1) (subst x v e2)
+  | CompareExchange e0 e1 e2 => CompareExchange (subst x v e0) (subst x v e1) (subst x v e2)
   | FAA e1 e2 => FAA (subst x v e1) (subst x v e2)
   | NewProph => NewProph
   | Resolve ex e1 e2 => Resolve (subst x v ex) (subst x v e1) (subst x v e2)
@@ -634,13 +634,14 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
-  | CasS l v1 v2 vl σ :
+  | CompareExchangeS l v1 v2 vl σ :
      vals_cas_compare_safe vl v1 →
      σ.(heap) !! l = Some vl →
-     head_step (CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
+     (* Crucially, this compares the same way as [EqOp]! *)
+     let b := bool_decide (val_for_compare vl = val_for_compare v1) in
+     head_step (CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
-               (* Crucially, this compares the same way as [EqOp]! *)
-               (Val vl) (if decide (val_for_compare vl = val_for_compare v1) then state_upd_heap <[l:=v2]> σ else σ)
+               (Val $ PairV (LitV $ LitBool b) vl) (if b then state_upd_heap <[l:=v2]> σ else σ)
                []
   | FaaS l i1 i2 σ :
      σ.(heap) !! l = Some (LitV (LitInt i1)) →

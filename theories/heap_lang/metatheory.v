@@ -14,7 +14,7 @@ Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
      is_closed_expr X e
   | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | FAA e1 e2 =>
      is_closed_expr X e1 && is_closed_expr X e2
-  | If e0 e1 e2 | Case e0 e1 e2 | CAS e0 e1 e2 | Resolve e0 e1 e2 =>
+  | If e0 e1 e2 | Case e0 e1 e2 | CompareExchange e0 e1 e2 | Resolve e0 e1 e2 =>
      is_closed_expr X e0 && is_closed_expr X e1 && is_closed_expr X e2
   | NewProph => true
   end
@@ -170,7 +170,7 @@ Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   | AllocN e1 e2 => AllocN (subst_map vs e1) (subst_map vs e2)
   | Load e => Load (subst_map vs e)
   | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
-  | CAS e0 e1 e2 => CAS (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
+  | CompareExchange e0 e1 e2 => CompareExchange (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
   | FAA e1 e2 => FAA (subst_map vs e1) (subst_map vs e2)
   | NewProph => NewProph
   | Resolve e0 e1 e2 => Resolve (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)

@@ -56,7 +56,7 @@ Local Hint Extern 0 (head_reducible_no_obs _ _) => eexists _, _, _; simpl : core
 
 (* [simpl apply] is too stupid, so we need extern hints here. *)
 Local Hint Extern 1 (head_step _ _ _ _ _ _) => econstructor : core.
-Local Hint Extern 0 (head_step (CAS _ _ _) _ _ _ _ _) => eapply CasS : core.
+Local Hint Extern 0 (head_step (CompareExchange _ _ _) _ _ _ _ _) => eapply CompareExchangeS : core.
 Local Hint Extern 0 (head_step (AllocN _ _) _ _ _ _ _) => apply alloc_fresh : core.
 Local Hint Extern 0 (head_step NewProph _ _ _ _ _) => apply new_proph_id_fresh : core.
 Local Hint Resolve to_of_val : core.
@@ -77,7 +77,7 @@ Instance load_atomic s v : Atomic s (Load (Val v)).
 Proof. solve_atomic. Qed.
 Instance store_atomic s v1 v2 : Atomic s (Store (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
-Instance cas_atomic s v0 v1 v2 : Atomic s (CAS (Val v0) (Val v1) (Val v2)).
+Instance cas_atomic s v0 v1 v2 : Atomic s (CompareExchange (Val v0) (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
 Instance faa_atomic s v1 v2 : Atomic s (FAA (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
@@ -376,44 +376,48 @@ Qed.
 
 Lemma wp_cas_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
-  {{{ ▷ l ↦{q} v' }}} CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET v'; l ↦{q} v' }}}.
+  {{{ ▷ l ↦{q} v' }}} CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  {{{ RET (#false, v'); l ↦{q} v' }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto. iNext; iIntros (v2' σ2 efs Hstep); inv_head_step.
+  rewrite /b bool_decide_false //.
   iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
 Qed.
 Lemma twp_cas_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
-  [[{ l ↦{q} v' }]] CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET v'; l ↦{q} v' }]].
+  [[{ l ↦{q} v' }]] CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  [[{ RET (#false, v'); l ↦{q} v' }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto. iIntros (κ v2' σ2 efs Hstep); inv_head_step.
+  rewrite /b bool_decide_false //.
   iModIntro; iSplit=> //. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
 
 Lemma wp_cas_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cas_compare_safe v' v1 →
-  {{{ ▷ l ↦ v' }}} CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET v'; l ↦ v2 }}}.
+  {{{ ▷ l ↦ v' }}} CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  {{{ RET (#true, v'); l ↦ v2 }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto. iNext; iIntros (v2' σ2 efs Hstep); inv_head_step.
+  rewrite /b bool_decide_true //.
   iMod (@gen_heap_update with "Hσ Hl") as "[$ Hl]".
   iModIntro. iSplit=>//. iFrame. by iApply "HΦ".
 Qed.
 Lemma twp_cas_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cas_compare_safe v' v1 →
-  [[{ l ↦ v' }]] CAS (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET v'; l ↦ v2 }]].
+  [[{ l ↦ v' }]] CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  [[{ RET (#true, v'); l ↦ v2 }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto. iIntros (κ v2' σ2 efs Hstep); inv_head_step.
+  rewrite /b bool_decide_true //.
   iMod (@gen_heap_update with "Hσ Hl") as "[$ Hl]".
   iModIntro. iSplit=>//. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
@@ -532,8 +536,8 @@ Qed.
 Lemma wp_resolve_cas_suc s E (l : loc) (p : proph_id) (pvs : list (val * val)) (v1 v2 v : val) :
   vals_cas_compare_safe v1 v1 →
   {{{ proph p pvs ∗ ▷ l ↦ v1 }}}
-    Resolve (CAS #l v1 v2) #p v @ s; E
-  {{{ RET v1 ; ∃ pvs', ⌜pvs = (v1, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦ v2 }}}.
+    Resolve (CompareExchange #l v1 v2) #p v @ s; E
+  {{{ RET (#true, v1) ; ∃ pvs', ⌜pvs = ((#true, v1)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦ v2 }}}.
 Proof.
   iIntros (Hcmp Φ) "[Hp Hl] HΦ".
   iApply (wp_resolve with "Hp"); first done.
@@ -545,8 +549,8 @@ Qed.
 Lemma wp_resolve_cas_fail s E (l : loc) (p : proph_id) (pvs : list (val * val)) q (v' v1 v2 v : val) :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
   {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
-    Resolve (CAS #l v1 v2) #p v @ s; E
-  {{{ RET v' ; ∃ pvs', ⌜pvs = (v', v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
+    Resolve (CompareExchange #l v1 v2) #p v @ s; E
+  {{{ RET (#false, v') ; ∃ pvs', ⌜pvs = ((#false, v')%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
 Proof.
   iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
   iApply (wp_resolve with "Hp"); first done.
@@ -603,8 +607,8 @@ Lemma wp_cas_suc_offset s E l off vs v' v1 v2 :
   val_for_compare v' = val_for_compare v1 →
   vals_cas_compare_safe v' v1 →
   {{{ ▷ l ↦∗ vs }}}
-    CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET v'; l ↦∗ <[off:=v2]> vs }}}.
+    CompareExchange #(l +ₗ off) v1 v2 @ s; E
+  {{{ RET (#true, v'); l ↦∗ <[off:=v2]> vs }}}.
 Proof.
   iIntros (Hlookup ?? Φ) "Hl HΦ".
   iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -616,8 +620,8 @@ Lemma wp_cas_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   val_for_compare (vs !!! off) = val_for_compare v1 →
   vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
-    CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (vs !!! off); l ↦∗ vinsert off v2 vs }}}.
+    CompareExchange #(l +ₗ off) v1 v2 @ s; E
+  {{{ RET (#true, vs !!! off); l ↦∗ vinsert off v2 vs }}}.
 Proof.
   intros. setoid_rewrite vec_to_list_insert. eapply wp_cas_suc_offset=> //.
   by apply vlookup_lookup.
@@ -628,8 +632,8 @@ Lemma wp_cas_fail_offset s E l off vs v0 v1 v2 :
   val_for_compare v0 ≠ val_for_compare v1 →
   vals_cas_compare_safe v0 v1 →
   {{{ ▷ l ↦∗ vs }}}
-    CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET v0; l ↦∗ vs }}}.
+    CompareExchange #(l +ₗ off) v1 v2 @ s; E
+  {{{ RET (#false, v0); l ↦∗ vs }}}.
 Proof.
   iIntros (Hlookup HNEq Hcmp Φ) ">Hl HΦ".
   iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -643,8 +647,8 @@ Lemma wp_cas_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   val_for_compare (vs !!! off) ≠ val_for_compare v1 →
   vals_cas_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
-    CAS #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (vs !!! off); l ↦∗ vs }}}.
+    CompareExchange #(l +ₗ off) v1 v2 @ s; E
+  {{{ RET (#false, vs !!! off); l ↦∗ vs }}}.
 Proof. intros. eapply wp_cas_fail_offset=> //. by apply vlookup_lookup. Qed.
 
 Lemma wp_faa_offset s E l off vs (i1 i2 : Z) :

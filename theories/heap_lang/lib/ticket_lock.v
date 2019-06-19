@@ -20,7 +20,7 @@ Definition newlock : val :=
 Definition acquire : val :=
   rec: "acquire" "lk" :=
     let: "n" := !(Snd "lk") in
-    if: CAS (Snd "lk") "n" ("n" + #1) = "n"
+    if: CAS (Snd "lk") "n" ("n" + #1)
       then wait_loop "n" "lk"
       else "acquire" "lk".
 
@@ -111,7 +111,7 @@ Section proof.
     iInv N as (o n) "[Hlo [Hln Ha]]".
     wp_load. iModIntro. iSplitL "Hlo Hln Ha".
     { iNext. iExists o, n. by iFrame. }
-    wp_pures. wp_bind (CAS _ _ _).
+    wp_pures. wp_bind (CompareExchange _ _ _).
     iInv N as (o' n') "(>Hlo' & >Hln' & >Hauth & Haown)".
     destruct (decide (#n' = #n))%V as [[= ->%Nat2Z.inj] | Hneq].
     - iMod (own_update with "Hauth") as "[Hauth Hofull]".
@@ -122,14 +122,14 @@ Section proof.
       wp_cas_suc. iModIntro. iSplitL "Hlo' Hln' Haown Hauth".
       { iNext. iExists o', (S n).
         rewrite Nat2Z.inj_succ -Z.add_1_r. by iFrame. }
-      wp_op. rewrite bool_decide_true //. wp_if.
+      wp_pures.
       iApply (wait_loop_spec γ (#lo, #ln) with "[-HΦ]").
       + iFrame. rewrite /is_lock; eauto 10.
       + by iNext.
     - wp_cas_fail. iModIntro.
       iSplitL "Hlo' Hln' Hauth Haown".
       { iNext. iExists o', n'. by iFrame. }
-      wp_op. rewrite bool_decide_false //. wp_if. by iApply "IH"; auto.
+      wp_pures. by iApply "IH"; auto.
   Qed.
 
   Lemma release_spec γ lk R :

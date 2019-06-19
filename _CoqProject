@@ -116,7 +116,6 @@ theories/heap_lang/lib/clairvoyant_coin.v
 theories/heap_lang/lib/counter.v
 theories/heap_lang/lib/atomic_heap.v
 theories/heap_lang/lib/increment.v
-theories/heap_lang/lib/compare_and_set.v
 theories/proofmode/base.v
 theories/proofmode/tokens.v
 theories/proofmode/coq_tactics.v

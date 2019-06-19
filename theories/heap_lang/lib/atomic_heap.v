@@ -31,12 +31,14 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
-  spec is still good enough for all our applications. *)
+  spec is still good enough for all our applications.
+  The postcondition deliberately does not use [bool_decide] so that users can
+  [destruct (decide (a = b))] and it will simplify in both places. *)
   cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
     <<< ∀ v, mapsto l 1 v >>> cas #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
-        RET v >>>;
+        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>;
 }.
 Arguments atomic_heap _ {_}.
 
@@ -100,13 +102,13 @@ Section proof.
     <<< ∀ (v : val), l ↦ v >>>
       primitive_cas #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then l ↦ w2 else l ↦ v,
-        RET v >>>.
+        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>.
   Proof.
-    iIntros (? Φ) "AU". wp_lam. wp_let. wp_let.
+    iIntros (? Φ) "AU". wp_lam. wp_pures. wp_bind (CompareExchange _ _ _).
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
     destruct (decide (val_for_compare v = val_for_compare w1)) as [Heq|Hne];
       [wp_cas_suc|wp_cas_fail];
-    iMod ("Hclose" with "H↦") as "HΦ"; done.
+    iMod ("Hclose" with "H↦") as "HΦ"; iModIntro; by wp_pures.
   Qed.
 End proof.
 

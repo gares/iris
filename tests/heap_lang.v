@@ -79,7 +79,7 @@ Section tests.
   Lemma heap_e6_spec (v : val) : (WP heap_e6 v {{ w, ⌜ w = #true ⌝ }})%I.
   Proof. wp_lam. wp_op. by case_bool_decide. Qed.
 
-  Definition heap_e7 : val := λ: "v", CAS "v" #0 #1.
+  Definition heap_e7 : val := λ: "v", CompareExchange "v" #0 #1.
 
   Lemma heap_e7_spec_total l : l ↦ #0 -∗ WP heap_e7 #l [{_,  l ↦ #1 }].
   Proof. iIntros. wp_lam. wp_cas_suc. auto. Qed.
@@ -126,7 +126,7 @@ Section tests.
 
   Lemma wp_cas l v :
     val_is_unboxed v →
-    l ↦ v -∗ WP CAS #l v v {{ _, True }}.
+    l ↦ v -∗ WP CompareExchange #l v v {{ _, True }}.
   Proof.
     iIntros (?) "?". wp_cas as ? | ?. done. done.
   Qed.

@@ -3,13 +3,13 @@ From iris.base_logic.lib Require Export invariants.
 From iris.heap_lang Require Export lang.
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import frac_auth auth.
-From iris.heap_lang Require Import proofmode notation lib.compare_and_set.
+From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".
 
 Definition newcounter : val := λ: <>, ref #0.
 Definition incr : val := rec: "incr" "l" :=
     let: "n" := !"l" in
-    if: compare_and_set "l" "n" (#1 + "n") then #() else "incr" "l".
+    if: CAS "l" "n" (#1 + "n") then #() else "incr" "l".
 Definition read : val := λ: "l", !"l".
 
 (** Monotone counter *)
@@ -50,25 +50,22 @@ Section mono_proof.
     iDestruct "Hl" as (γ) "[#? Hγf]".
     wp_bind (! _)%E. iInv N as (c) ">[Hγ Hl]".
     wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
-    wp_pures. wp_apply caset_spec; first done.
-    iInv N as (c') ">[Hγ Hl]" "Hclose".
+    wp_pures. wp_bind (CompareExchange _ _ _).
+    iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iDestruct (own_valid_2 with "Hγ Hγf")
         as %[?%mnat_included _]%auth_both_valid.
       iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply auth_update, (mnat_local_update _ _ (S c)); auto. }
-      iExists _; iFrame "Hl". iIntros "!> Hl".
-      rewrite bool_decide_true //. iMod ("Hclose" with "[Hl Hγ]") as "_".
-      { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. iFrame. }
-      iModIntro. wp_if.
-      iApply "HΦ"; iExists γ; repeat iSplit; eauto.
+      wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
+      { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
+      wp_pures. iApply "HΦ"; iExists γ; repeat iSplit; eauto.
       iApply (own_mono with "Hγf").
       (* FIXME: FIXME(Coq #6294): needs new unification *)
       apply: auth_frag_mono. by apply mnat_included, le_n_S.
-    - iExists _; iFrame "Hl". iIntros "!> Hl".
-      rewrite bool_decide_false; last by intros [= ?%Nat2Z.inj].
-      iMod ("Hclose" with "[Hl Hγ]") as "_"; [iNext; iExists c'; by iFrame|].
-      iModIntro. wp_if. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
+    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
+      iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
+      wp_pures. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
       rewrite {3}/mcounter; eauto 10.
   Qed.
 
@@ -132,19 +129,17 @@ Section contrib_spec.
     iIntros (Φ) "[#? Hγf] HΦ". iLöb as "IH". wp_rec.
     wp_bind (! _)%E. iInv N as (c) ">[Hγ Hl]".
     wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
-    wp_pures. wp_apply caset_spec; first done.
-    iInv N as (c') ">[Hγ Hl]" "Hclose".
+    wp_pures. wp_bind (CompareExchange _ _ _).
+    iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply frac_auth_update, (nat_local_update _ _ (S c) (S n)); lia. }
-      iExists _; iFrame "Hl". iIntros "!> Hl".
-      rewrite bool_decide_true //. iMod ("Hclose" with "[Hl Hγ]") as "_".
+      wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
-      iModIntro. wp_if. by iApply "HΦ".
-    - iExists _; iFrame "Hl". iIntros "!> Hl".
-      rewrite bool_decide_false; last by intros [= ?%Nat2Z.inj].
-      iMod ("Hclose" with "[Hl Hγ]"); [iNext; iExists c'; by iFrame|].
-      iModIntro. wp_if. by iApply ("IH" with "[Hγf] [HΦ]"); auto.
+      wp_pures. by iApply "HΦ".
+    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]).
+      iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
+      wp_pures. by iApply ("IH" with "[Hγf] [HΦ]"); auto.
   Qed.
 
   Lemma read_contrib_spec γ l q n :

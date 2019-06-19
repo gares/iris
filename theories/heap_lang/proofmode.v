@@ -284,10 +284,10 @@ Lemma tac_wp_cas Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   vals_cas_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ'' (WP fill K (Val v) @ s; E {{ Φ }})) →
+   envs_entails Δ'' (WP fill K (Val (#true, v)) @ s; E {{ Φ }})) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (CAS (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
+   envs_entails Δ' (WP fill K (Val (#false, v)) @ s; E {{ Φ }})) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ???? Hsuc Hfail.
   destruct (decide (val_for_compare v = val_for_compare v1)) as [Heq|Hne].
@@ -305,10 +305,10 @@ Lemma tac_twp_cas Δ Δ' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   vals_cas_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val v) @ s; E [{ Φ }])) →
+   envs_entails Δ' (WP fill K (Val (#true, v)) @ s; E [{ Φ }])) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+   envs_entails Δ (WP fill K (Val (#false, v)) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ??? Hsuc Hfail.
   destruct (decide (val_for_compare v = val_for_compare v1)) as [Heq|Hne].
@@ -326,8 +326,8 @@ Lemma tac_wp_cas_fail Δ Δ' s E i K l q v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }}) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
+  envs_entails Δ' (WP fill K (Val (#false, v)) @ s; E {{ Φ }}) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ?????.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_cas_fail.
@@ -337,8 +337,8 @@ Qed.
 Lemma tac_twp_cas_fail Δ s E i K l q v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }]) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+  envs_entails Δ (WP fill K (Val (#false, v)) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq. intros. rewrite -twp_bind.
   eapply wand_apply; first exact: twp_cas_fail.
@@ -350,8 +350,8 @@ Lemma tac_wp_cas_suc Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ'' (WP fill K (Val v) @ s; E {{ Φ }}) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
+  envs_entails Δ'' (WP fill K (Val (#true, v)) @ s; E {{ Φ }}) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ??????; subst.
   rewrite -wp_bind. eapply wand_apply.
@@ -363,8 +363,8 @@ Lemma tac_twp_cas_suc Δ Δ' s E i K l v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val v) @ s; E [{ Φ }]) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+  envs_entails Δ' (WP fill K (Val (#true, v)) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (CompareExchange (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=>?????; subst.
   rewrite -twp_bind. eapply wand_apply.
@@ -545,7 +545,7 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas _ _ _ _ _ _ K))
-      |fail 1 "wp_cas: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas: cannot find 'CompareExchange' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
@@ -555,7 +555,7 @@ Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2
   | |- envs_entails _ (twp ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas _ _ _ _ _ K))
-      |fail 1 "wp_cas: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas: cannot find 'CompareExchange' in" e];
     [solve_mapsto ()
     |pm_reflexivity
     |try solve_vals_cas_compare_safe
@@ -573,7 +573,7 @@ Tactic Notation "wp_cas_fail" :=
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas_fail _ _ _ _ _ K))
-      |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas_fail: cannot find 'CompareExchange' in" e];
     [iSolveTC
     |solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
@@ -582,7 +582,7 @@ Tactic Notation "wp_cas_fail" :=
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_fail _ _ _ _ K))
-      |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas_fail: cannot find 'CompareExchange' in" e];
     [solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
     |try solve_vals_cas_compare_safe
@@ -599,7 +599,7 @@ Tactic Notation "wp_cas_suc" :=
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas_suc _ _ _ _ _ _ K))
-      |fail 1 "wp_cas_suc: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas_suc: cannot find 'CompareExchange' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
@@ -609,7 +609,7 @@ Tactic Notation "wp_cas_suc" :=
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_suc _ _ _ _ _ K))
-      |fail 1 "wp_cas_suc: cannot find 'CAS' in" e];
+      |fail 1 "wp_cas_suc: cannot find 'CompareExchange' in" e];
     [solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)

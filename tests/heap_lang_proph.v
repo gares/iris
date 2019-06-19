@@ -11,7 +11,8 @@ Section tests.
   Lemma test_resolve1 E (l : loc) (n : Z) (p : proph_id) (vs : list (val * val)) (v : val) :
     l ↦ #n -∗
     proph p vs -∗
-    WP Resolve (CAS #l #n (#n + #1)) #p v @ E {{ v, ⌜v = #n⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
+    WP Resolve (CompareExchange #l #n (#n + #1)) #p v @ E
+      {{ v, ⌜v = (#true, #n)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_cas_suc. iIntros (ws ->) "Hp". eauto with iFrame.

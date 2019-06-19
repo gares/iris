@@ -121,7 +121,7 @@ Definition newcounter : val := λ: <>, ref #0.
 Definition incr : val :=
   rec: "incr" "l" :=
     let: "n" := !"l" in
-    if: CAS "l" "n" (#1 + "n") = "n" then #() else "incr" "l".
+    if: CAS "l" "n" (#1 + "n") then #() else "incr" "l".
 Definition read : val := λ: "l", !"l".
 
 (** The CMRA we need. *)
@@ -222,7 +222,7 @@ Section counter_proof.
     iDestruct 1 as (c) "[Hl Hγ]".
     wp_load. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     wp_let. wp_op.
-    wp_bind (CAS _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
+    wp_bind (CompareExchange _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c') ">[Hl Hγ]".
     destruct (decide (c' = c)) as [->|].
     - iCombine "Hγ" "Hγf" as "Hγ".
@@ -231,11 +231,10 @@ Section counter_proof.
       rewrite (auth_frag_op (S n) (S c)); last lia; iDestruct "Hγ" as "[Hγ Hγf]".
       wp_cas_suc. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
-      wp_op. rewrite bool_decide_true //. wp_if. rewrite {3}/C; eauto 10.
-    - assert (#c ≠ #c') by (intros [=]; abstract omega). wp_cas_fail.
+      wp_pures. rewrite {3}/C; eauto 10.
+    - wp_cas_fail; first (intros [=]; abstract omega).
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
-      wp_op. rewrite bool_decide_false //. wp_if.
-      iApply ("IH" with "[Hγf]"). rewrite {3}/C; eauto 10.
+      wp_pures. iApply ("IH" with "[Hγf]"). rewrite {3}/C; eauto 10.
   Qed.
 
   Check "read_spec".
