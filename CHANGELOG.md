@@ -50,6 +50,10 @@ Changes in heap_lang:
 * heap_lang now has support for allocating, accessing and reasoning about arrays
   (continuously allocated regions of memory).
 * One can now assign "meta" data to heap_lang locations.
+* For comparison operation (the binary operator and CAS), all closures are
+  "normalized" to the same.  This makes all closures indistinguishable from each
+  other while remaining unqueal to anything else.  We also use the same
+  "normalization" to make sure all prophecy variables seem equal to `()`.
 
 Changes in Coq:
 
