@@ -97,7 +97,7 @@ Inductive expr :=
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
-  | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr)
+  | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-exchange *)
   | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
   (* Prophecy *)
   | NewProph
