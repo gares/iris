@@ -634,11 +634,11 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
-  | CompareExchangeS l v1 v2 vl σ :
+  | CompareExchangeS l v1 v2 vl σ b :
      vals_cas_compare_safe vl v1 →
      σ.(heap) !! l = Some vl →
      (* Crucially, this compares the same way as [EqOp]! *)
-     let b := bool_decide (val_for_compare vl = val_for_compare v1) in
+     b = bool_decide (val_for_compare vl = val_for_compare v1) →
      head_step (CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
                (Val $ PairV (LitV $ LitBool b) vl) (if b then state_upd_heap <[l:=v2]> σ else σ)
