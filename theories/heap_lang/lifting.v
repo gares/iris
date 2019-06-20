@@ -533,7 +533,7 @@ Proof.
   iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
-Lemma wp_resolve_cas_suc s E (l : loc) (p : proph_id) (pvs : list (val * val)) (v1 v2 v : val) :
+Lemma wp_resolve_cas_suc s E l (p : proph_id) (pvs : list (val * val)) v1 v2 v :
   vals_cas_compare_safe v1 v1 →
   {{{ proph p pvs ∗ ▷ l ↦ v1 }}}
     Resolve (CompareExchange #l v1 v2) #p v @ s; E
@@ -546,7 +546,7 @@ Proof.
   iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
 Qed.
 
-Lemma wp_resolve_cas_fail s E (l : loc) (p : proph_id) (pvs : list (val * val)) q (v' v1 v2 v : val) :
+Lemma wp_resolve_cas_fail s E l (p : proph_id) (pvs : list (val * val)) q v' v1 v2 v :
   val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
   {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
     Resolve (CompareExchange #l v1 v2) #p v @ s; E
