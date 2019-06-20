@@ -163,9 +163,7 @@ Section language.
 
   Lemma stuck_fill `{!@LanguageCtx Λ K} e σ :
     stuck e σ → stuck (K e) σ.
-  Proof.
-    intros ST. split; [by apply fill_not_val, ST|apply irreducible_fill; apply ST].
-  Qed.
+  Proof. intros [??]. split. by apply fill_not_val. by apply irreducible_fill. Qed.
 
   Lemma step_Permutation (t1 t1' t2 : list (expr Λ)) κ σ1 σ2 :
     t1 ≡ₚ t1' → step (t1,σ1) κ (t2,σ2) → ∃ t2', t2 ≡ₚ t2' ∧ step (t1',σ1) κ (t2',σ2).
