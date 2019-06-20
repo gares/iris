@@ -161,6 +161,12 @@ Section language.
     to_val e = None → irreducible e σ → irreducible (K e) σ.
   Proof. rewrite -!not_reducible. naive_solver eauto using reducible_fill. Qed.
 
+  Lemma stuck_fill `{!@LanguageCtx Λ K} e σ :
+    stuck e σ → stuck (K e) σ.
+  Proof.
+    intros ST. split; [by apply fill_not_val, ST|apply irreducible_fill; apply ST].
+  Qed.
+
   Lemma step_Permutation (t1 t1' t2 : list (expr Λ)) κ σ1 σ2 :
     t1 ≡ₚ t1' → step (t1,σ1) κ (t2,σ2) → ∃ t2', t2 ≡ₚ t2' ∧ step (t1',σ1) κ (t2',σ2).
   Proof.
