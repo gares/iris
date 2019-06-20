@@ -222,17 +222,17 @@ Section counter_proof.
     iDestruct 1 as (c) "[Hl Hγ]".
     wp_load. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     wp_let. wp_op.
-    wp_bind (CompareExchange _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
+    wp_bind (CmpXchg _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c') ">[Hl Hγ]".
     destruct (decide (c' = c)) as [->|].
     - iCombine "Hγ" "Hγf" as "Hγ".
       iDestruct (own_valid with "Hγ") as %?%auth_frag_valid; rewrite -auth_frag_op //.
       iMod (own_update with "Hγ") as "Hγ"; first apply M_update.
       rewrite (auth_frag_op (S n) (S c)); last lia; iDestruct "Hγ" as "[Hγ Hγf]".
-      wp_cas_suc. iSplitL "Hl Hγ".
+      wp_cmpxchg_suc. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. rewrite {3}/C; eauto 10.
-    - wp_cas_fail; first (intros [=]; abstract omega).
+    - wp_cmpxchg_fail; first (intros [=]; abstract omega).
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. iApply ("IH" with "[Hγf]"). rewrite {3}/C; eauto 10.
   Qed.

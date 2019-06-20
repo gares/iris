@@ -50,20 +50,20 @@ Section mono_proof.
     iDestruct "Hl" as (γ) "[#? Hγf]".
     wp_bind (! _)%E. iInv N as (c) ">[Hγ Hl]".
     wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
-    wp_pures. wp_bind (CompareExchange _ _ _).
+    wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iDestruct (own_valid_2 with "Hγ Hγf")
         as %[?%mnat_included _]%auth_both_valid.
       iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply auth_update, (mnat_local_update _ _ (S c)); auto. }
-      wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
+      wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. iApply "HΦ"; iExists γ; repeat iSplit; eauto.
       iApply (own_mono with "Hγf").
       (* FIXME: FIXME(Coq #6294): needs new unification *)
       apply: auth_frag_mono. by apply mnat_included, le_n_S.
-    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
+    - wp_cmpxchg_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
       rewrite {3}/mcounter; eauto 10.
@@ -129,15 +129,15 @@ Section contrib_spec.
     iIntros (Φ) "[#? Hγf] HΦ". iLöb as "IH". wp_rec.
     wp_bind (! _)%E. iInv N as (c) ">[Hγ Hl]".
     wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
-    wp_pures. wp_bind (CompareExchange _ _ _).
+    wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply frac_auth_update, (nat_local_update _ _ (S c) (S n)); lia. }
-      wp_cas_suc. iModIntro. iSplitL "Hl Hγ".
+      wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. by iApply "HΦ".
-    - wp_cas_fail; first (by intros [= ?%Nat2Z.inj]).
+    - wp_cmpxchg_fail; first (by intros [= ?%Nat2Z.inj]).
       iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. by iApply ("IH" with "[Hγf] [HΦ]"); auto.
   Qed.

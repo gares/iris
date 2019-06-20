@@ -11,11 +11,14 @@ Section tests.
   Lemma test_resolve1 E (l : loc) (n : Z) (p : proph_id) (vs : list (val * val)) (v : val) :
     l ↦ #n -∗
     proph p vs -∗
-    WP Resolve (CompareExchange #l #n (#n + #1)) #p v @ E
-      {{ v, ⌜v = (#true, #n)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
+    WP Resolve (CmpXchg #l #n (#n + #1)) #p v @ E
+      {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
-    wp_cas_suc. iIntros (ws ->) "Hp". eauto with iFrame.
+    wp_cmpxchg_suc. iIntros (ws ->) "Hp". eauto with iFrame.
+  Restart.
+    iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve_cmpxchg_suc with "[$Hp $Hl]"); first by left.
+    iIntros "Hpost". iDestruct "Hpost" as (ws ->) "Hp". eauto with iFrame.
   Qed.
 
   Lemma test_resolve2 E (l : loc) (n m : Z) (p : proph_id) (vs : list (val * val)) :

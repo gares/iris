@@ -61,10 +61,10 @@ Section proof.
     {{{ b, RET #b; if b is true then locked γ ∗ R else True }}}.
   Proof.
     iIntros (Φ) "#Hl HΦ". iDestruct "Hl" as (l ->) "#Hinv".
-    wp_rec. wp_bind (CompareExchange _ _ _). iInv N as ([]) "[Hl HR]".
-    - wp_cas_fail. iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
+    wp_rec. wp_bind (CmpXchg _ _ _). iInv N as ([]) "[Hl HR]".
+    - wp_cmpxchg_fail. iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
       wp_pures. iApply ("HΦ" $! false). done.
-    - wp_cas_suc. iDestruct "HR" as "[Hγ HR]".
+    - wp_cmpxchg_suc. iDestruct "HR" as "[Hγ HR]".
       iModIntro. iSplitL "Hl"; first (iNext; iExists true; eauto).
       rewrite /locked. wp_pures. by iApply ("HΦ" $! true with "[$Hγ $HR]").
   Qed.

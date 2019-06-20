@@ -35,12 +35,9 @@ Ltac reshape_expr e tac :=
     | Load ?e                         => add_item LoadCtx vs K e
     | Store ?e (Val ?v)               => add_item (StoreLCtx v) vs K e
     | Store ?e1 ?e2                   => add_item (StoreRCtx e1) vs K e2
-    | CompareExchange ?e0 (Val ?v1) (Val ?v2)
-                                      => add_item (CompareExchangeLCtx v1 v2) vs K e0
-    | CompareExchange ?e0 ?e1 (Val ?v2)
-                                      => add_item (CompareExchangeMCtx e0 v2) vs K e1
-    | CompareExchange ?e0 ?e1 ?e2
-                                      => add_item (CompareExchangeRCtx e0 e1) vs K e2
+    | CmpXchg ?e0 (Val ?v1) (Val ?v2) => add_item (CmpXchgLCtx v1 v2) vs K e0
+    | CmpXchg ?e0 ?e1 (Val ?v2)       => add_item (CmpXchgMCtx e0 v2) vs K e1
+    | CmpXchg ?e0 ?e1 ?e2             => add_item (CmpXchgRCtx e0 e1) vs K e2
     | FAA ?e (Val ?v)                 => add_item (FaaLCtx v) vs K e
     | FAA ?e1 ?e2                     => add_item (FaaRCtx e1) vs K e2
     | Resolve ?ex (Val ?v1) (Val ?v2) => go K ((v1,v2) :: vs) ex

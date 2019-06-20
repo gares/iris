@@ -79,14 +79,14 @@ Section tests.
   Lemma heap_e6_spec (v : val) : (WP heap_e6 v {{ w, ⌜ w = #true ⌝ }})%I.
   Proof. wp_lam. wp_op. by case_bool_decide. Qed.
 
-  Definition heap_e7 : val := λ: "v", CompareExchange "v" #0 #1.
+  Definition heap_e7 : val := λ: "v", CmpXchg "v" #0 #1.
 
   Lemma heap_e7_spec_total l : l ↦ #0 -∗ WP heap_e7 #l [{_,  l ↦ #1 }].
-  Proof. iIntros. wp_lam. wp_cas_suc. auto. Qed.
+  Proof. iIntros. wp_lam. wp_cmpxchg_suc. auto. Qed.
 
   Check "heap_e7_spec".
   Lemma heap_e7_spec l : ▷^2 l ↦ #0 -∗ WP heap_e7 #l {{_,  l ↦ #1 }}.
-  Proof. iIntros. wp_lam. Show. wp_cas_suc. Show. auto. Qed.
+  Proof. iIntros. wp_lam. Show. wp_cmpxchg_suc. Show. auto. Qed.
 
   Definition FindPred : val :=
     rec: "pred" "x" "y" :=
@@ -124,11 +124,11 @@ Section tests.
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
 
-  Lemma wp_cas l v :
+  Lemma wp_cmpxchg l v :
     val_is_unboxed v →
-    l ↦ v -∗ WP CompareExchange #l v v {{ _, True }}.
+    l ↦ v -∗ WP CmpXchg #l v v {{ _, True }}.
   Proof.
-    iIntros (?) "?". wp_cas as ? | ?. done. done.
+    iIntros (?) "?". wp_cmpxchg as ? | ?. done. done.
   Qed.
 
   Lemma wp_alloc_split :
@@ -210,11 +210,11 @@ End printing_tests.
 Section error_tests.
   Context `{!heapG Σ}.
 
-  Check "not_cas".
-  Lemma not_cas :
+  Check "not_cmpxchg".
+  Lemma not_cmpxchg :
     (WP #() #() {{ _, True }})%I.
   Proof.
-    Fail wp_cas_suc.
+    Fail wp_cmpxchg_suc.
   Abort.
 End error_tests.
 

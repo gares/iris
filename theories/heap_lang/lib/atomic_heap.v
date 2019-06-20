@@ -11,7 +11,7 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   alloc : val;
   load : val;
   store : val;
-  cas : val;
+  cmpxchg : val;
   (* -- predicates -- *)
   mapsto (l : loc) (q: Qp) (v : val) : iProp Σ;
   (* -- mapsto properties -- *)
@@ -34,11 +34,11 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   spec is still good enough for all our applications.
   The postcondition deliberately does not use [bool_decide] so that users can
   [destruct (decide (a = b))] and it will simplify in both places. *)
-  cas_spec (l : loc) (w1 w2 : val) :
+  cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    <<< ∀ v, mapsto l 1 v >>> cas #l w1 w2 @ ⊤
+    <<< ∀ v, mapsto l 1 v >>> cmpxchg #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
-        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>;
+        RET (v, #if decide (val_for_compare v = val_for_compare w1) then true else false) >>>;
 }.
 Arguments atomic_heap _ {_}.
 
@@ -56,9 +56,27 @@ Notation "'ref' e" := (alloc e) : expr_scope.
 Notation "! e" := (load e) : expr_scope.
 Notation "e1 <- e2" := (store e1 e2) : expr_scope.
 
-Notation CAS e1 e2 e3 := (cas e1 e2 e3).
+Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
 
 End notation.
+
+Section derived.
+  Context `{!heapG Σ, !atomic_heap Σ}.
+
+  Import notation.
+
+  Lemma cas_spec (l : loc) (w1 w2 : val) :
+    val_is_unboxed w1 →
+    <<< ∀ v, mapsto l 1 v >>> CAS #l w1 w2 @ ⊤
+    <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
+        RET #if decide (val_for_compare v = val_for_compare w1) then true else false >>>.
+  Proof.
+    iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
+    iApply (aacc_aupd_commit with "AU"); first done.
+    iIntros (v) "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
+    iIntros "$ !> HΦ !>". wp_pures. done.
+  Qed.
+End derived.
 
 (** Proof that the primitive physical operations of heap_lang satisfy said interface. *)
 Definition primitive_alloc : val :=
@@ -67,8 +85,8 @@ Definition primitive_load : val :=
   λ: "l", !"l".
 Definition primitive_store : val :=
   λ: "l" "x", "l" <- "x".
-Definition primitive_cas : val :=
-  λ: "l" "e1" "e2", CAS "l" "e1" "e2".
+Definition primitive_cmpxchg : val :=
+  λ: "l" "e1" "e2", CmpXchg "l" "e1" "e2".
 
 Section proof.
   Context `{!heapG Σ}.
@@ -97,18 +115,18 @@ Section proof.
     wp_store. iMod ("Hclose" with "H↦") as "HΦ". done.
   Qed.
 
-  Lemma primitive_cas_spec (l : loc) (w1 w2 : val) :
+  Lemma primitive_cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
     <<< ∀ (v : val), l ↦ v >>>
-      primitive_cas #l w1 w2 @ ⊤
+      primitive_cmpxchg #l w1 w2 @ ⊤
     <<< if decide (val_for_compare v = val_for_compare w1) then l ↦ w2 else l ↦ v,
-        RET #(if decide (val_for_compare v = val_for_compare w1) then true else false) >>>.
+        RET (v, #if decide (val_for_compare v = val_for_compare w1) then true else false) >>>.
   Proof.
-    iIntros (? Φ) "AU". wp_lam. wp_pures. wp_bind (CompareExchange _ _ _).
+    iIntros (? Φ) "AU". wp_lam. wp_pures.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
     destruct (decide (val_for_compare v = val_for_compare w1)) as [Heq|Hne];
-      [wp_cas_suc|wp_cas_fail];
-    iMod ("Hclose" with "H↦") as "HΦ"; iModIntro; by wp_pures.
+      [wp_cmpxchg_suc|wp_cmpxchg_fail];
+    iMod ("Hclose" with "H↦") as "HΦ"; done.
   Qed.
 End proof.
 
@@ -118,5 +136,5 @@ Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
   {| alloc_spec := primitive_alloc_spec;
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
-     cas_spec := primitive_cas_spec;
+     cmpxchg_spec := primitive_cmpxchg_spec;
      mapsto_agree := gen_heap.mapsto_agree  |}.

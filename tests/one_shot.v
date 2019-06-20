@@ -49,13 +49,13 @@ Proof.
   iMod (inv_alloc N _ (one_shot_inv γ l) with "[Hl Hγ]") as "#HN".
   { iNext. iLeft. by iSplitL "Hl". }
   wp_pures. iModIntro. iApply "Hf"; iSplit.
-  - iIntros (n) "!#". wp_lam. wp_pures. wp_bind (CompareExchange _ _ _).
+  - iIntros (n) "!#". wp_lam. wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as ">[[Hl Hγ]|H]"; last iDestruct "H" as (m) "[Hl Hγ]".
     + iMod (own_update with "Hγ") as "Hγ".
       { by apply cmra_update_exclusive with (y:=Shot n). }
-      wp_cas_suc. iModIntro. iSplitL; last (wp_pures; by eauto).
+      wp_cmpxchg_suc. iModIntro. iSplitL; last (wp_pures; by eauto).
       iNext; iRight; iExists n; by iFrame.
-    + wp_cas_fail. iModIntro. iSplitL; last (wp_pures; by eauto).
+    + wp_cmpxchg_fail. iModIntro. iSplitL; last (wp_pures; by eauto).
       rewrite /one_shot_inv; eauto 10.
   - iIntros "!# /=". wp_lam. wp_bind (! _)%E.
     iInv N as ">Hγ".

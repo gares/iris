@@ -28,11 +28,11 @@ the [Resolve] is stuck), and this value is also attached to the resolution.
 A prophecy variable is thus resolved to a pair containing (1) the result
 value of the wrapped expression (called [e] above), and (2) the value that
 was attached by the [Resolve] (called [v] above). This allows, for example,
-to distinguish a resolution originating from a successful [CAS] from one
-originating from a failing [CAS]. For example:
- - [Resolve (CAS #l #n #(n+1)) #p v] will behave as [CAS #l #n #(n+1)],
-   which means step to a boolean [b] while updating the heap, but in the
-   meantime the prophecy variable [p] will be resolved to [(#b, v)].
+to distinguish a resolution originating from a successful [CmpXchg] from one
+originating from a failing [CmpXchg]. For example:
+ - [Resolve (CmpXchg #l #n #(n+1)) #p v] will behave as [CmpXchg #l #n #(n+1)],
+   which means step to a value-boole pair [(n', b)] while updating the heap, but
+   in the meantime the prophecy variable [p] will be resolved to [(n', b), v)].
  - [Resolve (! #l) #p v] will behave as [! #l], that is return the value
    [w] pointed to by [l] on the heap (assuming it was allocated properly),
    but it will additionally resolve [p] to the pair [(w,v)].
@@ -41,10 +41,10 @@ Note that the sub-expressions of [Resolve e p v] (i.e., [e], [p] and [v])
 are reduced as usual, from right to left. However, the evaluation of [e]
 is restricted so that the head-step to which the resolution is attached
 cannot be taken by the context. For example:
- - [Resolve (CAS #l #n (#n + #1)) #p v] will first be reduced (with by a
-   context-step) to [Resolve (CAS #l #n #(n+1) #p v], and then behave as
+ - [Resolve (CmpXchg #l #n (#n + #1)) #p v] will first be reduced (with by a
+   context-step) to [Resolve (CmpXchg #l #n #(n+1) #p v], and then behave as
    described above.
- - However, [Resolve ((λ: "n", CAS #l "n" ("n" + #1)) #n) #p v] is stuck.
+ - However, [Resolve ((λ: "n", CmpXchg #l "n" ("n" + #1)) #n) #p v] is stuck.
    Indeed, it can only be evaluated using a head-step (it is a β-redex),
    but the process does not yield a value.
 
@@ -97,7 +97,7 @@ Inductive expr :=
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
-  | CompareExchange (e0 : expr) (e1 : expr) (e2 : expr)
+  | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr)
   | FAA (e1 : expr) (e2 : expr) (* Fetch-and-add *)
   (* Prophecy *)
   | NewProph
@@ -115,7 +115,7 @@ Bind Scope val_scope with val.
 (** An observation associates a prophecy variable (identifier) to a pair of
 values. The first value is the one that was returned by the (atomic) operation
 during which the prophecy resolution happened (typically, a boolean when the
-wrapped operation is a CAS). The second value is the one that the prophecy
+wrapped operation is a CmpXchg). The second value is the one that the prophecy
 variable was actually resolved to. *)
 Definition observation : Set := proph_id * (val * val).
 
@@ -159,13 +159,13 @@ Definition val_is_unboxed (v : val) : Prop :=
   | _ => False
   end.
 
-(** CAS just compares the word-sized representation of two values, it cannot
+(** CmpXchg just compares the word-sized representation of two values, it cannot
 look into boxed data.  This works out fine if at least one of the to-be-compared
 values is unboxed (exploiting the fact that an unboxed and a boxed value can
 never be equal because these are disjoint sets). *)
-Definition vals_cas_compare_safe (vl v1 : val) : Prop :=
+Definition vals_cmpxchg_compare_safe (vl v1 : val) : Prop :=
   val_is_unboxed vl ∨ val_is_unboxed v1.
-Arguments vals_cas_compare_safe !_ !_ /.
+Arguments vals_cmpxchg_compare_safe !_ !_ /.
 
 (** We don't compare the logical program values, but we first normalize them
 to make sure that prophecies are treated like unit.
@@ -235,7 +235,7 @@ Proof.
      | Load e, Load e' => cast_if (decide (e = e'))
      | Store e1 e2, Store e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
-     | CompareExchange e0 e1 e2, CompareExchange e0' e1' e2' =>
+     | CmpXchg e0 e1 e2, CmpXchg e0' e1' e2' =>
         cast_if_and3 (decide (e0 = e0')) (decide (e1 = e1')) (decide (e2 = e2'))
      | FAA e1 e2, FAA e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
@@ -311,7 +311,7 @@ Proof.
      | AllocN e1 e2 => GenNode 13 [go e1; go e2]
      | Load e => GenNode 14 [go e]
      | Store e1 e2 => GenNode 15 [go e1; go e2]
-     | CompareExchange e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
+     | CmpXchg e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
      | FAA e1 e2 => GenNode 17 [go e1; go e2]
      | NewProph => GenNode 18 []
      | Resolve e0 e1 e2 => GenNode 19 [go e0; go e1; go e2]
@@ -346,7 +346,7 @@ Proof.
      | GenNode 13 [e1; e2] => AllocN (go e1) (go e2)
      | GenNode 14 [e] => Load (go e)
      | GenNode 15 [e1; e2] => Store (go e1) (go e2)
-     | GenNode 16 [e0; e1; e2] => CompareExchange (go e0) (go e1) (go e2)
+     | GenNode 16 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
      | GenNode 17 [e1; e2] => FAA (go e1) (go e2)
      | GenNode 18 [] => NewProph
      | GenNode 19 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
@@ -401,9 +401,9 @@ Inductive ectx_item :=
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
-  | CompareExchangeLCtx (v1 : val) (v2 : val)
-  | CompareExchangeMCtx (e0 : expr) (v2 : val)
-  | CompareExchangeRCtx (e0 : expr) (e1 : expr)
+  | CmpXchgLCtx (v1 : val) (v2 : val)
+  | CmpXchgMCtx (e0 : expr) (v2 : val)
+  | CmpXchgRCtx (e0 : expr) (e1 : expr)
   | FaaLCtx (v2 : val)
   | FaaRCtx (e1 : expr)
   | ResolveLCtx (ctx : ectx_item) (v1 : val) (v2 : val)
@@ -414,8 +414,8 @@ Inductive ectx_item :=
 the local context of [e] is non-empty. As a consequence, the first argument of
 [Resolve] is not completely evaluated (down to a value) by contextual closure:
 no head steps (i.e., surface reductions) are taken. This means that contextual
-closure will reduce [Resolve (CAS #l #n (#n + #1)) #p #v] into [Resolve (CAS
-#l #n #(n+1)) #p #v], but it cannot context-step any further. *)
+closure will reduce [Resolve (CmpXchg #l #n (#n + #1)) #p #v] into [Resolve
+(CmpXchg #l #n #(n+1)) #p #v], but it cannot context-step any further. *)
 
 Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   match Ki with
@@ -437,9 +437,9 @@ Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
-  | CompareExchangeLCtx v1 v2 => CompareExchange e (Val v1) (Val v2)
-  | CompareExchangeMCtx e0 v2 => CompareExchange e0 e (Val v2)
-  | CompareExchangeRCtx e0 e1 => CompareExchange e0 e1 e
+  | CmpXchgLCtx v1 v2 => CmpXchg e (Val v1) (Val v2)
+  | CmpXchgMCtx e0 v2 => CmpXchg e0 e (Val v2)
+  | CmpXchgRCtx e0 e1 => CmpXchg e0 e1 e
   | FaaLCtx v2 => FAA e (Val v2)
   | FaaRCtx e1 => FAA e1 e
   | ResolveLCtx K v1 v2 => Resolve (fill_item K e) (Val v1) (Val v2)
@@ -468,7 +468,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
   | Load e => Load (subst x v e)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
-  | CompareExchange e0 e1 e2 => CompareExchange (subst x v e0) (subst x v e1) (subst x v e2)
+  | CmpXchg e0 e1 e2 => CmpXchg (subst x v e0) (subst x v e1) (subst x v e2)
   | FAA e1 e2 => FAA (subst x v e1) (subst x v e2)
   | NewProph => NewProph
   | Resolve ex e1 e2 => Resolve (subst x v ex) (subst x v e1) (subst x v e2)
@@ -518,7 +518,7 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
 
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
   if decide (op = EqOp) then
-    (* Crucially, this compares the same way as [CAS]! *)
+    (* Crucially, this compares the same way as [CmpXchg]! *)
     Some $ LitV $ LitBool $ bool_decide (val_for_compare v1 = val_for_compare v2)
   else
     match v1, v2 with
@@ -634,14 +634,14 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
-  | CompareExchangeS l v1 v2 vl σ b :
-     vals_cas_compare_safe vl v1 →
+  | CmpXchgS l v1 v2 vl σ b :
+     vals_cmpxchg_compare_safe vl v1 →
      σ.(heap) !! l = Some vl →
      (* Crucially, this compares the same way as [EqOp]! *)
      b = bool_decide (val_for_compare vl = val_for_compare v1) →
-     head_step (CompareExchange (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
+     head_step (CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
-               (Val $ PairV (LitV $ LitBool b) vl) (if b then state_upd_heap <[l:=v2]> σ else σ)
+               (Val $ PairV vl (LitV $ LitBool b)) (if b then state_upd_heap <[l:=v2]> σ else σ)
                []
   | FaaS l i1 i2 σ :
      σ.(heap) !! l = Some (LitV (LitInt i1)) →
