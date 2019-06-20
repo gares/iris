@@ -458,7 +458,7 @@ Qed.
 (* In the following, strong atomicity is required due to the fact that [e] must
 be able to make a head step for [Resolve e _ _] not to be (head) stuck. *)
 
-Lemma resolve_reducible e σ p v :
+Lemma resolve_reducible e σ (p : proph_id) v :
   Atomic StronglyAtomic e → reducible e σ →
   reducible (Resolve e (Val (LitV (LitProphecy p))) (Val v)) σ.
 Proof.
@@ -471,10 +471,10 @@ Proof.
   simpl. constructor. by apply prim_step_to_val_is_head_step.
 Qed.
 
-Lemma step_resolve e p v σ1 κ e2 σ2 efs :
+Lemma step_resolve e vp vt σ1 κ e2 σ2 efs :
   Atomic StronglyAtomic e →
-  prim_step (Resolve e (Val p) (Val v)) σ1 κ e2 σ2 efs →
-  head_step (Resolve e (Val p) (Val v)) σ1 κ e2 σ2 efs.
+  prim_step (Resolve e (Val vp) (Val vt)) σ1 κ e2 σ2 efs →
+  head_step (Resolve e (Val vp) (Val vt)) σ1 κ e2 σ2 efs.
 Proof.
   intros A [Ks e1' e2' Hfill -> step]. simpl in *.
   induction Ks as [|K Ks _] using rev_ind.
@@ -488,13 +488,13 @@ Proof.
       assert (is_Some (to_val (fill (Ks ++ [K]) e2'))) as H.
       { apply (A σ1 _ κ σ2 efs). eapply Ectx_step with (K0 := Ks ++ [K]); done. }
       destruct H as [v H]. apply to_val_fill_some in H. by destruct H, Ks.
-    - assert (to_val (fill Ks e1') = Some p); first by rewrite -H1 //.
+    - assert (to_val (fill Ks e1') = Some vp); first by rewrite -H1 //.
       apply to_val_fill_some in H. destruct H as [-> ->]. inversion step.
-    - assert (to_val (fill Ks e1') = Some v); first by rewrite -H2 //.
+    - assert (to_val (fill Ks e1') = Some vt); first by rewrite -H2 //.
       apply to_val_fill_some in H. destruct H as [-> ->]. inversion step.
 Qed.
 
-Lemma wp_resolve s E e Φ p v pvs :
+Lemma wp_resolve s E e Φ (p : proph_id) v (pvs : list (val * val)) :
   Atomic StronglyAtomic e →
   to_val e = None →
   proph p pvs -∗
@@ -523,7 +523,7 @@ Proof.
 Qed.
 
 (** Lemmas for some particular expression inside the [Resolve]. *)
-Lemma wp_resolve_proph s E p pvs v :
+Lemma wp_resolve_proph s E (p : proph_id) (pvs : list (val * val)) v :
   {{{ proph p pvs }}}
     ResolveProph (Val $ LitV $ LitProphecy p) (Val v) @ s; E
   {{{ pvs', RET (LitV LitUnit); ⌜pvs = (LitV LitUnit, v)::pvs'⌝ ∗ proph p pvs' }}}.
