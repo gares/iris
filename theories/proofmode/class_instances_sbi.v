@@ -567,6 +567,14 @@ Proof.
   move=> Hn [_ ->|->] <-; by rewrite -!laterN_plus -Hn Nat.add_comm.
 Qed.
 
+Global Instance into_laterN_Next {A : ofeT} only_head n n' (x y : A) :
+  NatCancel n 1 n' 0 →
+  IntoLaterN (PROP:=PROP) only_head n (Next x ≡ Next y) (x ≡ y) | 2.
+Proof.
+  rewrite /MakeLaterN /IntoLaterN /MaybeIntoLaterN /NatCancel Nat.add_0_r.
+  move=> <-. rewrite later_equivI. by rewrite Nat.add_comm /= -laterN_intro.
+Qed.
+
 Global Instance into_laterN_and_l n P1 P2 Q1 Q2 :
   IntoLaterN false n P1 Q1 → MaybeIntoLaterN false n P2 Q2 →
   IntoLaterN false n (P1 ∧ P2) (Q1 ∧ Q2) | 10.
