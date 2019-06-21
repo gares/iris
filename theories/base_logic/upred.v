@@ -402,7 +402,7 @@ Lemma entails_lim (cP cQ : chain (uPredO M)) :
   (∀ n, cP n ⊢ cQ n) → compl cP ⊢ compl cQ.
 Proof.
   intros Hlim; split=> n m ? HP.
-  eapply uPred_holds_ne, Hlim, HP; eauto using conv_compl.
+  eapply uPred_holds_ne, Hlim, HP; rewrite ?conv_compl; eauto.
 Qed.
 
 (** Non-expansiveness and setoid morphisms *)

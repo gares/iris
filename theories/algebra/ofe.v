@@ -125,6 +125,7 @@ Class Cofe (A : ofeT) := {
   conv_compl n c : compl c ≡{n}≡ c n;
 }.
 Arguments compl : simpl never.
+Hint Mode Cofe ! : typeclass_instances.
 
 Lemma compl_chain_map `{Cofe A, Cofe B} (f : A → B) c `(NonExpansive f) :
   compl (chain_map f c) ≡ f (compl c).
@@ -264,7 +265,7 @@ Section limit_preserving.
     (∀ x, P x ↔ Q x) → LimitPreserving P → LimitPreserving Q.
   Proof. intros HP Hlimit c ?. apply HP, Hlimit=> n; by apply HP. Qed.
 
-  Global Instance limit_preserving_const (P : Prop) : LimitPreserving (λ _, P).
+  Global Instance limit_preserving_const (P : Prop) : LimitPreserving (λ _ : A, P).
   Proof. intros c HP. apply (HP 0). Qed.
 
   Lemma limit_preserving_discrete (P : A → Prop) :
