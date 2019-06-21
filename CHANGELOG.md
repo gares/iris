@@ -152,9 +152,9 @@ Changes in Coq:
 * Rename `C` suffixes into `O` since we no longer use COFEs but OFEs. Also
   rename `ofe_fun` into `discrete_fun` and the corresponding notation `-c>` into
   `-d>`. The renaming can be automatically done using the following script (on
-  macOS you will have to replace the `-i` at the end by `-i ''`):
+  macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
 ```
-sed '
+sed -i '
 s/\bCofeMor/OfeMor/g;
 s/\-c>/\-d>/g;
 s/\bcFunctor/oFunctor/g;
@@ -206,7 +206,7 @@ s/\blocC/locO/g;
 s/\bdec\_agreeC/dec\_agreeO/g;
 s/\bgnameC/gnameO/g;
 s/\bcoPset\_disjC/coPset\_disjO/g;
-' -i $(find theories -name "*.v")
+' $(find theories -name "*.v")
 ```
 
 ## Iris 3.1.0 (released 2017-12-19)
@@ -281,9 +281,9 @@ Changes in Coq:
     + `always_wand_impl` -> `persistently_impl_wand` (additionally, the
       direction of this equivalence got swapped for consistency's sake)
   The following `sed` snippet should get you most of the way (on macOS you will
-  have to replace `-i` by `-i ''`):
+  have to replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
 ```
-sed 's/\bPersistentP\b/Persistent/g; s/\bTimelessP\b/Timeless/g; s/\bCMRADiscrete\b/CmraDiscrete/g; s/\bCMRAT\b/CmraT/g; s/\bCMRAMixin\b/CmraMixin/g; s/\bUCMRAT\b/UcmraT/g; s/\bUCMRAMixin\b/UcmraMixin/g; s/\bSTS\b/Sts/g' -i $(find -name "*.v")
+sed -i 's/\bPersistentP\b/Persistent/g; s/\bTimelessP\b/Timeless/g; s/\bCMRADiscrete\b/CmraDiscrete/g; s/\bCMRAT\b/CmraT/g; s/\bCMRAMixin\b/CmraMixin/g; s/\bUCMRAT\b/UcmraT/g; s/\bUCMRAMixin\b/UcmraMixin/g; s/\bSTS\b/Sts/g' $(find -name "*.v")
 ```
 * `PersistentL` and `TimelessL` (persistence and timelessness of lists of
   propositions) are replaces by `TCForall` from std++.
