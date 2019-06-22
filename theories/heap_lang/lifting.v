@@ -377,7 +377,7 @@ Qed.
 Lemma wp_cmpxchg_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
   {{{ ▷ l ↦{q} v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET (v', #false); l ↦{q} v' }}}.
+  {{{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -388,7 +388,7 @@ Qed.
 Lemma twp_cmpxchg_fail s E l q v' v1 v2 :
   val_for_compare v' ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
   [[{ l ↦{q} v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET (v', #false); l ↦{q} v' }]].
+  [[{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -400,7 +400,7 @@ Qed.
 Lemma wp_cmpxchg_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
   {{{ ▷ l ↦ v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET (v', #true); l ↦ v2 }}}.
+  {{{ RET PairV v' (LitV $ LitBool true); l ↦ v2 }}}.
 Proof.
   iIntros (?? Φ) ">Hl HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -412,7 +412,7 @@ Qed.
 Lemma twp_cmpxchg_suc s E l v1 v2 v' :
   val_for_compare v' = val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
   [[{ l ↦ v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET (v', #true); l ↦ v2 }]].
+  [[{ RET PairV v' (LitV $ LitBool true); l ↦ v2 }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
