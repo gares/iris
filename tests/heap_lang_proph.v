@@ -12,7 +12,7 @@ Section tests.
     l ↦ #n -∗
     proph p vs -∗
     WP Resolve (CmpXchg #l #n (#n + #1)) #p v @ E
-      {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
+      {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_cmpxchg_suc. iIntros (ws ->) "Hp". eauto with iFrame.
@@ -23,7 +23,7 @@ Section tests.
 
   Lemma test_resolve2 E (l : loc) (n m : Z) (p : proph_id) (vs : list (val * val)) :
     proph p vs -∗
-    WP Resolve (#n + #m - (#n + #m)) #p #() @ E {{ v, ⌜v = #0⌝ ∗ ∃vs, proph p vs }}%I.
+    WP Resolve (#n + #m - (#n + #m)) #p #() @ E {{ v, ⌜v = #0⌝ ∗ ∃vs, proph p vs }}.
   Proof.
     iIntros "Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_pures. iIntros (ws ->) "Hp". rewrite Z.sub_diag. eauto with iFrame.
