@@ -35,9 +35,15 @@ Changes in the theory of Iris itself:
 
 Changes in heap_lang:
 
-* Weaken the semantics of CAS in heap_lang to be efficiently implementable:
-  CAS may only be used to compare "unboxed" values that can be represented in a
-  single machine word.
+* CAS (compare-and-set) got replaced by CmpXchg (compare-exchange).  The
+  difference is that CmpXchg returns a pair consisting of the old value and a
+  boolean indicating whether the comparison was successful and hence the
+  exchange happened.  CAS can be obtained by simply projecting to the second
+  component, but also providing the old value more closely models the primitive
+  typically provided in systems languages (C, C++, Rust).
+  The comparison by this operation also got weakened to be efficiently
+  implementable: CmpXchg may only be used to compare "unboxed" values that can
+  be represented in a single machine word.
 * Implement prophecy variables using the new support for "observations".
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
@@ -50,16 +56,10 @@ Changes in heap_lang:
 * heap_lang now has support for allocating, accessing and reasoning about arrays
   (continuously allocated regions of memory).
 * One can now assign "meta" data to heap_lang locations.
-* For comparison operation (the binary operator and CAS), all closures are
+* For comparison operation (the binary operator and CmpXchg), all closures are
   "normalized" to the same.  This makes all closures indistinguishable from each
   other while remaining unqueal to anything else.  We also use the same
   "normalization" to make sure all prophecy variables seem equal to `()`.
-* CAS (compare-and-set) got replaced by CmpXchg (compare-exchange).  The
-  difference is that CmpXchg returns a pair consisting of the old value and a
-  boolean indicating whether the comparison was successful and hence the
-  exchange happened.  CAS can be obtained by simply projecting to the second
-  component, but also providing the old value more closely models the primitive
-  typically provided in systems languages (C, C++, Rust).
 
 Changes in Coq:
 
