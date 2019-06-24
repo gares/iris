@@ -1359,8 +1359,6 @@ Section sigT.
 
   Global Instance existT_proper_2 a : Proper ((≡) ==> (≡)) (@existT A P a).
   Proof. apply ne_proper, _. Qed.
-  (* XXX Which do you prefer? *)
-  (* Proof. move => ?? Heq. apply (existT_proper eq_refl Heq). Qed. *)
 
   Implicit Types (c : chain sigTO).
 
