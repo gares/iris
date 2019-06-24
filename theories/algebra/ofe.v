@@ -1454,5 +1454,9 @@ Section sigTOF.
 End sigTOF.
 Arguments sigTOF {_} _%OF.
 
+(*
+FIXME: Notation disabled because it causes strange conflicts in Coq 8.7.
+Enable again once we drop support for that version.
 Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
 Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.
+*)
