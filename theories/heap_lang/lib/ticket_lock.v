@@ -111,7 +111,7 @@ Section proof.
     iInv N as (o n) "[Hlo [Hln Ha]]".
     wp_load. iModIntro. iSplitL "Hlo Hln Ha".
     { iNext. iExists o, n. by iFrame. }
-    wp_pures. wp_bind (CAS _ _ _).
+    wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as (o' n') "(>Hlo' & >Hln' & >Hauth & Haown)".
     destruct (decide (#n' = #n))%V as [[= ->%Nat2Z.inj] | Hneq].
     - iMod (own_update with "Hauth") as "[Hauth Hofull]".
@@ -119,17 +119,17 @@ Section proof.
         eapply (gset_disj_alloc_empty_local_update _ {[ n ]}).
         apply (set_seq_S_end_disjoint 0). }
       rewrite -(set_seq_S_end_union_L 0).
-      wp_cas_suc. iModIntro. iSplitL "Hlo' Hln' Haown Hauth".
+      wp_cmpxchg_suc. iModIntro. iSplitL "Hlo' Hln' Haown Hauth".
       { iNext. iExists o', (S n).
         rewrite Nat2Z.inj_succ -Z.add_1_r. by iFrame. }
-      wp_if.
+      wp_pures.
       iApply (wait_loop_spec γ (#lo, #ln) with "[-HΦ]").
       + iFrame. rewrite /is_lock; eauto 10.
       + by iNext.
-    - wp_cas_fail. iModIntro.
+    - wp_cmpxchg_fail. iModIntro.
       iSplitL "Hlo' Hln' Hauth Haown".
       { iNext. iExists o', n'. by iFrame. }
-      wp_if. by iApply "IH"; auto.
+      wp_pures. by iApply "IH"; auto.
   Qed.
 
   Lemma release_spec γ lk R :

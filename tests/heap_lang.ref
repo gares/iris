@@ -40,7 +40,7 @@
   ============================
   _ : ▷ l ↦ #0
   --------------------------------------∗
-  WP CAS #l #0 #1 {{ _, l ↦ #1 }}
+  WP CmpXchg #l #0 #1 {{ _, l ↦ #1 }}
   
 1 subgoal
   
@@ -144,8 +144,9 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
     let: "val2" := fun2 "val1" in
     let: "val3" := fun3 "val2" in if: "val1" = "val2" then "val" else "val3"
   {{{ (x y : val) (z : Z), RET (x, y, #z); True }}}
-"not_cas"
+"not_cmpxchg"
      : string
 The command has indeed failed with message:
-Ltac call to "wp_cas_suc" failed.
-Tactic failure: wp_cas_suc: cannot find 'CAS' in (#() #()).
+Ltac call to "wp_cmpxchg_suc" failed.
+Tactic failure: wp_cmpxchg_suc: cannot find 'CmpXchg' in 
+(#() #()).

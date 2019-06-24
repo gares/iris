@@ -25,6 +25,8 @@ Notation LetCtx x e2 := (AppRCtx (LamV x e2)) (only parsing).
 Notation SeqCtx e2 := (LetCtx BAnon e2) (only parsing).
 Notation Match e0 x1 e1 x2 e2 := (Case e0 (Lam x1 e1) (Lam x2 e2)) (only parsing).
 Notation Alloc e := (AllocN (Val $ LitV $ LitInt 1) e) (only parsing).
+(** Compare-and-set (CAS) returns just a boolean indicating success or failure. *)
+Notation CAS l e1 e2 := (Snd (CmpXchg l e1 e2)) (only parsing).
 
 (* Skip should be atomic, we sometimes open invariants around
    it. Hence, we need to explicitly use LamV instead of e.g., Seq. *)

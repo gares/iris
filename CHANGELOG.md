@@ -54,6 +54,12 @@ Changes in heap_lang:
   "normalized" to the same.  This makes all closures indistinguishable from each
   other while remaining unqueal to anything else.  We also use the same
   "normalization" to make sure all prophecy variables seem equal to `()`.
+* CAS (compare-and-set) got replaced by CmpXchg (compare-exchange).  The
+  difference is that CmpXchg returns a pair consisting of the old value and a
+  boolean indicating whether the comparison was successful and hence the
+  exchange happened.  CAS can be obtained by simply projecting to the second
+  component, but also providing the old value more closely models the primitive
+  typically provided in systems languages (C, C++, Rust).
 
 Changes in Coq:
 

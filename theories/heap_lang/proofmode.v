@@ -182,8 +182,8 @@ Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   (∀ l, ∃ Δ'',
     envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ' = Some Δ'' ∧
-    envs_entails Δ'' (WP fill K (Val $ LitV l) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (AllocN #n v) @ s; E {{ Φ }}).
+    envs_entails Δ'' (WP fill K (Val $ LitV $ LitLoc l) @ s; E {{ Φ }})) →
+  envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ? ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_allocN.
@@ -196,8 +196,8 @@ Lemma tac_twp_allocN Δ s E j K v n Φ :
   (∀ l, ∃ Δ',
     envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ
     = Some Δ' ∧
-    envs_entails Δ' (WP fill K (Val $ LitV l) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (AllocN #n v) @ s; E [{ Φ }]).
+    envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ? HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_allocN.
@@ -211,7 +211,7 @@ Lemma tac_wp_alloc Δ Δ' s E j K v Φ :
   (∀ l, ∃ Δ'',
     envs_app false (Esnoc Enil j (l ↦ v)) Δ' = Some Δ'' ∧
     envs_entails Δ'' (WP fill K (Val $ LitV l) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (Alloc v) @ s; E {{ Φ }}).
+  envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_alloc.
@@ -222,8 +222,8 @@ Qed.
 Lemma tac_twp_alloc Δ s E j K v Φ :
   (∀ l, ∃ Δ',
     envs_app false (Esnoc Enil j (l ↦ v)) Δ = Some Δ' ∧
-    envs_entails Δ' (WP fill K (Val $ LitV l) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (Alloc v) @ s; E [{ Φ }]).
+    envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_alloc.
@@ -278,97 +278,97 @@ Proof.
   rewrite right_id. by apply sep_mono_r, wand_mono.
 Qed.
 
-Lemma tac_wp_cas Δ Δ' Δ'' s E i K l v v1 v2 Φ :
+Lemma tac_wp_cmpxchg Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
-  vals_cas_compare_safe v v1 →
+  vals_cmpxchg_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ'' (WP fill K (Val $ LitV true) @ s; E {{ Φ }})) →
+   envs_entails Δ'' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E {{ Φ }})) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val $ LitV false) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (CAS (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
+   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }})) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ???? Hsuc Hfail.
   destruct (decide (val_for_compare v = val_for_compare v1)) as [Heq|Hne].
   - rewrite -wp_bind. eapply wand_apply.
-    { eapply wp_cas_suc; eauto. }
+    { eapply wp_cmpxchg_suc; eauto. }
     rewrite into_laterN_env_sound -later_sep /= {1}envs_simple_replace_sound //; simpl.
     apply later_mono, sep_mono_r. rewrite right_id. apply wand_mono; auto.
   - rewrite -wp_bind. eapply wand_apply.
-    { eapply wp_cas_fail; eauto. }
+    { eapply wp_cmpxchg_fail; eauto. }
     rewrite into_laterN_env_sound -later_sep /= {1}envs_lookup_split //; simpl.
     apply later_mono, sep_mono_r. apply wand_mono; auto.
 Qed.
-Lemma tac_twp_cas Δ Δ' s E i K l v v1 v2 Φ :
+Lemma tac_twp_cmpxchg Δ Δ' s E i K l v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
-  vals_cas_compare_safe v v1 →
+  vals_cmpxchg_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val $ LitV true) @ s; E [{ Φ }])) →
+   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E [{ Φ }])) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ (WP fill K (Val $ LitV false) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+   envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ??? Hsuc Hfail.
   destruct (decide (val_for_compare v = val_for_compare v1)) as [Heq|Hne].
   - rewrite -twp_bind. eapply wand_apply.
-    { eapply twp_cas_suc; eauto. }
+    { eapply twp_cmpxchg_suc; eauto. }
     rewrite /= {1}envs_simple_replace_sound //; simpl.
     apply sep_mono_r. rewrite right_id. apply wand_mono; auto.
   - rewrite -twp_bind. eapply wand_apply.
-    { eapply twp_cas_fail; eauto. }
+    { eapply twp_cmpxchg_fail; eauto. }
     rewrite /= {1}envs_lookup_split //; simpl.
     apply sep_mono_r. apply wand_mono; auto.
 Qed.
 
-Lemma tac_wp_cas_fail Δ Δ' s E i K l q v v1 v2 Φ :
+Lemma tac_wp_cmpxchg_fail Δ Δ' s E i K l q v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
-  val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val $ LitV false) @ s; E {{ Φ }}) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
+  val_for_compare v ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
+  envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }}) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ?????.
-  rewrite -wp_bind. eapply wand_apply; first exact: wp_cas_fail.
+  rewrite -wp_bind. eapply wand_apply; first exact: wp_cmpxchg_fail.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
   by apply later_mono, sep_mono_r, wand_mono.
 Qed.
-Lemma tac_twp_cas_fail Δ s E i K l q v v1 v2 Φ :
+Lemma tac_twp_cmpxchg_fail Δ s E i K l q v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦{q} v)%I →
-  val_for_compare v ≠ val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ (WP fill K (Val $ LitV false) @ s; E [{ Φ }]) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+  val_for_compare v ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
+  envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq. intros. rewrite -twp_bind.
-  eapply wand_apply; first exact: twp_cas_fail.
+  eapply wand_apply; first exact: twp_cmpxchg_fail.
   rewrite envs_lookup_split //=. by do 2 f_equiv.
 Qed.
 
-Lemma tac_wp_cas_suc Δ Δ' Δ'' s E i K l v v1 v2 Φ :
+Lemma tac_wp_cmpxchg_suc Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
-  val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ'' (WP fill K (Val $ LitV true) @ s; E {{ Φ }}) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E {{ Φ }}).
+  val_for_compare v = val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
+  envs_entails Δ'' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E {{ Φ }}) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ??????; subst.
   rewrite -wp_bind. eapply wand_apply.
-  { eapply wp_cas_suc; eauto. }
+  { eapply wp_cmpxchg_suc; eauto. }
   rewrite into_laterN_env_sound -later_sep envs_simple_replace_sound //; simpl.
   rewrite right_id. by apply later_mono, sep_mono_r, wand_mono.
 Qed.
-Lemma tac_twp_cas_suc Δ Δ' s E i K l v v1 v2 Φ :
+Lemma tac_twp_cmpxchg_suc Δ Δ' s E i K l v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
-  val_for_compare v = val_for_compare v1 → vals_cas_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val $ LitV true) @ s; E [{ Φ }]) →
-  envs_entails Δ (WP fill K (CAS (LitV l) v1 v2) @ s; E [{ Φ }]).
+  val_for_compare v = val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
+  envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=>?????; subst.
   rewrite -twp_bind. eapply wand_apply.
-  { eapply twp_cas_suc; eauto. }
+  { eapply twp_cmpxchg_suc; eauto. }
   rewrite envs_simple_replace_sound //; simpl.
   rewrite right_id. by apply sep_mono_r, wand_mono.
 Qed.
@@ -530,104 +530,104 @@ Tactic Notation "wp_store" :=
   | _ => fail "wp_store: not a 'wp'"
   end.
 
-Ltac solve_vals_cas_compare_safe :=
-  (* The first branch is for when we have [vals_cas_compare_safe] in the context.
+Ltac solve_vals_cmpxchg_compare_safe :=
+  (* The first branch is for when we have [vals_cmpxchg_compare_safe] in the context.
      The other two branches are for when either one of the branches reduces to
      [True] or we have it in the context. *)
   fast_done || (left; fast_done) || (right; fast_done).
 
-Tactic Notation "wp_cas" "as" simple_intropattern(H1) "|" simple_intropattern(H2) :=
+Tactic Notation "wp_cmpxchg" "as" simple_intropattern(H1) "|" simple_intropattern(H2) :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
-    iAssumptionCore || fail "wp_cas: cannot find" l "↦ ?" in
+    iAssumptionCore || fail "wp_cmpxchg: cannot find" l "↦ ?" in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas _ _ _ _ _ _ K))
-      |fail 1 "wp_cas: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cmpxchg _ _ _ _ _ _ K))
+      |fail 1 "wp_cmpxchg: cannot find 'CmpXchg' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |intros H1; wp_finish
     |intros H2; wp_finish]
   | |- envs_entails _ (twp ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas _ _ _ _ _ K))
-      |fail 1 "wp_cas: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cmpxchg _ _ _ _ _ K))
+      |fail 1 "wp_cmpxchg: cannot find 'CmpXchg' in" e];
     [solve_mapsto ()
     |pm_reflexivity
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |intros H1; wp_finish
     |intros H2; wp_finish]
-  | _ => fail "wp_cas: not a 'wp'"
+  | _ => fail "wp_cmpxchg: not a 'wp'"
   end.
 
-Tactic Notation "wp_cas_fail" :=
+Tactic Notation "wp_cmpxchg_fail" :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
-    iAssumptionCore || fail "wp_cas_fail: cannot find" l "↦ ?" in
+    iAssumptionCore || fail "wp_cmpxchg_fail: cannot find" l "↦ ?" in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas_fail _ _ _ _ _ K))
-      |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cmpxchg_fail _ _ _ _ _ K))
+      |fail 1 "wp_cmpxchg_fail: cannot find 'CmpXchg' in" e];
     [iSolveTC
     |solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_fail _ _ _ _ K))
-      |fail 1 "wp_cas_fail: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cmpxchg_fail _ _ _ _ K))
+      |fail 1 "wp_cmpxchg_fail: cannot find 'CmpXchg' in" e];
     [solve_mapsto ()
     |try (simpl; congruence) (* value inequality *)
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |wp_finish]
-  | _ => fail "wp_cas_fail: not a 'wp'"
+  | _ => fail "wp_cmpxchg_fail: not a 'wp'"
   end.
 
-Tactic Notation "wp_cas_suc" :=
+Tactic Notation "wp_cmpxchg_suc" :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
-    iAssumptionCore || fail "wp_cas_suc: cannot find" l "↦ ?" in
+    iAssumptionCore || fail "wp_cmpxchg_suc: cannot find" l "↦ ?" in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cas_suc _ _ _ _ _ _ K))
-      |fail 1 "wp_cas_suc: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_cmpxchg_suc _ _ _ _ _ _ K))
+      |fail 1 "wp_cmpxchg_suc: cannot find 'CmpXchg' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |wp_finish]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
-      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cas_suc _ _ _ _ _ K))
-      |fail 1 "wp_cas_suc: cannot find 'CAS' in" e];
+      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_cmpxchg_suc _ _ _ _ _ K))
+      |fail 1 "wp_cmpxchg_suc: cannot find 'CmpXchg' in" e];
     [solve_mapsto ()
     |pm_reflexivity
     |try (simpl; congruence) (* value equality *)
-    |try solve_vals_cas_compare_safe
+    |try solve_vals_cmpxchg_compare_safe
     |wp_finish]
-  | _ => fail "wp_cas_suc: not a 'wp'"
+  | _ => fail "wp_cmpxchg_suc: not a 'wp'"
   end.
 
 Tactic Notation "wp_faa" :=
   let solve_mapsto _ :=
     let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
-    iAssumptionCore || fail "wp_cas_suc: cannot find" l "↦ ?" in
+    iAssumptionCore || fail "wp_faa: cannot find" l "↦ ?" in
   wp_pures;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_wp_faa _ _ _ _ _ _ K))
-      |fail 1 "wp_faa: cannot find 'CAS' in" e];
+      |fail 1 "wp_faa: cannot find 'FAA' in" e];
     [iSolveTC
     |solve_mapsto ()
     |pm_reflexivity
@@ -635,7 +635,7 @@ Tactic Notation "wp_faa" :=
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first
       [reshape_expr e ltac:(fun K e' => eapply (tac_twp_faa _ _ _ _ _ K))
-      |fail 1 "wp_faa: cannot find 'CAS' in" e];
+      |fail 1 "wp_faa: cannot find 'FAA' in" e];
     [solve_mapsto ()
     |pm_reflexivity
     |wp_finish]

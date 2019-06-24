@@ -8,46 +8,22 @@ Section tests.
   Implicit Types P Q : iProp Σ.
   Implicit Types Φ : val → iProp Σ.
 
-  Definition CAS_resolve e1 e2 e3 p v :=
-    Resolve (CAS e1 e2 e3) p v.
-
-  Lemma wp_cas_suc_resolve s E (l : loc) (p : proph_id) (vs : list (val * val)) (v1 v2 v : val) :
-    vals_cas_compare_safe v1 v1 →
-    {{{ proph p vs ∗ ▷ l ↦ v1 }}}
-      CAS_resolve #l v1 v2 #p v @ s; E
-    {{{ RET #true ; ∃ vs', ⌜vs = (#true, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v2 }}}.
-  Proof.
-    iIntros (Hcmp Φ) "[Hp Hl] HΦ".
-    wp_apply (wp_resolve with "Hp"); first done.
-    assert (val_is_unboxed v1) as Hv1; first by destruct Hcmp.
-    wp_cas_suc. iIntros (vs' ->) "Hp".
-    iApply "HΦ". eauto with iFrame.
-  Qed.
-
-  Lemma wp_cas_fail_resolve s E (l : loc) (p : proph_id) (vs : list (val * val)) (v' v1 v2 v : val) :
-    val_for_compare v' ≠ val_for_compare v1 → vals_cas_compare_safe v' v1 →
-    {{{ proph p vs ∗ ▷ l ↦ v' }}}
-      CAS_resolve #l v1 v2 #p v @ s; E
-    {{{ RET #false ; ∃ vs', ⌜vs = (#false, v)::vs'⌝ ∗ proph p vs' ∗ l ↦ v' }}}.
-  Proof.
-    iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
-    wp_apply (wp_resolve with "Hp"); first done.
-    wp_cas_fail. iIntros (vs' ->) "Hp".
-    iApply "HΦ". eauto with iFrame.
-  Qed.
-
   Lemma test_resolve1 E (l : loc) (n : Z) (p : proph_id) (vs : list (val * val)) (v : val) :
     l ↦ #n -∗
     proph p vs -∗
-    WP Resolve (CAS #l #n (#n + #1)) #p v @ E {{ v, ⌜v = #true⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}%I.
+    WP Resolve (CmpXchg #l #n (#n + #1)) #p v @ E
+      {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
-    wp_cas_suc. iIntros (ws ->) "Hp". eauto with iFrame.
+    wp_cmpxchg_suc. iIntros (ws ->) "Hp". eauto with iFrame.
+  Restart.
+    iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve_cmpxchg_suc with "[$Hp $Hl]"); first by left.
+    iIntros "Hpost". iDestruct "Hpost" as (ws ->) "Hp". eauto with iFrame.
   Qed.
 
   Lemma test_resolve2 E (l : loc) (n m : Z) (p : proph_id) (vs : list (val * val)) :
     proph p vs -∗
-    WP Resolve (#n + #m - (#n + #m)) #p #() @ E {{ v, ⌜v = #0⌝ ∗ ∃vs, proph p vs }}%I.
+    WP Resolve (#n + #m - (#n + #m)) #p #() @ E {{ v, ⌜v = #0⌝ ∗ ∃vs, proph p vs }}.
   Proof.
     iIntros "Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
     wp_pures. iIntros (ws ->) "Hp". rewrite Z.sub_diag. eauto with iFrame.

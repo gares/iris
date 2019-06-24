@@ -26,12 +26,12 @@ Section increment_physical.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
     wp_load. iMod ("Hclose" with "Hl") as "AU". iModIntro.
-    wp_pures. wp_bind (CAS _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
+    wp_pures. wp_bind (CmpXchg _ _ _)%E. iMod "AU" as (w) "[Hl Hclose]".
     destruct (decide (#v = #w)) as [[= ->]|Hx].
-    - wp_cas_suc. iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
-      iModIntro. wp_if. done.
-    - wp_cas_fail. iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
-      iModIntro. wp_if. iApply "IH". done.
+    - wp_cmpxchg_suc. iDestruct "Hclose" as "[_ Hclose]". iMod ("Hclose" with "Hl") as "HΦ".
+      iModIntro. wp_pures. done.
+    - wp_cmpxchg_fail. iDestruct "Hclose" as "[Hclose _]". iMod ("Hclose" with "Hl") as "AU".
+      iModIntro. wp_pures. iApply "IH". done.
   Qed.
 End increment_physical.
 
