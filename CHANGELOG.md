@@ -131,6 +131,8 @@ Changes in Coq:
   authoritative elements have agreement: `✓ (●{p} a ⋅ ●{q} b) ⇒ a ≡ b`. As a
   consequence, `auth` is no longer a COFE and does not preserve Leibniz
   equality.
+* Add a COFE construction (and functor) on dependent pairs `sigTO`, dual to
+  `discrete_funO`.
 * Rename in `auth`:
   - Use `auth_auth_proj`/`auth_frag_proj` for the projections of `auth`:
     `authoritative` → `auth_auth_proj` and `auth_own` → `auth_frag_proj`.
@@ -208,8 +210,6 @@ s/\bgnameC/gnameO/g;
 s/\bcoPset\_disjC/coPset\_disjO/g;
 ' $(find theories -name "*.v")
 ```
-- Add a COFE construction (and functor) on dependent pairs `sigTO`, dual to
-  `discrete_funO`.
 
 ## Iris 3.1.0 (released 2017-12-19)
 
