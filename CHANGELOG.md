@@ -208,6 +208,8 @@ s/\bgnameC/gnameO/g;
 s/\bcoPset\_disjC/coPset\_disjO/g;
 ' $(find theories -name "*.v")
 ```
+- Add a COFE construction (and functor) on dependent pairs `sigTO`, dual to
+  `discrete_funO`.
 
 ## Iris 3.1.0 (released 2017-12-19)
 

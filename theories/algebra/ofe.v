@@ -1284,3 +1284,175 @@ Section sigma.
 End sigma.
 
 Arguments sigO {_} _.
+
+(** Ofe for [sigT]. The first component must be discrete
+    and use Leibniz equality, while the second component might be any OFE. *)
+Section sigT.
+  Import EqNotations.
+
+  Context {A : Type} {P : A → ofeT}.
+  Implicit Types x : sigT P.
+
+  (**
+    The distance for [{ a : A & P }] uses Leibniz equality on [A] to
+    transport the second components to the same type,
+    and then step-indexed distance on the second component.
+    Unlike in the topos of trees, with (C)OFEs we cannot use step-indexed equality
+    on the first component.
+  *)
+  Instance sigT_dist : Dist (sigT P) := λ n x1 x2,
+    ∃ eq : projT1 x1 = projT1 x2, rew eq in projT2 x1 ≡{n}≡ projT2 x2.
+
+  (**
+    Usually we'd give a direct definition, and show it equivalent to
+    [∀ n, x1 ≡{n}≡ x2] when proving the [equiv_dist] OFE axiom.
+    But here the equivalence requires UIP — see [sigT_equiv_eq_alt].
+    By defining [equiv] in terms of [dist], we can define an OFE
+    without assuming UIP, at the cost of complex reasoning on [equiv].
+  *)
+  Instance sigT_equiv : Equiv (sigT P) := λ x1 x2,
+    ∀ n, x1 ≡{n}≡ x2.
+
+  (** Unfolding lemmas.
+      Written with [↔] not [=] to avoid https://github.com/coq/coq/issues/3814. *)
+  Definition sigT_equiv_eq x1 x2 : (x1 ≡ x2) ↔ ∀ n, x1 ≡{n}≡ x2 :=
+      reflexivity _.
+
+  Definition sigT_dist_eq x1 x2 n : (x1 ≡{n}≡ x2) ↔
+    ∃ eq : projT1 x1 = projT1 x2, (rew eq in projT2 x1) ≡{n}≡ projT2 x2 :=
+      reflexivity _.
+
+  Definition sigT_dist_proj1 n {x y} : x ≡{n}≡ y → projT1 x = projT1 y := proj1_ex.
+  Definition sigT_equiv_proj1 x y : x ≡ y → projT1 x = projT1 y := λ H, proj1_ex (H 0).
+
+  (** [existT] is "non-expansive". *)
+  Lemma existT_ne n {i1 i2} {v1 : P i1} {v2 : P i2} :
+    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡{n}≡ v2) →
+      existT i1 v1 ≡{n}≡ existT i2 v2.
+  Proof. intros ->; simpl. exists eq_refl => /=. done. Qed.
+
+  Lemma existT_proper {i1 i2} {v1 : P i1} {v2 : P i2} :
+    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡ v2) →
+      existT i1 v1 ≡ existT i2 v2.
+  Proof. intros eq Heq n. apply (existT_ne n eq), equiv_dist, Heq. Qed.
+
+  Definition sigT_ofe_mixin : OfeMixin (sigT P).
+  Proof.
+    split => // n.
+    - split; hnf; setoid_rewrite sigT_dist_eq.
+      + intros. by exists eq_refl.
+      + move => [xa x] [ya y] /=. destruct 1 as [-> Heq].
+        by exists eq_refl.
+      + move => [xa x] [ya y] [za z] /=.
+        destruct 1 as [-> Heq1].
+        destruct 1 as [-> Heq2]. exists eq_refl => /=. by trans y.
+    - setoid_rewrite sigT_dist_eq.
+      move => [xa x] [ya y] /=. destruct 1 as [-> Heq].
+      exists eq_refl. exact: dist_S.
+  Qed.
+
+  Canonical Structure sigTO : ofeT := OfeT (sigT P) sigT_ofe_mixin.
+
+  Implicit Types (c : chain sigTO).
+
+  Global Instance sigT_discrete x : Discrete (projT2 x) → Discrete x.
+  Proof.
+    move: x => [xa x] ? [ya y] [] /=; intros -> => /= Hxy n.
+    exists eq_refl => /=. apply equiv_dist, (discrete _), Hxy.
+  Qed.
+
+  Global Instance sigT_ofe_discrete : (∀ a, OfeDiscrete (P a)) → OfeDiscrete sigTO.
+  Proof. intros ??. apply _. Qed.
+
+  Lemma sigT_chain_const_proj1 c n : projT1 (c n) = projT1 (c 0).
+  Proof. refine (sigT_dist_proj1 _ (chain_cauchy c 0 n _)). lia. Qed.
+
+  Lemma sigT_equiv_eq_alt `{!∀ a b : A, ProofIrrel (a = b)} x1 x2 :
+    x1 ≡ x2 ↔
+    ∃ eq : projT1 x1 = projT1 x2, rew eq in projT2 x1 ≡ projT2 x2.
+  Proof.
+    setoid_rewrite equiv_dist; setoid_rewrite sigT_dist_eq; split => Heq.
+    - move: (Heq 0) => [H0eq1 _].
+      exists H0eq1 => n. move: (Heq n) => [] Hneq1.
+      by rewrite (proof_irrel H0eq1 Hneq1).
+    - move: Heq => [Heq1 Heqn2] n. by exists Heq1.
+  Qed.
+
+  (* For this COFE construction we need UIP (Uniqueness of Identity Proofs)
+    on [A] (i.e. [∀ x y : A, ProofIrrel (x = y)]. UIP is most commonly obtained
+    from decidable equality (by Hedberg’s theorem, see
+    [stdpp.proof_irrel.eq_pi]). *)
+  Section cofe.
+    Context `{!∀ a b : A, ProofIrrel (a = b)} `{!∀ a, Cofe (P a)}.
+
+    Program Definition chain_map_snd c : chain (P (projT1 (c 0))) :=
+      {| chain_car n := rew (sigT_chain_const_proj1 c n) in projT2 (c n) |}.
+    Next Obligation.
+      move => c n i Hle /=.
+      (* [Hgoal] is our thesis, up to casts: *)
+      case: (chain_cauchy c n i Hle) => [Heqin Hgoal] /=.
+      (* Pretty delicate. We have two casts to [projT1 (c 0)].
+        We replace those by one cast. *)
+      move: (sigT_chain_const_proj1 c i) (sigT_chain_const_proj1 c n)
+        => Heqi0 Heqn0.
+      (* Rewrite [projT1 (c 0)] to [projT1 (c n)] in goal and [Heqi0]: *)
+      destruct Heqn0.
+      by rewrite /= (proof_irrel Heqi0 Heqin).
+    Qed.
+
+    Definition sigT_compl : Compl sigTO :=
+      λ c, existT (projT1 (chain_car c 0)) (compl (chain_map_snd c)).
+
+    Global Program Instance sigT_cofe : Cofe sigTO := { compl := sigT_compl }.
+    Next Obligation.
+      intros n c. rewrite /sigT_compl sigT_dist_eq /=.
+      exists (symmetry (sigT_chain_const_proj1 c n)).
+      (* Our thesis, up to casts: *)
+      pose proof (conv_compl n (chain_map_snd c)) as Hgoal.
+      move: (compl (chain_map_snd c)) Hgoal => pc0 /=.
+      destruct (sigT_chain_const_proj1 c n); simpl. done.
+    Qed.
+  End cofe.
+End sigT.
+
+Arguments sigTO {_} _.
+
+Section sigTOF.
+  Context {A : Type}.
+
+  Program Definition sigT_map {P1 P2 : A → ofeT} :
+    discrete_funO (λ a, P1 a -n> P2 a) -n>
+    sigTO P1 -n> sigTO P2 :=
+    λne f xpx, existT _ (f _ (projT2 xpx)).
+  Next Obligation.
+    move => ?? f n [x px] [y py] [/= Heq]. destruct Heq; simpl.
+    exists eq_refl => /=. by f_equiv.
+  Qed.
+  Next Obligation.
+    move => ?? n f g Heq [x px] /=. exists eq_refl => /=. apply Heq.
+  Qed.
+
+  Program Definition sigTOF (F : A → oFunctor) : oFunctor := {|
+    oFunctor_car A CA B CB := sigTO (λ a, oFunctor_car (F a) A _ B CB);
+    oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := sigT_map (λ a, oFunctor_map (F a) fg)
+  |}.
+  Next Obligation.
+    repeat intro. exists eq_refl => /=. solve_proper.
+  Qed.
+  Next Obligation.
+    simpl; intros. apply (existT_proper eq_refl), oFunctor_id.
+  Qed.
+  Next Obligation.
+    simpl; intros. apply (existT_proper eq_refl), oFunctor_compose.
+  Qed.
+
+  Global Instance sigTOF_contractive {F} :
+    (∀ a, oFunctorContractive (F a)) → oFunctorContractive (sigTOF F).
+  Proof.
+    repeat intro. apply sigT_map => a. exact: oFunctor_contractive.
+  Qed.
+End sigTOF.
+Arguments sigTOF {_} _%OF.
+
+Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
+Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.
