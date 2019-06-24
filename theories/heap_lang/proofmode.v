@@ -182,8 +182,8 @@ Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   (∀ l, ∃ Δ'',
     envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ' = Some Δ'' ∧
-    envs_entails Δ'' (WP fill K (Val $ LitV l) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (AllocN #n v) @ s; E {{ Φ }}).
+    envs_entails Δ'' (WP fill K (Val $ LitV $ LitLoc l) @ s; E {{ Φ }})) →
+  envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ? ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_allocN.
@@ -196,8 +196,8 @@ Lemma tac_twp_allocN Δ s E j K v n Φ :
   (∀ l, ∃ Δ',
     envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ
     = Some Δ' ∧
-    envs_entails Δ' (WP fill K (Val $ LitV l) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (AllocN #n v) @ s; E [{ Φ }]).
+    envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ? HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_allocN.
@@ -211,7 +211,7 @@ Lemma tac_wp_alloc Δ Δ' s E j K v Φ :
   (∀ l, ∃ Δ'',
     envs_app false (Esnoc Enil j (l ↦ v)) Δ' = Some Δ'' ∧
     envs_entails Δ'' (WP fill K (Val $ LitV l) @ s; E {{ Φ }})) →
-  envs_entails Δ (WP fill K (Alloc v) @ s; E {{ Φ }}).
+  envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ? HΔ.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_alloc.
@@ -222,8 +222,8 @@ Qed.
 Lemma tac_twp_alloc Δ s E j K v Φ :
   (∀ l, ∃ Δ',
     envs_app false (Esnoc Enil j (l ↦ v)) Δ = Some Δ' ∧
-    envs_entails Δ' (WP fill K (Val $ LitV l) @ s; E [{ Φ }])) →
-  envs_entails Δ (WP fill K (Alloc v) @ s; E [{ Φ }]).
+    envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])) →
+  envs_entails Δ (WP fill K (Alloc (Val v)) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> HΔ.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_alloc.
@@ -284,9 +284,9 @@ Lemma tac_wp_cmpxchg Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   vals_cmpxchg_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ'' (WP fill K (Val (v, #true)) @ s; E {{ Φ }})) →
+   envs_entails Δ'' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E {{ Φ }})) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val (v, #false)) @ s; E {{ Φ }})) →
+   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }})) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) (Val v1) (Val v2)) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ???? Hsuc Hfail.
@@ -305,9 +305,9 @@ Lemma tac_twp_cmpxchg Δ Δ' s E i K l v v1 v2 Φ :
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   vals_cmpxchg_compare_safe v v1 →
   (val_for_compare v = val_for_compare v1 →
-   envs_entails Δ' (WP fill K (Val (v, #true)) @ s; E [{ Φ }])) →
+   envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E [{ Φ }])) →
   (val_for_compare v ≠ val_for_compare v1 →
-   envs_entails Δ (WP fill K (Val (v, #false)) @ s; E [{ Φ }])) →
+   envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }])) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=> ??? Hsuc Hfail.
@@ -326,7 +326,7 @@ Lemma tac_wp_cmpxchg_fail Δ Δ' s E i K l q v v1 v2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val (v, #false)) @ s; E {{ Φ }}) →
+  envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ?????.
@@ -337,7 +337,7 @@ Qed.
 Lemma tac_twp_cmpxchg_fail Δ s E i K l q v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦{q} v)%I →
   val_for_compare v ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
-  envs_entails Δ (WP fill K (Val (v, #false)) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (Val $ PairV v (LitV $ LitBool false)) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq. intros. rewrite -twp_bind.
@@ -350,7 +350,7 @@ Lemma tac_wp_cmpxchg_suc Δ Δ' Δ'' s E i K l v v1 v2 Φ :
   envs_lookup i Δ' = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ' = Some Δ'' →
   val_for_compare v = val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
-  envs_entails Δ'' (WP fill K (Val (v, #true)) @ s; E {{ Φ }}) →
+  envs_entails Δ'' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ??????; subst.
@@ -363,7 +363,7 @@ Lemma tac_twp_cmpxchg_suc Δ Δ' s E i K l v v1 v2 Φ :
   envs_lookup i Δ = Some (false, l ↦ v)%I →
   envs_simple_replace i false (Esnoc Enil i (l ↦ v2)) Δ = Some Δ' →
   val_for_compare v = val_for_compare v1 → vals_cmpxchg_compare_safe v v1 →
-  envs_entails Δ' (WP fill K (Val (v, #true)) @ s; E [{ Φ }]) →
+  envs_entails Δ' (WP fill K (Val $ PairV v (LitV $ LitBool true)) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (CmpXchg (LitV l) v1 v2) @ s; E [{ Φ }]).
 Proof.
   rewrite envs_entails_eq=>?????; subst.
