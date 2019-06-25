@@ -84,6 +84,25 @@ Qed.
 Lemma sig_equivI {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
 Proof. apply (anti_symm _). apply sig_eq. apply f_equiv, _. Qed.
 
+Section sigT_equivI.
+Import EqNotations.
+
+Lemma sigT_equivI {A : Type} {P : A → ofeT} (x y : sigT P) :
+  x ≡ y ⊣⊢
+  ∃ eq : projT1 x = projT1 y, rew eq in projT2 x ≡ projT2 y.
+Proof.
+  apply (anti_symm _).
+  - apply (internal_eq_rewrite' x y (λ y,
+             ∃ eq : projT1 x = projT1 y,
+               rew eq in projT2 x ≡ projT2 y))%I;
+        [| done | exact: (exist_intro' _ _ eq_refl) ].
+    move => n [a pa] [b pb] [/=]; intros -> => /= Hab.
+    apply exist_ne => ?. by rewrite Hab.
+  - apply exist_elim. move: x y => [a pa] [b pb] /=. intros ->; simpl.
+    apply f_equiv, _.
+Qed.
+End sigT_equivI.
+
 Lemma discrete_fun_equivI {A} {B : A → ofeT} (f g : discrete_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
 Proof.
   apply (anti_symm _); auto using fun_ext.
