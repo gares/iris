@@ -1325,17 +1325,6 @@ Section sigT.
   Definition sigT_dist_proj1 n {x y} : x ≡{n}≡ y → projT1 x = projT1 y := proj1_ex.
   Definition sigT_equiv_proj1 x y : x ≡ y → projT1 x = projT1 y := λ H, proj1_ex (H 0).
 
-  (** [existT] is "non-expansive". *)
-  Lemma existT_ne n {i1 i2} {v1 : P i1} {v2 : P i2} :
-    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡{n}≡ v2) →
-      existT i1 v1 ≡{n}≡ existT i2 v2.
-  Proof. intros ->; simpl. exists eq_refl => /=. done. Qed.
-
-  Lemma existT_proper {i1 i2} {v1 : P i1} {v2 : P i2} :
-    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡ v2) →
-      existT i1 v1 ≡ existT i2 v2.
-  Proof. intros eq Heq n. apply (existT_ne n eq), equiv_dist, Heq. Qed.
-
   Definition sigT_ofe_mixin : OfeMixin (sigT P).
   Proof.
     split => // n.
@@ -1352,6 +1341,26 @@ Section sigT.
   Qed.
 
   Canonical Structure sigTO : ofeT := OfeT (sigT P) sigT_ofe_mixin.
+
+  (** [existT] is "non-expansive" — general, dependently-typed statement. *)
+  Lemma existT_ne n {i1 i2} {v1 : P i1} {v2 : P i2} :
+    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡{n}≡ v2) →
+      existT i1 v1 ≡{n}≡ existT i2 v2.
+  Proof. intros ->; simpl. exists eq_refl => /=. done. Qed.
+
+  Lemma existT_proper {i1 i2} {v1 : P i1} {v2 : P i2} :
+    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡ v2) →
+      existT i1 v1 ≡ existT i2 v2.
+  Proof. intros eq Heq n. apply (existT_ne n eq), equiv_dist, Heq. Qed.
+
+  (** [existT] is "non-expansive" — non-dependently-typed version. *)
+  Global Instance existT_ne_2 a : NonExpansive (@existT A P a).
+  Proof. move => ??? Heq. apply (existT_ne _ eq_refl Heq). Qed.
+
+  Global Instance existT_proper_2 a : Proper ((≡) ==> (≡)) (@existT A P a).
+  Proof. apply ne_proper, _. Qed.
+  (* XXX Which do you prefer? *)
+  (* Proof. move => ?? Heq. apply (existT_proper eq_refl Heq). Qed. *)
 
   Implicit Types (c : chain sigTO).
 
