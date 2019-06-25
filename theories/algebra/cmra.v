@@ -65,7 +65,7 @@ Section mixin.
   }.
 End mixin.
 
-(** Bundeled version *)
+(** Bundled version *)
 Structure cmraT := CmraT' {
   cmra_car :> Type;
   cmra_equiv : Equiv cmra_car;
