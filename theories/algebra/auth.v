@@ -362,8 +362,17 @@ Proof.
     exists a'. split; [done|]. split; [|done]. exists bf2.
     by rewrite left_id -assoc.
 Qed.
+
 Lemma auth_update_alloc a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a' ⋅ ◯ b'.
 Proof. intros. rewrite -(right_id _ _ (● a)). by apply auth_update. Qed.
+
+Lemma auth_update_core_id a b `{!CoreId b} :
+  b ≼ a → ● a ~~> ● a ⋅ ◯ b.
+Proof.
+  intros Hincl. apply: auth_update_alloc.
+  rewrite -(left_id ε _ b). apply: core_id_local_update. done.
+Qed.
+
 Lemma auth_update_dealloc a b a' : (a,b) ~l~> (a',ε) → ● a ⋅ ◯ b ~~> ● a'.
 Proof. intros. rewrite -(right_id _ _ (● a')). by apply auth_update. Qed.
 
