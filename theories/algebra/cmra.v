@@ -362,10 +362,6 @@ Proof.
   intros Hv Hx%cmra_pcore_l. move: Hv; rewrite -Hx. apply cmra_valid_op_l.
 Qed.
 
-(** ** CoreId elements *)
-Lemma core_id_dup x `{!CoreId x} : x ≡ x ⋅ x.
-Proof. by apply cmra_pcore_dup' with x. Qed.
-
 (** ** Exclusive elements *)
 Lemma exclusiveN_l n x `{!Exclusive x} y : ✓{n} (x ⋅ y) → False.
 Proof. intros. eapply (exclusive0_l x y), cmra_validN_le; eauto with lia. Qed.
@@ -460,6 +456,19 @@ Lemma cmra_included_dist_l n x1 x2 x1' :
 Proof.
   intros [z Hx2] Hx1; exists (x1' ⋅ z); split; auto using cmra_included_l.
   by rewrite Hx1 Hx2.
+Qed.
+
+(** ** CoreId elements *)
+Lemma core_id_dup x `{!CoreId x} : x ≡ x ⋅ x.
+Proof. by apply cmra_pcore_dup' with x. Qed.
+
+Lemma core_id_extract x y `{!CoreId x} :
+  x ≼ y → y ≡ y ⋅ x.
+Proof.
+  intros ?.
+  destruct (cmra_pcore_mono' x y x) as (cy & Hcy & [x' Hx']); [done|exact: core_id|].
+  rewrite -(cmra_pcore_r y) //. rewrite Hx' -!assoc. f_equiv.
+  rewrite [x' ⋅ x]comm assoc -core_id_dup. done.
 Qed.
 
 (** ** Total core *)
