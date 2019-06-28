@@ -161,8 +161,19 @@ Instance pure_unop op v v' :
 Proof. solve_pure_exec. Qed.
 
 Instance pure_binop op v1 v2 v' :
-  PureExec (bin_op_eval op v1 v2 = Some v') 1 (BinOp op (Val v1) (Val v2)) (Val v').
+  PureExec (bin_op_eval op v1 v2 = Some v') 1 (BinOp op (Val v1) (Val v2)) (Val v') | 10.
 Proof. solve_pure_exec. Qed.
+(* Higher-priority instance for EqOp. *)
+Instance pure_eqop v1 v2 :
+  PureExec (vals_compare_safe v1 v2) 1
+    (BinOp EqOp (Val v1) (Val v2))
+    (Val $ LitV $ LitBool $ bool_decide (v1 = v2)) | 1.
+Proof.
+  intros Hcompare.
+  cut (bin_op_eval EqOp v1 v2 = Some $ LitV $ LitBool $ bool_decide (v1 = v2)).
+  { intros. revert Hcompare. solve_pure_exec. }
+  rewrite /bin_op_eval /= bool_decide_true //.
+Qed.
 
 Instance pure_if_true e1 e2 : PureExec True 1 (If (Val $ LitV $ LitBool true) e1 e2) e1.
 Proof. solve_pure_exec. Qed.
@@ -375,7 +386,7 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_fail s E l q v' v1 v2 :
-  val_for_compare v' ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
+  v' ≠ v1 → vals_compare_safe v' v1 →
   {{{ ▷ l ↦{q} v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
   {{{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }}}.
 Proof.
@@ -386,7 +397,7 @@ Proof.
   iModIntro; iSplit=> //. iFrame. by iApply "HΦ".
 Qed.
 Lemma twp_cmpxchg_fail s E l q v' v1 v2 :
-  val_for_compare v' ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
+  v' ≠ v1 → vals_compare_safe v' v1 →
   [[{ l ↦{q} v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
   [[{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }]].
 Proof.
@@ -398,7 +409,7 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_suc s E l v1 v2 v' :
-  val_for_compare v' = val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
+  v' = v1 → vals_compare_safe v' v1 →
   {{{ ▷ l ↦ v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
   {{{ RET PairV v' (LitV $ LitBool true); l ↦ v2 }}}.
 Proof.
@@ -410,7 +421,7 @@ Proof.
   iModIntro. iSplit=>//. iFrame. by iApply "HΦ".
 Qed.
 Lemma twp_cmpxchg_suc s E l v1 v2 v' :
-  val_for_compare v' = val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
+  v' = v1 → vals_compare_safe v' v1 →
   [[{ l ↦ v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
   [[{ RET PairV v' (LitV $ LitBool true); l ↦ v2 }]].
 Proof.
@@ -534,7 +545,7 @@ Proof.
 Qed.
 
 Lemma wp_resolve_cmpxchg_suc s E l (p : proph_id) (pvs : list (val * val)) v1 v2 v :
-  vals_cmpxchg_compare_safe v1 v1 →
+  vals_compare_safe v1 v1 →
   {{{ proph p pvs ∗ ▷ l ↦ v1 }}}
     Resolve (CmpXchg #l v1 v2) #p v @ s; E
   {{{ RET (v1, #true) ; ∃ pvs', ⌜pvs = ((v1, #true)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦ v2 }}}.
@@ -547,7 +558,7 @@ Proof.
 Qed.
 
 Lemma wp_resolve_cmpxchg_fail s E l (p : proph_id) (pvs : list (val * val)) q v' v1 v2 v :
-  val_for_compare v' ≠ val_for_compare v1 → vals_cmpxchg_compare_safe v' v1 →
+  v' ≠ v1 → vals_compare_safe v' v1 →
   {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
     Resolve (CmpXchg #l v1 v2) #p v @ s; E
   {{{ RET (v', #false) ; ∃ pvs', ⌜pvs = ((v', #false)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
@@ -604,8 +615,8 @@ Qed.
 
 Lemma wp_cmpxchg_suc_offset s E l off vs v' v1 v2 :
   vs !! off = Some v' →
-  val_for_compare v' = val_for_compare v1 →
-  vals_cmpxchg_compare_safe v' v1 →
+  v' = v1 →
+  vals_compare_safe v' v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
   {{{ RET (v', #true); l ↦∗ <[off:=v2]> vs }}}.
@@ -617,8 +628,8 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  val_for_compare (vs !!! off) = val_for_compare v1 →
-  vals_cmpxchg_compare_safe (vs !!! off) v1 →
+  (vs !!! off) = v1 →
+  vals_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
   {{{ RET (vs !!! off, #true); l ↦∗ vinsert off v2 vs }}}.
@@ -629,8 +640,8 @@ Qed.
 
 Lemma wp_cmpxchg_fail_offset s E l off vs v0 v1 v2 :
   vs !! off = Some v0 →
-  val_for_compare v0 ≠ val_for_compare v1 →
-  vals_cmpxchg_compare_safe v0 v1 →
+  v0 ≠ v1 →
+  vals_compare_safe v0 v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
   {{{ RET (v0, #false); l ↦∗ vs }}}.
@@ -644,8 +655,8 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  val_for_compare (vs !!! off) ≠ val_for_compare v1 →
-  vals_cmpxchg_compare_safe (vs !!! off) v1 →
+  (vs !!! off) ≠ v1 →
+  vals_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
   {{{ RET (vs !!! off, #false); l ↦∗ vs }}}.

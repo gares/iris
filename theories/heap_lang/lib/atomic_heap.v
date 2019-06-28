@@ -37,8 +37,8 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
     <<< ∀ v, mapsto l 1 v >>> cmpxchg #l w1 w2 @ ⊤
-    <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
-        RET (v, #if decide (val_for_compare v = val_for_compare w1) then true else false) >>>;
+    <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
+        RET (v, #if decide (v = w1) then true else false) >>>;
 }.
 Arguments atomic_heap _ {_}.
 
@@ -68,8 +68,8 @@ Section derived.
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
     <<< ∀ v, mapsto l 1 v >>> CAS #l w1 w2 @ ⊤
-    <<< if decide (val_for_compare v = val_for_compare w1) then mapsto l 1 w2 else mapsto l 1 v,
-        RET #if decide (val_for_compare v = val_for_compare w1) then true else false >>>.
+    <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
+        RET #if decide (v = w1) then true else false >>>.
   Proof.
     iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
     iApply (aacc_aupd_commit with "AU"); first done.
@@ -119,12 +119,12 @@ Section proof.
     val_is_unboxed w1 →
     <<< ∀ (v : val), l ↦ v >>>
       primitive_cmpxchg #l w1 w2 @ ⊤
-    <<< if decide (val_for_compare v = val_for_compare w1) then l ↦ w2 else l ↦ v,
-        RET (v, #if decide (val_for_compare v = val_for_compare w1) then true else false) >>>.
+    <<< if decide (v = w1) then l ↦ w2 else l ↦ v,
+        RET (v, #if decide (v = w1) then true else false) >>>.
   Proof.
     iIntros (? Φ) "AU". wp_lam. wp_pures.
     iMod "AU" as (v) "[H↦ [_ Hclose]]".
-    destruct (decide (val_for_compare v = val_for_compare w1)) as [Heq|Hne];
+    destruct (decide (v = w1)) as [Heq|Hne];
       [wp_cmpxchg_suc|wp_cmpxchg_fail];
     iMod ("Hclose" with "H↦") as "HΦ"; done.
   Qed.
