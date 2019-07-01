@@ -172,7 +172,7 @@ Proof.
   intros Hcompare.
   cut (bin_op_eval EqOp v1 v2 = Some $ LitV $ LitBool $ bool_decide (v1 = v2)).
   { intros. revert Hcompare. solve_pure_exec. }
-  rewrite /bin_op_eval /= bool_decide_true //.
+  rewrite /bin_op_eval /= decide_True //.
 Qed.
 
 Instance pure_if_true e1 e2 : PureExec True 1 (If (Val $ LitV $ LitBool true) e1 e2) e1.
