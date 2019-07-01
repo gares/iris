@@ -61,7 +61,7 @@ Open Scope Z_scope.
 Definition proph_id := positive.
 
 Inductive base_lit : Set :=
-  | LitInt (n : Z) | LitBool (b : bool) | LitUnit
+  | LitInt (n : Z) | LitBool (b : bool) | LitUnit | LitErased
   | LitLoc (l : loc) | LitProphecy (p: proph_id).
 Inductive un_op : Set :=
   | NegOp | MinusUnOp.
@@ -151,38 +151,33 @@ Ignoring (as usual) the fact that we have to fit the infinite Z/loc into 61
 bits, this means every value is machine-word-sized and can hence be atomically
 read and written.  Also notice that the sets of boxed and unboxed values are
 disjoint. *)
+Definition lit_is_unboxed (l: base_lit) : Prop :=
+  match l with
+  (** Disallow comparing (erased) prophecies with (erased) prophecies, by
+  considering them boxed. *)
+  | LitProphecy _ | LitErased => False
+  | _ => True
+  end.
 Definition val_is_unboxed (v : val) : Prop :=
   match v with
-  | LitV _ => True
-  | InjLV (LitV _) => True
-  | InjRV (LitV _) => True
+  | LitV l => lit_is_unboxed l
+  | InjLV (LitV l) => lit_is_unboxed l
+  | InjRV (LitV l) => lit_is_unboxed l
   | _ => False
   end.
 
-(** CmpXchg just compares the word-sized representation of two values, it cannot
-look into boxed data.  This works out fine if at least one of the to-be-compared
+Instance lit_is_unboxed_dec l : Decision (lit_is_unboxed l).
+Proof. destruct l; simpl; exact (decide _). Defined.
+Instance val_is_unboxed_dec v : Decision (val_is_unboxed v).
+Proof. destruct v as [ | | | [] | [] ]; simpl; exact (decide _). Defined.
+
+(** We just compare the word-sized representation of two values, without looking
+into boxed data.  This works out fine if at least one of the to-be-compared
 values is unboxed (exploiting the fact that an unboxed and a boxed value can
 never be equal because these are disjoint sets). *)
-Definition vals_cmpxchg_compare_safe (vl v1 : val) : Prop :=
+Definition vals_compare_safe (vl v1 : val) : Prop :=
   val_is_unboxed vl ∨ val_is_unboxed v1.
-Arguments vals_cmpxchg_compare_safe !_ !_ /.
-
-(** We don't compare the logical program values, but we first normalize them
-to make sure that prophecies are treated like unit.
-Also all functions become the same, but still distinct from anything else. *)
-Definition lit_for_compare (l : base_lit) : base_lit :=
-  match l with
-  | LitProphecy p => LitUnit
-  | l => l
-  end.
-Fixpoint val_for_compare (v : val) : val :=
-  match v with
-  | LitV l => LitV (lit_for_compare l)
-  | PairV v1 v2 => PairV (val_for_compare v1) (val_for_compare v2)
-  | InjLV v => InjLV (val_for_compare v)
-  | InjRV v => InjRV (val_for_compare v)
-  | RecV f x e => RecV BAnon BAnon (Val $ LitV $ LitUnit)
-  end.
+Arguments vals_compare_safe !_ !_ /.
 
 (** The state: heaps of vals. *)
 Record state : Type := {
@@ -263,12 +258,18 @@ Proof. solve_decision. Defined.
 Instance base_lit_countable : Countable base_lit.
 Proof.
  refine (inj_countable' (λ l, match l with
-  | LitInt n => (inl (inl n), None) | LitBool b => (inl (inr b), None)
-  | LitUnit => (inr (inl ()), None) | LitLoc l => (inr (inr l), None)
-  | LitProphecy p => (inr (inl ()), Some p)
+  | LitInt n => (inl (inl n), None)
+  | LitBool b => (inl (inr b), None)
+  | LitUnit => (inr (inl false), None)
+  | LitErased => (inr (inl true), None)
+  | LitLoc l => (inr (inr l), None)
+  | LitProphecy p => (inr (inl false), Some p)
   end) (λ l, match l with
-  | (inl (inl n), None) => LitInt n | (inl (inr b), None) => LitBool b
-  | (inr (inl ()), None) => LitUnit | (inr (inr l), None) => LitLoc l
+  | (inl (inl n), None) => LitInt n
+  | (inl (inr b), None) => LitBool b
+  | (inr (inl false), None) => LitUnit
+  | (inr (inl true), None) => LitErased
+  | (inr (inr l), None) => LitLoc l
   | (_, Some p) => LitProphecy p
   end) _); by intros [].
 Qed.
@@ -519,7 +520,10 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
   if decide (op = EqOp) then
     (* Crucially, this compares the same way as [CmpXchg]! *)
-    Some $ LitV $ LitBool $ bool_decide (val_for_compare v1 = val_for_compare v2)
+    if decide (vals_compare_safe v1 v2) then
+      Some $ LitV $ LitBool $ bool_decide (v1 = v2)
+    else
+      None
   else
     match v1, v2 with
     | LitV (LitInt n1), LitV (LitInt n2) => LitV <$> bin_op_eval_int op n1 n2
@@ -635,10 +639,10 @@ Inductive head_step : expr → state → list observation → expr → state →
                (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
                []
   | CmpXchgS l v1 v2 vl σ b :
-     vals_cmpxchg_compare_safe vl v1 →
      σ.(heap) !! l = Some vl →
      (* Crucially, this compares the same way as [EqOp]! *)
-     b = bool_decide (val_for_compare vl = val_for_compare v1) →
+     vals_compare_safe vl v1 →
+     b = bool_decide (vl = v1) →
      head_step (CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
                (Val $ PairV vl (LitV $ LitBool b)) (if b then state_upd_heap <[l:=v2]> σ else σ)
