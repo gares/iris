@@ -593,7 +593,7 @@ Proof.
 Qed.
 
 Lemma wp_load_offset_vec s E l sz (off : fin sz) (vs : vec val sz) :
-  {{{ ▷ l ↦∗ vs }}} ! #(l +ₗ off) @ s; E {{{ RET (vs !!! off); l ↦∗ vs }}}.
+  {{{ ▷ l ↦∗ vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗ vs }}}.
 Proof. apply wp_load_offset. by apply vlookup_lookup. Qed.
 
 Lemma wp_store_offset s E l off vs v :
@@ -628,7 +628,7 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  (vs !!! off) = v1 →
+  vs !!! off = v1 →
   vals_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
@@ -655,7 +655,7 @@ Proof.
 Qed.
 
 Lemma wp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
-  (vs !!! off) ≠ v1 →
+  vs !!! off ≠ v1 →
   vals_compare_safe (vs !!! off) v1 →
   {{{ ▷ l ↦∗ vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E

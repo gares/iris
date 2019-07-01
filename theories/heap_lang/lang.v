@@ -153,7 +153,8 @@ read and written.  Also notice that the sets of boxed and unboxed values are
 disjoint. *)
 Definition lit_is_unboxed (l: base_lit) : Prop :=
   match l with
-  (* disallow comparing (erased) prophecies with (erased) prophecies, by considering them boxed *)
+  (** Disallow comparing (erased) prophecies with (erased) prophecies, by
+  considering them boxed. *)
   | LitProphecy _ | LitErased => False
   | _ => True
   end.
