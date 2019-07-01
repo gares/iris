@@ -296,7 +296,7 @@ Local Tactic Notation "iIntuitionistic" constr(H) :=
      fail "iIntuitionistic:" P "not affine and the goal not absorbing"
     |pm_reduce].
 
-Local Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
+Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
   eapply tac_pure with H _ _ _; (* (i:=H1) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
