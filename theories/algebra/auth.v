@@ -366,6 +366,12 @@ Qed.
 Lemma auth_update_alloc a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a' ⋅ ◯ b'.
 Proof. intros. rewrite -(right_id _ _ (● a)). by apply auth_update. Qed.
 
+Lemma auth_update_auth a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a'.
+Proof.
+  intros. etrans; first exact: auth_update_alloc.
+  exact: cmra_update_op_l.
+Qed.
+
 Lemma auth_update_core_id a b `{!CoreId b} :
   b ≼ a → ● a ~~> ● a ⋅ ◯ b.
 Proof.
