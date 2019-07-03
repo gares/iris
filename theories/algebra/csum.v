@@ -189,6 +189,10 @@ Proof.
     + exists (Cinl c); by constructor.
     + exists (Cinr c); by constructor.
 Qed.
+Lemma Cinl_included a a' : Cinl a ≼ Cinl a' ↔ a ≼ a'.
+Proof. rewrite csum_included. naive_solver. Qed.
+Lemma Cinr_included b b' : Cinr b ≼ Cinr b' ↔ b ≼ b'.
+Proof. rewrite csum_included. naive_solver. Qed.
 
 Lemma csum_includedN n x y :
   x ≼{n} y ↔ y = CsumBot ∨ (∃ a a', x = Cinl a ∧ y = Cinl a' ∧ a ≼{n} a')
