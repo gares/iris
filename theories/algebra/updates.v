@@ -47,6 +47,11 @@ Qed.
 Lemma cmra_updateP_weaken (P Q : A → Prop) x :
   x ~~>: P → (∀ y, P y → Q y) → x ~~>: Q.
 Proof. eauto using cmra_updateP_compose, cmra_updateP_id. Qed.
+Lemma cmra_update_exclusive `{!Exclusive x} y:
+  ✓ y → x ~~> y.
+Proof. move=>??[z|]=>[/exclusiveN_l[]|_]. by apply cmra_valid_validN. Qed.
+
+(** Updates form a preorder. *)
 Global Instance cmra_update_preorder : PreOrder (@cmra_update A).
 Proof.
   split.
@@ -54,9 +59,6 @@ Proof.
   - intros x y z. rewrite !cmra_update_updateP.
     eauto using cmra_updateP_compose with subst.
 Qed.
-Lemma cmra_update_exclusive `{!Exclusive x} y:
-  ✓ y → x ~~> y.
-Proof. move=>??[z|]=>[/exclusiveN_l[]|_]. by apply cmra_valid_validN. Qed.
 
 Lemma cmra_updateP_op (P1 P2 Q : A → Prop) x1 x2 :
   x1 ~~>: P1 → x2 ~~>: P2 → (∀ y1 y2, P1 y1 → P2 y2 → Q (y1 ⋅ y2)) →
