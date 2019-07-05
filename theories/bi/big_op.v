@@ -400,6 +400,17 @@ Section sep_list2.
     by f_equiv; f_equiv=> k [??].
   Qed.
 
+  Lemma big_sepL2_reverse_2 (Φ : A → B → PROP) l1 l2 :
+    ([∗ list] y1;y2 ∈ l1;l2, Φ y1 y2) ⊢ ([∗ list] y1;y2 ∈ reverse l1;reverse l2, Φ y1 y2).
+  Proof.
+    revert l2. induction l1 as [|x1 l1 IH]; intros [|x2 l2]; simpl; auto using False_elim.
+    rewrite !reverse_cons (comm bi_sep) IH.
+    by rewrite (big_sepL2_app _ _ [x1] _ [x2]) big_sepL2_singleton wand_elim_l.
+  Qed.
+  Lemma big_sepL2_reverse (Φ : A → B → PROP) l1 l2 :
+    ([∗ list] y1;y2 ∈ reverse l1;reverse l2, Φ y1 y2) ⊣⊢ ([∗ list] y1;y2 ∈ l1;l2, Φ y1 y2).
+  Proof. apply (anti_symm _); by rewrite big_sepL2_reverse_2 ?reverse_involutive. Qed.
+
   Lemma big_sepL2_sep Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2)
     ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2).
