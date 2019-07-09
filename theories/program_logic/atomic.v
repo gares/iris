@@ -112,8 +112,8 @@ Section lemmas.
   (* Sequential triples with a persistent precondition and no initial quantifier
   are atomic. *)
   Lemma seq_wp_atomic e Eo (α : [tele] → iProp) (β : [tele] → TB → iProp)
-        (f : [tele] → TB → val Λ) {HP : ∀.. x, Persistent (α x)} :
-    (∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}) -∗
+        (f : [tele] → TB → val Λ) {HP : Persistent (α [tele_arg])} :
+    (∀ Φ, α [tele_arg] -∗ (∀.. y, β [tele_arg] y -∗ Φ (f [tele_arg] y)) -∗ WP e {{ Φ }}) -∗
     atomic_wp e Eo α β f.
   Proof.
     simpl in HP. iIntros "Hwp" (Φ) "HΦ". iApply fupd_wp.
