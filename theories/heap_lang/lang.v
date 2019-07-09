@@ -685,7 +685,7 @@ Lemma fill_item_no_val_inj Ki1 Ki2 e1 e2 :
 Proof. revert Ki1. induction Ki2, Ki1; naive_solver eauto with f_equal. Qed.
 
 Lemma alloc_fresh v n σ :
-  let l := fresh_locs (dom (gset loc) σ.(heap)) n in
+  let l := fresh_locs (dom (gset loc) σ.(heap)) in
   0 < n →
   head_step (AllocN ((Val $ LitV $ LitInt $ n)) (Val v)) σ []
             (Val $ LitV $ LitLoc l) (state_init_heap l n v σ) [].
