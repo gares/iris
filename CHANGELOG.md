@@ -43,7 +43,11 @@ Changes in heap_lang:
   typically provided in systems languages (C, C++, Rust).
   The comparison by this operation also got weakened to be efficiently
   implementable: CmpXchg may only be used to compare "unboxed" values that can
-  be represented in a single machine word.
+  be represented in a single machine word. It is sufficient if one of the two
+  compared values is unboxed.
+* For consistency, the restrictions CmpXchg imposes on comparison also apply to
+  the `=` binary operator. This also fixes the long-standing problem that that
+  operator allowed compared closures with each other.
 * Implement prophecy variables using the new support for "observations".
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
@@ -56,10 +60,6 @@ Changes in heap_lang:
 * heap_lang now has support for allocating, accessing and reasoning about arrays
   (continuously allocated regions of memory).
 * One can now assign "meta" data to heap_lang locations.
-* For comparison operation (the binary operator and CmpXchg), all closures are
-  "normalized" to the same.  This makes all closures indistinguishable from each
-  other while remaining unqueal to anything else.  We also use the same
-  "normalization" to make sure all prophecy variables seem equal to `()`.
 
 Changes in Coq:
 
