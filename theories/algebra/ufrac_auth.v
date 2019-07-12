@@ -74,7 +74,7 @@ Section ufrac_auth.
   Proof.
     rewrite auth_both_validN=> -[Hincl Hvalid].
     move: Hincl=> /Some_includedN=> -[[_ ? //]|[[[p' ?] ?] [/=]]].
-    move=> /discrete_iff /leibniz_equiv_iff; rewrite ufrac_op'=> [/Qp_eq/=].
+    rewrite -discrete_iff leibniz_equiv_iff. rewrite ufrac_op'=> [/Qp_eq/=].
     rewrite -{1}(Qcplus_0_r p)=> /(inj (Qcplus p))=> ?; by subst.
   Qed.
   Lemma ufrac_auth_agree p a b : ✓ (●U{p} a ⋅ ◯U{p} b) → a ≡ b.
