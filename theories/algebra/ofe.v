@@ -1301,7 +1301,7 @@ Section sigT.
     on the first component.
   *)
   Instance sigT_dist : Dist (sigT P) := λ n x1 x2,
-    ∃ eq : projT1 x1 = projT1 x2, rew eq in projT2 x1 ≡{n}≡ projT2 x2.
+    ∃ Heq : projT1 x1 = projT1 x2, rew Heq in projT2 x1 ≡{n}≡ projT2 x2.
 
   (**
     Usually we'd give a direct definition, and show it equivalent to
@@ -1319,11 +1319,11 @@ Section sigT.
       reflexivity _.
 
   Definition sigT_dist_eq x1 x2 n : (x1 ≡{n}≡ x2) ↔
-    ∃ eq : projT1 x1 = projT1 x2, (rew eq in projT2 x1) ≡{n}≡ projT2 x2 :=
+    ∃ Heq : projT1 x1 = projT1 x2, (rew Heq in projT2 x1) ≡{n}≡ projT2 x2 :=
       reflexivity _.
 
   Definition sigT_dist_proj1 n {x y} : x ≡{n}≡ y → projT1 x = projT1 y := proj1_ex.
-  Definition sigT_equiv_proj1 x y : x ≡ y → projT1 x = projT1 y := λ H, proj1_ex (H 0).
+  Definition sigT_equiv_proj1 {x y} : x ≡ y → projT1 x = projT1 y := λ H, proj1_ex (H 0).
 
   Definition sigT_ofe_mixin : OfeMixin (sigT P).
   Proof.
@@ -1342,16 +1342,47 @@ Section sigT.
 
   Canonical Structure sigTO : ofeT := OfeT (sigT P) sigT_ofe_mixin.
 
+  Lemma sigT_equiv_eq_alt `{!∀ a b : A, ProofIrrel (a = b)} x1 x2 :
+    x1 ≡ x2 ↔
+    ∃ Heq : projT1 x1 = projT1 x2, rew Heq in projT2 x1 ≡ projT2 x2.
+  Proof.
+    setoid_rewrite equiv_dist; setoid_rewrite sigT_dist_eq; split => Heq.
+    - move: (Heq 0) => [H0eq1 _].
+      exists H0eq1 => n. move: (Heq n) => [] Hneq1.
+      by rewrite (proof_irrel H0eq1 Hneq1).
+    - move: Heq => [Heq1 Heqn2] n. by exists Heq1.
+  Qed.
+
+  (** [projT1] is non-expansive and proper. *)
+  Global Instance projT1_ne : NonExpansive (projT1 : sigTO → leibnizO A).
+  Proof. solve_proper. Qed.
+
+  Global Instance projT1_proper : Proper ((≡) ==> (≡)) (projT1 : sigTO → leibnizO A).
+  Proof. apply ne_proper, projT1_ne. Qed.
+
+  (** [projT2] is "non-expansive"; the properness lemma [projT2_ne] requires UIP. *)
+  Lemma projT2_ne n (x1 x2 : sigTO) (Heq : x1 ≡{n}≡ x2) :
+    rew (sigT_dist_proj1 n Heq) in projT2 x1 ≡{n}≡ projT2 x2.
+  Proof. by destruct Heq. Qed.
+
+  Lemma projT2_proper `{!∀ a b : A, ProofIrrel (a = b)} (x1 x2 : sigTO) (Heqs : x1 ≡ x2):
+    rew (sigT_equiv_proj1 Heqs) in projT2 x1 ≡ projT2 x2.
+  Proof.
+    move: x1 x2 Heqs => [a1 x1] [a2 x2] Heqs.
+    case: (proj1 (sigT_equiv_eq_alt _ _) Heqs) => /=. intros ->.
+    rewrite (proof_irrel (sigT_equiv_proj1 Heqs) eq_refl) /=. done.
+  Qed.
+
   (** [existT] is "non-expansive" — general, dependently-typed statement. *)
   Lemma existT_ne n {i1 i2} {v1 : P i1} {v2 : P i2} :
-    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡{n}≡ v2) →
+    ∀ (Heq : i1 = i2), (rew f_equal P Heq in v1 ≡{n}≡ v2) →
       existT i1 v1 ≡{n}≡ existT i2 v2.
   Proof. intros ->; simpl. exists eq_refl => /=. done. Qed.
 
   Lemma existT_proper {i1 i2} {v1 : P i1} {v2 : P i2} :
-    ∀ (eq : i1 = i2), (rew f_equal P eq in v1 ≡ v2) →
+    ∀ (Heq : i1 = i2), (rew f_equal P Heq in v1 ≡ v2) →
       existT i1 v1 ≡ existT i2 v2.
-  Proof. intros eq Heq n. apply (existT_ne n eq), equiv_dist, Heq. Qed.
+  Proof. intros Heq Heqv n. apply (existT_ne n Heq), equiv_dist, Heqv. Qed.
 
   (** [existT] is "non-expansive" — non-dependently-typed version. *)
   Global Instance existT_ne_2 a : NonExpansive (@existT A P a).
@@ -1373,17 +1404,6 @@ Section sigT.
 
   Lemma sigT_chain_const_proj1 c n : projT1 (c n) = projT1 (c 0).
   Proof. refine (sigT_dist_proj1 _ (chain_cauchy c 0 n _)). lia. Qed.
-
-  Lemma sigT_equiv_eq_alt `{!∀ a b : A, ProofIrrel (a = b)} x1 x2 :
-    x1 ≡ x2 ↔
-    ∃ eq : projT1 x1 = projT1 x2, rew eq in projT2 x1 ≡ projT2 x2.
-  Proof.
-    setoid_rewrite equiv_dist; setoid_rewrite sigT_dist_eq; split => Heq.
-    - move: (Heq 0) => [H0eq1 _].
-      exists H0eq1 => n. move: (Heq n) => [] Hneq1.
-      by rewrite (proof_irrel H0eq1 Hneq1).
-    - move: Heq => [Heq1 Heqn2] n. by exists Heq1.
-  Qed.
 
   (* For this COFE construction we need UIP (Uniqueness of Identity Proofs)
     on [A] (i.e. [∀ x y : A, ProofIrrel (x = y)]. UIP is most commonly obtained
