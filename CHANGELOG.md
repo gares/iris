@@ -50,8 +50,7 @@ Changes in heap_lang:
   operator allowed compared closures with each other.
 * Implement prophecy variables using the new support for "observations". The
   erasure theorem (showing that prophecy variables do not alter program
-  behavior) can be found in the iris/examples repository, in
-  `theories/logatom/proph_erasure.rs`.
+  behavior) can be found [in the iris/examples repository](https://gitlab.mpi-sws.org/iris/examples/blob/3f33781fe6e19cfdb25259c8194d34403f1134d5/theories/logatom/proph_erasure.v).
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
 * heap_lang values are now injected in heap_lang expressions via a specific
