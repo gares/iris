@@ -476,6 +476,10 @@ Section total_core.
   Local Set Default Proof Using "Type*".
   Context `{CmraTotal A}.
 
+  Lemma cmra_pcore_core x : pcore x = Some (core x).
+  Proof.
+    rewrite /core /core'. destruct (cmra_total x) as [cx ->]. done.
+  Qed.
   Lemma cmra_core_l x : core x ⋅ x ≡ x.
   Proof.
     destruct (cmra_total x) as [cx Hcx]. by rewrite /core /= Hcx cmra_pcore_l.
@@ -1135,6 +1139,13 @@ Section prod.
   Proof. done. Qed.
   Lemma pair_valid (a : A) (b : B) : ✓ (a, b) ↔ ✓ a ∧ ✓ b.
   Proof. done. Qed.
+
+  Lemma pair_core `{!CmraTotal A, !CmraTotal B} (a : A) (b : B) :
+    core (a, b) = (core a, core b).
+  Proof.
+    rewrite /core /core' {1}/pcore /=.
+    rewrite (cmra_pcore_core a) /= (cmra_pcore_core b). done.
+  Qed.
 
   Global Instance prod_cmra_total : CmraTotal A → CmraTotal B → CmraTotal prodR.
   Proof.
