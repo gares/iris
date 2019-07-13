@@ -48,7 +48,10 @@ Changes in heap_lang:
 * For consistency, the restrictions CmpXchg imposes on comparison also apply to
   the `=` binary operator. This also fixes the long-standing problem that that
   operator allowed compared closures with each other.
-* Implement prophecy variables using the new support for "observations".
+* Implement prophecy variables using the new support for "observations". The
+  erasure theorem (showing that prophecy variables do not alter program
+  behavior) can be found in the iris/examples repository, in
+  `theories/logatom/proph_erasure.rs`.
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
 * heap_lang values are now injected in heap_lang expressions via a specific
