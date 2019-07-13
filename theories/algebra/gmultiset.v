@@ -73,9 +73,10 @@ Section gmultiset.
   Proof. apply gmultiset_local_update. by rewrite (comm_L _ Y) assoc_L. Qed.
 
   Lemma gmultiset_local_update_dealloc X Y X' :
-    X' ⊆ X → X' ⊆ Y → (X,Y) ~l~> (X ∖ X', Y ∖ X').
+    X' ⊆ Y → (X,Y) ~l~> (X ∖ X', Y ∖ X').
   Proof.
-    intros ->%gmultiset_disj_union_difference ->%gmultiset_disj_union_difference.
+    intros ->%gmultiset_disj_union_difference. apply local_update_total_valid.
+    intros _ _ ->%gmultiset_included%gmultiset_disj_union_difference.
     apply gmultiset_local_update. apply gmultiset_eq=> x.
     repeat (rewrite multiplicity_difference || rewrite multiplicity_disj_union).
     lia.
