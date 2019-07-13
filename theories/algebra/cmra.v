@@ -1144,8 +1144,7 @@ Section prod.
     core (a, b) = (core a, core b).
   Proof.
     rewrite /core /core' {1}/pcore /=.
-    rewrite (cmra_pcore_core a). simpl.
-    rewrite (cmra_pcore_core b). done.
+    rewrite (cmra_pcore_core a) /= (cmra_pcore_core b). done.
   Qed.
 
   Global Instance prod_cmra_total : CmraTotal A → CmraTotal B → CmraTotal prodR.
