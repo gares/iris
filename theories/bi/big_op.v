@@ -335,6 +335,16 @@ Section sep_list2.
        [by rewrite left_id|by rewrite left_id|apply False_elim|].
     by rewrite IH -assoc.
   Qed.
+  Lemma big_sepL2_app_inv Φ l1 l2 l1' l2' :
+    length l1 = length l1' →
+    ([∗ list] k↦y1;y2 ∈ l1 ++ l2; l1' ++ l2', Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1; l1', Φ k y1 y2) ∗
+    ([∗ list] k↦y1;y2 ∈ l2; l2', Φ (length l1 + k)%nat y1 y2).
+  Proof.
+    revert Φ l1'. induction l1 as [|x1 l1 IH]=> Φ -[|x1' l1'] //= ?; simplify_eq.
+    - by rewrite left_id.
+    - by rewrite -assoc IH.
+  Qed.
 
   Lemma big_sepL2_mono Φ Ψ l1 l2 :
     (∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → Φ k y1 y2 ⊢ Ψ k y1 y2) →
