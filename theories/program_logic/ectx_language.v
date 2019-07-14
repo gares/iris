@@ -151,8 +151,23 @@ Section ectx_language.
   Lemma not_head_reducible e σ : ¬head_reducible e σ ↔ head_irreducible e σ.
   Proof. unfold head_reducible, head_irreducible. naive_solver. Qed.
 
+
+  Lemma fill_prim_step K e1 σ1 κ e2 σ2 efs :
+    prim_step e1 σ1 κ e2 σ2 efs → prim_step (fill K e1) σ1 κ (fill K e2) σ2 efs.
+  Proof.
+    destruct 1 as [K' e1' e2' -> ->].
+    rewrite !fill_comp. by econstructor.
+  Qed.
+  Lemma fill_reducible K e σ : reducible e σ → reducible (fill K e) σ.
+  Proof.
+    intros (κ&e'&σ'&efs&?). exists κ, (fill K e'), σ', efs.
+    by apply fill_prim_step.
+  Qed.
   Lemma head_prim_reducible e σ : head_reducible e σ → reducible e σ.
   Proof. intros (κ&e'&σ'&efs&?). eexists κ, e', σ', efs. by apply head_prim_step. Qed.
+  Lemma head_prim_fill_reducible e K σ :
+    head_reducible e σ → reducible (fill K e) σ.
+  Proof. intro. by apply fill_reducible, head_prim_reducible. Qed.
   Lemma head_prim_reducible_no_obs e σ : head_reducible_no_obs e σ → reducible_no_obs e σ.
   Proof. intros (e'&σ'&efs&?). eexists e', σ', efs. by apply head_prim_step. Qed.
   Lemma head_prim_irreducible e σ : irreducible e σ → head_irreducible e σ.
