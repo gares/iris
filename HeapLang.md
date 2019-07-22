@@ -105,6 +105,12 @@ Further tactics:
 
 There is no tactic for `Fork`, just do `wp_apply wp_fork`.
 
+To verify a recursive function, use `iLöb`.  Make sure you do `wp_pures` before
+running `iLöb`; otherwise the induction hypothesis will likely not be applicable
+when you need it.  (This makes sure that all administrative redexes are reduced
+in your induction hypothesis, just like we state our `WP` specifications with
+all of the redexes reduced.)
+
 ## Notation and lemmas for derived notions involving a thunk
 
 Sometimes, it is useful to define a derived notion in HeapLang that involves
