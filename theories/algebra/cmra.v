@@ -76,6 +76,7 @@ Structure cmraT := CmraT' {
   cmra_validN : ValidN cmra_car;
   cmra_ofe_mixin : OfeMixin cmra_car;
   cmra_mixin : CmraMixin cmra_car;
+  (* always same as [cmra_car], but by also having this as last field unification sometimes gets faster *)
   _ : Type
 }.
 Arguments CmraT' _ {_ _ _ _ _ _} _ _ _.
