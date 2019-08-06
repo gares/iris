@@ -115,4 +115,4 @@ is used by clients.
 * UR: unital cameras or resources algebras
 * F: functors (can be combined with all of the above, e.g. OF is an OFE functor)
 * G: global camera functor management
-* T: canonical structurs for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
+* T: canonical structures for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
