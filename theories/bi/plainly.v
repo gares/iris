@@ -467,10 +467,19 @@ Proof.
   rewrite -(internal_eq_refl True%I a) plainly_pure; auto.
 Qed.
 
+Lemma prop_ext P Q : P ≡ Q ⊣⊢ ■ (P ∗-∗ Q).
+Proof.
+  apply (anti_symm (⊢)); last exact: prop_ext_2.
+  apply (internal_eq_rewrite' P Q (λ Q, ■ (P ∗-∗ Q))%I);
+    [ solve_proper | done | ].
+  rewrite (plainly_emp_intro (P ≡ Q)%I).
+  apply plainly_mono, wand_iff_refl.
+Qed.
+
 Lemma plainly_alt P : ■ P ⊣⊢ <affine> P ≡ emp.
 Proof.
   rewrite -plainly_affinely_elim. apply (anti_symm (⊢)).
-  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l.
+  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l.
     + by rewrite affinely_elim_emp left_id.
     + by rewrite left_id.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
@@ -480,7 +489,7 @@ Qed.
 Lemma plainly_alt_absorbing P `{!Absorbing P} : ■ P ⊣⊢ P ≡ True.
 Proof.
   apply (anti_symm (⊢)).
-  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
     by rewrite plainly_pure True_impl.
 Qed.
@@ -488,7 +497,7 @@ Qed.
 Lemma plainly_True_alt P : ■ (True -∗ P) ⊣⊢ P ≡ True.
 Proof.
   apply (anti_symm (⊢)).
-  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
     by rewrite wand_elim_r.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _
       (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.
