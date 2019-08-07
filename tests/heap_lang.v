@@ -155,6 +155,12 @@ Section tests.
     by iApply "HΦ".
   Qed.
 
+  Lemma test_array_app l vs1 vs2 :
+    l ↦∗ (vs1 ++ vs2) -∗ l ↦∗ (vs1 ++ vs2).
+  Proof.
+    iIntros "[H1 H2]". iSplitL "H1"; done.
+  Qed.
+
 End tests.
 
 Section printing_tests.
