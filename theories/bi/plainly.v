@@ -29,7 +29,7 @@ Record BiPlainlyMixin (PROP : sbi) `(Plainly PROP) := {
   bi_plainly_mixin_plainly_emp_intro (P : PROP) : P ⊢ ■ emp;
   bi_plainly_mixin_plainly_absorb (P Q : PROP) : ■ P ∗ Q ⊢ ■ P;
 
-  bi_plainly_mixin_prop_ext (P Q : PROP) : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q;
+  bi_plainly_mixin_prop_ext_2 (P Q : PROP) : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q;
 
   bi_plainly_mixin_later_plainly_1 (P : PROP) : ▷ ■ P ⊢ ■ ▷ P;
   bi_plainly_mixin_later_plainly_2 (P : PROP) : ■ ▷ P ⊢ ▷ ■ P;
@@ -74,8 +74,8 @@ Section plainly_laws.
   Lemma plainly_emp_intro P : P ⊢ ■ emp.
   Proof. eapply bi_plainly_mixin_plainly_emp_intro, bi_plainly_mixin. Qed.
 
-  Lemma prop_ext P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
-  Proof. eapply bi_plainly_mixin_prop_ext, bi_plainly_mixin. Qed.
+  Lemma prop_ext_2 P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
+  Proof. eapply bi_plainly_mixin_prop_ext_2, bi_plainly_mixin. Qed.
 
   Lemma later_plainly_1 P : ▷ ■ P ⊢ ■ (▷ P).
   Proof. eapply bi_plainly_mixin_later_plainly_1, bi_plainly_mixin. Qed.
@@ -470,7 +470,7 @@ Qed.
 Lemma plainly_alt P : ■ P ⊣⊢ <affine> P ≡ emp.
 Proof.
   rewrite -plainly_affinely_elim. apply (anti_symm (⊢)).
-  - rewrite -prop_ext. apply plainly_mono, and_intro; apply wand_intro_l.
+  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l.
     + by rewrite affinely_elim_emp left_id.
     + by rewrite left_id.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
@@ -480,7 +480,7 @@ Qed.
 Lemma plainly_alt_absorbing P `{!Absorbing P} : ■ P ⊣⊢ P ≡ True.
 Proof.
   apply (anti_symm (⊢)).
-  - rewrite -prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l; auto.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
     by rewrite plainly_pure True_impl.
 Qed.
@@ -488,7 +488,7 @@ Qed.
 Lemma plainly_True_alt P : ■ (True -∗ P) ⊣⊢ P ≡ True.
 Proof.
   apply (anti_symm (⊢)).
-  - rewrite -prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+  - rewrite -prop_ext_2. apply plainly_mono, and_intro; apply wand_intro_l; auto.
     by rewrite wand_elim_r.
   - rewrite internal_eq_sym (internal_eq_rewrite _ _
       (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.

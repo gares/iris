@@ -617,7 +617,7 @@ Proof. by unseal. Qed.
 Lemma plainly_exist_1 {A} (Ψ : A → uPred M) : (■ ∃ a, Ψ a) ⊢ (∃ a, ■ Ψ a).
 Proof. by unseal. Qed.
 
-Lemma prop_ext P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
+Lemma prop_ext_2 P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
 Proof.
   unseal; split=> n x ? /= HPQ. split=> n' x' ??.
     move: HPQ=> [] /(_ n' x'); rewrite !left_id=> ?.

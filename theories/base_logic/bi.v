@@ -121,7 +121,7 @@ Proof.
     etrans; first exact: sep_comm'.
     apply sep_mono; last done.
     exact: pure_intro.
-  - exact: prop_ext.
+  - exact: prop_ext_2.
   - exact: later_plainly_1.
   - exact: later_plainly_2.
 Qed.
