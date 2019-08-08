@@ -923,7 +923,7 @@ Proof.
   - intros P. split=> i /=. apply bi.forall_intro=>_. by apply plainly_emp_intro.
   - intros P Q. split=> i. apply bi.sep_elim_l, _.
   - intros P Q. split=> i /=. rewrite (monPred_equivI P Q). f_equiv=> j.
-    by rewrite -prop_ext !(bi.forall_elim j) !bi.pure_True // !bi.True_impl.
+    by rewrite prop_ext !(bi.forall_elim j) !bi.pure_True // !bi.True_impl.
   - intros P. split=> i /=.
     rewrite bi.later_forall. f_equiv=> j. by rewrite -later_plainly_1.
   - intros P. split=> i /=.

@@ -159,6 +159,8 @@ Changes in Coq:
   fractional camera (`frac_auth`) with unbounded fractions.
 * Changed `frac_auth` notation from `●!`/`◯!` to `●F`/`◯F`. sed script:
   `s/◯!/◯F/g; s/●!/●F/g;`.
+* Lemma `prop_ext` works in both directions; its default direction is the
+  opposite of what it used to be.
 * Rename `C` suffixes into `O` since we no longer use COFEs but OFEs. Also
   rename `ofe_fun` into `discrete_fun` and the corresponding notation `-c>` into
   `-d>`. The renaming can be automatically done using the following script (on
