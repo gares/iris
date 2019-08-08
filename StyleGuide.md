@@ -114,5 +114,8 @@ is used by clients.
 * R: cameras
 * UR: unital cameras or resources algebras
 * F: functors (can be combined with all of the above, e.g. OF is an OFE functor)
-* G: global camera functor management
-* T: canonical structurs for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
+* G: global camera functor management (typeclass; see `ProofGuide.md`)
+* I: bunched implication logic (of type `bi`)
+* SI: step-indexed bunched implication logic (of type `sbi`)
+* T: canonical structures for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
+* Σ: global camera functor management (`gFunctors`; see `ProofGuide.md`)
