@@ -1105,11 +1105,19 @@ Proof.
 Qed.
 
 (** Dependently-typed functions over a discrete domain *)
-(** We make [discrete_fun] a definition so that we can register it as a
-canonical structure. Note that non-dependent functions over a discrete domain,
-[discrete_fun (λ _, A) B] (or [A -d> B] following the notation we introduce
-below) are isomorphic to [leibnizO A -n> B]. In other words, since the domain
-is discrete, we get non-expansiveness for free. *)
+(** This separate notion is useful whenever we need dependent functions, and
+whenever we want to avoid the hassle of the bundled non-expansive function type.
+
+Note that non-dependent functions over a discrete domain, [A -d> B] (following
+the notation we introduce below) are non-expansive if they are
+[Proper ((≡) ==> (≡))]. In other words, since the domain is discrete,
+non-expansiveness and respecting [(≡)] are the same. If the domain is moreover
+Leibniz ([LeibnizEquiv A]), we get both for free.
+
+We make [discrete_fun] a definition so that we can register it as a canonical
+structure.  We do not bundle the [Proper] proof to keep [discrete_fun] easier to
+use. It turns out all the desired OFE and functorial properties do not rely on
+this [Proper] instance. *)
 Definition discrete_fun {A} (B : A → ofeT) := ∀ x : A, B x.
 
 Section discrete_fun.
