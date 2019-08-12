@@ -706,3 +706,14 @@ The command has indeed failed with message:
 In nested Ltac calls to "iRevert ( (ident) )" and 
 "iForallRevert (ident)", last call failed.
 Tactic failure: iRevert: k is used in hypothesis "Hk".
+"iLöb_no_sbi"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iLöb as (constr)",
+"iLöbRevert (constr) with (tactic3)",
+"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
+"tac" (bound to iRevertIntros "∗" with tac), "tac" (bound to iRevertIntros
+"∗" with tac), "iRevertIntros (constr) with (tactic3)", 
+"iRevertIntros_go", "tac" (bound to iLöbCore as IH), 
+"tac" (bound to iLöbCore as IH) and "iLöbCore as (constr)", last call failed.
+Tactic failure: iLöb: not a step-indexed BI entailment.

@@ -928,3 +928,12 @@ Check "iRevert_dep_var".
 Lemma iRevert_dep_var (k : nat) (Φ : nat → PROP) : Φ k -∗ Φ (S k).
 Proof. iIntros "Hk". Fail iRevert (k). Abort.
 End error_tests.
+
+Section error_tests_bi.
+Context {PROP : bi}.
+Implicit Types P Q R : PROP.
+
+Check "iLöb_no_sbi".
+Lemma iLöb_no_sbi P : P.
+Proof. Fail iLöb as "IH". Abort.
+End error_tests_bi.
