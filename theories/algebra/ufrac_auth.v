@@ -137,7 +137,7 @@ Section ufrac_auth.
     intros n m; simpl; intros [Hvalid1 Hvalid2] Heq.
     split.
     - split; by apply cmra_valid_validN.
-    - rewrite -pair_op Some_op Heq comm.
+    - rewrite pair_op Some_op Heq comm.
       destruct m; simpl; [rewrite left_id | rewrite right_id]; done.
   Qed.
 End ufrac_auth.

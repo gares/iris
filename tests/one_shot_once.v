@@ -40,7 +40,7 @@ Definition one_shot_inv (γ : gname) (l : loc) : iProp Σ :=
 Lemma pending_split γ q :
   own γ (Pending q) ⊣⊢ own γ (Pending (q/2)) ∗ own γ (Pending (q/2)).
 Proof.
-  rewrite /Pending. rewrite -own_op Cinl_op. rewrite frac_op' Qp_div_2 //.
+  rewrite /Pending. rewrite -own_op -Cinl_op. rewrite frac_op' Qp_div_2 //.
 Qed.
 
 Lemma pending_shoot γ n :

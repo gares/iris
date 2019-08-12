@@ -252,7 +252,7 @@ Class CmraMorphism {A B : cmraT} (f : A → B) := {
   cmra_morphism_ne :> NonExpansive f;
   cmra_morphism_validN n x : ✓{n} x → ✓{n} f x;
   cmra_morphism_pcore x : pcore (f x) ≡ f <$> pcore x;
-  cmra_morphism_op x y : f x ⋅ f y ≡ f (x ⋅ y)
+  cmra_morphism_op x y : f (x ⋅ y) ≡ f x ⋅ f y
 }.
 Arguments cmra_morphism_validN {_ _} _ {_} _ _ _.
 Arguments cmra_morphism_pcore {_ _} _ {_} _.
@@ -1136,7 +1136,7 @@ Section prod.
   Qed.
   Canonical Structure prodR := CmraT (prod A B) prod_cmra_mixin.
 
-  Lemma pair_op (a a' : A) (b b' : B) : (a, b) ⋅ (a', b') = (a ⋅ a', b ⋅ b').
+  Lemma pair_op (a a' : A) (b b' : B) : (a ⋅ a', b ⋅ b') = (a, b) ⋅ (a', b').
   Proof. done. Qed.
   Lemma pair_valid (a : A) (b : B) : ✓ (a, b) ↔ ✓ a ∧ ✓ b.
   Proof. done. Qed.
@@ -1193,7 +1193,7 @@ Section prod_unit.
   Canonical Structure prodUR := UcmraT (prod A B) prod_ucmra_mixin.
 
   Lemma pair_split (x : A) (y : B) : (x, y) ≡ (x, ε) ⋅ (ε, y).
-  Proof. by rewrite pair_op left_id right_id. Qed.
+  Proof. by rewrite -pair_op left_id right_id. Qed.
 
   Lemma pair_split_L `{!LeibnizEquiv A, !LeibnizEquiv B} (x : A) (y : B) :
     (x, y) = (x, ε) ⋅ (ε, y).
@@ -1214,7 +1214,7 @@ Proof.
     assert (Hg := cmra_morphism_pcore g (x.2)).
     destruct (pcore (g (x.2))), (pcore (x.2)); inversion_clear Hg=>//=.
     by setoid_subst.
-  - intros. by rewrite /prod_map /= -!cmra_morphism_op.
+  - intros. by rewrite /prod_map /= !cmra_morphism_op.
 Qed.
 
 Program Definition prodRF (F1 F2 : rFunctor) : rFunctor := {|
@@ -1475,7 +1475,7 @@ Proof.
   split; first apply _.
   - intros n [a|] ?; rewrite /cmra_validN //=. by apply (cmra_morphism_validN f).
   - move=> [a|] //. by apply Some_proper, cmra_morphism_pcore.
-  - move=> [a|] [b|] //=. by rewrite -(cmra_morphism_op f).
+  - move=> [a|] [b|] //=. by rewrite (cmra_morphism_op f).
 Qed.
 
 Program Definition optionRF (F : rFunctor) : rFunctor := {|
