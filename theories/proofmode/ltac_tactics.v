@@ -573,6 +573,7 @@ Local Tactic Notation "iForallRevert" ident(x) :=
       | context [x] => fail 2 "iRevert:" x "is used in hypothesis" H
       end) in
   iStartProof;
+  first [let _ := type of x in idtac|fail 1 "iRevert:" x "not in scope"];
   let A := type of x in
   lazymatch type of A with
   | Prop => revert x; first [apply tac_pure_revert|err x]
