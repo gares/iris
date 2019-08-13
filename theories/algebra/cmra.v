@@ -768,7 +768,7 @@ Qed.
 Section cmra_morphism.
   Local Set Default Proof Using "Type*".
   Context {A B : cmraT} (f : A → B) `{!CmraMorphism f}.
-  Lemma cmra_morphism_core x : core (f x) ≡ f (core x).
+  Lemma cmra_morphism_core x : f (core x) ≡ core (f x).
   Proof. unfold core, core'. rewrite -cmra_morphism_pcore. by destruct (pcore x). Qed.
   Lemma cmra_morphism_monotone x y : x ≼ y → f x ≼ f y.
   Proof. intros [z ->]. exists (f z). by rewrite cmra_morphism_op. Qed.
@@ -1597,7 +1597,7 @@ Instance discrete_fun_map_cmra_morphism {A} {B1 B2 : A → ucmraT} (f : ∀ x, B
 Proof.
   split; first apply _.
   - intros n g Hg x; rewrite /discrete_fun_map; apply (cmra_morphism_validN (f _)), Hg.
-  - intros. apply Some_proper=>i. by rewrite (cmra_morphism_core (f i)).
+  - intros. apply Some_proper=>i. apply (cmra_morphism_core (f i)).
   - intros g1 g2 i. by rewrite /discrete_fun_map discrete_fun_lookup_op cmra_morphism_op.
 Qed.
 
