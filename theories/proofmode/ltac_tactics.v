@@ -1747,14 +1747,15 @@ Tactic Notation "iIntros" constr(p) "(" simple_intropattern(x1)
   iIntros p; iIntros ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x15 ); iIntros p2.
 
 (* Used for generalization in iInduction and iLöb *)
+Ltac iRevertIntros_go Hs tac :=
+  lazymatch Hs with
+  | [] => tac
+  | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
+  | ESelIdent ?p ?H :: ?Hs => iRevertHyp H; iRevertIntros_go Hs tac; iIntro H as p
+  end.
+
 Tactic Notation "iRevertIntros" constr(Hs) "with" tactic3(tac) :=
-  let rec go Hs :=
-    lazymatch Hs with
-    | [] => tac
-    | ESelPure :: ?Hs => fail "iRevertIntros: % not supported"
-    | ESelIdent ?p ?H :: ?Hs => iRevertHyp H; go Hs; iIntro H as p
-    end in
-  try iStartProof; let Hs := iElaborateSelPat Hs in go Hs.
+  try iStartProof; let Hs := iElaborateSelPat Hs in iRevertIntros_go Hs tac.
 
 Tactic Notation "iRevertIntros" "(" ident(x1) ")" constr(Hs) "with" tactic3(tac):=
   iRevertIntros Hs with (iRevert (x1); tac; iIntros (x1)).
