@@ -5,10 +5,18 @@ From iris.proofmode Require Import tactics.
 From stdpp Require Import fin_maps.
 Set Default Proof Using "Type".
 
+(** This file defines the [array] connective, a version of [mapsto] that works
+with lists of values. It also contains array versions of the basic heap
+operations of HeapLand. *)
+
 Definition array `{!heapG Σ} (l : loc) (vs : list val) : iProp Σ :=
   ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦ v)%I.
 Notation "l ↦∗ vs" := (array l vs)
   (at level 20, format "l  ↦∗  vs") : bi_scope.
+
+(** We have no [FromSep] or [IntoSep] instances to remain forwards compatible
+with a fractional array assertion, that will split the fraction, not the
+list. *)
 
 Section lifting.
 Context `{!heapG Σ}.
@@ -60,9 +68,6 @@ Proof.
   iApply array_cons. rewrite take_length min_l; last by lia. iFrame.
   rewrite drop_insert; last by lia. done.
 Qed.
-
-(** No [FromSep] or [IntoSep] instances to remain forwards compatible with a
-fractional array assertion, that will split the fraction, not the list. *)
 
 (** Allocation *)
 Lemma mapsto_seq_array l v n :
