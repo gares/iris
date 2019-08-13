@@ -86,6 +86,16 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   --------------------------------------∗
   WP "x" {{ _, True }}
   
+The command has indeed failed with message:
+In nested Ltac calls to "iIntros (constr)", "iIntros_go",
+"iDestructHyp (constr) as (constr)",
+"<iris.proofmode.ltac_tactics.iDestructHypFindPat>",
+"<iris.proofmode.ltac_tactics.iDestructHypGo>" and
+"iAndDestruct (constr) as (constr) (constr)", last call failed.
+Tactic failure: iAndDestruct: cannot destruct (l ↦∗ (vs1 ++ vs2))%I.
+The command has indeed failed with message:
+Ltac call to "iSplitL (constr)" failed.
+Tactic failure: iSplitL: (l ↦∗ (vs1 ++ vs2))%I not a separating conjunction.
 1 subgoal
   
   Σ : gFunctors

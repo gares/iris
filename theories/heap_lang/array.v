@@ -61,24 +61,8 @@ Proof.
   rewrite drop_insert; last by lia. done.
 Qed.
 
-(** Proofmode instances *)
-Global Instance into_sep_array_cons l vs v vs' :
-  IsCons vs v vs' →
-  IntoSep (l ↦∗ vs) (l ↦ v) ((l +ₗ 1) ↦∗ vs').
-Proof. rewrite /IsCons=>->. by rewrite /IntoSep array_cons. Qed.
-Global Instance into_sep_array_app l vs vs1 vs2 :
-  IsApp vs vs1 vs2 →
-  IntoSep (l ↦∗ vs) (l ↦∗ vs1) ((l +ₗ length vs1) ↦∗ vs2).
-Proof. rewrite /IsApp=>->. by rewrite /IntoSep array_app. Qed.
-
-Global Instance from_sep_array_cons l vs v vs' :
-  IsCons vs v vs' →
-  FromSep (l ↦∗ vs) (l ↦ v) ((l +ₗ 1) ↦∗ vs').
-Proof. rewrite /IsCons=> ->. by rewrite /FromSep array_cons. Qed.
-Global Instance from_sep_array_app l vs vs1 vs2 :
-  IsApp vs vs1 vs2 →
-  FromSep (l ↦∗ vs) (l ↦∗ vs1) ((l +ₗ length vs1) ↦∗ vs2).
-Proof. rewrite /IsApp=> ->. by rewrite /FromSep array_app. Qed.
+(** No [FromSep] or [IntoSep] instances to remain forwards compatible with a
+fractional array assertion, that will split the fraction, not the list. *)
 
 (** Allocation *)
 Lemma mapsto_seq_array l v n :
@@ -240,3 +224,5 @@ Proof.
 Qed.
 
 End lifting.
+
+Typeclasses Opaque array.

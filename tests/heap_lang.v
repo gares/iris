@@ -158,7 +158,10 @@ Section tests.
   Lemma test_array_app l vs1 vs2 :
     l ↦∗ (vs1 ++ vs2) -∗ l ↦∗ (vs1 ++ vs2).
   Proof.
-    iIntros "[H1 H2]". iSplitL "H1"; done.
+    Fail iIntros "[H1 H2]". (* this should, one day, split at the fraction. *)
+    iIntros "H". iDestruct (array_app with "H") as "[H1 H2]".
+    Fail iSplitL "H1".
+    iApply array_app. iSplitL "H1"; done.
   Qed.
 
 End tests.
