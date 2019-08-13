@@ -2445,7 +2445,9 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
   (* apply is sometimes confused wrt. canonical structures search.
      refine should use the other unification algorithm, which should
      not have this issue. *)
-  notypeclasses refine (tac_löb _ IH _ _ _);
+  first
+      [notypeclasses refine (tac_löb _ IH _ _ _)
+      |fail 1 "iLöb: not a step-indexed BI entailment"];
     [reflexivity || fail "iLöb: spatial context not empty, this should not happen"
     |pm_reduce;
      lazymatch goal with
@@ -2653,7 +2655,9 @@ Local Ltac iRewriteFindPred :=
 
 Local Tactic Notation "iRewriteCore" constr(lr) open_constr(lem) :=
   iPoseProofCore lem as true (fun Heq =>
-    eapply (tac_rewrite _ Heq _ _ lr);
+    first
+        [eapply (tac_rewrite _ Heq _ _ lr)
+        |fail 1 "iRewrite: not a step-indexed BI entailment"];
       [pm_reflexivity ||
        let Heq := pretty_ident Heq in
        fail "iRewrite:" Heq "not found"
