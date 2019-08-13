@@ -28,6 +28,8 @@ Implicit Types vs : list val.
 Implicit Types l : loc.
 Implicit Types sz off : nat.
 
+Global Instance array_timeless l vs : Timeless (array l vs) := _.
+
 Lemma array_nil l : l ↦∗ [] ⊣⊢ emp.
 Proof. by rewrite /array. Qed.
 
