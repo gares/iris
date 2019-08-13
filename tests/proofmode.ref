@@ -668,3 +668,41 @@ In nested Ltac calls to "iApply (open_constr)",
 failed.
 Tactic failure: iApply: Q
 not absorbing and the remaining hypotheses not affine.
+"iRevert_wrong_var"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iRevert ( (ident) )" and 
+"iForallRevert (ident)", last call failed.
+Tactic failure: iRevert: k1 not in scope.
+The command has indeed failed with message:
+In nested Ltac calls to "iLöb as (constr) forall ( (ident) )",
+"iLöbRevert (constr) with (tactic3)",
+"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
+"tac" (bound to iRevertIntros "∗" with tac), "tac" (bound to iRevertIntros
+"∗" with tac), "iRevertIntros (constr) with (tactic3)", 
+"iRevertIntros_go", "tac" (bound to iRevertIntros ( x1 ) "" with iLöbCore as
+IH), "tac" (bound to iRevertIntros ( x1 ) "" with iLöbCore as IH),
+"iRevertIntros ( (ident) ) (constr) with (tactic3)",
+"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
+"tac" (bound to iRevert ( x1 ); tac; iIntros ( x1 )), 
+"tac" (bound to iRevert ( x1 ); tac; iIntros ( x1 )),
+"iRevert ( (ident) )" and "iForallRevert (ident)", last call failed.
+Tactic failure: iRevert: k1 not in scope.
+"iRevert_dup_var"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iRevert ( (ident) (ident) )",
+"iRevert ( (ident) )" and "iForallRevert (ident)", last call failed.
+Tactic failure: iRevert: k not in scope.
+"iRevert_dep_var_coq"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iRevert ( (ident) )", "iForallRevert (ident)" and
+"revert (ne_var_list)", last call failed.
+k is used in hypothesis Hk.
+"iRevert_dep_var"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "iRevert ( (ident) )" and 
+"iForallRevert (ident)", last call failed.
+Tactic failure: iRevert: k is used in hypothesis "Hk".

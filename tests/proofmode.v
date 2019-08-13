@@ -684,7 +684,6 @@ Lemma test_iDestruct_clear P Q R :
 Proof.
   iIntros "HP HQR". iDestruct "HQR" as "{HP} [HQ HR]". done.
 Qed.
-
 End tests.
 
 (** Test specifically if certain things print correctly. *)
@@ -909,4 +908,23 @@ Proof. iIntros "HP HQ". Fail iApply "HQ". Abort.
 Check "iApply_fail_not_affine_2".
 Lemma iApply_fail_not_affine_1 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
 Proof. iIntros "HP HR HQ". Fail iApply ("HQ" with "HR"). Abort.
+
+Check "iRevert_wrong_var".
+Lemma iRevert_wrong_var (k : nat) (Φ : nat → PROP) : Φ (S k).
+Proof.
+  Fail iRevert (k1).
+  Fail iLöb as "IH" forall (k1).
+Abort.
+
+Check "iRevert_dup_var".
+Lemma iRevert_dup_var (k : nat) (Φ : nat → PROP) : Φ (S k).
+Proof. Fail iRevert (k k). Abort.
+
+Check "iRevert_dep_var_coq".
+Lemma iRevert_dep_var_coq (k : nat) (Φ : nat → PROP) : k = 0 → Φ (S k).
+Proof. intros Hk. Fail iRevert (k). Abort.
+
+Check "iRevert_dep_var".
+Lemma iRevert_dep_var (k : nat) (Φ : nat → PROP) : Φ k -∗ Φ (S k).
+Proof. iIntros "Hk". Fail iRevert (k). Abort.
 End error_tests.
