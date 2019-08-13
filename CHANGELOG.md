@@ -162,7 +162,7 @@ Changes in Coq:
 * Lemma `prop_ext` works in both directions; its default direction is the
   opposite of what it used to be.
 * Make direction of `f_op` rewrite lemmas more consistent: Flip `pair_op`,
-  `Cinl_op`, `Cinr_op`, `cmra_morphism_op`.
+  `Cinl_op`, `Cinr_op`, `cmra_morphism_op`, `cmra_morphism_pcore`.
 * Rename `C` suffixes into `O` since we no longer use COFEs but OFEs. Also
   rename `ofe_fun` into `discrete_fun` and the corresponding notation `-c>` into
   `-d>`. The renaming can be automatically done using the following script (on

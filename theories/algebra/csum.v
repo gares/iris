@@ -366,7 +366,7 @@ Instance csum_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B'
 Proof.
   split; try apply _.
   - intros n [a|b|]; simpl; auto using cmra_morphism_validN.
-  - move=> [a|b|]=>//=; rewrite cmra_morphism_pcore; by destruct pcore.
+  - move=> [a|b|]=>//=; rewrite -cmra_morphism_pcore; by destruct pcore.
   - intros [xa|ya|] [xb|yb|]=>//=; by rewrite cmra_morphism_op.
 Qed.
 
