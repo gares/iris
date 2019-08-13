@@ -34,7 +34,7 @@ Definition gmap_compl `{Cofe A} : Compl gmapO := λ c,
 Global Program Instance gmap_cofe `{Cofe A} : Cofe gmapO :=
   {| compl := gmap_compl |}.
 Next Obligation.
-  intros ? n c k. rewrite /compl /gmap_compl lookup_imap.
+  intros ? n c k. rewrite /compl /gmap_compl map_lookup_imap.
   feed inversion (λ H, chain_cauchy c 0 n H k);simplify_option_eq;auto with lia.
   by rewrite conv_compl /=; apply reflexive_eq.
 Qed.
@@ -156,7 +156,7 @@ Proof.
       last by rewrite -lookup_op.
     exists (map_imap (λ i _, projT1 (FUN i)) y1).
     exists (map_imap (λ i _, proj1_sig (projT2 (FUN i))) y2).
-    split; [|split]=>i; rewrite ?lookup_op !lookup_imap;
+    split; [|split]=>i; rewrite ?lookup_op !map_lookup_imap;
     destruct (FUN i) as (z1i&z2i&Hmi&Hz1i&Hz2i)=>/=.
     + destruct (y1 !! i), (y2 !! i); inversion Hz1i; inversion Hz2i; subst=>//.
     + revert Hz1i. case: (y1!!i)=>[?|] //.
