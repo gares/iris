@@ -251,8 +251,8 @@ Hint Mode CmraDiscrete ! : typeclass_instances.
 Class CmraMorphism {A B : cmraT} (f : A → B) := {
   cmra_morphism_ne :> NonExpansive f;
   cmra_morphism_validN n x : ✓{n} x → ✓{n} f x;
-  cmra_morphism_pcore x : pcore (f x) ≡ f <$> pcore x;
-  cmra_morphism_op x y : f x ⋅ f y ≡ f (x ⋅ y)
+  cmra_morphism_pcore x : f <$> pcore x ≡ pcore (f x);
+  cmra_morphism_op x y : f (x ⋅ y) ≡ f x ⋅ f y
 }.
 Arguments cmra_morphism_validN {_ _} _ {_} _ _ _.
 Arguments cmra_morphism_pcore {_ _} _ {_} _.
@@ -761,15 +761,15 @@ Proof.
   split.
   - apply _.
   - move=> n x Hx /=. by apply cmra_morphism_validN, cmra_morphism_validN.
-  - move=> x /=. by rewrite 2!cmra_morphism_pcore option_fmap_compose.
+  - move=> x /=. by rewrite option_fmap_compose !cmra_morphism_pcore.
   - move=> x y /=. by rewrite !cmra_morphism_op.
 Qed.
 
 Section cmra_morphism.
   Local Set Default Proof Using "Type*".
   Context {A B : cmraT} (f : A → B) `{!CmraMorphism f}.
-  Lemma cmra_morphism_core x : core (f x) ≡ f (core x).
-  Proof. unfold core, core'. rewrite cmra_morphism_pcore. by destruct (pcore x). Qed.
+  Lemma cmra_morphism_core x : f (core x) ≡ core (f x).
+  Proof. unfold core, core'. rewrite -cmra_morphism_pcore. by destruct (pcore x). Qed.
   Lemma cmra_morphism_monotone x y : x ≼ y → f x ≼ f y.
   Proof. intros [z ->]. exists (f z). by rewrite cmra_morphism_op. Qed.
   Lemma cmra_morphism_monotoneN n x y : x ≼{n} y → f x ≼{n} f y.
@@ -1136,7 +1136,7 @@ Section prod.
   Qed.
   Canonical Structure prodR := CmraT (prod A B) prod_cmra_mixin.
 
-  Lemma pair_op (a a' : A) (b b' : B) : (a, b) ⋅ (a', b') = (a ⋅ a', b ⋅ b').
+  Lemma pair_op (a a' : A) (b b' : B) : (a ⋅ a', b ⋅ b') = (a, b) ⋅ (a', b').
   Proof. done. Qed.
   Lemma pair_valid (a : A) (b : B) : ✓ (a, b) ↔ ✓ a ∧ ✓ b.
   Proof. done. Qed.
@@ -1193,7 +1193,7 @@ Section prod_unit.
   Canonical Structure prodUR := UcmraT (prod A B) prod_ucmra_mixin.
 
   Lemma pair_split (x : A) (y : B) : (x, y) ≡ (x, ε) ⋅ (ε, y).
-  Proof. by rewrite pair_op left_id right_id. Qed.
+  Proof. by rewrite -pair_op left_id right_id. Qed.
 
   Lemma pair_split_L `{!LeibnizEquiv A, !LeibnizEquiv B} (x : A) (y : B) :
     (x, y) = (x, ε) ⋅ (ε, y).
@@ -1207,14 +1207,14 @@ Instance prod_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B'
 Proof.
   split; first apply _.
   - by intros n x [??]; split; simpl; apply cmra_morphism_validN.
-  - intros x. etrans. apply (reflexivity (mbind _ _)).
-    etrans; last apply (reflexivity (_ <$> mbind _ _)). simpl.
+  - intros x. etrans; last apply (reflexivity (mbind _ _)).
+    etrans; first apply (reflexivity (_ <$> mbind _ _)). simpl.
     assert (Hf := cmra_morphism_pcore f (x.1)).
     destruct (pcore (f (x.1))), (pcore (x.1)); inversion_clear Hf=>//=.
     assert (Hg := cmra_morphism_pcore g (x.2)).
     destruct (pcore (g (x.2))), (pcore (x.2)); inversion_clear Hg=>//=.
     by setoid_subst.
-  - intros. by rewrite /prod_map /= -!cmra_morphism_op.
+  - intros. by rewrite /prod_map /= !cmra_morphism_op.
 Qed.
 
 Program Definition prodRF (F1 F2 : rFunctor) : rFunctor := {|
@@ -1475,7 +1475,7 @@ Proof.
   split; first apply _.
   - intros n [a|] ?; rewrite /cmra_validN //=. by apply (cmra_morphism_validN f).
   - move=> [a|] //. by apply Some_proper, cmra_morphism_pcore.
-  - move=> [a|] [b|] //=. by rewrite -(cmra_morphism_op f).
+  - move=> [a|] [b|] //=. by rewrite (cmra_morphism_op f).
 Qed.
 
 Program Definition optionRF (F : rFunctor) : rFunctor := {|

@@ -299,11 +299,11 @@ Proof. by rewrite auth_both_frac_op. Qed.
 Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
 Proof.
   intros; split; simpl; last by rewrite left_id.
-  by rewrite -Some_op pair_op agree_idemp.
+  by rewrite -Some_op -pair_op agree_idemp.
 Qed.
 Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
 Proof.
-  rewrite /op /auth_op /= left_id -Some_op pair_op auth_validN_eq /=.
+  rewrite /op /auth_op /= left_id -Some_op -pair_op auth_validN_eq /=.
   intros (?&?& Eq &?&?). apply to_agree_injN, agree_op_invN. by rewrite Eq.
 Qed.
 Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
@@ -388,7 +388,7 @@ Lemma auth_local_update (a b0 b1 a' b0' b1': A) :
 Proof.
   rewrite !local_update_unital=> Hup ? ? n /=.
     move=> [[[qc ac]|] bc] /auth_both_validN [Le Val] [] /=.
-  - move => Ha. exfalso. move : Ha. rewrite right_id -Some_op pair_op.
+  - move => Ha. exfalso. move : Ha. rewrite right_id -Some_op -pair_op.
     move => /Some_dist_inj [/=]. rewrite frac_op' => Eq _.
     apply (Qp_not_plus_q_ge_1 qc). by rewrite -Eq.
   - move => _. rewrite !left_id=> ?.
@@ -442,8 +442,7 @@ Proof.
     naive_solver eauto using cmra_morphism_monotoneN, cmra_morphism_validN.
   - intros [??]. apply Some_proper; rewrite /auth_map /=.
     by f_equiv; rewrite /= cmra_morphism_core.
-  - intros [[[??]|]?] [[[??]|]?]; try apply Auth_proper=>//=; try by rewrite cmra_morphism_op.
-    by rewrite -Some_op pair_op cmra_morphism_op.
+  - intros [[[??]|]?] [[[??]|]?]; try apply Auth_proper=>//=; by rewrite cmra_morphism_op.
 Qed.
 Definition authO_map {A B} (f : A -n> B) : authO A -n> authO B :=
   OfeMor (auth_map f).

@@ -172,9 +172,9 @@ Instance csum_op : Op (csum A B) := λ x y,
   | _, _ => CsumBot
   end.
 
-Lemma Cinl_op a a' : Cinl a ⋅ Cinl a' = Cinl (a ⋅ a').
+Lemma Cinl_op a a' : Cinl (a ⋅ a') = Cinl a ⋅ Cinl a'.
 Proof. done. Qed.
-Lemma Cinr_op b b' : Cinr b ⋅ Cinr b' = Cinr (b ⋅ b').
+Lemma Cinr_op b b' : Cinr (b ⋅ b') = Cinr b ⋅ Cinr b'.
 Proof. done. Qed.
 
 Lemma csum_included x y :
@@ -366,8 +366,8 @@ Instance csum_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B'
 Proof.
   split; try apply _.
   - intros n [a|b|]; simpl; auto using cmra_morphism_validN.
-  - move=> [a|b|]=>//=; rewrite cmra_morphism_pcore; by destruct pcore.
-  - intros [xa|ya|] [xb|yb|]=>//=; by rewrite -cmra_morphism_op.
+  - move=> [a|b|]=>//=; rewrite -cmra_morphism_pcore; by destruct pcore.
+  - intros [xa|ya|] [xb|yb|]=>//=; by rewrite cmra_morphism_op.
 Qed.
 
 Program Definition csumRF (Fa Fb : rFunctor) : rFunctor := {|
