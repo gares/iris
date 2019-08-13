@@ -570,7 +570,8 @@ Local Tactic Notation "iForallRevert" ident(x) :=
     intros x;
     iMatchHyp (fun H P =>
       lazymatch P with
-      | context [x] => fail 2 "iRevert:" x "is used in hypothesis" H
+      | context [x] =>
+         let H := pretty_ident H in fail 2 "iRevert:" x "is used in hypothesis" H
       end) in
   iStartProof;
   first [let _ := type of x in idtac|fail 1 "iRevert:" x "not in scope"];
