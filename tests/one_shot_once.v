@@ -15,10 +15,11 @@ Definition one_shot_example : val := λ: <>,
     assert: CAS "x" NONE (SOME "n")),
   (* check  *) (λ: <>,
     let: "y" := !"x" in λ: <>,
-    match: "y" with
-      NONE => #()
-    | SOME <> => assert: "y" = !"x"
-    end)).
+      let: "y'" := !"x" in
+      match: "y" with
+        NONE => #()
+      | SOME <> => assert: "y" = "y'"
+      end)).
 
 Definition one_shotR := csumR fracR (agreeR ZO).
 Definition Pending (q : Qp) : one_shotR := Cinl q.
@@ -36,6 +37,8 @@ Context `{!heapG Σ, !one_shotG Σ}.
 Definition one_shot_inv (γ : gname) (l : loc) : iProp Σ :=
   (l ↦ NONEV ∗ own γ (Pending (1/2)%Qp) ∨
    ∃ n : Z, l ↦ SOMEV #n ∗ own γ (Shot n))%I.
+
+Local Hint Extern 0 (environments.envs_entails _ (one_shot_inv _ _)) => unfold one_shot_inv.
 
 Lemma pending_split γ q :
   own γ (Pending q) ⊣⊢ own γ (Pending (q/2)) ∗ own γ (Pending (q/2)).
@@ -86,17 +89,18 @@ Proof.
       + Show. iSplit. iLeft; by iSplitL "Hl". eauto.
       + iSplit. iRight; iExists m; by iSplitL "Hl". eauto. }
     iSplitL "Hinv"; first by eauto.
-    iModIntro. wp_pures. iIntros "!#". wp_lam.
-    iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']";
-      subst; wp_match; [done|].
-    wp_pures. iApply wp_assert. wp_bind (! _)%E.
-    iInv N as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]".
-    { by iDestruct (own_valid_2 with "Hγ Hγ'") as %?. }
-    wp_load. Show.
-    iDestruct (own_valid_2 with "Hγ Hγ'") as %?%agree_op_invL'; subst.
-    iModIntro. iSplitL "Hl".
-    { iNext; iRight; by eauto. }
-    wp_pures. by case_bool_decide.
+    iModIntro. wp_pures. iIntros "!#". wp_lam. wp_bind (! _)%E.
+    iInv N as "Hinv".
+    iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']"; subst.
+    + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]";
+      wp_load; iModIntro; (iSplitL "Hl Hγ"; first by eauto with iFrame);
+      wp_pures; done.
+    + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]".
+      { by iDestruct (own_valid_2 with "Hγ Hγ'") as %?. }
+      wp_load. Show.
+      iDestruct (own_valid_2 with "Hγ Hγ'") as %?%agree_op_invL'; subst.
+      iModIntro. iSplitL "Hl Hγ"; first by eauto with iFrame.
+      wp_pures. iApply wp_assert. wp_op. by case_bool_decide.
 Qed.
 
 Lemma ht_one_shot (Φ : val → iProp Σ) :
