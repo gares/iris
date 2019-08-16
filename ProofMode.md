@@ -216,6 +216,8 @@ _introduction patterns_:
   + Either the proposition `P` or `Q` should be persistent.
   + Either `ipat1` or `ipat2` should be `_`, which results in one of the
     conjuncts to be thrown away.
+- `(pat1 & pat2 & ... & patn)` : syntactic sugar for `[pat1 [pat2 .. patn ..]]`
+  to eliminate nested (separating) conjunctions.
 - `[ipat1|ipat2]` : disjunction elimination.
 - `[]` : false elimination.
 - `%` : move the hypothesis to the pure Coq context (anonymously).
