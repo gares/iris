@@ -1,5 +1,5 @@
 From iris.algebra Require Export big_op.
-From iris.bi Require Import derived_laws_sbi plainly.
+From iris.bi Require Import derived_laws_sbi.
 From stdpp Require Import countable fin_sets functions.
 Set Default Proof Using "Type".
 Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
@@ -1448,46 +1448,6 @@ Section list.
   Global Instance big_sepL_timeless_id `{!Timeless (emp%I : PROP)} Ps :
     TCForall Timeless Ps → Timeless ([∗] Ps).
   Proof. induction 1; simpl; apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepL_plainly `{!BiAffine PROP} Φ l :
-      ■ ([∗ list] k↦x ∈ l, Φ k x) ⊣⊢ [∗ list] k↦x ∈ l, ■ (Φ k x).
-    Proof. apply (big_opL_commute _). Qed.
-
-    Global Instance big_sepL_nil_plain `{!BiAffine PROP} Φ :
-      Plain ([∗ list] k↦x ∈ [], Φ k x).
-    Proof. simpl; apply _. Qed.
-
-    Global Instance big_sepL_plain `{!BiAffine PROP} Φ l :
-      (∀ k x, Plain (Φ k x)) → Plain ([∗ list] k↦x ∈ l, Φ k x).
-    Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-    Lemma big_andL_plainly Φ l :
-      ■ ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, ■ (Φ k x).
-    Proof. apply (big_opL_commute _). Qed.
-
-    Global Instance big_andL_nil_plain Φ :
-      Plain ([∧ list] k↦x ∈ [], Φ k x).
-    Proof. simpl; apply _. Qed.
-
-    Global Instance big_andL_plain Φ l :
-      (∀ k x, Plain (Φ k x)) → Plain ([∧ list] k↦x ∈ l, Φ k x).
-    Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-    Lemma big_orL_plainly `{!BiPlainlyExist PROP} Φ l :
-      ■ ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ [∨ list] k↦x ∈ l, ■ (Φ k x).
-    Proof. apply (big_opL_commute _). Qed.
-
-    Global Instance big_orL_nil_plain Φ :
-      Plain ([∨ list] k↦x ∈ [], Φ k x).
-    Proof. simpl; apply _. Qed.
-
-    Global Instance big_orL_plain Φ l :
-      (∀ k x, Plain (Φ k x)) → Plain ([∨ list] k↦x ∈ l, Φ k x).
-    Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-  End plainly.
 End list.
 
 Section list2.
@@ -1522,24 +1482,6 @@ Section list2.
     (∀ k x1 x2, Timeless (Φ k x1 x2)) →
     Timeless ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
   Proof. rewrite big_sepL2_alt. apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepL2_plainly `{!BiAffine PROP} Φ l1 l2 :
-      ■ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2)
-      ⊣⊢ [∗ list] k↦y1;y2 ∈ l1;l2, ■ (Φ k y1 y2).
-    Proof. by rewrite !big_sepL2_alt plainly_and plainly_pure big_sepL_plainly. Qed.
-
-    Global Instance big_sepL2_nil_plain `{!BiAffine PROP} Φ :
-      Plain ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
-    Proof. simpl; apply _. Qed.
-
-    Global Instance big_sepL2_plain `{!BiAffine PROP} Φ l1 l2 :
-      (∀ k x1 x2, Plain (Φ k x1 x2)) →
-      Plain ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
-    Proof. rewrite big_sepL2_alt. apply _. Qed.
-  End plainly.
 End list2.
 
 (** ** Big ops over finite maps *)
@@ -1568,21 +1510,6 @@ Section gmap.
   Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
     (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
   Proof. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepM_plainly `{BiAffine PROP} Φ m :
-      ■ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ [∗ map] k↦x ∈ m, ■ (Φ k x).
-    Proof. apply (big_opM_commute _). Qed.
-
-    Global Instance big_sepM_empty_plain `{BiAffine PROP} Φ :
-      Plain ([∗ map] k↦x ∈ ∅, Φ k x).
-    Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
-    Global Instance big_sepM_plain `{BiAffine PROP} Φ m :
-      (∀ k x, Plain (Φ k x)) → Plain ([∗ map] k↦x  ∈ m, Φ k x).
-    Proof. intros. apply (big_sepL_plain _ _)=> _ [??]; apply _. Qed.
-  End plainly.
 End gmap.
 
 Section gmap2.
@@ -1621,23 +1548,6 @@ Section gmap2.
     (∀ k x1 x2, Timeless (Φ k x1 x2)) →
     Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
   Proof. intros. rewrite /big_sepM2. apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepM2_plainly `{BiAffine PROP} Φ m1 m2 :
-      ■ ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢
-      [∗ map] k↦x1;x2 ∈ m1;m2, ■ (Φ k x1 x2).
-    Proof. by rewrite /big_sepM2 plainly_and plainly_pure big_sepM_plainly. Qed.
-
-    Global Instance big_sepM2_empty_plain `{BiAffine PROP} Φ :
-      Plain ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
-    Proof. rewrite /big_sepM2 map_zip_with_empty. apply _. Qed.
-    Global Instance big_sepM2_plain `{BiAffine PROP} Φ m1 m2 :
-      (∀ k x1 x2, Plain (Φ k x1 x2)) →
-      Plain ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
-    Proof. intros. rewrite /big_sepM2. apply _. Qed.
-  End plainly.
 End gmap2.
 
 (** ** Big ops over finite sets *)
@@ -1666,20 +1576,6 @@ Section gset.
   Global Instance big_sepS_timeless `{!Timeless (emp%I : PROP)} Φ X :
     (∀ x, Timeless (Φ x)) → Timeless ([∗ set] x ∈ X, Φ x).
   Proof. rewrite /big_opS. apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepS_plainly `{BiAffine PROP} Φ X :
-      ■ ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, ■ (Φ y).
-    Proof. apply (big_opS_commute _). Qed.
-
-    Global Instance big_sepS_empty_plain `{BiAffine PROP} Φ : Plain ([∗ set] x ∈ ∅, Φ x).
-    Proof. rewrite /big_opS elements_empty. apply _. Qed.
-    Global Instance big_sepS_plain `{BiAffine PROP} Φ X :
-      (∀ x, Plain (Φ x)) → Plain ([∗ set] x ∈ X, Φ x).
-    Proof. rewrite /big_opS. apply _. Qed.
-  End plainly.
 End gset.
 
 (** ** Big ops over finite multisets *)
@@ -1708,19 +1604,5 @@ Section gmultiset.
   Global Instance big_sepMS_timeless `{!Timeless (emp%I : PROP)} Φ X :
     (∀ x, Timeless (Φ x)) → Timeless ([∗ mset] x ∈ X, Φ x).
   Proof. rewrite /big_opMS. apply _. Qed.
-
-  Section plainly.
-    Context `{!BiPlainly PROP}.
-
-    Lemma big_sepMS_plainly `{BiAffine PROP} Φ X :
-      ■ ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, ■ (Φ y).
-    Proof. apply (big_opMS_commute _). Qed.
-
-    Global Instance big_sepMS_empty_plain `{BiAffine PROP} Φ : Plain ([∗ mset] x ∈ ∅, Φ x).
-    Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
-    Global Instance big_sepMS_plain `{BiAffine PROP} Φ X :
-      (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
-    Proof. rewrite /big_opMS. apply _. Qed.
-  End plainly.
 End gmultiset.
 End sbi_big_op.
