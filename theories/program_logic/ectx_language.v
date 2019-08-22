@@ -163,6 +163,11 @@ Section ectx_language.
     intros (κ&e'&σ'&efs&?). exists κ, (fill K e'), σ', efs.
     by apply fill_prim_step.
   Qed.
+  Lemma fill_reducible_no_obs K e σ : reducible_no_obs e σ → reducible_no_obs (fill K e) σ.
+  Proof.
+    intros (e'&σ'&efs&?). exists (fill K e'), σ', efs.
+    by apply fill_prim_step.
+  Qed.
   Lemma head_prim_reducible e σ : head_reducible e σ → reducible e σ.
   Proof. intros (κ&e'&σ'&efs&?). eexists κ, e', σ', efs. by apply head_prim_step. Qed.
   Lemma head_prim_fill_reducible e K σ :
@@ -174,6 +179,9 @@ Section ectx_language.
   Proof.
     rewrite -not_reducible -not_head_reducible. eauto using head_prim_reducible.
   Qed.
+  Lemma head_prim_fill_reducible_no_obs e  K σ :
+    head_reducible_no_obs e σ → reducible_no_obs (fill K e) σ.
+  Proof. intro. by apply fill_reducible_no_obs, head_prim_reducible_no_obs. Qed.
 
   Lemma prim_head_reducible e σ :
     reducible e σ → sub_redexes_are_values e → head_reducible e σ.
