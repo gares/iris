@@ -308,24 +308,23 @@ Section fupd_derived.
 
   Lemma fupd_sep E P Q : (|={E}=> P) ∗ (|={E}=> Q) ={E}=∗ P ∗ Q.
   Proof. by rewrite fupd_frame_r fupd_frame_l fupd_trans. Qed.
-  Lemma fupd_big_sepL {A} E (Φ : nat → A → PROP) (l : list A) :
+
+  Global Instance fupd_homomorphism E :
+    MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (fupd (PROP:=PROP) E E).
+  Proof. split; [split|]; try apply _. apply fupd_sep. apply fupd_intro. Qed.
+
+  Lemma big_sepL_fupd {A} E (Φ : nat → A → PROP) l :
     ([∗ list] k↦x ∈ l, |={E}=> Φ k x) ={E}=∗ [∗ list] k↦x ∈ l, Φ k x.
-  Proof.
-    apply (big_opL_forall (λ P Q, P ={E}=∗ Q)); auto using fupd_intro.
-    intros P1 P2 HP Q1 Q2 HQ. by rewrite HP HQ -fupd_sep.
-  Qed.
-  Lemma fupd_big_sepM `{Countable K} {A} E (Φ : K → A → PROP) (m : gmap K A) :
+  Proof. by rewrite (big_opL_commute _). Qed.
+  Lemma big_sepM_fupd `{Countable K} {A} E (Φ : K → A → PROP) m :
     ([∗ map] k↦x ∈ m, |={E}=> Φ k x) ={E}=∗ [∗ map] k↦x ∈ m, Φ k x.
-  Proof.
-    apply (big_opM_forall (λ P Q, P ={E}=∗ Q)); auto using fupd_intro.
-    intros P1 P2 HP Q1 Q2 HQ. by rewrite HP HQ -fupd_sep.
-  Qed.
-  Lemma fupd_big_sepS `{Countable A} E (Φ : A → PROP) X :
+  Proof. by rewrite (big_opM_commute _). Qed.
+  Lemma big_sepS_fupd `{Countable A} E (Φ : A → PROP) X :
     ([∗ set] x ∈ X, |={E}=> Φ x) ={E}=∗ [∗ set] x ∈ X, Φ x.
-  Proof.
-    apply (big_opS_forall (λ P Q, P ={E}=∗ Q)); auto using fupd_intro.
-    intros P1 P2 HP Q1 Q2 HQ. by rewrite HP HQ -fupd_sep.
-  Qed.
+  Proof. by rewrite (big_opS_commute _). Qed.
+  Lemma big_sepMS_fupd `{Countable A} E (Φ : A → PROP) l :
+    ([∗ mset] x ∈ l, |={E}=> Φ x) ⊢ |={E}=> [∗ mset] x ∈ l, Φ x.
+  Proof. by rewrite (big_opMS_commute _). Qed.
 
   (** Fancy updates that take a step derived rules. *)
   Lemma step_fupd_wand E1 E2 E3 P Q : (|={E1,E2,E3}▷=> P) -∗ (P -∗ Q) -∗ |={E1,E2,E3}▷=> Q.
