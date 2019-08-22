@@ -179,7 +179,7 @@ Section ectx_language.
   Proof.
     rewrite -not_reducible -not_head_reducible. eauto using head_prim_reducible.
   Qed.
-  Lemma head_prim_fill_reducible_no_obs e  K σ :
+  Lemma head_prim_fill_reducible_no_obs e K σ :
     head_reducible_no_obs e σ → reducible_no_obs (fill K e) σ.
   Proof. intro. by apply fill_reducible_no_obs, head_prim_reducible_no_obs. Qed.
 
