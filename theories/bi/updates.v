@@ -163,6 +163,23 @@ Section bupd_derived.
   Proof. by rewrite bupd_frame_r wand_elim_r. Qed.
   Lemma bupd_sep P Q : (|==> P) ∗ (|==> Q) ==∗ P ∗ Q.
   Proof. by rewrite bupd_frame_r bupd_frame_l bupd_trans. Qed.
+
+  Global Instance bupd_homomorphism :
+    MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (bupd (PROP:=PROP)).
+  Proof. split; [split|]; try apply _. apply bupd_sep. apply bupd_intro. Qed.
+
+  Lemma big_sepL_bupd {A} (Φ : nat → A → PROP) l :
+    ([∗ list] k↦x ∈ l, |==> Φ k x) ⊢ |==> [∗ list] k↦x ∈ l, Φ k x.
+  Proof. by rewrite (big_opL_commute _). Qed.
+  Lemma big_sepM_bupd {A} `{Countable K} (Φ : K → A → PROP) l :
+    ([∗ map] k↦x ∈ l, |==> Φ k x) ⊢ |==> [∗ map] k↦x ∈ l, Φ k x.
+  Proof. by rewrite (big_opM_commute _). Qed.
+  Lemma big_sepS_bupd `{Countable A} (Φ : A → PROP) l :
+    ([∗ set]  x ∈ l, |==> Φ x) ⊢ |==> [∗ set] x ∈ l, Φ x.
+  Proof. by rewrite (big_opS_commute _). Qed.
+  Lemma big_sepMS_bupd `{Countable A} (Φ : A → PROP) l :
+    ([∗ mset] x ∈ l, |==> Φ x) ⊢ |==> [∗ mset] x ∈ l, Φ x.
+  Proof. by rewrite (big_opMS_commute _). Qed.
 End bupd_derived.
 
 Section bupd_derived_sbi.
