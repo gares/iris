@@ -1,4 +1,4 @@
-From iris.bi Require Import derived_laws_sbi.
+From iris.bi Require Import derived_laws_sbi big_op.
 From iris.algebra Require Import monoid.
 Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
 
@@ -373,38 +373,61 @@ Proof.
   - apply persistently_mono, wand_intro_l. by rewrite sep_and impl_elim_r.
 Qed.
 
+Global Instance limit_preserving_Plain {A:ofeT} `{Cofe A} (Φ : A → PROP) :
+  NonExpansive Φ → LimitPreserving (λ x, Plain (Φ x)).
+Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
+
 (* Instances for big operators *)
-Global Instance plainly_and_homomorphism :
-  MonoidHomomorphism bi_and bi_and (≡) (@plainly PROP _).
-Proof.
-  split; [split|]; try apply _. apply plainly_and. apply plainly_pure.
-Qed.
-
-Global Instance plainly_or_homomorphism `{!BiPlainlyExist PROP} :
-  MonoidHomomorphism bi_or bi_or (≡) (@plainly PROP _).
-Proof.
-  split; [split|]; try apply _. apply plainly_or. apply plainly_pure.
-Qed.
-
 Global Instance plainly_sep_weak_homomorphism `{!BiPositive PROP, !BiAffine PROP} :
   WeakMonoidHomomorphism bi_sep bi_sep (≡) (@plainly PROP _).
 Proof. split; try apply _. apply plainly_sep. Qed.
-
-Global Instance plainly_sep_homomorphism `{BiAffine PROP} :
-  MonoidHomomorphism bi_sep bi_sep (≡) (@plainly PROP _).
-Proof. split. apply _. apply plainly_emp. Qed.
-
 Global Instance plainly_sep_entails_weak_homomorphism :
   WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@plainly PROP _).
 Proof. split; try apply _. intros P Q; by rewrite plainly_sep_2. Qed.
-
 Global Instance plainly_sep_entails_homomorphism `{!BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@plainly PROP _).
 Proof. split. apply _. simpl. rewrite plainly_emp. done. Qed.
 
-Global Instance limit_preserving_Plain {A:ofeT} `{Cofe A} (Φ : A → PROP) :
-  NonExpansive Φ → LimitPreserving (λ x, Plain (Φ x)).
-Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
+Global Instance plainly_sep_homomorphism `{BiAffine PROP} :
+  MonoidHomomorphism bi_sep bi_sep (≡) (@plainly PROP _).
+Proof. split. apply _. apply plainly_emp. Qed.
+Global Instance plainly_and_homomorphism :
+  MonoidHomomorphism bi_and bi_and (≡) (@plainly PROP _).
+Proof. split; [split|]; try apply _. apply plainly_and. apply plainly_pure. Qed.
+Global Instance plainly_or_homomorphism `{!BiPlainlyExist PROP} :
+  MonoidHomomorphism bi_or bi_or (≡) (@plainly PROP _).
+Proof. split; [split|]; try apply _. apply plainly_or. apply plainly_pure. Qed.
+
+Lemma big_sepL_plainly `{!BiAffine PROP} {A} (Φ : nat → A → PROP) l :
+  ■ ([∗ list] k↦x ∈ l, Φ k x) ⊣⊢ [∗ list] k↦x ∈ l, ■ (Φ k x).
+Proof. apply (big_opL_commute _). Qed.
+Lemma big_andL_plainly {A} (Φ : nat → A → PROP) l :
+  ■ ([∧ list] k↦x ∈ l, Φ k x) ⊣⊢ [∧ list] k↦x ∈ l, ■ (Φ k x).
+Proof. apply (big_opL_commute _). Qed.
+Lemma big_orL_plainly `{!BiPlainlyExist PROP} {A} (Φ : nat → A → PROP) l :
+  ■ ([∨ list] k↦x ∈ l, Φ k x) ⊣⊢ [∨ list] k↦x ∈ l, ■ (Φ k x).
+Proof. apply (big_opL_commute _). Qed.
+
+Lemma big_sepL2_plainly `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) l1 l2 :
+  ■ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2)
+  ⊣⊢ [∗ list] k↦y1;y2 ∈ l1;l2, ■ (Φ k y1 y2).
+Proof. by rewrite !big_sepL2_alt plainly_and plainly_pure big_sepL_plainly. Qed.
+
+Lemma big_sepM_plainly `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
+  ■ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ [∗ map] k↦x ∈ m, ■ (Φ k x).
+Proof. apply (big_opM_commute _). Qed.
+
+Lemma big_sepM2_plainly `{BiAffine PROP, Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
+  ■ ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢ [∗ map] k↦x1;x2 ∈ m1;m2, ■ (Φ k x1 x2).
+Proof. by rewrite /big_sepM2 plainly_and plainly_pure big_sepM_plainly. Qed.
+
+Lemma big_sepS_plainly `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  ■ ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, ■ (Φ y).
+Proof. apply (big_opS_commute _). Qed.
+
+Lemma big_sepMS_plainly `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  ■ ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, ■ (Φ y).
+Proof. apply (big_opMS_commute _). Qed.
 
 (* Plainness instances *)
 Global Instance pure_plain φ : Plain (PROP:=PROP) ⌜φ⌝.
@@ -457,6 +480,64 @@ Proof. rewrite /bi_absorbingly. apply _. Qed.
 Global Instance from_option_plain {A} P (Ψ : A → PROP) (mx : option A) :
   (∀ x, Plain (Ψ x)) → Plain P → Plain (from_option Ψ P mx).
 Proof. destruct mx; apply _. Qed.
+
+Global Instance big_sepL_nil_plain `{!BiAffine PROP} {A} (Φ : nat → A → PROP) :
+  Plain ([∗ list] k↦x ∈ [], Φ k x).
+Proof. simpl; apply _. Qed.
+Global Instance big_sepL_plain `{!BiAffine PROP} {A} (Φ : nat → A → PROP) l :
+  (∀ k x, Plain (Φ k x)) → Plain ([∗ list] k↦x ∈ l, Φ k x).
+Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+Global Instance big_andL_nil_plain {A} (Φ : nat → A → PROP) :
+  Plain ([∧ list] k↦x ∈ [], Φ k x).
+Proof. simpl; apply _. Qed.
+Global Instance big_andL_plain {A} (Φ : nat → A → PROP) l :
+  (∀ k x, Plain (Φ k x)) → Plain ([∧ list] k↦x ∈ l, Φ k x).
+Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+Global Instance big_orL_nil_plain {A} (Φ : nat → A → PROP) :
+  Plain ([∨ list] k↦x ∈ [], Φ k x).
+Proof. simpl; apply _. Qed.
+Global Instance big_orL_plain {A} (Φ : nat → A → PROP) l :
+  (∀ k x, Plain (Φ k x)) → Plain ([∨ list] k↦x ∈ l, Φ k x).
+Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
+
+Global Instance big_sepL2_nil_plain `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) :
+  Plain ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
+Proof. simpl; apply _. Qed.
+Global Instance big_sepL2_plain `{!BiAffine PROP} {A B} (Φ : nat → A → B → PROP) l1 l2 :
+  (∀ k x1 x2, Plain (Φ k x1 x2)) →
+  Plain ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
+Proof. rewrite big_sepL2_alt. apply _. Qed.
+
+Global Instance big_sepM_empty_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) :
+  Plain ([∗ map] k↦x ∈ ∅, Φ k x).
+Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
+Global Instance big_sepM_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
+  (∀ k x, Plain (Φ k x)) → Plain ([∗ map] k↦x  ∈ m, Φ k x).
+Proof. intros. apply (big_sepL_plain _ _)=> _ [??]; apply _. Qed.
+
+Global Instance big_sepM2_empty_plain `{BiAffine PROP, Countable K}
+    {A B} (Φ : K → A → B → PROP) :
+  Plain ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
+Proof. rewrite /big_sepM2 map_zip_with_empty. apply _. Qed.
+Global Instance big_sepM2_plain `{BiAffine PROP, Countable K}
+    {A B} (Φ : K → A → B → PROP) m1 m2 :
+  (∀ k x1 x2, Plain (Φ k x1 x2)) →
+  Plain ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
+Proof. intros. rewrite /big_sepM2. apply _. Qed.
+
+Global Instance big_sepS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
+  Plain ([∗ set] x ∈ ∅, Φ x).
+Proof. rewrite /big_opS elements_empty. apply _. Qed.
+Global Instance big_sepS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  (∀ x, Plain (Φ x)) → Plain ([∗ set] x ∈ X, Φ x).
+Proof. rewrite /big_opS. apply _. Qed.
+
+Global Instance big_sepMS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
+  Plain ([∗ mset] x ∈ ∅, Φ x).
+Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
+Global Instance big_sepMS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
+  (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
+Proof. rewrite /big_opMS. apply _. Qed.
 
 (* Interaction with equality *)
 Lemma plainly_internal_eq {A:ofeT} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.

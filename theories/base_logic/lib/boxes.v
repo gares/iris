@@ -210,7 +210,7 @@ Proof.
   iEval (rewrite internal_eq_iff later_iff big_sepM_later) in "HeqP".
   iDestruct ("HeqP" with "HP") as "HP".
   iCombine "Hf" "HP" as "Hf".
-  rewrite -big_sepM_sep big_opM_fmap; iApply (fupd_big_sepM _ _ f).
+  rewrite -big_sepM_sep big_opM_fmap; iApply (big_sepM_fupd _ _ f).
   iApply (@big_sepM_impl with "Hf").
   iIntros "!#" (γ b' ?) "[(Hγ' & #$ & #$) HΦ]".
   iInv N as (b) "[>Hγ _]".
@@ -227,7 +227,7 @@ Proof.
   iAssert (([∗ map] γ↦b ∈ f, ▷ Φ γ) ∗
     [∗ map] γ↦b ∈ f, box_own_auth γ (◯ Excl' false) ∗  box_own_prop γ (Φ γ) ∗
       inv N (slice_inv γ (Φ γ)))%I with "[> Hf]" as "[HΦ ?]".
-  { rewrite -big_sepM_sep -fupd_big_sepM. iApply (@big_sepM_impl with "[$Hf]").
+  { rewrite -big_sepM_sep -big_sepM_fupd. iApply (@big_sepM_impl with "[$Hf]").
     iIntros "!#" (γ b ?) "(Hγ' & #HγΦ & #Hinv)".
     assert (true = b) as <- by eauto.
     iInv N as (b) "[>Hγ HΦ]".
