@@ -1475,6 +1475,13 @@ Section list2.
     auto using and_mono, laterN_intro.
   Qed.
 
+  Lemma big_sepL2_flip Φ l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l2; l1, Φ k y2 y1) ⊣⊢ ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2).
+  Proof.
+    revert Φ l2. induction l1 as [|x1 l1 IH]=> Φ -[|x2 l2]//=; simplify_eq.
+    by rewrite IH.
+  Qed.
+
   Global Instance big_sepL2_nil_timeless `{!Timeless (emp%I : PROP)} Φ :
     Timeless ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
   Proof. simpl; apply _. Qed.
@@ -1539,6 +1546,14 @@ Section gmap2.
     induction n as [|n IHn]; first done.
     rewrite later_laterN -IHn -big_sepM2_later_2.
     apply big_sepM2_mono. eauto.
+  Qed.
+
+  Lemma big_sepM2_flip Φ m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m2; m1, Φ k y2 y1) ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2).
+  Proof.
+    rewrite /big_sepM2. apply and_proper; [apply pure_proper; naive_solver |].
+    rewrite -map_zip_with_flip map_zip_with_map_zip big_sepM_fmap.
+    apply big_sepM_proper. by intros k [b a].
   Qed.
 
   Global Instance big_sepM2_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
