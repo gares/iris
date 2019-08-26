@@ -616,6 +616,20 @@ Section unit.
   Proof. done. Qed.
 End unit.
 
+(** empty *)
+Section empty.
+  Instance Empty_set_dist : Dist Empty_set := λ _ _ _, True.
+  Definition Empty_set_ofe_mixin : OfeMixin Empty_set.
+  Proof. by repeat split; try exists 0. Qed.
+  Canonical Structure Empty_setO : ofeT := OfeT Empty_set Empty_set_ofe_mixin.
+
+  Global Program Instance Empty_set_cofe : Cofe Empty_setO := { compl x := x 0 }.
+  Next Obligation. by repeat split; try exists 0. Qed.
+
+  Global Instance Empty_set_ofe_discrete : OfeDiscrete Empty_setO.
+  Proof. done. Qed.
+End empty.
+
 (** Product *)
 Section product.
   Context {A B : ofeT}.

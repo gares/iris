@@ -971,6 +971,24 @@ Section unit.
   Proof. by constructor. Qed.
 End unit.
 
+(** ** CMRA for the empty type *)
+Section empty.
+  Instance Empty_set_valid : Valid Empty_set := λ x, False.
+  Instance Empty_set_validN : ValidN Empty_set := λ n x, False.
+  Instance Empty_set_pcore : PCore Empty_set := λ x, Some x.
+  Instance Empty_set_op : Op Empty_set := λ x y, x.
+  Lemma Empty_set_cmra_mixin : CmraMixin Empty_set.
+  Proof. apply discrete_cmra_mixin, ra_total_mixin; by (intros [] || done). Qed.
+  Canonical Structure Empty_setR : cmraT := CmraT Empty_set Empty_set_cmra_mixin.
+
+  Global Instance Empty_set_cmra_discrete : CmraDiscrete Empty_setR.
+  Proof. done. Qed.
+  Global Instance Empty_set_core_id (x : Empty_set) : CoreId x.
+  Proof. by constructor. Qed.
+  Global Instance Empty_set_cancelable (x : Empty_set) : Cancelable x.
+  Proof. by constructor. Qed.
+End empty.
+
 (** ** Natural numbers *)
 Section nat.
   Instance nat_valid : Valid nat := λ x, True.
