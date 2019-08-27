@@ -359,6 +359,9 @@ Section properties.
   Global Instance list_singleton_core_id i (x : A) :
     CoreId x → CoreId {[ i := x ]}.
   Proof. by rewrite !core_id_total list_core_singletonM=> ->. Qed.
+  Lemma list_singleton_snoc l x:
+    {[length l := x]} ⋅ l ≡ l ++ [x].
+  Proof. elim: l => //= ?? <-. by rewrite left_id. Qed.
 
   (* Update *)
   Lemma list_singleton_updateP (P : A → Prop) (Q : list A → Prop) x :
@@ -446,6 +449,17 @@ Section properties.
     x ~l~> y @ ml ≫= (!! i) → {[ i := x ]} ~l~> {[ i := y ]} @ ml.
   Proof. intros; apply list_middle_local_update. by rewrite replicate_length. Qed.
 *)
+
+  Lemma list_alloc_singleton_local_update x l :
+    ✓ x → (l, ε) ~l~> (l ++ [x], {[length l := x]}).
+  Proof.
+    move => ?.
+    have -> : ({[length l := x]} ≡ {[length l := x]} ⋅ ε) by rewrite right_id.
+    rewrite -list_singleton_snoc. apply op_local_update => ??.
+    rewrite list_singleton_snoc app_validN cons_validN. split_and? => //; [| constructor].
+    by apply cmra_valid_validN.
+  Qed.
+
 End properties.
 
 (** Functor *)
