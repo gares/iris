@@ -15,7 +15,12 @@ Chajed. Thanks a lot to everyone involved!
 The highlight of this release is the completely re-engineered interactive proof
 mode.  Not only did many tactics become more powerful; the entire proof mode can
 now be used not just for Iris but also for other separation logics satisfying
-the proof mode interface.
+the proof mode interface (e.g., [Iron] and [GPFSL]). Also see the
+[accompanying paper][MoSeL].
+
+[Iron]: https://iris-project.org/iron/
+[GPFSL]: https://gitlab.mpi-sws.org/iris/gpfsl/
+[MoSeL]: https://iris-project.org/mosel/
 
 Beyond that, the Iris program logic gained the ability to reason about
 potentially stuck programs, and a significantly strengthened adequacy theorem
@@ -92,8 +97,7 @@ Changes in heap_lang:
 
 Changes in Coq:
 
-* An all-new generalized proof mode that abstracts away from Iris!  See
-  <http://iris-project.org/mosel/> for the corresponding paper.  Major new
+* An all-new generalized proof mode that abstracts away from Iris!  Major new
   features:
   - The proof mode can now be used with logics derived from Iris (like iGPS),
     with non-step-indexed logics and even with non-affine (i.e., linear) logics.
