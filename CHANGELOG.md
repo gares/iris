@@ -3,7 +3,14 @@ way the logic is used on paper.  We also mention some significant changes in the
 Coq development, but not every API-breaking change is listed.  Changes marked
 `[#]` still need to be ported to the Iris Documentation LaTeX file(s).
 
-## Iris master
+## Iris 3.2.0 (unreleased)
+
+This release of Iris received contributions by Aleš Bizjak, Amin Timany, Dan
+Frumin, Glen Mével, Hai Dang, Hugo Herbelin, Jacques-Henri Jourdan, Jan Menz,
+Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Joseph Tassarotti, Mackie Loeffel,
+Marianna Rapoport, Maxime Dénès, Michael Sammler, Paolo G. Giarrusso,
+Pierre-Marie Pédrot, Ralf Jung, Robbert Krebbers, Rodolphe Lepigre, and Tej
+Chajed. Thanks a lot!
 
 Changes in the theory of Iris itself:
 
