@@ -12,6 +12,24 @@ Marianna Rapoport, Maxime Dénès, Michael Sammler, Paolo G. Giarrusso,
 Pierre-Marie Pédrot, Ralf Jung, Robbert Krebbers, Rodolphe Lepigre, and Tej
 Chajed. Thanks a lot!
 
+The highlight of this release is the completely re-engineered interactive proof
+mode.  Not only did many tactics become more powerful; the entire proof mode can
+now be used not just for Iris but also for other separation logics satisfying
+the proof mode interface.
+
+Beyond that, the Iris program logic gained the ability to reason about
+potentially stuck programs, and a significantly strengthened adequacy theorem
+that unifies the three previously separately presented theorems.  There are now
+also Hoare triples for total program correctness (but with very limited support
+for invariants) and logical atomicity.
+
+And finally, our example language HeapLang was made more realistic
+(Compare-and-set got replaced by compare-exchange and limited to only compare
+values that can actually be compared atomically) and more powerful, with added
+support for arrays and prophecy variables.
+
+Further details are given in the changelog below.
+
 Changes in the theory of Iris itself:
 
 * Change in the definition of WP, so that there is a fancy update between
@@ -57,7 +75,7 @@ Changes in heap_lang:
   operator allowed compared closures with each other.
 * Implement prophecy variables using the new support for "observations". The
   erasure theorem (showing that prophecy variables do not alter program
-  behavior) can be found [in the iris/examples repository](https://gitlab.mpi-sws.org/iris/examples/blob/3f33781fe6e19cfdb25259c8194d34403f1134d5/theories/logatom/proph_erasure.v).
+  behavior) can be found [in the iris/examples repository][prophecy-erasure].
 * heap_lang now uses right-to-left evaluation order. This makes it
   significantly easier to write specifications of curried functions.
 * heap_lang values are now injected in heap_lang expressions via a specific
@@ -70,6 +88,8 @@ Changes in heap_lang:
   (continuously allocated regions of memory).
 * One can now assign "meta" data to heap_lang locations.
 
+[prophecy-erasure]: https://gitlab.mpi-sws.org/iris/examples/blob/3f33781fe6e19cfdb25259c8194d34403f1134d5/theories/logatom/proph_erasure.v
+
 Changes in Coq:
 
 * An all-new generalized proof mode that abstracts away from Iris!  See
@@ -80,7 +100,7 @@ Changes in Coq:
   - `iModIntro` is more flexible and more powerful, it now also subsumes
     `iNext` and `iAlways`.
   - General infrastructure for deriving a logic for monotone predicates over
-    an existing logic (see the paper for more details).  
+    an existing logic (see the paper for more details).
     Developments instantiating the proof mode typeclasses may need significant
     changes.  For developments just using the proof mode tactics, porting should
     not be too much effort.  Notable things to port are:
