@@ -10,7 +10,7 @@ Frumin, Glen Mével, Hai Dang, Hugo Herbelin, Jacques-Henri Jourdan, Jan Menz,
 Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Joseph Tassarotti, Mackie Loeffel,
 Marianna Rapoport, Maxime Dénès, Michael Sammler, Paolo G. Giarrusso,
 Pierre-Marie Pédrot, Ralf Jung, Robbert Krebbers, Rodolphe Lepigre, and Tej
-Chajed. Thanks a lot!
+Chajed. Thanks a lot to everyone involved!
 
 The highlight of this release is the completely re-engineered interactive proof
 mode.  Not only did many tactics become more powerful; the entire proof mode can
