@@ -5,13 +5,6 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 ## Iris 3.2.0 (released 2019-08-29)
 
-This release of Iris received contributions by Aleš Bizjak, Amin Timany, Dan
-Frumin, Glen Mével, Hai Dang, Hugo Herbelin, Jacques-Henri Jourdan, Jan Menz,
-Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Joseph Tassarotti, Mackie Loeffel,
-Marianna Rapoport, Maxime Dénès, Michael Sammler, Paolo G. Giarrusso,
-Pierre-Marie Pédrot, Ralf Jung, Robbert Krebbers, Rodolphe Lepigre, and Tej
-Chajed. Thanks a lot to everyone involved!
-
 The highlight of this release is the completely re-engineered interactive proof
 mode.  Not only did many tactics become more powerful; the entire proof mode can
 now be used not just for Iris but also for other separation logics satisfying
@@ -35,7 +28,14 @@ support for arrays and prophecy variables.
 
 Further details are given in the changelog below.
 
-Changes in the theory of Iris itself:
+This release of Iris received contributions by Aleš Bizjak, Amin Timany, Dan
+Frumin, Glen Mével, Hai Dang, Hugo Herbelin, Jacques-Henri Jourdan, Jan Menz,
+Jan-Oliver Kaiser, Jonas Kastberg Hinrichsen, Joseph Tassarotti, Mackie Loeffel,
+Marianna Rapoport, Maxime Dénès, Michael Sammler, Paolo G. Giarrusso,
+Pierre-Marie Pédrot, Ralf Jung, Robbert Krebbers, Rodolphe Lepigre, and Tej
+Chajed. Thanks a lot to everyone involved!
+
+**Changes in the theory of Iris itself:**
 
 * Change in the definition of WP, so that there is a fancy update between
   the quantification over the next states and the later modality. This makes it
@@ -63,7 +63,7 @@ Changes in the theory of Iris itself:
 * The user-chosen functor used to instantiate the Iris logic now goes from
   COFEs to Cameras (it was OFEs to Cameras).
 
-Changes in heap_lang:
+**Changes in heap_lang:**
 
 * CAS (compare-and-set) got replaced by CmpXchg (compare-exchange).  The
   difference is that CmpXchg returns a pair consisting of the old value and a
@@ -95,7 +95,7 @@ Changes in heap_lang:
 
 [prophecy-erasure]: https://gitlab.mpi-sws.org/iris/examples/blob/3f33781fe6e19cfdb25259c8194d34403f1134d5/theories/logatom/proph_erasure.v
 
-Changes in Coq:
+**Changes in Coq:**
 
 * An all-new generalized proof mode that abstracts away from Iris!  Major new
   features:
@@ -259,7 +259,7 @@ s/\bcoPset\_disjC/coPset\_disjO/g;
 
 ## Iris 3.1.0 (released 2017-12-19)
 
-Changes in and extensions of the theory:
+**Changes in and extensions of the theory:**
 
 * Define `uPred` as a quotient on monotone predicates `M -> SProp`.
 * Get rid of some primitive laws; they can be derived:
@@ -279,7 +279,7 @@ Changes in and extensions of the theory:
   latter. The full judgment is `WP e @ s; E {{ Φ }}`, where non-stuck WP uses
   *stuckness bit* `s = NotStuck` while stuck WP uses `s = MaybeStuck`.
 
-Changes in Coq:
+**Changes in Coq:**
 
 * Move the `prelude` folder to its own project:
   [coq-std++](https://gitlab.mpi-sws.org/robbertkrebbers/coq-stdpp)
