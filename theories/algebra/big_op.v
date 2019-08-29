@@ -128,11 +128,11 @@ Section list.
   Global Instance big_opL_ne n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==>
             eq ==> dist n) (big_opL o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
   Global Instance big_opL_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> eq ==> (≡))
            (big_opL o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opL_consZ_l (f : Z → A → M) x l :
     ([^o list] k↦y ∈ x :: l, f k y) = f 0 x `o` [^o list] k↦y ∈ l, f (1 + k)%Z y.
