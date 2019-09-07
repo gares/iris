@@ -71,7 +71,7 @@ Tactic Notation "iStartProof" :=
   | |- envs_entails _ _ => idtac
   | |- ?φ => notypeclasses refine (as_emp_valid_2 φ _ _);
                [iSolveTC || fail "iStartProof: not a BI assertion"
-               |apply tac_adequate]
+               |apply tac_start]
   end.
 
 (* Same as above, with 2 differences :
@@ -92,7 +92,13 @@ Tactic Notation "iStartProof" uconstr(PROP) :=
      to find the corresponding bi. *)
   | |- ?φ => notypeclasses refine ((λ P : PROP, @as_emp_valid_2 φ _ P) _ _ _);
                [iSolveTC || fail "iStartProof: not a BI assertion"
-               |apply tac_adequate]
+               |apply tac_start]
+  end.
+
+Tactic Notation "iStopProof" :=
+  lazymatch goal with
+  | |- envs_entails _ _ => apply tac_stop; pm_reduce
+  | |- _ => fail "iStopProof: proofmode not started"
   end.
 
 (** * Generate a fresh identifier *)

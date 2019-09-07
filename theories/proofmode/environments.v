@@ -364,11 +364,15 @@ Definition envs_split {PROP} (d : direction)
   ''(Δ1,Δ2) ← envs_split_go js Δ (envs_clear_spatial Δ);
   if d is Right then Some (Δ1,Δ2) else Some (Δ2,Δ1).
 
+Fixpoint env_to_prop_go {PROP : bi} (acc : PROP) (Γ : env PROP) : PROP :=
+  match Γ with Enil => acc | Esnoc Γ _ P => env_to_prop_go (P ∗ acc)%I Γ end.
 Definition env_to_prop {PROP : bi} (Γ : env PROP) : PROP :=
-  let fix aux Γ acc :=
-    match Γ with Enil => acc | Esnoc Γ _ P => aux Γ (P ∗ acc)%I end
-  in
-  match Γ with Enil => emp%I | Esnoc Γ _ P => aux Γ P end.
+  match Γ with Enil => emp%I | Esnoc Γ _ P => env_to_prop_go P Γ end.
+
+Fixpoint env_to_prop_and_go {PROP : bi} (acc : PROP) (Γ : env PROP) : PROP :=
+  match Γ with Enil => acc | Esnoc Γ _ P => env_to_prop_and_go (P ∧ acc)%I Γ end.
+Definition env_to_prop_and {PROP : bi} (Γ : env PROP) : PROP :=
+  match Γ with Enil => True%I | Esnoc Γ _ P => env_to_prop_and_go P Γ end.
 
 Section envs.
 Context {PROP : bi}.
@@ -767,7 +771,15 @@ Qed.
 
 Lemma env_to_prop_sound Γ : env_to_prop Γ ⊣⊢ [∗] Γ.
 Proof.
-  destruct Γ as [|Γ ? P]; simpl; first done.
+  destruct Γ as [|Γ i P]; simpl; first done.
+  revert P. induction Γ as [|Γ IH ? Q]=>P; simpl.
+  - by rewrite right_id.
+  - rewrite /= IH (comm _ Q _) assoc. done.
+Qed.
+
+Lemma env_to_prop_and_sound Γ : env_to_prop_and Γ ⊣⊢ [∧] Γ.
+Proof.
+  destruct Γ as [|Γ i P]; simpl; first done.
   revert P. induction Γ as [|Γ IH ? Q]=>P; simpl.
   - by rewrite right_id.
   - rewrite /= IH (comm _ Q _) assoc. done.

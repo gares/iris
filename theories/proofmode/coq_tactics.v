@@ -12,12 +12,26 @@ Implicit Types Γ : env PROP.
 Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
-(** * Adequacy *)
-Lemma tac_adequate P : envs_entails (Envs Enil Enil 1) P → P.
+(** * Starting and stopping the proof mode *)
+Lemma tac_start P : envs_entails (Envs Enil Enil 1) P → bi_emp_valid P.
 Proof.
   rewrite envs_entails_eq !of_envs_eq /=.
   rewrite intuitionistically_True_emp left_id=><-.
   apply and_intro=> //. apply pure_intro; repeat constructor.
+Qed.
+
+Lemma tac_stop Δ P :
+  (match env_intuitionistic Δ, env_spatial Δ with
+   | Enil, Γs => env_to_prop Γs
+   | Γp, Enil => □ env_to_prop_and Γp
+   | Γp, Γs => □ env_to_prop_and Γp ∗ env_to_prop Γs
+   end%I ⊢ P) →
+  envs_entails Δ P.
+Proof.
+  rewrite envs_entails_eq !of_envs_eq. intros <-.
+  rewrite and_elim_r -env_to_prop_and_sound -env_to_prop_sound.
+  destruct (env_intuitionistic Δ), (env_spatial Δ);
+    by rewrite /= ?intuitionistically_True_emp ?left_id ?right_id.
 Qed.
 
 (** * Basic rules *)
