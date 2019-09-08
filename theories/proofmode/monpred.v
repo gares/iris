@@ -557,34 +557,30 @@ Global Instance elim_modal_at_fupd_hyp `{BiFUpd PROP} φ p p' E1 E2 P 𝓟 𝓟'
   ElimModal φ p p' ((|={E1,E2}=> P) i) 𝓟' 𝓠 𝓠'.
 Proof. by rewrite /MakeMonPredAt /ElimModal monPred_at_fupd=><-. Qed.
 
-(* This instances are awfully specific, but that's what is needed. *)
-Global Instance elim_acc_at_fupd `{BiFUpd PROP} {X : Type} E1 E2 E
-       M1 M2 α β (mγ : X → option PROP) Q (Q' : X → monPred) i :
-  ElimAcc (X:=X) M1 M2 α β mγ (|={E1,E}=> Q i)
-          (λ x, |={E2}=> β x ∗ (mγ x -∗? |={E1,E}=> Q' x i))%I →
-  ElimAcc (X:=X) M1 M2 α β mγ ((|={E1,E}=> Q) i)
-          (λ x, (|={E2}=> ⎡β x⎤ ∗
-                         (match mγ x with Some 𝓟 => Some ⎡𝓟⎤ | None => None end -∗?
-                            |={E1,E}=> Q' x)) i)%I
-  | 1.
+Global Instance elim_acc_at_None `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' P P'x V:
+  (∀ x, MakeEmbed (α x) (α' x)) → (∀ x, MakeEmbed (β x) (β' x)) →
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ _, None) P P'x →
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ _, None) (P V) (λ x, P'x x V).
 Proof.
-  rewrite /ElimAcc monPred_at_fupd=><-. apply bi.forall_mono=>x.
-  destruct (mγ x); simpl.
-  - rewrite monPred_at_fupd monPred_at_sep monPred_wand_force monPred_at_fupd !monPred_at_embed //.
-  - rewrite monPred_at_fupd monPred_at_sep monPred_at_fupd !monPred_at_embed //.
+  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ HEA) "Hinner Hacc".
+  iApply (HEA with "[Hinner]").
+  - iIntros (x).  iSpecialize ("Hinner" $! x). rewrite -Hα. by iIntros (? <-).
+  - iMod "Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]". iModIntro. iExists x.
+    rewrite -Hα -Hβ. iFrame. iIntros (? _) "Hβ". by iApply "Hclose".
 Qed.
-(* A separate, higher-priority instance for unit because otherwise unification
-fails. *)
-Global Instance elim_acc_at_fupd_unit `{BiFUpd PROP} E1 E2 E
-       M1 M2 α β mγ Q Q' i :
-  ElimAcc (X:=unit) M1 M2 α β mγ (|={E1,E}=> Q i)
-          (λ x, |={E2}=> β x ∗ (mγ x -∗? |={E1,E}=> Q' i))%I →
-  ElimAcc (X:=unit) M1 M2 α β mγ ((|={E1,E}=> Q) i)
-          (λ x, (|={E2}=> ⎡β x⎤ ∗
-                         (match mγ x with Some 𝓟 => Some ⎡𝓟⎤ | None => None end -∗?
-                            |={E1,E}=> Q')) i)%I
-  | 0.
-Proof. exact: elim_acc_at_fupd. Qed.
+Global Instance elim_acc_at_Some `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' γ γ' P P'x V:
+  (∀ x, MakeEmbed (α x) (α' x)) →
+  (∀ x, MakeEmbed (β x) (β' x)) →
+  (∀ x, MakeEmbed (γ x) (γ' x)) →
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ x, Some (γ' x)) P P'x →
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ x, Some (γ x)) (P V) (λ x, P'x x V).
+Proof.
+  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ Hγ HEA) "Hinner Hacc".
+  iApply (HEA with "[Hinner]").
+  - iIntros (x).  iSpecialize ("Hinner" $! x). rewrite -Hα. by iIntros (? <-).
+  - iMod "Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]". iModIntro. iExists x.
+    rewrite -Hα -Hβ -Hγ. iFrame. iIntros (? _) "Hβ /=". by iApply "Hclose".
+Qed.
 
 Global Instance add_modal_at_fupd_goal `{BiFUpd PROP} E1 E2 𝓟 𝓟' Q i :
   AddModal 𝓟 𝓟' (|={E1,E2}=> Q i) → AddModal 𝓟 𝓟' ((|={E1,E2}=> Q) i).
@@ -615,5 +611,4 @@ Proof.
   setoid_rewrite <-Hout.
   iIntros (?) "(?&?&HQ')". iApply H; [done|]. iFrame. iIntros (x) "?". by iApply "HQ'".
 Qed.
-
 End sbi.

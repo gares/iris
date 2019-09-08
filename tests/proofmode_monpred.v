@@ -1,4 +1,5 @@
 From iris.proofmode Require Import tactics monpred.
+From iris.base_logic.lib Require Import invariants.
 Set Ltac Backtrace.
 
 Section tests.
@@ -168,3 +169,27 @@ Section tests.
   Proof. iIntros "HP". iExists _. Fail iFrame "HP". Abort.
 
 End tests.
+
+Section tests_iprop.
+  Context {I : biIndex} `{!invG Σ}.
+
+  Local Notation monPred := (monPred I (iPropI Σ)).
+  Implicit Types P : iProp Σ.
+
+  Lemma test_iInv_0 N P:
+    embed (B:=monPred) (inv N (<pers> P)) ={⊤}=∗  ⎡▷ P⎤.
+  Proof.
+    iIntros "#H".
+    iInv N as "#H2". Show.
+    iModIntro. iSplit=>//. iModIntro. iModIntro; auto.
+  Qed.
+
+  Lemma test_iInv_0_with_close N P:
+    embed (B:=monPred) (inv N (<pers> P)) ={⊤}=∗ ⎡▷ P⎤.
+  Proof.
+    iIntros "#H".
+    iInv N as "#H2" "Hclose". Show.
+    iMod ("Hclose" with "H2").
+    iModIntro. iModIntro. by iNext.
+  Qed.
+End tests_iprop.
