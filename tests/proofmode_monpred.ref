@@ -62,3 +62,31 @@ In nested Ltac calls to "iFrame (constr)",
 "<iris.proofmode.ltac_tactics.iFrame_go>" and
 "<iris.proofmode.ltac_tactics.iFrameHyp>", last call failed.
 Tactic failure: iFrame: cannot frame (P i).
+1 subgoal
+  
+  I : biIndex
+  Σ : gFunctors
+  invG0 : invG Σ
+  N : namespace
+  P : iProp Σ
+  ============================
+  "H" : ⎡ inv N (<pers> P) ⎤
+  "H2" : ⎡ ▷ <pers> P ⎤
+  --------------------------------------□
+  |={⊤ ∖ ↑N}=> ⎡ ▷ <pers> P ⎤ ∗ (|={⊤}=> ⎡ ▷ P ⎤)
+  
+1 subgoal
+  
+  I : biIndex
+  Σ : gFunctors
+  invG0 : invG Σ
+  N : namespace
+  P : iProp Σ
+  ============================
+  "H" : ⎡ inv N (<pers> P) ⎤
+  "H2" : ⎡ ▷ <pers> P ⎤
+  --------------------------------------□
+  "Hclose" : ⎡ ▷ <pers> P ={⊤ ∖ ↑N,⊤}=∗ emp ⎤
+  --------------------------------------∗
+  |={⊤ ∖ ↑N,⊤}=> ⎡ ▷ P ⎤
+  
