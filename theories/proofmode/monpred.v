@@ -440,6 +440,13 @@ Global Instance elim_modal_at_bupd_hyp `{BiBUpd PROP} φ p p' P 𝓟 𝓟' 𝓠 
   ElimModal φ p p' (|==> 𝓟) 𝓟' 𝓠 𝓠' →
   ElimModal φ p p' ((|==> P) i) 𝓟' 𝓠 𝓠'.
 Proof. by rewrite /MakeMonPredAt /ElimModal monPred_at_bupd=><-. Qed.
+Global Instance elim_modal_at φ p p' 𝓟 𝓟' P P' V:
+  ElimModal φ p p' ⎡𝓟⎤ ⎡𝓟'⎤ P P' → ElimModal φ p p' 𝓟 𝓟' (P V) (P' V).
+Proof.
+  rewrite /ElimModal -!embed_intuitionistically_if.
+  iIntros (HH Hφ) "[? HP]". iApply HH; [done|]. iFrame. iIntros (? <-) "?".
+  by iApply "HP".
+Qed.
 
 Global Instance add_modal_at_bupd_goal `{BiBUpd PROP} φ 𝓟 𝓟' Q i :
   AddModal 𝓟 𝓟' (|==> Q i)%I → AddModal 𝓟 𝓟' ((|==> Q) i).
