@@ -3,6 +3,13 @@ way the logic is used on paper.  We also mention some significant changes in the
 Coq development, but not every API-breaking change is listed.  Changes marked
 `[#]` still need to be ported to the Iris Documentation LaTeX file(s).
 
+## Iris master
+
+**Changes in Coq:**
+
+* A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
+  Coq goal `big star of context ⊢ proof mode goal`.
+
 ## Iris 3.2.0 (released 2019-08-29)
 
 The highlight of this release is the completely re-engineered interactive proof

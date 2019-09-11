@@ -13,7 +13,8 @@ Declare Reduction pm_eval := cbv [
   envs_lookup envs_lookup_delete envs_delete envs_snoc envs_app
   envs_simple_replace envs_replace envs_split
   envs_clear_spatial envs_clear_intuitionistic envs_incr_counter
-  envs_split_go envs_split env_to_prop
+  envs_split_go envs_split
+  env_to_prop_go env_to_prop env_to_prop_and_go env_to_prop_and
   (* PM option combinators *)
   pm_option_bind pm_from_option pm_option_fun
 ].

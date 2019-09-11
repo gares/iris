@@ -8,6 +8,18 @@ of the tactics can be applied when the connective to be introduced or to be elim
 appears under a later, an update modality, or in the conclusion of a
 weakest precondition.
 
+Starting and stopping the proof mode
+------------------------------------
+
+- `iStartProof PROP` : start the proof mode by turning a Coq goal into a proof
+  mode entailment. This tactic is performed implicitly by all proof mode tactics
+  described in this file, and thus should generally not be used by hand. The
+  optional argument `PROP` can be used to explicitly specify which BI logic
+  `PROP : bi` should be used. This is useful to drop down in a layered logic,
+  e.g. to drop down from `monPred PROP` to `PROP`.
+- `iStopProof` to turn the proof mode entailment into an ordinary Coq goal
+  `big star of context ⊢ proof mode goal`.
+
 Applying hypotheses and lemmas
 ------------------------------
 
