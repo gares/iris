@@ -1,7 +1,7 @@
-From iris.base_logic.lib Require Export own.
 From stdpp Require Export coPset.
-From iris.algebra Require Import gmap auth agree gset coPset.
 From iris.proofmode Require Import tactics.
+From iris.algebra Require Import gmap auth agree gset coPset.
+From iris.base_logic.lib Require Export own.
 Set Default Proof Using "Type".
 
 (** All definitions in this file are internal to [fancy_updates] with the
@@ -129,9 +129,9 @@ Proof.
   rewrite /ownI /wsat -!lock.
   iIntros "(Hw & Hi & HiE)". iDestruct "Hw" as (I) "[Hw HI]".
   iDestruct (invariant_lookup I i P with "[$]") as (Q ?) "#HPQ".
-  iDestruct (big_opM_delete _ _ i with "HI") as "[[[HQ $]|HiE'] HI]"; eauto.
+  iDestruct (big_sepM_delete _ _ i with "HI") as "[[[HQ $]|HiE'] HI]"; eauto.
   - iSplitR "HQ"; last by iNext; iRewrite -"HPQ".
-    iExists I. iFrame "Hw". iApply (big_opM_delete _ _ i); eauto.
+    iExists I. iFrame "Hw". iApply (big_sepM_delete _ _ i); eauto.
     iFrame "HI"; eauto.
   - iDestruct (ownE_singleton_twice with "[$HiE $HiE']") as %[].
 Qed.
@@ -140,9 +140,9 @@ Proof.
   rewrite /ownI /wsat -!lock.
   iIntros "(Hw & Hi & HP & HiD)". iDestruct "Hw" as (I) "[Hw HI]".
   iDestruct (invariant_lookup with "[$]") as (Q ?) "#HPQ".
-  iDestruct (big_opM_delete _ _ i with "HI") as "[[[HQ ?]|$] HI]"; eauto.
+  iDestruct (big_sepM_delete _ _ i with "HI") as "[[[HQ ?]|$] HI]"; eauto.
   - iDestruct (ownD_singleton_twice with "[$]") as %[].
-  - iExists I. iFrame "Hw". iApply (big_opM_delete _ _ i); eauto.
+  - iExists I. iFrame "Hw". iApply (big_sepM_delete _ _ i); eauto.
     iFrame "HI". iLeft. iFrame "HiD". by iNext; iRewrite "HPQ".
 Qed.
 
@@ -165,7 +165,7 @@ Proof.
   iModIntro; iExists i;  iSplit; [done|]. rewrite /ownI; iFrame "HiP".
   iExists (<[i:=P]>I); iSplitL "Hw".
   { by rewrite fmap_insert insert_singleton_op ?lookup_fmap ?HIi. }
-  iApply (big_opM_insert _ I); first done.
+  iApply (big_sepM_insert _ I); first done.
   iFrame "HI". iLeft. by rewrite /ownD; iFrame.
 Qed.
 
@@ -188,7 +188,7 @@ Proof.
   rewrite -/(ownD _). iFrame "HD".
   iIntros "HE". iExists (<[i:=P]>I); iSplitL "Hw".
   { by rewrite fmap_insert insert_singleton_op ?lookup_fmap ?HIi. }
-  iApply (big_opM_insert _ I); first done.
+  iApply (big_sepM_insert _ I); first done.
   iFrame "HI". by iRight.
 Qed.
 End wsat.

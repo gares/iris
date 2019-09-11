@@ -1,7 +1,6 @@
 (** Some derived lemmas for ectx-based languages *)
-From iris.program_logic Require Export ectx_language.
-From iris.program_logic Require Export total_weakestpre total_lifting.
 From iris.proofmode Require Import tactics.
+From iris.program_logic Require Export ectx_language total_weakestpre total_lifting.
 Set Default Proof Using "Type".
 
 Section wp.

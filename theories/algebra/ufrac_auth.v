@@ -16,11 +16,9 @@ difference:
 - We no longer have the [◯U{1} a] is the exclusive fragmental element (cf.
   [frac_auth_frag_validN_op_1_l]).
 *)
-From iris.algebra Require Export auth frac.
-From iris.algebra Require Import ufrac.
-From iris.algebra Require Export updates local_updates.
-From iris.algebra Require Import proofmode_classes.
 From Coq Require Import QArith Qcanon.
+From iris.algebra Require Export auth frac updates local_updates.
+From iris.algebra Require Import ufrac proofmode_classes.
 
 Definition ufrac_authR (A : cmraT) : cmraT :=
   authR (optionUR (prodR ufracR A)).

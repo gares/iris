@@ -1,8 +1,8 @@
-From iris.program_logic Require Export language ectx_language ectxi_language.
-From iris.heap_lang Require Export locations.
-From iris.algebra Require Export ofe.
 From stdpp Require Export binders strings.
 From stdpp Require Import gmap.
+From iris.algebra Require Export ofe.
+From iris.program_logic Require Export language ectx_language ectxi_language.
+From iris.heap_lang Require Export locations.
 Set Default Proof Using "Type".
 
 (** heap_lang.  A fairly simple language used for common Iris examples.

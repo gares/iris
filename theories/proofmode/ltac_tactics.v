@@ -1,9 +1,8 @@
-From iris.proofmode Require Import coq_tactics reduction.
-From iris.proofmode Require Import base intro_patterns spec_patterns sel_patterns.
+From stdpp Require Import namespaces hlist pretty.
 From iris.bi Require Export bi telescopes.
-From stdpp Require Import namespaces.
+From iris.proofmode Require Import base intro_patterns spec_patterns
+                                   sel_patterns coq_tactics reduction.
 From iris.proofmode Require Export classes notation.
-From stdpp Require Import hlist pretty.
 Set Default Proof Using "Type".
 Export ident.
 

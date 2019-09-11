@@ -1,5 +1,5 @@
-From iris.base_logic.lib Require Export invariants.
 From iris.proofmode Require Import tactics.
+From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 
 Definition vs `{!invG Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=

@@ -1,5 +1,5 @@
-From iris.heap_lang Require Export lifting notation.
 From iris.base_logic.lib Require Export invariants.
+From iris.heap_lang Require Export lifting notation.
 Set Default Proof Using "Type".
 
 Structure lock Σ `{!heapG Σ} := Lock {
@@ -36,4 +36,3 @@ Existing Instances is_lock_ne is_lock_persistent locked_timeless.
 
 Instance is_lock_proper Σ `{!heapG Σ} (L: lock Σ) N γ lk:
   Proper ((≡) ==> (≡)) (is_lock L N γ lk) := ne_proper _.
-

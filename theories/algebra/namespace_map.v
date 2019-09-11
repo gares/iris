@@ -1,7 +1,6 @@
-From iris.algebra Require Export gmap coPset local_updates.
 From stdpp Require Import namespaces.
-From iris.algebra Require Import updates.
-From iris.algebra Require Import proofmode_classes.
+From iris.algebra Require Export gmap coPset local_updates.
+From iris.algebra Require Import updates proofmode_classes.
 Set Default Proof Using "Type".
 
 (** The camera [namespace_map A] over a camera [A] provides the connectives

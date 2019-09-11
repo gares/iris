@@ -1,5 +1,5 @@
-From iris.bi Require Export bi.
 From stdpp Require Import namespaces.
+From iris.bi Require Export bi.
 Set Default Proof Using "Type".
 Import bi.
 

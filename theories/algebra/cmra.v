@@ -1,5 +1,5 @@
-From iris.algebra Require Export ofe monoid.
 From stdpp Require Import finite.
+From iris.algebra Require Export ofe monoid.
 Set Default Proof Using "Type".
 
 Class PCore (A : Type) := pcore : A → option A.

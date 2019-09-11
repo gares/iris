@@ -1,7 +1,7 @@
+From iris.proofmode Require Import tactics.
 From iris.algebra Require Export frac agree local_updates.
 From iris.algebra Require Import proofmode_classes.
 From iris.base_logic Require Import base_logic.
-From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
 (** Authoritative CMRA with fractional authoritative parts. [auth] has 3 types

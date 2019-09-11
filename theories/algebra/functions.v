@@ -1,6 +1,6 @@
+From stdpp Require Import finite.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates.
-From stdpp Require Import finite.
 Set Default Proof Using "Type".
 
 Definition discrete_fun_insert `{EqDecision A} {B : A → ofeT}

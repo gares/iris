@@ -1,5 +1,5 @@
-From iris.algebra Require Export monoid.
 From stdpp Require Export functions gmap gmultiset.
+From iris.algebra Require Export monoid.
 Set Default Proof Using "Type*".
 Local Existing Instances monoid_ne monoid_assoc monoid_comm
   monoid_left_id monoid_right_id monoid_proper

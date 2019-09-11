@@ -1,6 +1,6 @@
+From stdpp Require Import coPset namespaces.
 From iris.bi Require Export bi updates laterable.
 From iris.bi.lib Require Import fixpoint.
-From stdpp Require Import coPset namespaces.
 From iris.proofmode Require Import coq_tactics tactics reduction.
 Set Default Proof Using "Type".
 

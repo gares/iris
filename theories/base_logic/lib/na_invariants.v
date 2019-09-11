@@ -1,6 +1,6 @@
-From iris.base_logic.lib Require Export invariants.
-From iris.algebra Require Import gset coPset.
 From iris.proofmode Require Import tactics.
+From iris.algebra Require Import gset coPset.
+From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 Import uPred.
 
