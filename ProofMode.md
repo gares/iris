@@ -59,7 +59,7 @@ Introduction of logical connectives
 -----------------------------------
 
 - `iPureIntro` : turn a pure goal into a Coq goal. This tactic works for goals
-  of the shape `⌜φ⌝`, `a ≡ b` on discrete COFEs, and `✓ a` on discrete CMRAs.
+  of the shape `⌜φ⌝`, `a ≡ b` on discrete OFEs, and `✓ a` on discrete cameras.
 
 - `iLeft` : left introduction of disjunction.
 - `iRight` : right introduction of disjunction.
