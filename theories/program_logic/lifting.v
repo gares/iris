@@ -1,5 +1,5 @@
-From iris.program_logic Require Export weakestpre.
 From iris.proofmode Require Import tactics.
+From iris.program_logic Require Export weakestpre.
 Set Default Proof Using "Type".
 
 Section lifting.

@@ -1,6 +1,6 @@
+From iris.proofmode Require Export tactics.
 From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Export lang.
-From iris.proofmode Require Export tactics.
 From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".
 

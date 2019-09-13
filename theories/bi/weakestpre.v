@@ -1,6 +1,6 @@
 From stdpp Require Export coPset.
-From iris.program_logic Require Import language.
 From iris.bi Require Import interface derived_connectives.
+From iris.program_logic Require Import language.
 
 Inductive stuckness := NotStuck | MaybeStuck.
 

@@ -43,7 +43,7 @@ Proof.
   - exact: @exist_intro.
   - exact: @exist_elim.
   - exact: sep_mono.
-  - exact: True_sep_1. 
+  - exact: True_sep_1.
   - exact: True_sep_2.
   - exact: sep_comm'.
   - exact: sep_assoc'.

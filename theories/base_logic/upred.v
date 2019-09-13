@@ -1,7 +1,6 @@
-From iris.algebra Require Export cmra updates.
-From iris.bi Require Import notation.
 From stdpp Require Import finite.
-From Coq.Init Require Import Nat.
+From iris.bi Require Import notation.
+From iris.algebra Require Export cmra updates.
 Set Default Proof Using "Type".
 Local Hint Extern 1 (_ ≼ _) => etrans; [eassumption|] : core.
 Local Hint Extern 1 (_ ≼ _) => etrans; [|eassumption] : core.

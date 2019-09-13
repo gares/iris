@@ -1,7 +1,7 @@
-From iris.base_logic Require Export bi.
 From iris.bi Require Export bi.
+From iris.base_logic Require Export bi.
 Set Default Proof Using "Type".
-Import bi base_logic.bi.uPred.
+Import bi.bi base_logic.bi.uPred.
 
 (** Derived laws for Iris-specific primitive connectives (own, valid).
     This file does NOT unseal! *)

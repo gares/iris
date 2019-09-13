@@ -6,6 +6,24 @@ This complements the tactic documentation for the [proof mode](ProofMode.md) and
 [HeapLang](HeapLang.md) as well as the documentation of syntactic conventions in
 the [style guide](StyleGuide.md).
 
+## Order of `Requires`
+
+In Coq, declarations in modules imported later may override the
+previous definition. Therefore, in order to make sure the most
+relevant declarations and notations always take priority, we recommend
+importing dependencies from the furthest to the closest.
+
+In particular, when importing Iris, Stdpp and Coq stdlib modules, we
+recommend importing in the following order:
+- Coq
+- stdpp
+- iris.bi
+- iris.proofmode
+- iris.algebra
+- iris.base_logic
+- iris.program_logic
+- iris.heap_lang
+
 ## Combinators for functors
 
 In Iris, the type of propositions [iProp] is described by the solution to the

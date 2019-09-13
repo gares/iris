@@ -1,5 +1,5 @@
-From iris.algebra Require Import monoid.
 From iris.bi Require Import interface derived_laws_sbi big_op plainly updates.
+From iris.algebra Require Import monoid.
 
 Class Embed (A B : Type) := embed : A → B.
 Arguments embed {_ _ _} _%I : simpl never.

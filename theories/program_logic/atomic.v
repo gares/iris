@@ -1,8 +1,8 @@
 From stdpp Require Import namespaces.
-From iris.program_logic Require Export weakestpre.
-From iris.proofmode Require Import tactics classes.
-From iris.bi.lib Require Export atomic.
 From iris.bi Require Import telescopes.
+From iris.bi.lib Require Export atomic.
+From iris.proofmode Require Import tactics classes.
+From iris.program_logic Require Export weakestpre.
 Set Default Proof Using "Type".
 
 (* This hard-codes the inner mask to be empty, because we have yet to find an

@@ -1,8 +1,8 @@
+From stdpp Require Import fin_maps.
+From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lifting.
 From iris.heap_lang Require Import tactics notation.
-From iris.proofmode Require Import tactics.
-From stdpp Require Import fin_maps.
 Set Default Proof Using "Type".
 
 (** This file defines the [array] connective, a version of [mapsto] that works

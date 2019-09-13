@@ -1,9 +1,9 @@
 (* This file shows that the fancy update can be encoded in terms of the
 view shift, and that the laws of the fancy update can be derived from the
 laws of the view shift. *)
-From iris.base_logic Require Export base_logic.
-From iris.proofmode Require Import tactics.
 From stdpp Require Export coPset.
+From iris.proofmode Require Import tactics.
+From iris.base_logic Require Export base_logic.
 Set Default Proof Using "Type*".
 
 Section fupd.

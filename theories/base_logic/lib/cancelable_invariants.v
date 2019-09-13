@@ -1,7 +1,7 @@
-From iris.base_logic.lib Require Export invariants.
 From iris.bi.lib Require Import fractional.
-From iris.algebra Require Export frac.
 From iris.proofmode Require Import tactics.
+From iris.algebra Require Export frac.
+From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 Import uPred.
 

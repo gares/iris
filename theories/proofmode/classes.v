@@ -1,7 +1,7 @@
+From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
 From iris.proofmode Require Import base.
 From iris.proofmode Require Export modalities.
-From stdpp Require Import namespaces.
 Set Default Proof Using "Type".
 Import bi.
 

@@ -1,8 +1,7 @@
-From iris.algebra Require Export cmra.
 From stdpp Require Export list gmap.
-From iris.algebra Require Import updates local_updates.
+From iris.algebra Require Export cmra.
+From iris.algebra Require Import updates local_updates proofmode_classes.
 From iris.base_logic Require Import base_logic.
-From iris.algebra Require Import proofmode_classes.
 Set Default Proof Using "Type".
 
 Section cofe.

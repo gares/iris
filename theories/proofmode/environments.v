@@ -1,7 +1,7 @@
-From iris.proofmode Require Import base.
-From iris.algebra Require Export base.
 From iris.bi Require Export bi.
 From iris.bi Require Import tactics.
+From iris.proofmode Require Import base.
+From iris.algebra Require Export base.
 Set Default Proof Using "Type".
 Import bi.
 

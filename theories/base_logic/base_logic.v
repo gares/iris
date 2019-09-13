@@ -1,5 +1,5 @@
-From iris.base_logic Require Export derived proofmode.
 From iris.bi Require Export bi.
+From iris.base_logic Require Export derived proofmode.
 Set Default Proof Using "Type".
 
 (* The trick of having multiple [uPred] modules, which are all exported in

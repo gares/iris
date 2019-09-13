@@ -1,7 +1,9 @@
+From iris.proofmode Require Import base tactics classes.
 From iris.base_logic.lib Require Export fancy_updates.
 From iris.program_logic Require Export language.
+(* FIXME: If we import iris.bi.weakestpre earlier texan triples do not
+   get pretty-printed correctly. *)
 From iris.bi Require Export weakestpre.
-From iris.proofmode Require Import base tactics classes.
 Set Default Proof Using "Type".
 Import uPred.
 

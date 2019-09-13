@@ -3,8 +3,8 @@
 Interactive Proofs in Higher-Order Concurrent Separation Logic
 Robbert Krebbers, Amin Timany and Lars Birkedal
 POPL 2017 *)
-From iris.base_logic Require Import base_logic.
 From iris.proofmode Require Import tactics.
+From iris.base_logic Require Import base_logic.
 From iris.program_logic Require Export hoare.
 From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".

@@ -1,7 +1,7 @@
-From iris.program_logic Require Export weakestpre total_weakestpre.
-From iris.program_logic Require Import atomic.
 From iris.proofmode Require Import coq_tactics reduction.
 From iris.proofmode Require Export tactics.
+From iris.program_logic Require Export weakestpre total_weakestpre.
+From iris.program_logic Require Import atomic.
 From iris.heap_lang Require Export tactics lifting array.
 From iris.heap_lang Require Import notation.
 Set Default Proof Using "Type".

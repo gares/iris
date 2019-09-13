@@ -1,8 +1,8 @@
+From iris.bi.lib Require Import fractional.
+From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export invariants.
 From iris.program_logic Require Export atomic.
-From iris.proofmode Require Import tactics.
 From iris.heap_lang Require Import proofmode notation atomic_heap par.
-From iris.bi.lib Require Import fractional.
 Set Default Proof Using "Type".
 
 (** Show that implementing fetch-and-add on top of CAS preserves logical

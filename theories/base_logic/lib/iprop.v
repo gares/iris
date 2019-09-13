@@ -1,6 +1,6 @@
-From iris.base_logic Require Export base_logic.
 From iris.algebra Require Import gmap.
 From iris.algebra Require cofe_solver.
+From iris.base_logic Require Export base_logic.
 Set Default Proof Using "Type".
 
 (** In this file we construct the type [iProp] of propositions of the Iris

@@ -1,5 +1,5 @@
-From iris.base_logic Require Export base_logic.
 From iris.proofmode Require Import tactics.
+From iris.base_logic Require Export base_logic.
 
 (** This file contains an alternative version of basic updates, that is
 expression in terms of just the plain modality [■]. *)

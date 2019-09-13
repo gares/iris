@@ -1,6 +1,6 @@
-From iris.base_logic.lib Require Export invariants.
-From iris.algebra Require Import excl auth gmap agree.
 From iris.proofmode Require Import tactics.
+From iris.algebra Require Import excl auth gmap agree.
+From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 Import uPred.
 
@@ -131,7 +131,7 @@ Proof.
   iIntros (??) "[#HγQ Hinv] H". iDestruct "H" as (Φ) "[#HeqP Hf]".
   iExists ([∗ map] γ'↦_ ∈ delete γ f, Φ γ')%I.
   iInv N as (b) "[>Hγ _]".
-  iDestruct (big_opM_delete _ f _ false with "Hf")
+  iDestruct (big_sepM_delete _ f _ false with "Hf")
     as "[[>Hγ' #[HγΦ ?]] ?]"; first done.
   iDestruct (box_own_auth_agree γ b false with "[-]") as %->; first by iFrame.
   iModIntro. iSplitL "Hγ"; first iExists false; eauto.
@@ -148,7 +148,7 @@ Lemma slice_fill E q f γ P Q :
 Proof.
   iIntros (??) "#[HγQ Hinv] HQ H"; iDestruct "H" as (Φ) "[#HeqP Hf]".
   iInv N as (b') "[>Hγ _]".
-  iDestruct (big_opM_delete _ f _ false with "Hf")
+  iDestruct (big_sepM_delete _ f _ false with "Hf")
     as "[[>Hγ' #[HγΦ Hinv']] ?]"; first done.
   iMod (box_own_auth_update γ b' false true with "[$Hγ $Hγ']") as "[Hγ Hγ']".
   iModIntro. iSplitL "Hγ HQ"; first (iNext; iExists true; by iFrame).
@@ -165,7 +165,7 @@ Lemma slice_empty E q f P Q γ :
 Proof.
   iIntros (??) "#[HγQ Hinv] H"; iDestruct "H" as (Φ) "[#HeqP Hf]".
   iInv N as (b) "[>Hγ HQ]".
-  iDestruct (big_opM_delete _ f with "Hf")
+  iDestruct (big_sepM_delete _ f with "Hf")
     as "[[>Hγ' #[HγΦ Hinv']] ?]"; first done.
   iDestruct (box_own_auth_agree γ b true with "[-]") as %->; first by iFrame.
   iFrame "HQ".

@@ -5,8 +5,8 @@ Separation Logic
 Robbert Krebbers, Jacques-Henri Jourdan, Ralf Jung, Joseph Tassarotti,
 Jan-Oliver Kaiser, Amin Timany, Arthur Charguéraud, Derek Dreyer
 ICFP 2018 *)
-From iris.proofmode Require Import tactics monpred.
 From iris.bi Require Import monpred.
+From iris.proofmode Require Import tactics monpred.
 
 Lemma example_1 {PROP : bi} {A : Type} (P : PROP) (Φ Ψ : A → PROP) :
   P ∗ (∃ a, Φ a ∨ Ψ a) -∗ ∃ a, (P ∗ Φ a) ∨ (P ∗ Ψ a).
