@@ -121,12 +121,13 @@ Module Type iProp_solution_sig.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
     discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
-  Notation iProp Σ := (uPredO (iResUR Σ)).
+  Notation iProp Σ := (uPred (iResUR Σ)).
+  Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
   Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
-  Parameter iProp_unfold: ∀ {Σ}, iProp Σ -n> iPreProp Σ.
-  Parameter iProp_fold: ∀ {Σ}, iPreProp Σ -n> iProp Σ.
+  Parameter iProp_unfold: ∀ {Σ}, iPropO Σ -n> iPreProp Σ.
+  Parameter iProp_fold: ∀ {Σ}, iPreProp Σ -n> iPropO Σ.
   Parameter iProp_fold_unfold: ∀ {Σ} (P : iProp Σ),
     iProp_fold (iProp_unfold P) ≡ P.
   Parameter iProp_unfold_fold: ∀ {Σ} (P : iPreProp Σ),
@@ -142,11 +143,12 @@ Module Export iProp_solution : iProp_solution_sig.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
     discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
-  Notation iProp Σ := (uPredO (iResUR Σ)).
+  Notation iProp Σ := (uPred (iResUR Σ)).
+  Notation iPropO Σ := (uPredO (iResUR Σ)).
 
-  Definition iProp_unfold {Σ} : iProp Σ -n> iPreProp Σ :=
+  Definition iProp_unfold {Σ} : iPropO Σ -n> iPreProp Σ :=
     solution_fold (iProp_result Σ).
-  Definition iProp_fold {Σ} : iPreProp Σ -n> iProp Σ := solution_unfold _.
+  Definition iProp_fold {Σ} : iPreProp Σ -n> iPropO Σ := solution_unfold _.
   Lemma iProp_fold_unfold {Σ} (P : iProp Σ) : iProp_fold (iProp_unfold P) ≡ P.
   Proof. apply solution_unfold_fold. Qed.
   Lemma iProp_unfold_fold {Σ} (P : iPreProp Σ) : iProp_unfold (iProp_fold P) ≡ P.

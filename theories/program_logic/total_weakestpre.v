@@ -37,8 +37,8 @@ Qed.
 
 (* Uncurry [twp_pre] and equip its type with an OFE structure *)
 Definition twp_pre' `{!irisG Λ Σ} (s : stuckness) :
-  (prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iProp Σ) → iProp Σ) →
-  prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iProp Σ) → iProp Σ :=
+  (prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ) →
+  prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ :=
     curry3 ∘ twp_pre s ∘ uncurry3.
 
 Local Instance twp_pre_mono' `{!irisG Λ Σ} s : BiMonoPred (twp_pre' s).
@@ -76,7 +76,7 @@ Lemma twp_ind s Ψ :
 Proof.
   iIntros (HΨ). iIntros "#IH" (e E Φ) "H". rewrite twp_eq.
   set (Ψ' := curry3 Ψ :
-    prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iProp Σ) → iProp Σ).
+    prodO (prodO (leibnizO coPset) (exprO Λ)) (val Λ -d> iPropO Σ) → iPropO Σ).
   assert (NonExpansive Ψ').
   { intros n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=. by apply HΨ. }
