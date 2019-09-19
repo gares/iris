@@ -25,8 +25,8 @@ Class irisG (Λ : language) (Σ : gFunctors) := IrisG {
 Global Opaque iris_invG.
 
 Definition wp_pre `{!irisG Λ Σ} (s : stuckness)
-    (wp : coPset -d> expr Λ -d> (val Λ -d> iProp Σ) -d> iProp Σ) :
-    coPset -d> expr Λ -d> (val Λ -d> iProp Σ) -d> iProp Σ := λ E e1 Φ,
+    (wp : coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ) :
+    coPset -d> expr Λ -d> (val Λ -d> iPropO Σ) -d> iPropO Σ := λ E e1 Φ,
   match to_val e1 with
   | Some v => |={E}=> Φ v
   | None => ∀ σ1 κ κs n,

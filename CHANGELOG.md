@@ -9,6 +9,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 * A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
   Coq goal `big star of context ⊢ proof mode goal`.
+* Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
+  Introduce `iProp` for the `Type` carrier of `iPropO`.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

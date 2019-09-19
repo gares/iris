@@ -1,11 +1,11 @@
 From iris.base_logic.lib Require Import invariants.
 
-Instance test_cofe {Σ} : Cofe (iPreProp Σ) := _.
+Instance test_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
 Section tests.
   Context `{!invG Σ}.
 
-  Program Definition test : (iProp Σ -n> iProp Σ) -n> (iProp Σ -n> iProp Σ) :=
+  Program Definition test : (iPropO Σ -n> iPropO Σ) -n> (iPropO Σ -n> iPropO Σ) :=
     λne P v, (▷ (P v))%I.
   Solve Obligations with solve_proper.
 
