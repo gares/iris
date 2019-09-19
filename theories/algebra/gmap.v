@@ -195,7 +195,7 @@ Global Instance lookup_op_homomorphism :
   MonoidHomomorphism op op (≡) (lookup i : gmap K A → option A).
 Proof. split; [split|]; try apply _. intros m1 m2; by rewrite lookup_op. done. Qed.
 
-Lemma lookup_opM m1 mm2 i : (m1 ⋅? mm2) !! i = m1 !! i ⋅ (mm2 ≫= (!! i)).
+Lemma lookup_opM m1 mm2 i : (m1 ⋅? mm2) !! i = m1 !! i ⋅ (mm2 ≫= (.!! i)).
 Proof. destruct mm2; by rewrite /= ?lookup_op ?right_id_L. Qed.
 
 Lemma lookup_validN_Some n m i x : ✓{n} m → m !! i ≡{n}≡ Some x → ✓{n} x.

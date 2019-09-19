@@ -220,7 +220,7 @@ Qed.
 
 Lemma box_empty E f P :
   ↑N ⊆ E →
-  map_Forall (λ _, (true =)) f →
+  map_Forall (λ _, (true =.)) f →
   box N f P ={E}=∗ ▷ P ∗ box N (const false <$> f) P.
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".

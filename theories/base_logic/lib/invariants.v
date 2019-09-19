@@ -53,7 +53,7 @@ Qed.
 Lemma inv_alloc N E P : ▷ P ={E}=∗ inv N P.
 Proof.
   rewrite inv_eq /inv_def uPred_fupd_eq. iIntros "HP [Hw $]".
-  iMod (ownI_alloc (∈ (↑N : coPset)) P with "[$HP $Hw]")
+  iMod (ownI_alloc (.∈ (↑N : coPset)) P with "[$HP $Hw]")
     as (i ?) "[$ ?]"; auto using fresh_inv_name.
   do 2 iModIntro. iExists i, P. rewrite -(iff_refl True%I). auto.
 Qed.
@@ -62,7 +62,7 @@ Lemma inv_alloc_open N E P :
   ↑N ⊆ E → (|={E, E∖↑N}=> inv N P ∗ (▷P ={E∖↑N, E}=∗ True))%I.
 Proof.
   rewrite inv_eq /inv_def uPred_fupd_eq. iIntros (Sub) "[Hw HE]".
-  iMod (ownI_alloc_open (∈ (↑N : coPset)) P with "Hw")
+  iMod (ownI_alloc_open (.∈ (↑N : coPset)) P with "Hw")
     as (i ?) "(Hw & #Hi & HD)"; auto using fresh_inv_name.
   iAssert (ownE {[i]} ∗ ownE (↑ N ∖ {[i]}) ∗ ownE (E ∖ ↑ N))%I
     with "[HE]" as "(HEi & HEN\i & HE\N)".

@@ -32,7 +32,7 @@ Proof.
   rewrite /cmra_update=> x x' Hx y y' Hy; split=> ? n mz ?; setoid_subst; auto.
 Qed.
 
-Lemma cmra_update_updateP x y : x ~~> y ↔ x ~~>: (y =).
+Lemma cmra_update_updateP x y : x ~~> y ↔ x ~~>: (y =.).
 Proof. split=> Hup n z ?; eauto. destruct (Hup n z) as (?&<-&?); auto. Qed.
 Lemma cmra_updateP_id (P : A → Prop) x : P x → x ~~>: P.
 Proof. intros ? n mz ?; eauto. Qed.
@@ -42,7 +42,7 @@ Proof. intros Hx Hy n mz ?. destruct (Hx n mz) as (y&?&?); naive_solver. Qed.
 Lemma cmra_updateP_compose_l (Q : A → Prop) x y : x ~~> y → y ~~>: Q → x ~~>: Q.
 Proof.
   rewrite cmra_update_updateP.
-  intros; apply cmra_updateP_compose with (y =); naive_solver.
+  intros; apply cmra_updateP_compose with (y =.); naive_solver.
 Qed.
 Lemma cmra_updateP_weaken (P Q : A → Prop) x :
   x ~~>: P → (∀ y, P y → Q y) → x ~~>: Q.

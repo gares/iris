@@ -657,7 +657,7 @@ Inductive head_step : expr → state → list observation → expr → state →
      p ∉ σ.(used_proph_id) →
      head_step NewProph σ
                []
-               (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪) σ)
+               (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪.) σ)
                []
   | ResolveS p v e σ w σ' κs ts :
      head_step e σ κs (Val v) σ' ts →
@@ -698,7 +698,7 @@ Qed.
 
 Lemma new_proph_id_fresh σ :
   let p := fresh σ.(used_proph_id) in
-  head_step NewProph σ [] (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪) σ) [].
+  head_step NewProph σ [] (Val $ LitV $ LitProphecy p) (state_upd_used_proph_id ({[ p ]} ∪.) σ) [].
 Proof. constructor. apply is_fresh. Qed.
 
 Lemma heap_lang_mixin : EctxiLanguageMixin of_val to_val fill_item head_step.

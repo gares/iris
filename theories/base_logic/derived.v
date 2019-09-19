@@ -55,7 +55,7 @@ Proof.
 Qed.
 Lemma bupd_ownM_update x y : x ~~> y → uPred_ownM x ⊢ |==> uPred_ownM y.
 Proof.
-  intros; rewrite (bupd_ownM_updateP _ (y =)); last by apply cmra_update_updateP.
+  intros; rewrite (bupd_ownM_updateP _ (y =.)); last by apply cmra_update_updateP.
   by apply bupd_mono, exist_elim=> y'; apply pure_elim_l=> ->.
 Qed.
 

@@ -278,7 +278,7 @@ Section properties.
   Local Arguments cmra_op _ !_ !_ / : simpl nomatch.
   Local Arguments ucmra_op _ !_ !_ / : simpl nomatch.
 
-  Lemma list_lookup_opM l mk i : (l ⋅? mk) !! i = l !! i ⋅ (mk ≫= (!! i)).
+  Lemma list_lookup_opM l mk i : (l ⋅? mk) !! i = l !! i ⋅ (mk ≫= (.!! i)).
   Proof. destruct mk; by rewrite /= ?list_lookup_op ?right_id_L. Qed.
 
   Global Instance list_op_nil_l : LeftId (=) (@nil A) op.
@@ -426,7 +426,7 @@ Section properties.
 
 (* FIXME
   Lemma list_middle_local_update l1 l2 x y ml :
-    x ~l~> y @ ml ≫= (!! length l1) →
+    x ~l~> y @ ml ≫= (.!! length l1) →
     l1 ++ x :: l2 ~l~> l1 ++ y :: l2 @ ml.
   Proof.
     intros [Hxy Hxy']; split.
@@ -446,7 +446,7 @@ Section properties.
         rewrite !list_lookup_opM !lookup_app_r !app_length //=; lia.
   Qed.
   Lemma list_singleton_local_update i x y ml :
-    x ~l~> y @ ml ≫= (!! i) → {[ i := x ]} ~l~> {[ i := y ]} @ ml.
+    x ~l~> y @ ml ≫= (.!! i) → {[ i := x ]} ~l~> {[ i := y ]} @ ml.
   Proof. intros; apply list_middle_local_update. by rewrite replicate_length. Qed.
 *)
 

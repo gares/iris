@@ -52,7 +52,7 @@ Section gmultiset.
 
   Global Instance gmultiset_cancelable X : Cancelable X.
   Proof.
-    apply: discrete_cancelable=> Y Z _ ?. fold_leibniz. by apply (inj (X ⊎)).
+    apply: discrete_cancelable=> Y Z _ ?. fold_leibniz. by apply (inj (X ⊎.)).
   Qed.
 
   Lemma gmultiset_opM X mY : X ⋅? mY = X ⊎ default ∅ mY.
@@ -64,7 +64,7 @@ Section gmultiset.
   Lemma gmultiset_local_update X Y X' Y' : X ⊎ Y' = X' ⊎ Y → (X,Y) ~l~> (X', Y').
   Proof.
     intros HXY. rewrite local_update_unital_discrete=> Z' _. intros ->%leibniz_equiv.
-    split; first done. apply leibniz_equiv_iff, (inj (⊎ Y)).
+    split; first done. apply leibniz_equiv_iff, (inj (.⊎ Y)).
     rewrite -HXY !gmultiset_op_disj_union.
     by rewrite -(comm_L _ Y) (comm_L _ Y') assoc_L.
   Qed.

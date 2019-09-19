@@ -184,7 +184,7 @@ Qed.
 
 Lemma own_update γ a a' : a ~~> a' → own γ a ==∗ own γ a'.
 Proof.
-  intros; rewrite (own_updateP (a' =)); last by apply cmra_update_updateP.
+  intros; rewrite (own_updateP (a' =.)); last by apply cmra_update_updateP.
   by apply bupd_mono, exist_elim=> a''; apply pure_elim_l=> ->.
 Qed.
 Lemma own_update_2 γ a1 a2 a' :
