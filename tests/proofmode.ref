@@ -433,6 +433,11 @@ Tactic failure: iFrame: cannot frame Q.
   ={E1,E2}=∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
              ={E1,E2}=∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ
   
+"iStopProof_not_proofmode"
+     : string
+The command has indeed failed with message:
+Ltac call to "iStopProof" failed.
+Tactic failure: iStopProof: proofmode not started.
 "iAlways_spatial_non_empty"
      : string
 The command has indeed failed with message:

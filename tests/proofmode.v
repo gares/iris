@@ -44,6 +44,9 @@ Definition bar : PROP := (∀ P, foo P)%I.
 Lemma test_unfold_constants : bar.
 Proof. iIntros (P) "HP //". Qed.
 
+Lemma test_iStopProof Q : emp -∗ Q -∗ Q.
+Proof. iIntros "#H1 H2". iStopProof. by rewrite bi.sep_elim_r. Qed.
+
 Lemma test_iRewrite {A : ofeT} (x y : A) P :
   □ (∀ z, P -∗ <affine> (z ≡ y)) -∗ (P -∗ P ∧ (x,x) ≡ (y,x)).
 Proof.
@@ -764,6 +767,10 @@ End printing_tests.
 Section error_tests.
 Context {PROP : sbi}.
 Implicit Types P Q R : PROP.
+
+Check "iStopProof_not_proofmode".
+Lemma iStopProof_not_proofmode : 10 = 10.
+Proof. Fail iStopProof. Abort.
 
 Check "iAlways_spatial_non_empty".
 Lemma iAlways_spatial_non_empty P :
