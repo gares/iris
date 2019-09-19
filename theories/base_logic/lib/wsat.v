@@ -9,7 +9,7 @@ exception of what's in the [invG] module. The module [invG] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
 Module invG.
   Class invG (Σ : gFunctors) : Set := WsatG {
-    inv_inG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPreProp Σ)))));
+    inv_inG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPrePropO Σ)))));
     enabled_inG :> inG Σ coPset_disjR;
     disabled_inG :> inG Σ (gset_disjR positive);
     invariant_name : gname;
@@ -23,7 +23,7 @@ Module invG.
       GFunctor (gset_disjUR positive)].
 
   Class invPreG (Σ : gFunctors) : Set := WsatPreG {
-    inv_inPreG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPreProp Σ)))));
+    inv_inPreG :> inG Σ (authR (gmapUR positive (agreeR (laterO (iPrePropO Σ)))));
     enabled_inPreG :> inG Σ coPset_disjR;
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.
@@ -33,7 +33,7 @@ Module invG.
 End invG.
 Import invG.
 
-Definition invariant_unfold {Σ} (P : iProp Σ) : agree (later (iPreProp Σ)) :=
+Definition invariant_unfold {Σ} (P : iProp Σ) : agree (later (iPrePropO Σ)) :=
   to_agree (Next (iProp_unfold P)).
 Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (◯ {[ i := invariant_unfold P ]}).

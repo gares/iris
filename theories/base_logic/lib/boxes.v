@@ -8,7 +8,7 @@ Import uPred.
 Class boxG Σ :=
   boxG_inG :> inG Σ (prodR
     (authR (optionUR (exclR boolO)))
-    (optionR (agreeR (laterO (iPreProp Σ))))).
+    (optionR (agreeR (laterO (iPrePropO Σ))))).
 
 Definition boxΣ : gFunctors := #[ GFunctor (authR (optionUR (exclR boolO)) *
                                             optionRF (agreeRF (▶ ∙)) ) ].

@@ -116,21 +116,21 @@ Qed.
 the construction, this way we are sure we do not use any properties of the
 construction, and also avoid Coq from blindly unfolding it. *)
 Module Type iProp_solution_sig.
-  Parameter iPreProp : gFunctors → ofeT.
-  Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ).
+  Parameter iPrePropO : gFunctors → ofeT.
+  Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ).
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
+    discrete_funUR (λ i, gmapUR gname (Σ i (iPrePropO Σ) _)).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
   Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
-  Parameter iProp_unfold: ∀ {Σ}, iPropO Σ -n> iPreProp Σ.
-  Parameter iProp_fold: ∀ {Σ}, iPreProp Σ -n> iPropO Σ.
+  Parameter iProp_unfold: ∀ {Σ}, iPropO Σ -n> iPrePropO Σ.
+  Parameter iProp_fold: ∀ {Σ}, iPrePropO Σ -n> iPropO Σ.
   Parameter iProp_fold_unfold: ∀ {Σ} (P : iProp Σ),
     iProp_fold (iProp_unfold P) ≡ P.
-  Parameter iProp_unfold_fold: ∀ {Σ} (P : iPreProp Σ),
+  Parameter iProp_unfold_fold: ∀ {Σ} (P : iPrePropO Σ),
     iProp_unfold (iProp_fold P) ≡ P.
 End iProp_solution_sig.
 
@@ -138,20 +138,20 @@ Module Export iProp_solution : iProp_solution_sig.
   Import cofe_solver.
   Definition iProp_result (Σ : gFunctors) :
     solution (uPredOF (iResF Σ)) := solver.result _.
-  Definition iPreProp (Σ : gFunctors) : ofeT := iProp_result Σ.
-  Global Instance iPreProp_cofe {Σ} : Cofe (iPreProp Σ) := _.
+  Definition iPrePropO (Σ : gFunctors) : ofeT := iProp_result Σ.
+  Global Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (Σ i (iPreProp Σ) _)).
+    discrete_funUR (λ i, gmapUR gname (Σ i (iPrePropO Σ) _)).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
 
-  Definition iProp_unfold {Σ} : iPropO Σ -n> iPreProp Σ :=
+  Definition iProp_unfold {Σ} : iPropO Σ -n> iPrePropO Σ :=
     solution_fold (iProp_result Σ).
-  Definition iProp_fold {Σ} : iPreProp Σ -n> iPropO Σ := solution_unfold _.
+  Definition iProp_fold {Σ} : iPrePropO Σ -n> iPropO Σ := solution_unfold _.
   Lemma iProp_fold_unfold {Σ} (P : iProp Σ) : iProp_fold (iProp_unfold P) ≡ P.
   Proof. apply solution_unfold_fold. Qed.
-  Lemma iProp_unfold_fold {Σ} (P : iPreProp Σ) : iProp_unfold (iProp_fold P) ≡ P.
+  Lemma iProp_unfold_fold {Σ} (P : iPrePropO Σ) : iProp_unfold (iProp_fold P) ≡ P.
   Proof. apply solution_fold_unfold. Qed.
 End iProp_solution.
 

@@ -9,7 +9,7 @@ Import uPred.
    saved whatever-you-like. *)
 
 Class savedAnythingG (Σ : gFunctors) (F : oFunctor) := SavedAnythingG {
-  saved_anything_inG :> inG Σ (agreeR (F (iPreProp Σ) _));
+  saved_anything_inG :> inG Σ (agreeR (F (iPrePropO Σ) _));
   saved_anything_contractive : oFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
 }.
 Definition savedAnythingΣ (F : oFunctor) `{!oFunctorContractive F} : gFunctors :=
