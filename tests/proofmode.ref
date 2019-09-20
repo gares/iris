@@ -21,6 +21,25 @@
   --------------------------------------□
   Q ∨ P
   
+"test_iStopProof"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  Q : PROP
+  ============================
+  "H1" : emp
+  --------------------------------------□
+  "H2" : Q
+  --------------------------------------∗
+  Q
+  
+1 subgoal
+  
+  PROP : sbi
+  Q : PROP
+  ============================
+  □ emp ∗ Q -∗ Q
 "test_iDestruct_and_emp"
      : string
 1 subgoal

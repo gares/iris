@@ -44,8 +44,9 @@ Definition bar : PROP := (∀ P, foo P)%I.
 Lemma test_unfold_constants : bar.
 Proof. iIntros (P) "HP //". Qed.
 
+Check "test_iStopProof".
 Lemma test_iStopProof Q : emp -∗ Q -∗ Q.
-Proof. iIntros "#H1 H2". iStopProof. by rewrite bi.sep_elim_r. Qed.
+Proof. iIntros "#H1 H2". Show. iStopProof. Show. by rewrite bi.sep_elim_r. Qed.
 
 Lemma test_iRewrite {A : ofeT} (x y : A) P :
   □ (∀ z, P -∗ <affine> (z ≡ y)) -∗ (P -∗ P ∧ (x,x) ≡ (y,x)).
