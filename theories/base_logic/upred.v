@@ -800,8 +800,16 @@ Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g �
 Proof. by unseal. Qed.
 
 (** Consistency/soundness statement *)
+(** The lemmas [pure_soundness] and [internal_eq_soundness] should become an
+instance of [siProp] soundness in the future. *)
 Lemma pure_soundness φ : (True ⊢ ⌜ φ ⌝) → φ.
 Proof. unseal=> -[H]. by apply (H 0 ε); eauto using ucmra_unit_validN. Qed.
+
+Lemma internal_eq_soundness {A : ofeT} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+Proof.
+  unseal=> -[H]. apply equiv_dist=> n.
+  by apply (H n ε); eauto using ucmra_unit_validN.
+Qed.
 
 Lemma later_soundness P : (True ⊢ ▷ P) → (True ⊢ P).
 Proof.
