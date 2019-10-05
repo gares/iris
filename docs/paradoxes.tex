@@ -67,7 +67,7 @@ Unsurprisingly, that leads to a contradiction, as is shown in the following lemm
 \end{proof}
 
 With this lemma in hand, the proof of \thmref{thm:counterexample-1} is simple.
-\begin{proof}[\thmref{thm:counterexample-1}]
+\begin{proof}[Proof of \thmref{thm:counterexample-1}]
   Using the previous lemmas we have
   \begin{align*}
     \proves \All \gname. \lnot (\gname \Mapsto A(\gname)).
@@ -176,7 +176,7 @@ We have
     Thus for any $\prop$ we have ${\upd}_1\left(\ownGhost{\gname}{\starttoken} \lor \ownGhost \gname \finishtoken * \prop\right)$.
     Again since our goal is still of the form ${\upd}_1$ we may assume $\ownGhost{\gname}{\starttoken} \lor \ownGhost \gname \finishtoken * \always \prop$.
     The rule \ruleref{eq:inv-alloc} then gives us precisely what we need.
- \qed \end{proof}
+ \end{proof}
 
 %
 \begin{lem}
@@ -191,7 +191,7 @@ and thus
   \)
 \end{lem}
 
-\begin{proof}[\lemref{lem:counterexample-invariants-saved-prop-agree}]
+\begin{proof}%[\lemref{lem:counterexample-invariants-saved-prop-agree}]
 \begin{itemize}
   \item We first show
     \[\gname \Mapsto \prop * \gname \Mapsto \propB * \always \prop \proves {\upd}_1 \always \propB.\]
@@ -218,7 +218,7 @@ and thus
 \item By applying the above twice, we easily obtain
 \[ \gname \Mapsto \prop * \gname \Mapsto \propB \proves ({\upd}_1 \always \prop) \Lra ({\upd}_1 \always \propB) \]
 \end{itemize}
-\qed \end{proof}
+\end{proof}
 % When allocating $\gname \Mapsto \prop(\gname)$ in \lemref{lem:counterexample-invariants-saved-prop-alloc}, we will start off in ``state'' $\ownGhost \gname \starttoken$, and once we have $P$ in \lemref{lem:counterexample-invariants-saved-prop-agree} we use \ruleref{eq:start-finish} to transition to $\ownGhost\gname \finishtoken$, obtaining ourselves a copy of said token.
 % Finally, we use this token with $\gname \Mapsto \propB$ to obtain a proof of $\propB$.
 Intuitively, \lemref{lem:counterexample-invariants-saved-prop-agree} shows that we can ``convert'' a proof from $\prop$ to $\propB$.
