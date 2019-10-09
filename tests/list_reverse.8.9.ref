@@ -10,7 +10,7 @@
   "Hys" : is_list acc ys
   "HΦ" : ∀ w : val, is_list w (reverse xs ++ ys) -∗ Φ w
   --------------------------------------∗
-  WP rev hd acc [{ v, Φ v }]
+  WP (rev hd) acc [{ v, Φ v }]
   
 1 subgoal
   
@@ -28,6 +28,6 @@
      | InjR "l" =>
        let: "tmp1" := Fst ! "l" in
        let: "tmp2" := Snd ! "l" in
-       "l" <- ("tmp1", acc);; rev "tmp2" (InjLV #())
+       "l" <- ("tmp1", acc);; (rev "tmp2") (InjLV #())
      end [{ v, Φ v }]
   
