@@ -66,6 +66,30 @@ Local Ltac solve_atomic :=
     [inversion 1; naive_solver
     |apply ectxi_language_sub_redexes_are_values; intros [] **; naive_solver].
 
+Instance rec_atomic s f x e : Atomic s (Rec f x e).
+Proof. solve_atomic. Qed.
+Instance pair_atomic s v1 v2 : Atomic s (Pair (Val v1) (Val v2)).
+Proof. solve_atomic. Qed.
+Instance injl_atomic s v : Atomic s (InjL (Val v)).
+Proof. solve_atomic. Qed.
+Instance injr_atomic s v : Atomic s (InjR (Val v)).
+Proof. solve_atomic. Qed.
+Instance beta_atomic s f x v1 v2 : Atomic s (App (RecV f x (Val v1)) (Val v2)).
+Proof. destruct f, x; solve_atomic. Qed.
+Instance unop_atomic s op v : Atomic s (UnOp op (Val v)).
+Proof. solve_atomic. Qed.
+Instance binop_atomic s op v1 v2 : Atomic s (BinOp op (Val v1) (Val v2)).
+Proof. solve_atomic. Qed.
+Instance if_true_atomic s v1 e2 : Atomic s (If (Val $ LitV $ LitBool true) (Val v1) e2).
+Proof. solve_atomic. Qed.
+Instance if_false_atomic s e1 v2 : Atomic s (If (Val $ LitV $ LitBool false) e1 (Val v2)).
+Proof. solve_atomic. Qed.
+Instance fst_atomic s v : Atomic s (Fst (Val v)).
+Proof. solve_atomic. Qed.
+Instance snd_atomic s v : Atomic s (Snd (Val v)).
+Proof. solve_atomic. Qed.
+Instance fork_atomic s e : Atomic s (Fork e).
+Proof. solve_atomic. Qed.
 Instance alloc_atomic s v w : Atomic s (AllocN (Val v) (Val w)).
 Proof. solve_atomic. Qed.
 Instance load_atomic s v : Atomic s (Load (Val v)).
@@ -76,16 +100,9 @@ Instance cmpxchg_atomic s v0 v1 v2 : Atomic s (CmpXchg (Val v0) (Val v1) (Val v2
 Proof. solve_atomic. Qed.
 Instance faa_atomic s v1 v2 : Atomic s (FAA (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
-Instance fork_atomic s e : Atomic s (Fork e).
-Proof. solve_atomic. Qed.
-Instance skip_atomic s  : Atomic s Skip.
-Proof. solve_atomic. Qed.
 Instance new_proph_atomic s : Atomic s NewProph.
 Proof. solve_atomic. Qed.
-Instance binop_atomic s op v1 v2 : Atomic s (BinOp op (Val v1) (Val v2)).
-Proof. solve_atomic. Qed.
-
-Instance proph_resolve_atomic s e v1 v2 :
+Instance resolve_atomic s e v1 v2 :
   Atomic s e → Atomic s (Resolve e (Val v1) (Val v2)).
 Proof.
   rename e into e1. intros H σ1 e2 κ σ2 efs [Ks e1' e2' Hfill -> step].
@@ -103,9 +120,6 @@ Proof.
       * apply irreducible_resolve. by rewrite fill_app in Hs.
     + econstructor 1 with (K := Ks ++ [K]); try done. simpl. by rewrite fill_app.
 Qed.
-
-Instance resolve_proph_atomic s v1 v2 : Atomic s (ResolveProph (Val v1) (Val v2)).
-Proof. by apply proph_resolve_atomic, skip_atomic. Qed.
 
 Local Ltac solve_exec_safe := intros; subst; do 3 eexists; econstructor; eauto.
 Local Ltac solve_exec_puredet := simpl; intros; by inv_head_step.
