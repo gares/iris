@@ -74,6 +74,7 @@ Instance injl_atomic s v : Atomic s (InjL (Val v)).
 Proof. solve_atomic. Qed.
 Instance injr_atomic s v : Atomic s (InjR (Val v)).
 Proof. solve_atomic. Qed.
+(** The instance below is a more general version of [Skip] *)
 Instance beta_atomic s f x v1 v2 : Atomic s (App (RecV f x (Val v1)) (Val v2)).
 Proof. destruct f, x; solve_atomic. Qed.
 Instance unop_atomic s op v : Atomic s (UnOp op (Val v)).
@@ -88,8 +89,10 @@ Instance fst_atomic s v : Atomic s (Fst (Val v)).
 Proof. solve_atomic. Qed.
 Instance snd_atomic s v : Atomic s (Snd (Val v)).
 Proof. solve_atomic. Qed.
+
 Instance fork_atomic s e : Atomic s (Fork e).
 Proof. solve_atomic. Qed.
+
 Instance alloc_atomic s v w : Atomic s (AllocN (Val v) (Val w)).
 Proof. solve_atomic. Qed.
 Instance load_atomic s v : Atomic s (Load (Val v)).
@@ -100,6 +103,7 @@ Instance cmpxchg_atomic s v0 v1 v2 : Atomic s (CmpXchg (Val v0) (Val v1) (Val v2
 Proof. solve_atomic. Qed.
 Instance faa_atomic s v1 v2 : Atomic s (FAA (Val v1) (Val v2)).
 Proof. solve_atomic. Qed.
+
 Instance new_proph_atomic s : Atomic s NewProph.
 Proof. solve_atomic. Qed.
 Instance resolve_atomic s e v1 v2 :
