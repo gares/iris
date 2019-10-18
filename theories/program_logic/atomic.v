@@ -3,6 +3,7 @@ From iris.bi Require Import telescopes.
 From iris.bi.lib Require Export atomic.
 From iris.proofmode Require Import tactics classes.
 From iris.program_logic Require Export weakestpre.
+From iris.base_logic Require Import invariants.
 Set Default Proof Using "Type".
 
 (* This hard-codes the inner mask to be empty, because we have yet to find an
@@ -98,6 +99,7 @@ Section lemmas.
   Notation iProp := (iProp Σ).
   Implicit Types (α : TA → iProp) (β : TA → TB → iProp) (f : TA → TB → val Λ).
 
+  (* Atomic triples imply sequential triples if the precondition is laterable. *)
   Lemma atomic_wp_seq e Eo α β f {HL : ∀.. x, Laterable (α x)} :
     atomic_wp e Eo α β f -∗
     ∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
@@ -109,9 +111,20 @@ Section lemmas.
     rewrite ->!tele_app_bind. iIntros "HΦ". iApply "HΦ". done.
   Qed.
 
+  (* Sequential triples with the empty mask for a physically atomic [e] are atomic. *)
+  Lemma atomic_seq_wp_atomic e Eo α β f `{!Atomic WeaklyAtomic e} :
+    (∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e @ ∅ {{ Φ }}) -∗
+    atomic_wp e Eo α β f.
+  Proof.
+    iIntros "Hwp" (Φ) "AU". iMod "AU" as (x) "[Hα [_ Hclose]]".
+    iApply ("Hwp" with "Hα"). iIntros (y) "Hβ".
+    iMod ("Hclose" with "Hβ") as "HΦ".
+    rewrite ->!tele_app_bind. iApply "HΦ".
+  Qed.
+
   (* Sequential triples with a persistent precondition and no initial quantifier
   are atomic. *)
-  Lemma seq_wp_atomic e Eo (α : [tele] → iProp) (β : [tele] → TB → iProp)
+  Lemma persistent_seq_wp_atomic e Eo (α : [tele] → iProp) (β : [tele] → TB → iProp)
         (f : [tele] → TB → val Λ) {HP : Persistent (α [tele_arg])} :
     (∀ Φ, α [tele_arg] -∗ (∀.. y, β [tele_arg] y -∗ Φ (f [tele_arg] y)) -∗ WP e {{ Φ }}) -∗
     atomic_wp e Eo α β f.
@@ -122,6 +135,23 @@ Section lemmas.
     iMod ("HΦ") as "[_ [_ Hclose]]". iMod ("Hclose" with "Hβ") as "HΦ".
     (* FIXME: Using ssreflect rewrite does not work, see Coq bug #7773. *)
     rewrite ->!tele_app_bind. done.
+  Qed.
+
+  (* We can open invariants around atomic triples.
+     (Just for demonstration purposes; we always use [iInv] in proofs.) *)
+  Lemma wp_atomic_inv e Eo α β f N I :
+    ↑N ⊆ Eo →
+    atomic_wp e Eo (λ.. x, ▷ I ∗ α x) (λ.. x y, ▷ I ∗ β x y) f -∗
+    inv N I -∗ atomic_wp e (Eo ∖ ↑N) α β f.
+  Proof.
+    intros ?. iIntros "Hwp #Hinv" (Φ) "AU". iApply "Hwp". iAuIntro.
+    iInv N as "HI". iApply (aacc_aupd with "AU"); first done.
+    iIntros (x) "Hα". iAaccIntro with "[HI Hα]"; rewrite ->!tele_app_bind; first by iFrame.
+    - (* abort *)
+      iIntros "[HI $]". by eauto with iFrame.
+    - (* commit *)
+      iIntros (y). rewrite ->!tele_app_bind. iIntros "[HI Hβ]". iRight.
+      iExists y. rewrite ->!tele_app_bind. by eauto with iFrame.
   Qed.
 
 End lemmas.
