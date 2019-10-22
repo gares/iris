@@ -99,6 +99,13 @@ Section lemmas.
   Notation iProp := (iProp Σ).
   Implicit Types (α : TA → iProp) (β : TA → TB → iProp) (f : TA → TB → val Λ).
 
+  Lemma atomic_wp_mask_weaken e Eo1 Eo2 α β f :
+    Eo2 ⊆ Eo1 → atomic_wp e Eo1 α β f -∗ atomic_wp e Eo2 α β f.
+  Proof.
+    iIntros (HEo) "Hwp". iIntros (Φ) "AU". iApply "Hwp".
+    iApply atomic_update_mask_weaken; last done. done.
+  Qed.
+
   (* Atomic triples imply sequential triples if the precondition is laterable. *)
   Lemma atomic_wp_seq e Eo α β f {HL : ∀.. x, Laterable (α x)} :
     atomic_wp e Eo α β f -∗

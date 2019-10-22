@@ -226,6 +226,7 @@ Section lemmas.
 
   Local Existing Instance atomic_update_pre_mono.
 
+  (* Can't be in the section above as that fixes the parameters *)
   Global Instance atomic_acc_ne Eo Ei n :
     Proper (
         pointwise_relation TA (dist n) ==>
@@ -245,6 +246,18 @@ Section lemmas.
     ) (atomic_update (PROP:=PROP) Eo Ei).
   Proof.
     rewrite atomic_update_eq /atomic_update_def /atomic_update_pre. solve_proper.
+  Qed.
+
+  Lemma atomic_update_mask_weaken Eo1 Eo2 Ei α β Φ :
+    Eo1 ⊆ Eo2 →
+    atomic_update Eo1 Ei α β Φ -∗ atomic_update Eo2 Ei α β Φ.
+  Proof.
+    rewrite atomic_update_eq {2}/atomic_update_def /=.
+    iIntros (Heo) "HAU".
+    iApply (greatest_fixpoint_coind _ (λ _, atomic_update_def Eo1 Ei α β Φ)); last done.
+    iIntros "!# *". rewrite {1}/atomic_update_def /= greatest_fixpoint_unfold.
+    iApply make_laterable_wand. iIntros "!#".
+    iApply atomic_acc_mask_weaken. done.
   Qed.
 
   (** The ellimination form: an atomic accessor *)
