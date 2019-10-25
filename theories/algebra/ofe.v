@@ -1081,6 +1081,10 @@ Instance later_map_ne {A B : ofeT} (f : A → B) n :
   Proper (dist (pred n) ==> dist (pred n)) f →
   Proper (dist n ==> dist n) (later_map f) | 0.
 Proof. destruct n as [|n]; intros Hf [x] [y] ?; do 2 red; simpl; auto. Qed.
+Instance later_map_proper {A B : ofeT} (f : A → B) :
+  Proper ((≡) ==> (≡)) f →
+  Proper ((≡) ==> (≡)) (later_map f).
+Proof. solve_proper. Qed.
 Lemma later_map_id {A} (x : later A) : later_map id x = x.
 Proof. by destruct x. Qed.
 Lemma later_map_compose {A B C} (f : A → B) (g : B → C) (x : later A) :
