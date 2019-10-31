@@ -60,8 +60,13 @@ Open Scope Z_scope.
 (** Expressions and vals. *)
 Definition proph_id := positive.
 
+(** We have a notion of "poison" as a variant of unit that may not be compared
+with anything. This is useful for erasure proofs: if we erased things to unit,
+[<erased> == unit] would evaluate to true after erasure, changing program
+behavior. So we erase to the poison value instead, making sure that no legal
+comparisons could be affected. *)
 Inductive base_lit : Set :=
-  | LitInt (n : Z) | LitBool (b : bool) | LitUnit | LitErased
+  | LitInt (n : Z) | LitBool (b : bool) | LitUnit | LitPoison
   | LitLoc (l : loc) | LitProphecy (p: proph_id).
 Inductive un_op : Set :=
   | NegOp | MinusUnOp.
@@ -141,6 +146,7 @@ architectures). The tags have the following meaning:
 6: Payload is one of the following finitely many values, which 61 bits are more
    than enough to encode:
    LitV LitUnit, InjLV (LitV LitUnit), InjRV (LitV LitUnit),
+   LitV LitPoison, InjLV (LitV LitPoison), InjRV (LitV LitPoison),
    LitV (LitBool _), InjLV (LitV (LitBool _)), InjRV (LitV (LitBool _)).
 7: Value is boxed, i.e., payload is a pointer to some read-only memory area on
    the heap which stores whether this is a RecV, PairV, InjLV or InjRV and the
@@ -155,7 +161,7 @@ Definition lit_is_unboxed (l: base_lit) : Prop :=
   match l with
   (** Disallow comparing (erased) prophecies with (erased) prophecies, by
   considering them boxed. *)
-  | LitProphecy _ | LitErased => False
+  | LitProphecy _ | LitPoison => False
   | _ => True
   end.
 Definition val_is_unboxed (v : val) : Prop :=
@@ -261,14 +267,14 @@ Proof.
   | LitInt n => (inl (inl n), None)
   | LitBool b => (inl (inr b), None)
   | LitUnit => (inr (inl false), None)
-  | LitErased => (inr (inl true), None)
+  | LitPoison => (inr (inl true), None)
   | LitLoc l => (inr (inr l), None)
   | LitProphecy p => (inr (inl false), Some p)
   end) (λ l, match l with
   | (inl (inl n), None) => LitInt n
   | (inl (inr b), None) => LitBool b
   | (inr (inl false), None) => LitUnit
-  | (inr (inl true), None) => LitErased
+  | (inr (inl true), None) => LitPoison
   | (inr (inr l), None) => LitLoc l
   | (_, Some p) => LitProphecy p
   end) _); by intros [].
