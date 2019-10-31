@@ -68,6 +68,9 @@ on the math symbol list, and with some custom aliases for symbols used a lot in 
       (append math-symbol-list-basic math-symbol-list-extended))
 ```
 
+Finally, set your default input method with `M-x customize-set-value`, setting
+`default-input-method` to `math`.
+
 ### Font Configuration
 
 Even when usable fonts are installed, Emacs tends to pick bad fonts for some
