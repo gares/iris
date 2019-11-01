@@ -42,14 +42,13 @@ Definition gFunctors := { n : nat & fin n → gFunctor }.
 
 Definition gid (Σ : gFunctors) := fin (projT1 Σ).
 Definition gFunctors_lookup (Σ : gFunctors) : gid Σ → gFunctor := projT2 Σ.
-Coercion gFunctors_lookup : gFunctors >-> Funclass.
 
 Definition gname := positive.
 Canonical Structure gnameO := leibnizO gname.
 
 (** The resources functor [iResF Σ A := ∀ i : gid, gname -fin-> (Σ i) A]. *)
 Definition iResF (Σ : gFunctors) : urFunctor :=
-  discrete_funURF (λ i, gmapURF gname (Σ i)).
+  discrete_funURF (λ i, gmapURF gname (gFunctors_lookup Σ i)).
 
 
 (** We define functions for the empty list of functors, the singleton list of
@@ -81,7 +80,8 @@ lock invariant.
 
 The contraints to can be expressed using the type class [subG Σ1 Σ2], which
 expresses that the functors [Σ1] are contained in [Σ2]. *)
-Class subG (Σ1 Σ2 : gFunctors) := in_subG i : { j | Σ1 i = Σ2 j }.
+Class subG (Σ1 Σ2 : gFunctors) := in_subG i :
+  { j | gFunctors_lookup Σ1 i = gFunctors_lookup Σ2 j }.
 
 (** Avoid trigger happy type class search: this line ensures that type class
 search is only triggered if the arguments of [subG] do not contain evars. Since
@@ -120,7 +120,7 @@ Module Type iProp_solution_sig.
   Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ).
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (Σ i (iPrePropO Σ) _)).
+    discrete_funUR (λ i, gmapUR gname (gFunctors_lookup Σ i (iPrePropO Σ) _)).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
@@ -142,7 +142,7 @@ Module Export iProp_solution : iProp_solution_sig.
   Global Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (Σ i (iPrePropO Σ) _)).
+    discrete_funUR (λ i, gmapUR gname (gFunctors_lookup Σ i (iPrePropO Σ) _)).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
 
