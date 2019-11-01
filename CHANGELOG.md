@@ -5,6 +5,11 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 ## Iris master
 
+**Changes in the theory of Iris itself:**
+
+* [#] Redefine invariants as "semantic invariants" so that they support
+  splitting and other forms of weakening.
+
 **Changes in Coq:**
 
 * A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
