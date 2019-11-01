@@ -209,6 +209,9 @@ Proof. exact: uPred_primitive.discrete_fun_validI. Qed.
 Lemma pure_soundness φ : bi_emp_valid (PROP:=uPredI M) ⌜ φ ⌝ → φ.
 Proof. apply pure_soundness. Qed.
 
+Lemma internal_eq_soundness {A : ofeT} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+Proof. apply internal_eq_soundness. Qed.
+
 Lemma later_soundness P : bi_emp_valid (▷ P) → bi_emp_valid P.
 Proof. apply later_soundness. Qed.
 (** See [derived.v] for a similar soundness result for basic updates. *)
