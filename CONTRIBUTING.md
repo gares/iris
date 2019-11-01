@@ -1,7 +1,9 @@
 # Contributing to the Iris Coq Development
 
 Here you can find some how-tos for various thing sthat might come up when doing
-Iris development.
+Iris development.  This is for contributing to Iris itself; see
+[the README](README.md#further-resources) for resources helpful for all Iris
+users.
 
 ## How to submit a merge request
 
