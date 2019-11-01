@@ -12,6 +12,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 **Changes in Coq:**
 
+* Added support for Coq 8.10; dropped support for Coq 8.7.
 * A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
   Coq goal `big star of context ⊢ proof mode goal`.
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
