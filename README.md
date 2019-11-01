@@ -10,7 +10,7 @@ For using the Coq library, check out the
 For understanding the theory of Iris, a LaTeX version of the core logic
 definitions and some derived forms is available in
 [docs/iris.tex](docs/iris.tex).  A compiled PDF version of this document is
-[available online](http://plv.mpi-sws.org/iris/appendix-3.1.pdf).
+[available online](http://plv.mpi-sws.org/iris/appendix-3.2.pdf).
 
 ## Building Iris
 
