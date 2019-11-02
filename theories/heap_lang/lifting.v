@@ -176,7 +176,7 @@ Proof. solve_pure_exec. Qed.
 Instance pure_binop op v1 v2 v' :
   PureExec (bin_op_eval op v1 v2 = Some v') 1 (BinOp op (Val v1) (Val v2)) (Val v') | 10.
 Proof. solve_pure_exec. Qed.
-(* Higher-priority instance for EqOp. *)
+(* Higher-priority instance for [EqOp]. *)
 Instance pure_eqop v1 v2 :
   PureExec (vals_compare_safe v1 v2) 1
     (BinOp EqOp (Val v1) (Val v2))
@@ -237,8 +237,8 @@ Proof.
 Qed.
 
 (** Heap *)
-(** The "proper" [allocN] are derived in [array]. *)
-
+(** The usable rules for [allocN] stated in terms of the [array] proposition
+are derived in te file [array]. *)
 Lemma heap_array_to_seq_meta l vs (n : nat) :
   length vs = n →
   ([∗ map] l' ↦ _ ∈ heap_array l vs, meta_token l' ⊤) -∗
@@ -280,8 +280,9 @@ Proof.
   iIntros (Hn Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κ κs k) "[Hσ Hκs] !>"; iSplit; first by auto with lia.
   iNext; iIntros (v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc_gen with "Hσ") as "(Hσ & Hl & Hm)".
-  { apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
+  iMod (gen_heap_alloc_gen _ (heap_array l (replicate (Z.to_nat n) v)) with "Hσ")
+    as "(Hσ & Hl & Hm)".
+  { apply heap_array_map_disjoint.
     rewrite replicate_length Z2Nat.id; auto with lia. }
   iModIntro; iSplit; first done. iFrame "Hσ Hκs". iApply "HΦ".
   iApply big_sepL_sep. iSplitL "Hl".
@@ -297,8 +298,9 @@ Proof.
   iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; auto.
   iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step.
-  iMod (@gen_heap_alloc_gen with "Hσ") as "(Hσ & Hl & Hm)".
-  { apply (heap_array_map_disjoint _ l (replicate (Z.to_nat n) v)); eauto.
+  iMod (gen_heap_alloc_gen _ (heap_array l (replicate (Z.to_nat n) v)) with "Hσ")
+    as "(Hσ & Hl & Hm)".
+  { apply heap_array_map_disjoint.
     rewrite replicate_length Z2Nat.id; auto with lia. }
   iModIntro; do 2 (iSplit; first done). iFrame "Hσ Hκs". iApply "HΦ".
   iApply big_sepL_sep. iSplitL "Hl".
