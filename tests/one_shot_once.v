@@ -38,7 +38,8 @@ Definition one_shot_inv (γ : gname) (l : loc) : iProp Σ :=
   (l ↦ NONEV ∗ own γ (Pending (1/2)%Qp) ∨
    ∃ n : Z, l ↦ SOMEV #n ∗ own γ (Shot n))%I.
 
-Local Hint Extern 0 (environments.envs_entails _ (one_shot_inv _ _)) => unfold one_shot_inv.
+Local Hint Extern 0 (environments.envs_entails _ (one_shot_inv _ _)) =>
+  unfold one_shot_inv : core.
 
 Lemma pending_split γ q :
   own γ (Pending q) ⊣⊢ own γ (Pending (q/2)) ∗ own γ (Pending (q/2)).
