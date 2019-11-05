@@ -25,21 +25,18 @@ Section inv.
 
   (** ** Internal model of invariants *)
   Definition own_inv (N : namespace) (P : iProp Σ) : iProp Σ :=
-    (∃ i P', ⌜i ∈ (↑N:coPset)⌝ ∧ ▷ □ (P' ↔ P) ∧ ownI i P')%I.
+    (∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧ ownI i P)%I.
 
   Lemma own_inv_open E N P :
     ↑N ⊆ E → own_inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
-    rewrite uPred_fupd_eq /uPred_fupd_def.
-    iDestruct 1 as (i P') "(Hi & #HP' & #HiP)".
+    rewrite uPred_fupd_eq /uPred_fupd_def. iDestruct 1 as (i) "[Hi #HiP]".
     iDestruct "Hi" as % ?%elem_of_subseteq_singleton.
     rewrite {1 4}(union_difference_L (↑ N) E) // ownE_op; last set_solver.
     rewrite {1 5}(union_difference_L {[ i ]} (↑ N)) // ownE_op; last set_solver.
     iIntros "(Hw & [HE $] & $) !> !>".
-    iDestruct (ownI_open i with "[$Hw $HE $HiP]") as "($ & HP & HD)".
-    iDestruct ("HP'" with "HP") as "$".
-    iIntros "HP [Hw $] !> !>". iApply (ownI_close _ P'). iFrame "HD Hw HiP".
-    iApply "HP'". iFrame.
+    iDestruct (ownI_open i with "[$Hw $HE $HiP]") as "($ & $ & HD)".
+    iIntros "HP [Hw $] !> !>". iApply (ownI_close _ P). by iFrame.
   Qed.
 
   Lemma fresh_inv_name (E : gset positive) N : ∃ i, i ∉ E ∧ i ∈ (↑N:coPset).
@@ -56,7 +53,7 @@ Section inv.
     rewrite uPred_fupd_eq. iIntros "HP [Hw $]".
     iMod (ownI_alloc (.∈ (↑N : coPset)) P with "[$HP $Hw]")
       as (i ?) "[$ ?]"; auto using fresh_inv_name.
-    do 2 iModIntro. iExists i, P. rewrite -(iff_refl True%I). auto.
+    do 2 iModIntro. iExists i. auto.
   Qed.
 
   Lemma own_inv_alloc_open N E P :
@@ -71,7 +68,7 @@ Section inv.
       rewrite assoc_L -!union_difference_L //. set_solver. }
     do 2 iModIntro. iFrame "HE\N". iSplitL "Hw HEi"; first by iApply "Hw".
     iSplitL "Hi".
-    { iExists i, P. rewrite -(iff_refl True%I). auto. }
+    { iExists i. auto. }
     iIntros "HP [Hw HE\N]".
     iDestruct (ownI_close with "[$Hw $Hi $HP $HD]") as "[$ HEi]".
     do 2 iModIntro. iSplitL; [|done].
