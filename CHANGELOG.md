@@ -9,6 +9,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 * [#] Redefine invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
+* Updated the strong variant of the opening lemma for cancellable invariants
+  to match that of regular invariants, where you can pick the mask at a later time.
 
 **Changes in Coq:**
 
