@@ -17,7 +17,7 @@ Section defs.
   Definition cinv_own (γ : gname) (p : frac) : iProp Σ := own γ p.
 
   Definition cinv (N : namespace) (γ : gname) (P : iProp Σ) : iProp Σ :=
-    inv N (P ∨ cinv_own γ 1)%I.
+    inv N (P ∨ cinv_own γ 1).
 End defs.
 
 Instance: Params (@cinv) 5 := {}.
