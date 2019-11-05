@@ -17,7 +17,7 @@ Section defs.
   Definition cinv_own (γ : gname) (p : frac) : iProp Σ := own γ p.
 
   Definition cinv (N : namespace) (γ : gname) (P : iProp Σ) : iProp Σ :=
-    (∃ P', □ ▷ (P ↔ P') ∗ inv N (P' ∨ cinv_own γ 1%Qp))%I.
+    inv N (P ∨ cinv_own γ 1)%I.
 End defs.
 
 Instance: Params (@cinv) 5 := {}.
@@ -56,10 +56,8 @@ Section proofs.
   Lemma cinv_iff N γ P P' :
     ▷ □ (P ↔ P') -∗ cinv N γ P -∗ cinv N γ P'.
   Proof.
-    iIntros "#HP' Hinv". iDestruct "Hinv" as (P'') "[#HP'' Hinv]".
-    iExists _. iFrame "Hinv". iAlways. iNext. iSplit.
-    - iIntros "?". iApply "HP''". iApply "HP'". done.
-    - iIntros "?". iApply "HP'". iApply "HP''". done.
+    iIntros "#HP". iApply inv_iff. iIntros "!> !>".
+    iSplit; iIntros "[?|$]"; iLeft; by iApply "HP".
   Qed.
 
   Lemma cinv_alloc_strong (I : gname → Prop) E N :
@@ -68,8 +66,7 @@ Section proofs.
   Proof.
     iIntros (?). iMod (own_alloc_strong 1%Qp I) as (γ) "[Hfresh Hγ]"; [done|done|].
     iExists γ; iIntros "!> {$Hγ $Hfresh}" (P) "HP".
-    iMod (inv_alloc N _ (P ∨ own γ 1%Qp)%I with "[HP]"); first by eauto.
-    iIntros "!>". iExists P. iSplit; last done. iIntros "!# !>"; iSplit; auto.
+    iMod (inv_alloc N _ (P ∨ cinv_own γ 1) with "[HP]"); eauto.
   Qed.
 
   Lemma cinv_alloc_cofinite (G : gset gname) E N :
@@ -85,20 +82,15 @@ Section proofs.
     ▷ P ∗ cinv_own γ p ∗ (∀ E' : coPset, ▷ P ∨ cinv_own γ 1 ={E',↑N ∪ E'}=∗ True)).
   Proof.
     iIntros (?) "Hinv Hown".
-    unfold cinv. iDestruct "Hinv" as (P') "[#HP' Hinv]".
-    iPoseProof (inv_open (↑ N) N (P ∨ cinv_own γ 1) with "[Hinv]") as "H"; first done.
-    { iApply inv_iff=> //.
-      iModIntro. iModIntro.
-      iSplit; iIntros "[H | $]"; iDestruct ("HP'" with "H") as "$". }
+    iPoseProof (inv_open (↑ N) N with "Hinv") as "H"; first done.
     rewrite difference_diag_L.
     iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
-    rewrite left_id_L -union_difference_L //. iMod "H" as "[[$ | >HP] H]".
-    - iFrame "Hown". iModIntro.
-      iIntros (E') "HP".
+    rewrite left_id_L -union_difference_L //. iMod "H" as "[[$ | >Hown'] H]".
+    - iIntros "{$Hown} !>" (E') "HP".
       iPoseProof (fupd_mask_frame_r _ _ E' with "(H [HP])") as "H"; first set_solver.
-      { iDestruct "HP" as "[HP | Hown]"; eauto. }
+      { iDestruct "HP" as "[?|?]"; eauto. }
       by rewrite left_id_L.
-    - iDestruct (cinv_own_1_l with "HP Hown") as %[].
+    - iDestruct (cinv_own_1_l with "Hown' Hown") as %[].
   Qed.
 
   Lemma cinv_alloc E N P : ▷ P ={E}=∗ ∃ γ, cinv N γ P ∗ cinv_own γ 1.
