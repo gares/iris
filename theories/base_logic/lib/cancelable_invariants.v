@@ -81,17 +81,24 @@ Section proofs.
 
   Lemma cinv_open_strong E N γ p P :
     ↑N ⊆ E →
-    cinv N γ P -∗ cinv_own γ p ={E,E∖↑N}=∗
-    ▷ P ∗ cinv_own γ p ∗ (▷ P ∨ cinv_own γ 1 ={E∖↑N,E}=∗ True).
+    cinv N γ P -∗ (cinv_own γ p ={E,E∖↑N}=∗
+    ▷ P ∗ cinv_own γ p ∗ (∀ E' : coPset, ▷ P ∨ cinv_own γ 1 ={E',↑N ∪ E'}=∗ True)).
   Proof.
-    iIntros (?) "#Hinv Hγ". iDestruct "Hinv" as (P') "[#HP' Hinv]".
-    iInv N as "[HP | >Hγ']" "Hclose".
-    - iIntros "!> {$Hγ}". iSplitL "HP".
-      + iNext. iApply "HP'". done.
-      + iIntros "[HP|Hγ]".
-        * iApply "Hclose". iLeft. iNext. by iApply "HP'".
-        * iApply "Hclose". iRight. by iNext.
-    - iDestruct (cinv_own_1_l with "Hγ' Hγ") as %[].
+    iIntros (?) "Hinv Hown".
+    unfold cinv. iDestruct "Hinv" as (P') "[#HP' Hinv]".
+    iPoseProof (inv_open (↑ N) N (P ∨ cinv_own γ 1) with "[Hinv]") as "H"; first done.
+    { iApply inv_iff=> //.
+      iModIntro. iModIntro.
+      iSplit; iIntros "[H | $]"; iDestruct ("HP'" with "H") as "$". }
+    rewrite difference_diag_L.
+    iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
+    rewrite left_id_L -union_difference_L //. iMod "H" as "[[$ | >HP] H]".
+    - iFrame "Hown". iModIntro.
+      iIntros (E') "HP".
+      iPoseProof (fupd_mask_frame_r _ _ E' with "(H [HP])") as "H"; first set_solver.
+      { iDestruct "HP" as "[HP | Hown]"; eauto. }
+      by rewrite left_id_L.
+    - iDestruct (cinv_own_1_l with "HP Hown") as %[].
   Qed.
 
   Lemma cinv_alloc E N P : ▷ P ={E}=∗ ∃ γ, cinv N γ P ∗ cinv_own γ 1.
@@ -104,6 +111,7 @@ Section proofs.
   Proof.
     iIntros (?) "#Hinv Hγ".
     iMod (cinv_open_strong with "Hinv Hγ") as "($ & Hγ & H)"; first done.
+    rewrite {2}(union_difference_L (↑N) E)=> //.
     iApply "H". by iRight.
   Qed.
 
@@ -113,7 +121,9 @@ Section proofs.
   Proof.
     iIntros (?) "#Hinv Hγ".
     iMod (cinv_open_strong with "Hinv Hγ") as "($ & $ & H)"; first done.
-    iIntros "!> HP". iApply "H"; auto.
+    iIntros "!> HP".
+    rewrite {2}(union_difference_L (↑N) E)=> //.
+    iApply "H". by iLeft.
   Qed.
 
   Global Instance into_inv_cinv N γ P : IntoInv (cinv N γ P) N := {}.
