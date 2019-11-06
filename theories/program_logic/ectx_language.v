@@ -29,17 +29,17 @@ Section ectx_language_mixin.
     mixin_fill_inj K : Inj (=) (=) (fill K);
     mixin_fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e);
 
-    (* There are a whole lot of sensible axioms (like associativity, and left and
-    right identity, we could demand for [comp_ectx] and [empty_ectx]. However,
-    positivity suffices. *)
-    mixin_ectx_positive K1 K2 :
-      comp_ectx K1 K2 = empty_ectx → K1 = empty_ectx ∧ K2 = empty_ectx;
-
     mixin_step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
       fill K e1 = fill K' e1' →
       to_val e1 = None →
       head_step e1' σ1 κ e2 σ2 efs →
       ∃ K'', K' = comp_ectx K K'';
+
+    (* If [fill K e] takes a head step, then either [e] is a value or [K] is
+       the empty evaluation context. In other words, if [e] is not a value then
+       there cannot be another redex position elsewhere in [fill K e]. *)
+    mixin_head_ctx_step_val K e σ1 κ e2 σ2 efs :
+      head_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx;
   }.
 End ectx_language_mixin.
 
@@ -87,14 +87,14 @@ Section ectx_language.
   Proof. apply ectx_language_mixin. Qed.
   Lemma fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e).
   Proof. apply ectx_language_mixin. Qed.
-  Lemma ectx_positive K1 K2 :
-    comp_ectx K1 K2 = empty_ectx → K1 = empty_ectx ∧ K2 = empty_ectx.
-  Proof. apply ectx_language_mixin. Qed.
   Lemma step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
     fill K e1 = fill K' e1' →
     to_val e1 = None →
     head_step e1' σ1 κ e2 σ2 efs →
     ∃ K'', K' = comp_ectx K K''.
+  Proof. apply ectx_language_mixin. Qed.
+  Lemma head_ctx_step_val K e σ1 κ e2 σ2 efs :
+    head_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx.
   Proof. apply ectx_language_mixin. Qed.
 
   Definition head_reducible (e : expr Λ) (σ : state Λ) :=
@@ -151,6 +151,8 @@ Section ectx_language.
   Lemma not_head_reducible e σ : ¬head_reducible e σ ↔ head_irreducible e σ.
   Proof. unfold head_reducible, head_irreducible. naive_solver. Qed.
 
+  Lemma head_step_not_stuck e σ κ e' σ' efs : head_step e σ κ e' σ' efs → not_stuck e σ.
+  Proof. rewrite /not_stuck /reducible /=. eauto 10 using head_prim_step. Qed.
 
   Lemma fill_prim_step K e1 σ1 κ e2 σ2 efs :
     prim_step e1 σ1 κ e2 σ2 efs → prim_step (fill K e1) σ1 κ (fill K e2) σ2 efs.
@@ -211,16 +213,30 @@ Section ectx_language.
     rewrite fill_empty. eapply Hatomic_step. by rewrite fill_empty.
   Qed.
 
+  Lemma head_reducible_prim_step_ctx K e1 σ1 κ e2 σ2 efs :
+    head_reducible e1 σ1 →
+    prim_step (fill K e1) σ1 κ e2 σ2 efs →
+    ∃ e2', e2 = fill K e2' ∧ head_step e1 σ1 κ e2' σ2 efs.
+  Proof.
+    intros (κ'&e2''&σ2''&efs''&?HhstepK) [K' e1' e2' HKe1 -> Hstep].
+    edestruct (step_by_val K) as [K'' ?];
+      eauto using val_head_stuck; simplify_eq/=.
+    rewrite -fill_comp in HKe1; simplify_eq.
+    exists (fill K'' e2'). rewrite fill_comp; split; first done.
+    apply head_ctx_step_val in HhstepK as [[v ?]|?]; simplify_eq.
+    { apply val_head_stuck in Hstep; simplify_eq. }
+    by rewrite !fill_empty.
+  Qed.
+
   Lemma head_reducible_prim_step e1 σ1 κ e2 σ2 efs :
     head_reducible e1 σ1 →
     prim_step e1 σ1 κ e2 σ2 efs →
     head_step e1 σ1 κ e2 σ2 efs.
   Proof.
-    intros (κ'&e2''&σ2''&efs''&?) [K e1' e2' -> -> Hstep].
-    destruct (step_by_val K empty_ectx e1' (fill K e1') σ1 κ' e2'' σ2'' efs'')
-      as [K' [-> _]%symmetry%ectx_positive];
-      eauto using fill_empty, fill_not_val, val_head_stuck.
-    by rewrite !fill_empty.
+    intros.
+    edestruct (head_reducible_prim_step_ctx empty_ectx) as (?&?&?);
+      rewrite ?fill_empty; eauto.
+    by simplify_eq; rewrite fill_empty.
   Qed.
 
   (* Every evaluation context is a context. *)

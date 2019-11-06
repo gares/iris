@@ -109,7 +109,6 @@ Section ectxi_language.
     - intros K1 K2 e. by rewrite /fill /= foldl_app.
     - intros K; induction K as [|Ki K IH]; rewrite /Inj; naive_solver.
     - done.
-    - by intros [] [].
     - intros K K' e1 κ e1' σ1 e2 σ2 efs Hfill Hred Hstep; revert K' Hfill.
       induction K as [|Ki K IH] using rev_ind=> /= K' Hfill; eauto using app_nil_r.
       destruct K' as [|Ki' K' _] using @rev_ind; simplify_eq/=.
@@ -121,6 +120,10 @@ Section ectxi_language.
         apply fill_not_val. revert Hstep. apply ectxi_language_mixin. }
       simplify_eq. destruct (IH K') as [K'' ->]; auto.
       exists K''. by rewrite assoc.
+    - intros K e1 σ1 κ e2 σ2 efs.
+      destruct K as [|Ki K _] using rev_ind; simpl; first by auto.
+      rewrite fill_app /=.
+      intros ?%head_ctx_step_val; eauto using fill_val.
   Qed.
 
   Canonical Structure ectxi_lang_ectx := EctxLanguage ectxi_lang_ectx_mixin.
