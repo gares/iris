@@ -11,6 +11,12 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   splitting and other forms of weakening.
 * Updated the strong variant of the opening lemma for cancellable invariants
   to match that of regular invariants, where you can pick the mask at a later time.
+  
+**Changes in program logic:**
+
+* In the axiomatization of ectx languages we replace the axiom of positivity of
+  context composition with an axiom that says if `fill K e` takes a head step,
+  then either `K` is the empty evaluation context or `e` is a value.
 
 **Changes in Coq:**
 

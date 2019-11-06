@@ -80,6 +80,8 @@ Section language.
     ∀ κ e' σ' efs, ¬prim_step e σ κ e' σ' efs.
   Definition stuck (e : expr Λ) (σ : state Λ) :=
     to_val e = None ∧ irreducible e σ.
+  Definition not_stuck (e : expr Λ) (σ : state Λ) :=
+    is_Some (to_val e) ∨ reducible e σ.
 
   (* [Atomic WeaklyAtomic]: This (weak) form of atomicity is enough to open
      invariants when WP ensures safety, i.e., programs never can get stuck.  We
@@ -140,6 +142,11 @@ Section language.
   Proof. intros [??] ???? ?%val_stuck. by destruct (to_val e). Qed.
   Global Instance of_val_inj : Inj (=) (=) (@of_val Λ).
   Proof. by intros v v' Hv; apply (inj Some); rewrite -!to_of_val Hv. Qed.
+  Lemma not_not_stuck e σ : ¬not_stuck e σ ↔ stuck e σ.
+  Proof.
+    rewrite /stuck /not_stuck -not_eq_None_Some -not_reducible.
+    destruct (decide (to_val e = None)); naive_solver.
+  Qed.
 
   Lemma strongly_atomic_atomic e a :
     Atomic StronglyAtomic e → Atomic a e.
@@ -175,6 +182,18 @@ Section language.
     by rewrite -!Permutation_middle !assoc_L Ht.
   Qed.
 
+  Lemma step_insert i t2 σ2 e κ e' σ3 efs :
+    t2 !! i = Some e →
+    prim_step e σ2 κ e' σ3 efs →
+    step (t2, σ2) κ (<[i:=e']>t2 ++ efs, σ3).
+  Proof.
+    intros.
+    edestruct (elem_of_list_split_length t2) as (t21&t22&?&?);
+      first (by eauto using elem_of_list_lookup_2); simplify_eq.
+    econstructor; eauto.
+    by rewrite insert_app_r_alt // Nat.sub_diag /= -assoc_L.
+  Qed.
+
   Lemma erased_step_Permutation (t1 t1' t2 : list (expr Λ)) σ1 σ2 :
     t1 ≡ₚ t1' → erased_step (t1,σ1) (t2,σ2) → ∃ t2', t2 ≡ₚ t2' ∧ erased_step (t1',σ1) (t2',σ2).
   Proof.
@@ -187,6 +206,8 @@ Section language.
     pure_step_det σ1 κ e2' σ2 efs :
       prim_step e1 σ1 κ e2' σ2 efs → κ = [] ∧ σ2 = σ1 ∧ e2' = e2 ∧ efs = []
   }.
+
+  Notation pure_steps_tp := (Forall2 (rtc pure_step)).
 
   (* TODO: Exclude the case of [n=0], either here, or in [wp_pure] to avoid it
   succeeding when it did not actually do anything. *)
@@ -208,7 +229,21 @@ Section language.
   Lemma pure_step_nsteps_ctx K `{!@LanguageCtx Λ K} n e1 e2 :
     relations.nsteps pure_step n e1 e2 →
     relations.nsteps pure_step n (K e1) (K e2).
-  Proof. induction 1; econstructor; eauto using pure_step_ctx. Qed.
+  Proof. eauto using nsteps_congruence, pure_step_ctx. Qed.
+
+  Lemma rtc_pure_step_ctx K `{!@LanguageCtx Λ K} e1 e2 :
+    rtc pure_step e1 e2 → rtc pure_step (K e1) (K e2).
+  Proof. eauto using rtc_congruence, pure_step_ctx. Qed.
+
+  Lemma not_stuck_under_ectx K `{!@LanguageCtx Λ K} e σ :
+    not_stuck (K e) σ → not_stuck e σ.
+  Proof.
+    rewrite /not_stuck /reducible /=.
+    intros [[? HK]|(?&?&?&?&Hstp)]; simpl in *.
+    - left. apply not_eq_None_Some; intros ?%fill_not_val; simplify_eq.
+    - destruct (to_val e) eqn:?; first by left; eauto.
+      apply fill_step_inv in Hstp; naive_solver.
+  Qed.
 
   (* We do not make this an instance because it is awfully general. *)
   Lemma pure_exec_ctx K `{!@LanguageCtx Λ K} φ n e1 e2 :
@@ -228,7 +263,58 @@ Section language.
     apply TCForall_Forall, Forall_fmap, Forall_true=> v.
     rewrite /AsVal /=; eauto.
   Qed.
+
   Lemma as_val_is_Some e :
     (∃ v, of_val v = e) → is_Some (to_val e).
   Proof. intros [v <-]. rewrite to_of_val. eauto. Qed.
+
+  Lemma prim_step_not_stuck e σ κ e' σ' efs :
+    prim_step e σ κ e' σ' efs → not_stuck e σ.
+  Proof. rewrite /not_stuck /reducible. eauto 10. Qed.
+
+  Lemma rtc_pure_step_val `{!Inhabited (state Λ)} v e :
+    rtc pure_step (of_val v) e → to_val e = Some v.
+  Proof.
+    intros ?; rewrite <- to_of_val.
+    f_equal; symmetry; eapply rtc_nf; first done.
+    intros [e' [Hstep _]].
+    destruct (Hstep inhabitant) as (?&?&?&Hval%val_stuck).
+    by rewrite to_of_val in Hval.
+  Qed.
+
+  (** Let thread pools [t1] and [t3] be such that each thread in [t1] makes
+   (zero or more) pure steps to the corresponding thread in [t3]. Furthermore,
+   let [t2] be a thread pool such that [t1] under state [σ1] makes a (single)
+   step to thread pool [t2] and state [σ2]. In this situation, either the step
+   from [t1] to [t2] corresponds to one of the pure steps between [t1] and [t3],
+   or, there is an [i] such that [i]th thread does not participate in the
+   pure steps between [t1] and [t3] and [t2] corresponds to taking a step in
+   the [i]th thread starting from [t1]. *)
+  Lemma erased_step_pure_step_tp t1 σ1 t2 σ2 t3 :
+    erased_step (t1, σ1) (t2, σ2) →
+    pure_steps_tp t1 t3 →
+    (σ1 = σ2 ∧ pure_steps_tp t2 t3) ∨
+    (∃ i e efs e' κ,
+      t1 !! i = Some e ∧ t3 !! i = Some e ∧
+      t2 = <[i:=e']>t1 ++ efs ∧
+      prim_step e σ1 κ e' σ2 efs).
+  Proof.
+    intros [κ [e σ e' σ' ? t11 t12 ?? Hstep]] Hps; simplify_eq/=.
+    apply Forall2_app_inv_l in Hps
+      as (t31&?&Hpsteps&(e''&t32&Hps&?&->)%Forall2_cons_inv_l&->).
+    destruct Hps as [e|e1 e2 e3 [_ Hprs]].
+    - right.
+      exists (length t11), e, efs, e', κ; split_and!; last done.
+      + by rewrite lookup_app_r // Nat.sub_diag.
+      + apply Forall2_length in Hpsteps.
+        by rewrite lookup_app_r Hpsteps // Nat.sub_diag.
+      + by rewrite insert_app_r_alt // Nat.sub_diag /= -assoc_L.
+    - edestruct Hprs as (?&?&?&?); first done; simplify_eq.
+      left; split; first done.
+      rewrite right_id_L.
+      eauto using Forall2_app.
+  Qed.
+
 End language.
+
+Notation pure_steps_tp := (Forall2 (rtc pure_step)).

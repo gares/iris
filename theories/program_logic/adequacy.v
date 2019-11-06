@@ -67,11 +67,10 @@ Proof.
   by iApply (IH with "Hσ He Ht").
 Qed.
 
-Lemma wp_safe κs m e σ Φ :
-  state_interp σ κs m -∗
-  WP e {{ Φ }} ={⊤}=∗ ⌜is_Some (to_val e) ∨ reducible e σ⌝.
+Lemma wp_not_stuck κs m e σ Φ :
+  state_interp σ κs m -∗ WP e {{ Φ }} ={⊤}=∗ ⌜not_stuck e σ⌝.
 Proof.
-  rewrite wp_unfold /wp_pre. iIntros "Hσ H".
+  rewrite wp_unfold /wp_pre /not_stuck. iIntros "Hσ H".
   destruct (to_val e) as [v|] eqn:?; first by eauto.
   iSpecialize ("H" $! σ [] κs with "Hσ"). rewrite sep_elim_l.
   iMod (fupd_plain_mask with "H") as %?; eauto.
@@ -98,8 +97,8 @@ Proof.
     with "[$Hσ $Hwp $Ht]") as "(Hsafe&Hσ&Hwp&Hvs)".
   { iIntros "(Hσ & Hwp & Ht)" (e' -> He').
     apply elem_of_cons in He' as [<-|(t1''&t2''&->)%elem_of_list_split].
-    - iMod (wp_safe with "Hσ Hwp") as "$"; auto.
-    - iDestruct "Ht" as "(_ & He' & _)". by iMod (wp_safe with "Hσ He'"). }
+    - iMod (wp_not_stuck with "Hσ Hwp") as "$"; auto.
+    - iDestruct "Ht" as "(_ & He' & _)". by iMod (wp_not_stuck with "Hσ He'"). }
   iApply step_fupd_fupd. iApply step_fupd_intro; first done. iNext.
   iExists _, _. iSplitL ""; first done. iFrame "Hsafe Hσ".
   iSplitL "Hwp".
@@ -166,14 +165,14 @@ Record adequate {Λ} (s : stuckness) (e1 : expr Λ) (σ1 : state Λ)
   adequate_not_stuck t2 σ2 e2 :
    s = NotStuck →
    rtc erased_step ([e1], σ1) (t2, σ2) →
-   e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2)
+   e2 ∈ t2 → not_stuck e2 σ2
 }.
 
 Lemma adequate_alt {Λ} s e1 σ1 (φ : val Λ → state Λ → Prop) :
   adequate s e1 σ1 φ ↔ ∀ t2 σ2,
     rtc erased_step ([e1], σ1) (t2, σ2) →
       (∀ v2 t2', t2 = of_val v2 :: t2' → φ v2 σ2) ∧
-      (∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2)).
+      (∀ e2, s = NotStuck → e2 ∈ t2 → not_stuck e2 σ2).
 Proof. split. intros []; naive_solver. constructor; naive_solver. Qed.
 
 Theorem adequate_tp_safe {Λ} (e1 : expr Λ) t2 σ1 σ2 φ :
