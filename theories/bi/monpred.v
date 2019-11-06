@@ -370,6 +370,54 @@ Local Notation BiIndexBottom := (@BiIndexBottom I).
 Implicit Types i : I.
 Implicit Types P Q : monPred.
 
+(** monPred_at unfolding laws *)
+Lemma monPred_at_pure i (φ : Prop) : monPred_at ⌜φ⌝ i ⊣⊢ ⌜φ⌝.
+Proof. by unseal. Qed.
+Lemma monPred_at_emp i : monPred_at emp i ⊣⊢ emp.
+Proof. by unseal. Qed.
+Lemma monPred_at_and i P Q : (P ∧ Q) i ⊣⊢ P i ∧ Q i.
+Proof. by unseal. Qed.
+Lemma monPred_at_or i P Q : (P ∨ Q) i ⊣⊢ P i ∨ Q i.
+Proof. by unseal. Qed.
+Lemma monPred_at_impl i P Q : (P → Q) i ⊣⊢ ∀ j, ⌜i ⊑ j⌝ → P j → Q j.
+Proof. by unseal. Qed.
+Lemma monPred_at_forall {A} i (Φ : A → monPred) : (∀ x, Φ x) i ⊣⊢ ∀ x, Φ x i.
+Proof. by unseal. Qed.
+Lemma monPred_at_exist {A} i (Φ : A → monPred) : (∃ x, Φ x) i ⊣⊢ ∃ x, Φ x i.
+Proof. by unseal. Qed.
+Lemma monPred_at_sep i P Q : (P ∗ Q) i ⊣⊢ P i ∗ Q i.
+Proof. by unseal. Qed.
+Lemma monPred_at_wand i P Q : (P -∗ Q) i ⊣⊢ ∀ j, ⌜i ⊑ j⌝ → P j -∗ Q j.
+Proof. by unseal. Qed.
+Lemma monPred_at_persistently i P : (<pers> P) i ⊣⊢ <pers> (P i).
+Proof. by unseal. Qed.
+Lemma monPred_at_in i j : monPred_at (monPred_in j) i ⊣⊢ ⌜j ⊑ i⌝.
+Proof. by unseal. Qed.
+Lemma monPred_at_objectively i P : (<obj> P) i ⊣⊢ ∀ j, P j.
+Proof. by unseal. Qed.
+Lemma monPred_at_subjectively i P : (<subj> P) i ⊣⊢ ∃ j, P j.
+Proof. by unseal. Qed.
+Lemma monPred_at_persistently_if i p P : (<pers>?p P) i ⊣⊢ <pers>?p (P i).
+Proof. destruct p=>//=. apply monPred_at_persistently. Qed.
+Lemma monPred_at_affinely i P : (<affine> P) i ⊣⊢ <affine> (P i).
+Proof. by rewrite /bi_affinely monPred_at_and monPred_at_emp. Qed.
+Lemma monPred_at_affinely_if i p P : (<affine>?p P) i ⊣⊢ <affine>?p (P i).
+Proof. destruct p=>//=. apply monPred_at_affinely. Qed.
+Lemma monPred_at_intuitionistically i P : (□ P) i ⊣⊢ □ (P i).
+Proof. by rewrite /bi_intuitionistically monPred_at_affinely monPred_at_persistently. Qed.
+Lemma monPred_at_intuitionistically_if i p P : (□?p P) i ⊣⊢ □?p (P i).
+Proof. destruct p=>//=. apply monPred_at_intuitionistically. Qed.
+
+Lemma monPred_at_absorbingly i P : (<absorb> P) i ⊣⊢ <absorb> (P i).
+Proof. by rewrite /bi_absorbingly monPred_at_sep monPred_at_pure. Qed.
+Lemma monPred_at_absorbingly_if i p P : (<absorb>?p P) i ⊣⊢ <absorb>?p (P i).
+Proof. destruct p=>//=. apply monPred_at_absorbingly. Qed.
+
+Lemma monPred_wand_force i P Q : (P -∗ Q) i -∗ (P i -∗ Q i).
+Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
+Lemma monPred_impl_force i P Q : (P → Q) i -∗ (P i → Q i).
+Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
+
 (** Instances *)
 Global Instance monPred_at_mono :
   Proper ((⊢) ==> (⊑) ==> (⊢)) monPred_at.
@@ -422,6 +470,9 @@ Global Instance monPred_bi_embed : BiEmbed PROP monPredI :=
 Global Instance monPred_bi_embed_emp : BiEmbedEmp PROP monPredI.
 Proof. split. by unseal. Qed.
 
+Lemma monPred_at_embed i (P : PROP) : monPred_at ⎡P⎤ i ⊣⊢ P.
+Proof. by unseal. Qed.
+
 Lemma monPred_emp_unfold : emp%I = ⎡emp : PROP⎤%I.
 Proof. by unseal. Qed.
 Lemma monPred_pure_unfold : bi_pure = λ φ, ⎡ ⌜ φ ⌝ : PROP⎤%I.
@@ -468,56 +519,6 @@ Global Instance monPred_subjectively_absorbing P : Absorbing P → Absorbing (<s
 Proof. rewrite monPred_subjectively_unfold. apply _. Qed.
 Global Instance monPred_subjectively_affine P : Affine P → Affine (<subj> P).
 Proof. rewrite monPred_subjectively_unfold. apply _. Qed.
-
-(** monPred_at unfolding laws *)
-Lemma monPred_at_embed i (P : PROP) : monPred_at ⎡P⎤ i ⊣⊢ P.
-Proof. by unseal. Qed.
-Lemma monPred_at_pure i (φ : Prop) : monPred_at ⌜φ⌝ i ⊣⊢ ⌜φ⌝.
-Proof. by unseal. Qed.
-Lemma monPred_at_emp i : monPred_at emp i ⊣⊢ emp.
-Proof. by unseal. Qed.
-Lemma monPred_at_and i P Q : (P ∧ Q) i ⊣⊢ P i ∧ Q i.
-Proof. by unseal. Qed.
-Lemma monPred_at_or i P Q : (P ∨ Q) i ⊣⊢ P i ∨ Q i.
-Proof. by unseal. Qed.
-Lemma monPred_at_impl i P Q : (P → Q) i ⊣⊢ ∀ j, ⌜i ⊑ j⌝ → P j → Q j.
-Proof. by unseal. Qed.
-Lemma monPred_at_forall {A} i (Φ : A → monPred) : (∀ x, Φ x) i ⊣⊢ ∀ x, Φ x i.
-Proof. by unseal. Qed.
-Lemma monPred_at_exist {A} i (Φ : A → monPred) : (∃ x, Φ x) i ⊣⊢ ∃ x, Φ x i.
-Proof. by unseal. Qed.
-Lemma monPred_at_sep i P Q : (P ∗ Q) i ⊣⊢ P i ∗ Q i.
-Proof. by unseal. Qed.
-Lemma monPred_at_wand i P Q : (P -∗ Q) i ⊣⊢ ∀ j, ⌜i ⊑ j⌝ → P j -∗ Q j.
-Proof. by unseal. Qed.
-Lemma monPred_at_persistently i P : (<pers> P) i ⊣⊢ <pers> (P i).
-Proof. by unseal. Qed.
-Lemma monPred_at_in i j : monPred_at (monPred_in j) i ⊣⊢ ⌜j ⊑ i⌝.
-Proof. by unseal. Qed.
-Lemma monPred_at_objectively i P : (<obj> P) i ⊣⊢ ∀ j, P j.
-Proof. by unseal. Qed.
-Lemma monPred_at_subjectively i P : (<subj> P) i ⊣⊢ ∃ j, P j.
-Proof. by unseal. Qed.
-Lemma monPred_at_persistently_if i p P : (<pers>?p P) i ⊣⊢ <pers>?p (P i).
-Proof. destruct p=>//=. apply monPred_at_persistently. Qed.
-Lemma monPred_at_affinely i P : (<affine> P) i ⊣⊢ <affine> (P i).
-Proof. by rewrite /bi_affinely monPred_at_and monPred_at_emp. Qed.
-Lemma monPred_at_affinely_if i p P : (<affine>?p P) i ⊣⊢ <affine>?p (P i).
-Proof. destruct p=>//=. apply monPred_at_affinely. Qed.
-Lemma monPred_at_intuitionistically i P : (□ P) i ⊣⊢ □ (P i).
-Proof. by rewrite /bi_intuitionistically monPred_at_affinely monPred_at_persistently. Qed.
-Lemma monPred_at_intuitionistically_if i p P : (□?p P) i ⊣⊢ □?p (P i).
-Proof. destruct p=>//=. apply monPred_at_intuitionistically. Qed.
-
-Lemma monPred_at_absorbingly i P : (<absorb> P) i ⊣⊢ <absorb> (P i).
-Proof. by rewrite /bi_absorbingly monPred_at_sep monPred_at_pure. Qed.
-Lemma monPred_at_absorbingly_if i p P : (<absorb>?p P) i ⊣⊢ <absorb>?p (P i).
-Proof. destruct p=>//=. apply monPred_at_absorbingly. Qed.
-
-Lemma monPred_wand_force i P Q : (P -∗ Q) i -∗ (P i -∗ Q i).
-Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
-Lemma monPred_impl_force i P Q : (P → Q) i -∗ (P i → Q i).
-Proof. unseal. rewrite bi.forall_elim bi.pure_impl_forall bi.forall_elim //. Qed.
 
 (* Laws for monPred_objectively and of Objective. *)
 Lemma monPred_objectively_elim P : <obj> P ⊢ P.
