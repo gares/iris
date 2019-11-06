@@ -435,9 +435,9 @@ Proof. unseal. split. solve_proper. Qed.
 Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
 Proof. solve_proper. Qed.
 
-Global Instance monPred_positive : BiPositive PROP → BiPositive monPredI.
+Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.
 Proof. split => ?. unseal. apply bi_positive. Qed.
-Global Instance monPred_affine : BiAffine PROP → BiAffine monPredI.
+Global Instance monPred_bi_affine : BiAffine PROP → BiAffine monPredI.
 Proof. split => ?. unseal. by apply affine. Qed.
 
 Global Instance monPred_at_persistent P i : Persistent P → Persistent (P i).
