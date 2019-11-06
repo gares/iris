@@ -440,6 +440,13 @@ Proof. split => ?. unseal. apply bi_positive. Qed.
 Global Instance monPred_bi_affine : BiAffine PROP → BiAffine monPredI.
 Proof. split => ?. unseal. by apply affine. Qed.
 
+Lemma monPred_persistent P : (∀ i, Persistent (P i)) → Persistent P.
+Proof. intros HP. constructor=> i. unseal. apply HP. Qed.
+Lemma monPred_absorbing P : (∀ i, Absorbing (P i)) → Absorbing P.
+Proof. intros HP. constructor=> i. unseal. apply HP. Qed.
+Lemma monPred_affine P : (∀ i, Affine (P i)) → Affine P.
+Proof. intros HP. constructor=> i. unseal. apply HP. Qed.
+
 Global Instance monPred_at_persistent P i : Persistent P → Persistent (P i).
 Proof. move => [] /(_ i). by unseal. Qed.
 Global Instance monPred_at_absorbing P i : Absorbing P → Absorbing (P i).
@@ -449,9 +456,9 @@ Proof. move => [] /(_ i). unfold Affine. by unseal. Qed.
 
 (** Note that [monPred_in] is *not* [Plain], because it depends on the index. *)
 Global Instance monPred_in_persistent i : Persistent (@monPred_in I PROP i).
-Proof. unfold Persistent. unseal; split => ?. by apply bi.pure_persistent. Qed.
+Proof. apply monPred_persistent=> j. rewrite monPred_at_in. apply _. Qed.
 Global Instance monPred_in_absorbing i : Absorbing (@monPred_in I PROP i).
-Proof. unfold Absorbing. unseal. split=> ? /=. apply absorbing, _. Qed.
+Proof. apply monPred_absorbing=> j. rewrite monPred_at_in. apply _. Qed.
 
 Definition monPred_embedding_mixin : BiEmbedMixin PROP monPredI monPred_embed.
 Proof.
