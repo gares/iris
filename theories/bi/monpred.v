@@ -447,13 +447,10 @@ Proof. move => [] /(_ i). unfold Absorbing. by unseal. Qed.
 Global Instance monPred_at_affine P i : Affine P → Affine (P i).
 Proof. move => [] /(_ i). unfold Affine. by unseal. Qed.
 
-(* Note that monPred_in is *not* Plain, because it does depend on the
-   index. *)
-Global Instance monPred_in_persistent i :
-  Persistent (@monPred_in I PROP i).
+(** Note that [monPred_in] is *not* [Plain], because it depends on the index. *)
+Global Instance monPred_in_persistent i : Persistent (@monPred_in I PROP i).
 Proof. unfold Persistent. unseal; split => ?. by apply bi.pure_persistent. Qed.
-Global Instance monPred_in_absorbing i :
-  Absorbing (@monPred_in I PROP i).
+Global Instance monPred_in_absorbing i : Absorbing (@monPred_in I PROP i).
 Proof. unfold Absorbing. unseal. split=> ? /=. apply absorbing, _. Qed.
 
 Definition monPred_embedding_mixin : BiEmbedMixin PROP monPredI monPred_embed.
