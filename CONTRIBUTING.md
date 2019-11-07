@@ -26,6 +26,8 @@ a feature branch instead.
 * Wait for CI to publish a new std++ version on the opam archive, then run
   `opam update iris-dev`.
 * In Iris, change the `opam` file to depend on the new version.
+  (In case you do not use opam yourself, you can see recently published versions
+  [in this repository](https://gitlab.mpi-sws.org/iris/opam/commits/master).)
 * Run `make build-dep` (in Iris) to install the new version of std++.
   You may have to do `make clean` as Coq will likely complain about .vo file
   mismatches.
