@@ -720,23 +720,25 @@ Notation "( H $! x1 .. xn 'with' pat )" :=
   (ITrm H (hcons x1 .. (hcons xn hnil) ..) pat) (at level 0, x1, xn at level 9).
 Notation "( H 'with' pat )" := (ITrm H hnil pat) (at level 0).
 
-(* The tactic [iIntoEmpValid] tactic solves a goal [bi_emp_valid Q]. The
+(* The tactic [iIntoEmpValid] tactic solves a goal [bi_emp_valid ?Q]. The
 argument [t] must be a Coq term whose type is of the following shape:
 
 [∀ (x_1 : A_1) .. (x_n : A_n), φ]
 
-and so that we have an instance `AsValid φ Q`.
+for which we have an instance [AsEmpValid φ ?Q].
 
 Examples of such [φ]s are
 
-- [bi_emp_valid P], in which case [Q] should be [P]
-- [P1 ⊢ P2], in which case [Q] should be [P1 -∗ P2]
-- [P1 ⊣⊢ P2], in which case [Q] should be [P1 ↔ P2]
+- [bi_emp_valid P], in which case [Q] is unified with [P].
+- [P1 ⊢ P2], in which case [Q] is unified with [P1 -∗ P2].
+- [P1 ⊣⊢ P2], in which case [Q] is unified with [P1 ↔ P2].
 
-The tactic instantiates each dependent argument [x_i] with an evar and generates
-a goal [R] for each non-dependent argument [x_i : R].  For example, if the
-original goal was [Q] and [t] has type [∀ x, P x → Q], then it generates an evar
-[?x] for [x] and a subgoal [P ?x]. *)
+The tactic instantiates each dependent argument [x_i : A_i] with an evar and
+generates a goal [A_i] for each non-dependent argument [x_i : A_i].
+
+For example, if the initial goal is [bi_emp_valid ?Q] and [t] has type
+[∀ x, P x → R x], then it generates an evar [?x] for [x], a subgoal [P ?x],
+and unifies [?Q] with [R x]. *)
 Local Ltac iIntoEmpValid t :=
   let go_specialize t tT :=
     lazymatch tT with                (* We do not use hnf of tT, because, if
