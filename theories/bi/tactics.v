@@ -81,7 +81,7 @@ Module bi_reflection. Section bi_reflection.
   Lemma flatten_cancel e e' ns :
     cancel ns e = Some e' → flatten e ≡ₚ ns ++ flatten e'.
   Proof.
-    rewrite /cancel fmap_Some=> -[{e'}e' [He ->]]; rewrite flatten_prune.
+    rewrite /cancel fmap_Some=> -[{e'}-e' [He ->]]; rewrite flatten_prune.
     revert e' He; induction ns as [|n ns IH]=> e' He; simplify_option_eq; auto.
     rewrite Permutation_middle -flatten_cancel_go //; eauto.
   Qed.
