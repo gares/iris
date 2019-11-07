@@ -174,18 +174,19 @@ Section tests_iprop.
   Context {I : biIndex} `{!invG Σ}.
 
   Local Notation monPred := (monPred I (iPropI Σ)).
-  Implicit Types P : iProp Σ.
+  Implicit Types P Q R : monPred.
+  Implicit Types 𝓟 𝓠 𝓡 : iProp Σ.
 
-  Lemma test_iInv_0 N P:
-    embed (B:=monPred) (inv N (<pers> P)) ={⊤}=∗  ⎡▷ P⎤.
+  Lemma test_iInv_0 N 𝓟 :
+    embed (B:=monPred) (inv N (<pers> 𝓟)) ={⊤}=∗ ⎡▷ 𝓟⎤.
   Proof.
     iIntros "#H".
     iInv N as "#H2". Show.
     iModIntro. iSplit=>//. iModIntro. iModIntro; auto.
   Qed.
 
-  Lemma test_iInv_0_with_close N P:
-    embed (B:=monPred) (inv N (<pers> P)) ={⊤}=∗ ⎡▷ P⎤.
+  Lemma test_iInv_0_with_close N 𝓟 :
+    embed (B:=monPred) (inv N (<pers> 𝓟)) ={⊤}=∗ ⎡▷ 𝓟⎤.
   Proof.
     iIntros "#H".
     iInv N as "#H2" "Hclose". Show.
