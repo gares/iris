@@ -28,11 +28,15 @@ PROJECTS = [
     { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'c', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'tutorial-popl18', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] }, # these do not work, for some reason
+    { 'name': 'time-credits', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'actris', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
 ]
 
 for project in PROJECTS:
     print("Triggering build for {}{}...".format(project['name'], '' if project['branch'] == 'master' else ':'+project['branch']))
-    url = "https://gitlab.mpi-sws.org/api/v4/projects/iris%2F{}/pipeline".format(project['name'])
+    id = str(project['id']) if 'id' in project else "iris%2F{}".format(project['name'])
+    url = "https://gitlab.mpi-sws.org/api/v4/projects/{}/pipeline".format(id)
     json = {
         'ref': project['branch'],
         'variables': list(map(lambda var: { 'key': var, 'value': os.environ.get(var, "master") }, project['vars'])),
