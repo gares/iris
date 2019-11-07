@@ -19,12 +19,3 @@ Makefile.coq
 Makefile.coq.conf
 *.crashcoqide
 .env
-*.bbl
-*.bcf
-*.blg
-*.log
-*.out
-*.pdf
-*.run.xml
-*.toc
-
