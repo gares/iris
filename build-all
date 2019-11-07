@@ -24,7 +24,6 @@ PROJECTS = [
     { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'lambda-rust', 'branch': 'ci/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
     { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'fairis', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'ora', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'c', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
