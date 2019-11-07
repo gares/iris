@@ -498,9 +498,9 @@ Class AsEmpValid {PROP : bi} (φ : Prop) (P : PROP) :=
   as_emp_valid : φ ↔ bi_emp_valid P.
 Arguments AsEmpValid {_} _%type _%I.
 Class AsEmpValid0 {PROP : bi} (φ : Prop) (P : PROP) :=
-  as_emp_valid_here : AsEmpValid φ P.
+  as_emp_valid_0 : AsEmpValid φ P.
 Arguments AsEmpValid0 {_} _%type _%I.
-Existing Instance as_emp_valid_here | 0.
+Existing Instance as_emp_valid_0 | 0.
 
 Lemma as_emp_valid_1 (φ : Prop) {PROP : bi} (P : PROP) `{!AsEmpValid φ P} :
   φ → bi_emp_valid P.
