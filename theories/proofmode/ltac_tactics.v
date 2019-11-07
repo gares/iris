@@ -3186,6 +3186,7 @@ Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?) : core.
 
 Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit : core.
 Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit : core.
+Hint Extern 1 (envs_entails _ (_ ∗-∗ _)) => iSplit : core.
 Hint Extern 1 (envs_entails _ (▷ _)) => iNext : core.
 Hint Extern 1 (envs_entails _ (■ _)) => iAlways : core.
 Hint Extern 1 (envs_entails _ (<pers> _)) => iAlways : core.
