@@ -158,7 +158,7 @@ Proof.
   iIntros "H".
   let H1 := iFresh in
   let H2 := iFresh in
-  let pat :=constr:(IList [cons (IIdent H1) (cons (IIdent H2) nil)]) in 
+  let pat :=constr:(IList [cons (IIdent H1) (cons (IIdent H2) nil)]) in
   iDestruct "H" as pat.
   iFrame.
 Qed.
