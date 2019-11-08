@@ -76,7 +76,7 @@ Proof.
   iMod (fupd_plain_mask with "H") as %?; eauto.
 Qed.
 
-Lemma wptp_strong_adequacy Φ κs' s n e1 t1 κs e2 t2 σ1 σ2 :
+Lemma wptp_strong_adequacy Φ κs' s n e1 t1 κs t2 σ1 σ2 :
   nsteps n (e1 :: t1, σ1) κs (t2, σ2) →
   state_interp σ1 (κs ++ κs') (length t1) -∗
   WP e1 @ s; ⊤ {{ Φ }} -∗
