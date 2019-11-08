@@ -3153,6 +3153,7 @@ Tactic Notation "iAccu" :=
 
 (** Automation *)
 Hint Extern 0 (_ ⊢ _) => iStartProof : core.
+Hint Extern 0 (bi_emp_valid _) => iStartProof : core.
 
 (* Make sure that by and done solve trivial things in proof mode *)
 Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.

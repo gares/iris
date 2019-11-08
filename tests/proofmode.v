@@ -10,7 +10,7 @@ Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
 Proof. eauto 6. Qed.
 
 Lemma test_eauto_isplit_biwand P : (P ∗-∗ P)%I.
-Proof. iStartProof. eauto. Qed.
+Proof. eauto. Qed.
 
 Check "demo_0".
 Lemma demo_0 P Q : □ (P ∨ Q) -∗ (∀ x, ⌜x = 0⌝ ∨ ⌜x = 1⌝) → (Q ∨ P).
