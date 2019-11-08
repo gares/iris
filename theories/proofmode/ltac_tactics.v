@@ -720,58 +720,9 @@ Notation "( H $! x1 .. xn 'with' pat )" :=
   (ITrm H (hcons x1 .. (hcons xn hnil) ..) pat) (at level 0, x1, xn at level 9).
 Notation "( H 'with' pat )" := (ITrm H hnil pat) (at level 0).
 
-(* The tactic [iIntoEmpValid] tactic solves a goal [bi_emp_valid ?Q]. The
-argument [t] must be a Coq term whose type is of the following shape:
-
-[∀ (x_1 : A_1) .. (x_n : A_n), φ]
-
-for which we have an instance [AsEmpValid φ ?Q].
-
-Examples of such [φ]s are
-
-- [bi_emp_valid P], in which case [Q] is unified with [P].
-- [P1 ⊢ P2], in which case [Q] is unified with [P1 -∗ P2].
-- [P1 ⊣⊢ P2], in which case [Q] is unified with [P1 ↔ P2].
-
-The tactic instantiates each dependent argument [x_i : A_i] with an evar and
-generates a goal [A_i] for each non-dependent argument [x_i : A_i].
-
-For example, if the initial goal is [bi_emp_valid ?Q] and [t] has type
-[∀ x, P x → R x], then it generates an evar [?x] for [x], a subgoal [P ?x],
-and unifies [?Q] with [R x]. *)
-Local Ltac iIntoEmpValid t :=
-  let go_specialize t tT :=
-    lazymatch tT with                (* We do not use hnf of tT, because, if
-                                        entailment is not opaque, then it would
-                                        unfold it. *)
-    | ?P → ?Q => let H := fresh in assert P as H; [|iIntoEmpValid uconstr:(t H); clear H]
-    | ∀ _ : ?T, _ =>
-      (* Put [T] inside an [id] to avoid TC inference from being invoked. *)
-      (* This is a workarround for Coq bug #6583. *)
-      let e := fresh in evar (e:id T);
-      let e' := eval unfold e in e in clear e; iIntoEmpValid (t e')
-    end
-  in
-    (* We try two reduction tactics for the type of t before trying to
-       specialize it. We first try the head normal form in order to
-       unfold all the definition that could hide an entailment.  Then,
-       we try the much weaker [eval cbv zeta], because entailment is
-       not necessarilly opaque, and could be unfolded by [hnf].
-
-       However, for calling type class search, we only use [cbv zeta]
-       in order to make sure we do not unfold [bi_emp_valid]. *)
-    let tT := type of t in
-    first
-      [ let tT' := eval hnf in tT in go_specialize t tT'
-      | let tT' := eval cbv zeta in tT in go_specialize t tT'
-      | let tT' := eval cbv zeta in tT in
-        notypeclasses refine (as_emp_valid_1 tT _ _);
-          [iSolveTC || fail 1 "iPoseProof: not a BI assertion"
-          |exact t]].
-
 Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
   let Δ := iGetCtx in
-  eapply tac_pose_proof_hyp with H Hnew;
+  notypeclasses refine (tac_pose_proof_hyp _ H Hnew _ _);
     pm_reduce;
     lazymatch goal with
     | |- False =>
@@ -787,10 +738,47 @@ Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
     | _ => idtac
     end.
 
-Tactic Notation "iPoseProofCoreLem" constr(lem) "as" tactic3(tac) :=
+(* The tactic [iIntoEmpValid] tactic "imports a Coq lemma into the proofmode",
+i.e. it solves a goal [IntoEmpValid ψ ?Q]. The argument [ψ] must be of the
+following shape:
+
+[∀ (x_1 : A_1) .. (x_n : A_n), φ]
+
+for which we have an instance [AsEmpValid φ ?Q].
+
+Examples of such [φ]s are
+
+- [bi_emp_valid P], in which case [?Q] is unified with [P].
+- [P1 ⊢ P2], in which case [?Q] is unified with [P1 -∗ P2].
+- [P1 ⊣⊢ P2], in which case [?Q] is unified with [P1 ↔ P2].
+
+The tactic instantiates each dependent argument [x_i : A_i] with an evar, and
+generates a goal [A_i] for each non-dependent argument [x_i : A_i].
+
+For example, if goal is [bi_emp_valid (∀ x, P x → R1 x ⊢ R2 x) ?Q], then the
+[iIntoEmpValid] tactic generates an evar [?x], a subgoal [P ?x], and unifies
+[?Q] with [R1 ?x -∗ R2 ?x]. *)
+Ltac iIntoEmpValid_go := first
+  [(* Case [φ → ψ] *)
+   notypeclasses refine (into_emp_valid_impl _ _ _ _ _);
+     [(*goal for [φ] *)|iIntoEmpValid_go]
+  |(* Case [∀ x : A, φ] *)
+   notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
+  |(* Case [P ⊢ Q], [P ⊣⊢ Q], [bi_emp_valid P] *)
+   notypeclasses refine (into_emp_valid_here _ _ _)].
+
+Ltac iIntoEmpValid :=
+  (* Factor out the base case of the loop to avoid needless backtracking *)
+  iIntoEmpValid_go;
+    [.. (* goals for premises *)
+    |iSolveTC ||
+     let φ := lazymatch goal with |- AsEmpValid ?φ _ => φ end in
+     fail "iPoseProof:" φ "not a BI assertion"].
+
+Tactic Notation "iPoseProofCoreLem" open_constr(lem) "as" tactic3(tac) :=
   let Hnew := iFresh in
-  eapply tac_pose_proof with Hnew _; (* (j:=H) *)
-    [iIntoEmpValid lem
+  notypeclasses refine (tac_pose_proof _ Hnew _ _ _ lem _ _);
+    [iIntoEmpValid
     |pm_reduce;
      lazymatch goal with
      | |- False =>
