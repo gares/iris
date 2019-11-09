@@ -213,7 +213,7 @@ Proof.
 Qed.
 
 Lemma into_wand_monPred_at_unknown_unknown p q R P 𝓟 Q 𝓠 i :
-  IntoWand p q R P Q →  MakeMonPredAt i P 𝓟 → MakeMonPredAt i Q 𝓠 →
+  IntoWand p q R P Q → MakeMonPredAt i P 𝓟 → MakeMonPredAt i Q 𝓠 →
   IntoWand p q (R i) 𝓟 𝓠.
 Proof.
   rewrite /IntoWand /MakeMonPredAt /bi_affinely_if /bi_persistently_if.
