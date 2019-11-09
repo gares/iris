@@ -4,6 +4,13 @@ From iris.proofmode Require Import base modality_instances classes ltac_tactics.
 Set Default Proof Using "Type".
 Import bi.
 
+(** The following lemma is not an instance, but defined using a [Hint Extern] to
+enable the better unification algorithm. *)
+Lemma from_assumption_exact {PROP : bi} p (P : PROP) : FromAssumption p P P.
+Proof. by rewrite /FromAssumption /= intuitionistically_if_elim. Qed.
+Hint Extern 0 (FromAssumption _ _ _) =>
+  notypeclasses refine (from_assumption_exact _ _) : typeclass_instances.
+
 Section bi_instances.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
@@ -59,9 +66,6 @@ Global Instance into_absorbingly_default P : IntoAbsorbingly (<absorb> P) P | 10
 Proof. by rewrite /IntoAbsorbingly. Qed.
 
 (** FromAssumption *)
-Global Instance from_assumption_exact p P : FromAssumption p P P | 0.
-Proof. by rewrite /FromAssumption /= intuitionistically_if_elim. Qed.
-
 Global Instance from_assumption_persistently_r P Q :
   FromAssumption true P Q → KnownRFromAssumption true P (<pers> Q).
 Proof.
