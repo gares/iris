@@ -220,6 +220,11 @@ Section iris_tests.
     iIntros "H"; iInv "H" as (v1 v2 v3) "(?&?&_)".
     eauto.
   Qed.
+
+  Theorem test_iApply_inG `{!inG Σ A} γ (x x' : A) :
+    x' ≼ x →
+    own γ x -∗ own γ x'.
+  Proof. intros. by iApply own_mono. Qed.
 End iris_tests.
 
 Section monpred_tests.

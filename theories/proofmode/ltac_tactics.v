@@ -70,7 +70,7 @@ Tactic Notation "iStartProof" :=
   | |- envs_entails _ _ => idtac
   | |- ?φ => notypeclasses refine (as_emp_valid_2 φ _ _);
                [iSolveTC || fail "iStartProof: not a BI assertion"
-               |apply tac_start]
+               |notypeclasses refine (tac_start _ _)]
   end.
 
 (* Same as above, with 2 differences :
