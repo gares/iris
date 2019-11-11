@@ -7,7 +7,7 @@ language for simple examples.
 ## Language
 
 HeapLang is a lambda-calculus with operations to allocate individual locations,
-`load`, `store`, `CAS` (compare-and-swap) and `FAA` (fetch-and-add). Moreover,
+`load`, `store`, `CmpXchg` (compare-and-exchange) and `FAA` (fetch-and-add). Moreover,
 it has a `fork` construct to spawn new threads.  In terms of values, we have
 integers, booleans, unit, heap locations, as well as (binary) sums and products.
 
@@ -82,11 +82,11 @@ Tactics for the heap:
   assertion in the spatial context, and fails if it cannot be found.
 - `wp_store`: Reduce a store operation.  This automatically finds the points-to
   assertion in the spatial context, and fails if it cannot be found.
-- `wp_cas_suc`, `wp_cas_fail`: Reduce a succeeding/failing CAS.  This
+- `wp_cmpxchg_suc`, `wp_cmpxchg_fail`: Reduce a succeeding/failing CmpXchg.  This
   automatically finds the points-to assertion.  It also automatically tries to
-  solve the (in)equality to show that the CAS succeeds/fails, and opens a new
+  solve the (in)equality to show that the CmpXchg succeeds/fails, and opens a new
   goal if it cannot prove this goal.
-- `wp_cas as H1 | H2`: Reduce a CAS, performing a case distinction over whether
+- `wp_cmpxchg as H1 | H2`: Reduce a CmpXchg, performing a case distinction over whether
   it succeeds or fails.  This automatically finds the points-to assertion.  The
   proof of equality in the first new subgoal will be called `H1`, and the proof
   of the inequality in the second new subgoal will be called `H2`.
