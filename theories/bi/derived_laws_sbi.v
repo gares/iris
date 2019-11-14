@@ -187,6 +187,8 @@ Proof.
 Qed.
 Lemma later_exist_2 {A} (Φ : A → PROP) : (∃ a, ▷ Φ a) ⊢ ▷ (∃ a, Φ a).
 Proof. apply exist_elim; eauto using exist_intro. Qed.
+Lemma later_exist_except_0 {A} (Φ : A → PROP) : ▷ (∃ a, Φ a) ⊢ ◇ (∃ a, ▷ Φ a).
+Proof. apply later_exist_false. Qed.
 Lemma later_exist `{Inhabited A} (Φ : A → PROP) : ▷ (∃ a, Φ a) ⊣⊢ (∃ a, ▷ Φ a).
 Proof.
   apply: anti_symm; [|apply later_exist_2].
