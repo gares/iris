@@ -6,7 +6,10 @@ Class MakeMonPredAt {I : biIndex} {PROP : bi} (i : I)
       (P : monPred I PROP) (𝓟 : PROP) :=
   make_monPred_at : P i ⊣⊢ 𝓟.
 Arguments MakeMonPredAt {_ _} _ _%I _%I.
-Hint Mode MakeMonPredAt + + - ! - : typeclass_instances.
+(** Since [MakeMonPredAt] is used by [AsEmpValid] to import lemmas into the
+proof mode, the index [I] and BI [PROP] often contain evars. Hence, it is
+important to use the mode [!] also for the first two arguments. *)
+Hint Mode MakeMonPredAt ! ! - ! - : typeclass_instances.
 
 Class IsBiIndexRel {I : biIndex} (i j : I) := is_bi_index_rel : i ⊑ j.
 Hint Mode IsBiIndexRel + - - : typeclass_instances.

@@ -93,5 +93,5 @@ Lemma step_fupdN_soundness' `{!invPreG Σ} φ n :
 Proof.
   iIntros (Hiter). eapply (step_fupdN_soundness _ n).
   iIntros (Hinv). iPoseProof (Hiter Hinv) as "Hiter".
-  iApply (step_fupdN_wand with "Hiter"). by iApply (fupd_mask_weaken _ _ _).
+  iApply (step_fupdN_wand with "Hiter"). by iApply fupd_mask_weaken.
 Qed.

@@ -622,7 +622,7 @@ Qed.
 Global Instance id_free_op_r x y : IdFree y → Cancelable x → IdFree (x ⋅ y).
 Proof.
   intros ?? z ? Hid%symmetry. revert Hid. rewrite -assoc=>/(cancelableN x) ?.
-  eapply (id_free0_r _); [by eapply cmra_validN_op_r |symmetry; eauto].
+  eapply (id_free0_r y); [by eapply cmra_validN_op_r |symmetry; eauto].
 Qed.
 Global Instance id_free_op_l x y : IdFree x → Cancelable y → IdFree (x ⋅ y).
 Proof. intros. rewrite comm. apply _. Qed.

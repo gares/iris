@@ -95,7 +95,8 @@ Proof. iApply saved_anything_alloc. Qed.
 Lemma saved_prop_agree `{!savedPropG Σ} γ P Q :
   saved_prop_own γ P -∗ saved_prop_own γ Q -∗ ▷ (P ≡ Q).
 Proof.
-  iIntros "HP HQ". iApply later_equivI. iApply (saved_anything_agree with "HP HQ").
+  iIntros "HP HQ". iApply later_equivI.
+  iApply (saved_anything_agree (F := ▶ ∙) with "HP HQ").
 Qed.
 
 (* Saved predicates. *)
@@ -129,6 +130,6 @@ Lemma saved_pred_agree `{!savedPredG Σ A} γ Φ Ψ x :
   saved_pred_own γ Φ -∗ saved_pred_own γ Ψ -∗ ▷ (Φ x ≡ Ψ x).
 Proof.
   unfold saved_pred_own. iIntros "#HΦ #HΨ /=". iApply later_equivI.
-  iDestruct (saved_anything_agree with "HΦ HΨ") as "Heq".
+  iDestruct (saved_anything_agree (F := A -d> ▶ ∙) with "HΦ HΨ") as "Heq".
   by iDestruct (discrete_fun_equivI with "Heq") as "?".
 Qed.

@@ -193,4 +193,12 @@ Section tests_iprop.
     iMod ("Hclose" with "H2").
     iModIntro. iModIntro. by iNext.
   Qed.
+
+  Lemma test_iPoseProof `{inG Σ A} P γ (x y : A) :
+    x ~~> y → P ∗ ⎡own γ x⎤ ==∗ ⎡own γ y⎤.
+  Proof.
+    iIntros (?) "[_ Hγ]".
+    iPoseProof (own_update with "Hγ") as "H"; first done.
+    by iMod "H".
+  Qed.
 End tests_iprop.

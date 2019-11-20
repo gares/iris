@@ -578,13 +578,13 @@ Tactic failure: iStartProof: not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (tactic3)" and
-"<iris.proofmode.ltac_tactics.iIntoEmpValid>", last call failed.
-Tactic failure: iPoseProof: not a BI assertion.
+"iPoseProofCoreLem (open_constr) as (tactic3)" and 
+"iIntoEmpValid", last call failed.
+Tactic failure: iPoseProof: (0 = 0) not a BI assertion.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (tactic3)", "tac" (bound to
+"iPoseProofCoreLem (open_constr) as (tactic3)", "tac" (bound to
 fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
 fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
 fun H => iDestructHyp H as pat), "iDestructHyp (constr) as (constr)",
@@ -604,7 +604,7 @@ Tactic failure: iPoseProof: "Hx" not found.
 The command has indeed failed with message:
 In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
 "iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (constr) as (tactic3)", "tac" (bound to
+"iPoseProofCoreLem (open_constr) as (tactic3)", "tac" (bound to
 fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
 fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "spec_tac" (bound to
 fun Htmp =>
