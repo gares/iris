@@ -741,6 +741,7 @@ Proof.
   - right; eauto using reducible_no_obs_reducible.
 Qed.
 
+(** This is the top-level erasure theorem: erasure preserves adequacy. *)
 Theorem erasure e σ φ :
   adequate NotStuck e σ φ →
   adequate NotStuck (erase_expr e) (erase_state σ)
