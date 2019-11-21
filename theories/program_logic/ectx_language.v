@@ -61,13 +61,16 @@ Structure ectxLanguage := EctxLanguage {
     EctxLanguageMixin of_val to_val empty_ectx comp_ectx fill head_step
 }.
 
+Bind Scope expr_scope with expr.
+Bind Scope val_scope with val.
+
 Arguments EctxLanguage {_ _ _ _ _ _ _ _ _ _ _} _.
-Arguments of_val {_} _%V.
-Arguments to_val {_} _%E.
+Arguments of_val {_} _.
+Arguments to_val {_} _.
 Arguments empty_ectx {_}.
 Arguments comp_ectx {_} _ _.
-Arguments fill {_} _ _%E.
-Arguments head_step {_} _%E _ _ _%E _ _.
+Arguments fill {_} _ _.
+Arguments head_step {_} _ _ _ _ _ _.
 
 (* From an ectx_language, we can construct a language. *)
 Section ectx_language.

@@ -65,11 +65,14 @@ Structure ectxiLanguage := EctxiLanguage {
     EctxiLanguageMixin of_val to_val fill_item head_step
 }.
 
+Bind Scope expr_scope with expr.
+Bind Scope val_scope with val.
+
 Arguments EctxiLanguage {_ _ _ _ _ _ _ _ _} _.
-Arguments of_val {_} _%V.
-Arguments to_val {_} _%E.
-Arguments fill_item {_} _ _%E.
-Arguments head_step {_} _%E _ _ _%E _ _.
+Arguments of_val {_} _.
+Arguments to_val {_} _.
+Arguments fill_item {_} _ _.
+Arguments head_step {_} _ _ _ _ _ _.
 
 Section ectxi_language.
   Context {Λ : ectxiLanguage}.
@@ -144,7 +147,6 @@ Section ectxi_language.
   Proof. change (LanguageCtx (fill [Ki])). apply _. Qed.
 End ectxi_language.
 
-Arguments fill {_} _ _%E.
 Arguments ectxi_lang_ectx : clear implicits.
 Arguments ectxi_lang : clear implicits.
 Coercion ectxi_lang_ectx : ectxiLanguage >-> ectxLanguage.
