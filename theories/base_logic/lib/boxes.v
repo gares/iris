@@ -1,5 +1,5 @@
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import excl_auth gmap agree.
+From iris.algebra Require Import lib.excl_auth gmap agree.
 From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 Import uPred.

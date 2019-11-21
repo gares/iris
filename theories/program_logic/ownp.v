@@ -1,5 +1,5 @@
 From iris.proofmode Require Import tactics classes.
-From iris.algebra Require Import excl_auth.
+From iris.algebra Require Import lib.excl_auth.
 From iris.program_logic Require Export weakestpre.
 From iris.program_logic Require Import lifting adequacy.
 From iris.program_logic Require ectx_language.
