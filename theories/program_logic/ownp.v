@@ -1,5 +1,5 @@
 From iris.proofmode Require Import tactics classes.
-From iris.algebra Require Import excl auth.
+From iris.algebra Require Import lib.excl_auth.
 From iris.program_logic Require Export weakestpre.
 From iris.program_logic Require Import lifting adequacy.
 From iris.program_logic Require ectx_language.
@@ -16,24 +16,24 @@ union.
 
 Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
   ownP_invG : invG Σ;
-  ownP_inG :> inG Σ (authR (optionUR (exclR (stateO Λ))));
+  ownP_inG :> inG Σ (excl_authR (stateO Λ));
   ownP_name : gname;
 }.
 
 Instance ownPG_irisG `{!ownPG Λ Σ} : irisG Λ Σ := {
   iris_invG := ownP_invG;
-  state_interp σ κs _ := own ownP_name (● (Excl' σ))%I;
+  state_interp σ κs _ := own ownP_name (●E σ)%I;
   fork_post _ := True%I;
 }.
 Global Opaque iris_invG.
 
 Definition ownPΣ (Λ : language) : gFunctors :=
   #[invΣ;
-    GFunctor (authR (optionUR (exclR (stateO Λ))))].
+    GFunctor (excl_authR (stateO Λ))].
 
 Class ownPPreG (Λ : language) (Σ : gFunctors) : Set := IrisPreG {
   ownPPre_invG :> invPreG Σ;
-  ownPPre_state_inG :> inG Σ (authR (optionUR (exclR (stateO Λ))))
+  ownPPre_state_inG :> inG Σ (excl_authR (stateO Λ))
 }.
 
 Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.
@@ -41,8 +41,7 @@ Proof. solve_inG. Qed.
 
 (** Ownership *)
 Definition ownP `{!ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
-  own ownP_name (◯ (Excl' σ)).
-
+  own ownP_name (◯E σ).
 Typeclasses Opaque ownP.
 Instance: Params (@ownP) 3 := {}.
 
@@ -53,9 +52,9 @@ Theorem ownP_adequacy Σ `{!ownPPreG Λ Σ} s e σ φ :
 Proof.
   intros Hwp. apply (wp_adequacy Σ _).
   iIntros (? κs).
-  iMod (own_alloc (● (Excl' σ) ⋅ ◯ (Excl' σ))) as (γσ) "[Hσ Hσf]";
-    first by apply auth_both_valid.
-  iModIntro. iExists (λ σ κs, own γσ (● (Excl' σ)))%I, (λ _, True%I).
+  iMod (own_alloc (●E σ ⋅ ◯E σ)) as (γσ) "[Hσ Hσf]";
+    first by apply excl_auth_valid.
+  iModIntro. iExists (λ σ κs, own γσ (●E σ))%I, (λ _, True%I).
   iFrame "Hσ".
   iApply (Hwp (OwnPG _ _ _ _ γσ)). rewrite /ownP. iFrame.
 Qed.
@@ -69,9 +68,9 @@ Theorem ownP_invariance Σ `{!ownPPreG Λ Σ} s e σ1 t2 σ2 φ :
 Proof.
   intros Hwp Hsteps. eapply (wp_invariance Σ Λ s e σ1 t2 σ2 _)=> //.
   iIntros (? κs).
-  iMod (own_alloc (● (Excl' σ1) ⋅ ◯ (Excl' σ1))) as (γσ) "[Hσ Hσf]";
+  iMod (own_alloc (●E σ1 ⋅ ◯E σ1)) as (γσ) "[Hσ Hσf]";
     first by apply auth_both_valid.
-  iExists (λ σ κs' _, own γσ (● (Excl' σ)))%I, (λ _, True%I).
+  iExists (λ σ κs' _, own γσ (●E σ))%I, (λ _, True%I).
   iFrame "Hσ".
   iMod (Hwp (OwnPG _ _ _ _ γσ) with "[Hσf]") as "[$ H]";
     first by rewrite /ownP; iFrame.
@@ -118,8 +117,7 @@ Section lifting.
       iModIntro; iSplit; [by destruct s|]; iNext; iIntros (e2 σ2 efs Hstep).
       iDestruct "Hσκs" as "Hσ". rewrite /ownP.
       iMod (own_update_2 with "Hσ Hσf") as "[Hσ Hσf]".
-      { apply auth_update. apply option_local_update.
-         by apply (exclusive_local_update _ (Excl σ2)). }
+      { apply excl_auth_update. }
       iFrame "Hσ". iApply ("H" with "[]"); eauto with iFrame.
   Qed.
 

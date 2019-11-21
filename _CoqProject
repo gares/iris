@@ -17,7 +17,6 @@ theories/algebra/big_op.v
 theories/algebra/cmra_big_op.v
 theories/algebra/sts.v
 theories/algebra/auth.v
-theories/algebra/frac_auth.v
 theories/algebra/gmap.v
 theories/algebra/ofe.v
 theories/algebra/base.v
@@ -39,7 +38,9 @@ theories/algebra/deprecated.v
 theories/algebra/proofmode_classes.v
 theories/algebra/ufrac.v
 theories/algebra/namespace_map.v
-theories/algebra/ufrac_auth.v
+theories/algebra/lib/excl_auth.v
+theories/algebra/lib/frac_auth.v
+theories/algebra/lib/ufrac_auth.v
 theories/bi/notation.v
 theories/bi/interface.v
 theories/bi/derived_connectives.v

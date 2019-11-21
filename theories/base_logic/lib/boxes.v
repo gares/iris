@@ -1,5 +1,5 @@
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import excl auth gmap agree.
+From iris.algebra Require Import lib.excl_auth gmap agree.
 From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 Import uPred.
@@ -7,10 +7,10 @@ Import uPred.
 (** The CMRAs we need. *)
 Class boxG Σ :=
   boxG_inG :> inG Σ (prodR
-    (authR (optionUR (exclR boolO)))
+    (excl_authR boolO)
     (optionR (agreeR (laterO (iPrePropO Σ))))).
 
-Definition boxΣ : gFunctors := #[ GFunctor (authR (optionUR (exclR boolO)) *
+Definition boxΣ : gFunctors := #[ GFunctor (excl_authR boolO *
                                             optionRF (agreeRF (▶ ∙)) ) ].
 
 Instance subG_boxΣ Σ : subG boxΣ Σ → boxG Σ.
@@ -21,14 +21,14 @@ Section box_defs.
 
   Definition slice_name := gname.
 
-  Definition box_own_auth (γ : slice_name) (a : auth (option (excl bool))) : iProp Σ :=
+  Definition box_own_auth (γ : slice_name) (a : excl_authR boolO) : iProp Σ :=
     own γ (a, None).
 
   Definition box_own_prop (γ : slice_name) (P : iProp Σ) : iProp Σ :=
     own γ (ε, Some (to_agree (Next (iProp_unfold P)))).
 
   Definition slice_inv (γ : slice_name) (P : iProp Σ) : iProp Σ :=
-    (∃ b, box_own_auth γ (● Excl' b) ∗ if b then P else True)%I.
+    (∃ b, box_own_auth γ (●E b) ∗ if b then P else True)%I.
 
   Definition slice (γ : slice_name) (P : iProp Σ) : iProp Σ :=
     (box_own_prop γ P ∗ inv N (slice_inv γ P))%I.
@@ -36,7 +36,7 @@ Section box_defs.
   Definition box (f : gmap slice_name bool) (P : iProp Σ) : iProp Σ :=
     (∃ Φ : slice_name → iProp Σ,
       ▷ (P ≡ [∗ map] γ ↦ _ ∈ f, Φ γ) ∗
-      [∗ map] γ ↦ b ∈ f, box_own_auth γ (◯ Excl' b) ∗ box_own_prop γ (Φ γ) ∗
+      [∗ map] γ ↦ b ∈ f, box_own_auth γ (◯E b) ∗ box_own_prop γ (Φ γ) ∗
                          inv N (slice_inv γ (Φ γ)))%I.
 End box_defs.
 
@@ -75,18 +75,18 @@ Global Instance box_proper f : Proper ((≡) ==> (≡)) (box N f).
 Proof. apply ne_proper, _. Qed.
 
 Lemma box_own_auth_agree γ b1 b2 :
-  box_own_auth γ (● Excl' b1) ∗ box_own_auth γ (◯ Excl' b2) ⊢ ⌜b1 = b2⌝.
+  box_own_auth γ (●E b1) ∗ box_own_auth γ (◯E b2) ⊢ ⌜b1 = b2⌝.
 Proof.
   rewrite /box_own_prop -own_op own_valid prod_validI /= and_elim_l.
-  by iDestruct 1 as % [[[] [=]%leibniz_equiv] ?]%auth_both_valid.
+  by iDestruct 1 as %?%excl_auth_agreeL.
 Qed.
 
 Lemma box_own_auth_update γ b1 b2 b3 :
-  box_own_auth γ (● Excl' b1) ∗ box_own_auth γ (◯ Excl' b2)
-  ==∗ box_own_auth γ (● Excl' b3) ∗ box_own_auth γ (◯ Excl' b3).
+  box_own_auth γ (●E b1) ∗ box_own_auth γ (◯E b2)
+  ==∗ box_own_auth γ (●E b3) ∗ box_own_auth γ (◯E b3).
 Proof.
   rewrite /box_own_auth -!own_op. apply own_update, prod_update; last done.
-  by apply auth_update, option_local_update, exclusive_local_update.
+  apply excl_auth_update.
 Qed.
 
 Lemma box_own_agree γ Q1 Q2 :
@@ -108,7 +108,7 @@ Lemma slice_insert_empty E q f Q P :
     slice N γ Q ∗ ▷?q box N (<[γ:=false]> f) (Q ∗ P).
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
-  iMod (own_alloc_cofinite (● Excl' false ⋅ ◯ Excl' false,
+  iMod (own_alloc_cofinite (●E false ⋅ ◯E false,
     Some (to_agree (Next (iProp_unfold Q)))) (dom _ f))
     as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid|]).
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".
@@ -225,7 +225,7 @@ Lemma box_empty E f P :
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
   iAssert (([∗ map] γ↦b ∈ f, ▷ Φ γ) ∗
-    [∗ map] γ↦b ∈ f, box_own_auth γ (◯ Excl' false) ∗  box_own_prop γ (Φ γ) ∗
+    [∗ map] γ↦b ∈ f, box_own_auth γ (◯E false) ∗  box_own_prop γ (Φ γ) ∗
       inv N (slice_inv γ (Φ γ)))%I with "[> Hf]" as "[HΦ ?]".
   { rewrite -big_sepM_sep -big_sepM_fupd. iApply (@big_sepM_impl with "[$Hf]").
     iIntros "!#" (γ b ?) "(Hγ' & #HγΦ & #Hinv)".
