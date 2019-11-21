@@ -25,6 +25,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   Coq goal `big star of context ⊢ proof mode goal`.
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
   Introduce `iProp` for the `Type` carrier of `iPropO`.
+* Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
+  `algebra/lib`.
+* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
 
 ## Iris 3.2.0 (released 2019-08-29)
 
