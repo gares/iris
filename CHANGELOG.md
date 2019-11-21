@@ -28,6 +28,16 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
   `algebra/lib`.
 * Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
+* Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
+  `iAssumption`, see https://gitlab.mpi-sws.org/iris/iris/merge_requests/329
+  This has two consequences:
+  1. Coq's new unification algorithm is used more often by the proof mode
+     tactics
+  2. TC constraints are solved eagerly, see https://github.com/coq/coq/issues/6583.
+  In order to port your development, it is often needed to instantiate evars
+  explicitly (since TC search is performed less eagerly), and in few cases it is
+  needed to unfold definitions explicitly (due to new unification algorithm
+  behaving differently).
 
 ## Iris 3.2.0 (released 2019-08-29)
 
