@@ -12,6 +12,13 @@ Proof. eauto 6. Qed.
 Lemma test_eauto_isplit_biwand P : (P ∗-∗ P)%I.
 Proof. eauto. Qed.
 
+Fixpoint test_fixpoint (n : nat) {struct n} : True → emp ⊢@{PROP} ⌜ (n + 0)%nat = n ⌝%I.
+Proof.
+  case: n => [|n] /=; first (iIntros (_) "_ !%"; reflexivity).
+  iIntros (_) "_".
+  by iDestruct (test_fixpoint with "[//]") as %->.
+Qed.
+
 Check "demo_0".
 Lemma demo_0 P Q : □ (P ∨ Q) -∗ (∀ x, ⌜x = 0⌝ ∨ ⌜x = 1⌝) → (Q ∨ P).
 Proof.

@@ -777,7 +777,7 @@ Ltac iIntoEmpValid :=
 
 Tactic Notation "iPoseProofCoreLem" open_constr(lem) "as" tactic3(tac) :=
   let Hnew := iFresh in
-  notypeclasses refine (tac_pose_proof _ Hnew _ _ _ lem _ _);
+  notypeclasses refine (tac_pose_proof _ Hnew _ _ (into_emp_valid_proj _ _ _ lem) _);
     [iIntoEmpValid
     |pm_reduce;
      lazymatch goal with
