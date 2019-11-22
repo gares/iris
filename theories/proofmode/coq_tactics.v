@@ -453,18 +453,26 @@ Proof.
 Qed.
 
 Definition IntoEmpValid (φ : Type) (P : PROP) := φ → bi_emp_valid P.
+(** These lemmas are [Defined] because the guardedness checker must see
+through them. See https://gitlab.mpi-sws.org/iris/iris/issues/274. For the
+same reason, their bodies use as little automation as possible. *)
 Lemma into_emp_valid_here φ P : AsEmpValid φ P → IntoEmpValid φ P.
-Proof. by intros [??]. Qed.
+Proof. by intros [??]. Defined.
 Lemma into_emp_valid_impl (φ ψ : Type) P :
   φ → IntoEmpValid ψ P → IntoEmpValid (φ → ψ) P.
-Proof. rewrite /IntoEmpValid; auto. Qed.
+Proof. rewrite /IntoEmpValid => Hφ Hi1 Hi2. apply Hi1, Hi2, Hφ. Defined.
 Lemma into_emp_valid_forall {A} (φ : A → Type) P x :
   IntoEmpValid (φ x) P → IntoEmpValid (∀ x : A, φ x) P.
-Proof. rewrite /IntoEmpValid; auto. Qed.
+Proof. rewrite /IntoEmpValid => Hi1 Hi2. apply Hi1, Hi2. Defined.
+Lemma into_emp_valid_proj φ P : IntoEmpValid φ P → φ → bi_emp_valid P.
+Proof. intros HP. apply HP. Defined.
 
-Lemma tac_pose_proof Δ j (φ : Prop) P Q :
-  φ →
-  IntoEmpValid φ P →
+(** When called by the proof mode, the proof of [P] is produced by calling
+[into_emp_valid_proj]. That call must be transparent to the guardedness
+checker, per https://gitlab.mpi-sws.org/iris/iris/issues/274; hence, it must
+be done _outside_ [tac_pose_proof], so the latter can remain opaque. *)
+Lemma tac_pose_proof Δ j P Q :
+  P →
   match envs_app true (Esnoc Enil j P) Δ with
   | None => False
   | Some Δ' => envs_entails Δ' Q
@@ -472,8 +480,8 @@ Lemma tac_pose_proof Δ j (φ : Prop) P Q :
   envs_entails Δ Q.
 Proof.
   destruct (envs_app _ _ _) as [Δ'|] eqn:?; last done.
-  rewrite envs_entails_eq => ? HP <-. rewrite envs_app_singleton_sound //=.
-  by rewrite -HP //= intuitionistically_emp emp_wand.
+  rewrite envs_entails_eq => HP <-. rewrite envs_app_singleton_sound //=.
+  by rewrite -HP /= intuitionistically_emp emp_wand.
 Qed.
 
 Lemma tac_pose_proof_hyp Δ i j Q :
