@@ -33,7 +33,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   This has two consequences:
   1. Coq's "new" unification algorithm (the one in `refine`, not the "old" one
      in `apply`) is used more often by the proof mode tactics.
-  2. TC constraints are solved eagerly, see https://github.com/coq/coq/issues/6583.
+  2. Due to the use of `notypeclasses refine`, TC constraints are solved less
+     eagerly, see https://github.com/coq/coq/issues/6583.
   In order to port your development, it is often needed to instantiate evars
   explicitly (since TC search is performed less eagerly), and in few cases it is
   needed to unfold definitions explicitly (due to new unification algorithm
