@@ -33,6 +33,12 @@ build-coq.dev:
     OPAM_PINS: "coq version dev"
     CI_COQCHK: "1"
 
+build-coq.8.11.dev:
+  <<: *template
+  variables:
+    OPAM_PINS: "coq version 8.11.dev"
+    CI_COQCHK: "1"
+
 build-coq.8.10.1:
   <<: *template
   variables:
