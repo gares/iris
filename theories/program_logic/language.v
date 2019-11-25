@@ -168,9 +168,17 @@ Section language.
     to_val e = None → irreducible e σ → irreducible (K e) σ.
   Proof. rewrite -!not_reducible. naive_solver eauto using reducible_fill. Qed.
 
+  Lemma not_stuck_fill K `{!@LanguageCtx Λ K} e σ :
+    not_stuck (K e) σ → not_stuck e σ.
+  Proof.
+    rewrite /not_stuck -!not_eq_None_Some. intros [?|?].
+    - auto using fill_not_val.
+    - destruct (decide (to_val e = None)); auto using reducible_fill.
+  Qed.
+
   Lemma stuck_fill `{!@LanguageCtx Λ K} e σ :
     stuck e σ → stuck (K e) σ.
-  Proof. intros [??]. split. by apply fill_not_val. by apply irreducible_fill. Qed.
+  Proof. rewrite -!not_not_stuck. eauto using not_stuck_fill. Qed.
 
   Lemma step_Permutation (t1 t1' t2 : list (expr Λ)) κ σ1 σ2 :
     t1 ≡ₚ t1' → step (t1,σ1) κ (t2,σ2) → ∃ t2', t2 ≡ₚ t2' ∧ step (t1',σ1) κ (t2',σ2).
@@ -234,16 +242,6 @@ Section language.
   Lemma rtc_pure_step_ctx K `{!@LanguageCtx Λ K} e1 e2 :
     rtc pure_step e1 e2 → rtc pure_step (K e1) (K e2).
   Proof. eauto using rtc_congruence, pure_step_ctx. Qed.
-
-  Lemma not_stuck_under_ectx K `{!@LanguageCtx Λ K} e σ :
-    not_stuck (K e) σ → not_stuck e σ.
-  Proof.
-    rewrite /not_stuck /reducible /=.
-    intros [[? HK]|(?&?&?&?&Hstp)]; simpl in *.
-    - left. apply not_eq_None_Some; intros ?%fill_not_val; simplify_eq.
-    - destruct (to_val e) eqn:?; first by left; eauto.
-      apply fill_step_inv in Hstp; naive_solver.
-  Qed.
 
   (* We do not make this an instance because it is awfully general. *)
   Lemma pure_exec_ctx K `{!@LanguageCtx Λ K} φ n e1 e2 :
