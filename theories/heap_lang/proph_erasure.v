@@ -470,7 +470,7 @@ Proof.
             lazymatch K with
             | [] => fail
             | _ => apply (prim_step_matched_by_erased_steps_ectx K);
-                    apply IH; [done| by eapply (not_stuck_under_ectx (fill K))]
+                    apply IH; [done| by eapply (not_stuck_fill (fill K))]
             end
         in
         reshape_expr e tac
@@ -587,11 +587,11 @@ Proof.
         end.
       apply (prim_step_matched_by_erased_steps_ectx [ResolveMCtx _ _]).
       apply IH; [rewrite !app_length /=; lia|done|
-                 by eapply (not_stuck_under_ectx (fill [ResolveMCtx _ _])); simpl].
+                 by eapply (not_stuck_fill (fill [ResolveMCtx _ _])); simpl].
   - (** e1 is of the form ([Resolve] e1_ e1_2 e13) and e1_3 takes a prim_step. *)
     apply (prim_step_matched_by_erased_steps_ectx [ResolveRCtx _ _]).
     apply IH; [rewrite !app_length /=; lia|done|
-                 by eapply (not_stuck_under_ectx (fill [ResolveRCtx _ _])); simpl].
+                 by eapply (not_stuck_fill (fill [ResolveRCtx _ _])); simpl].
 Qed.
 
 Lemma erased_prim_step_prim_step e1 σ1 κ e2 σ2 efs:
