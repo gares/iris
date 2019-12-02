@@ -1,7 +1,7 @@
 From iris.algebra Require Export cmra updates.
 Set Default Proof Using "Type".
 
-Record DraMixin A `{Equiv A, Core A, Disjoint A, Op A, Valid A} := {
+Record DraMixin A `{Equiv A, PCore A, Disjoint A, Op A, Valid A} := {
   (* setoids *)
   mixin_dra_equivalence : Equivalence (≡@{A});
   mixin_dra_op_proper : Proper ((≡@{A}) ==> (≡) ==> (≡)) (⋅);
@@ -29,7 +29,7 @@ Record DraMixin A `{Equiv A, Core A, Disjoint A, Op A, Valid A} := {
 Structure draT := DraT {
   dra_car :> Type;
   dra_equiv : Equiv dra_car;
-  dra_core : Core dra_car;
+  dra_pcore : PCore dra_car;
   dra_disjoint : Disjoint dra_car;
   dra_op : Op dra_car;
   dra_valid : Valid dra_car;
@@ -38,13 +38,13 @@ Structure draT := DraT {
 Arguments DraT _ {_ _ _ _ _} _.
 Arguments dra_car : simpl never.
 Arguments dra_equiv : simpl never.
-Arguments dra_core : simpl never.
+Arguments dra_pcore : simpl never.
 Arguments dra_disjoint : simpl never.
 Arguments dra_op : simpl never.
 Arguments dra_valid : simpl never.
 Arguments dra_mixin : simpl never.
 Add Printing Constructor draT.
-Existing Instances dra_equiv dra_core dra_disjoint dra_op dra_valid.
+Existing Instances dra_equiv dra_pcore dra_disjoint dra_op dra_valid.
 
 (** Lifting properties from the mixin *)
 Section dra_mixin.

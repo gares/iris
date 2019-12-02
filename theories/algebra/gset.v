@@ -28,13 +28,8 @@ Section gset.
 
   Lemma gset_ra_mixin : RAMixin (gset K).
   Proof.
-    apply ra_total_mixin; eauto.
-    - solve_proper.
-    - solve_proper.
-    - solve_proper.
-    - intros X1 X2 X3. by rewrite !gset_op_union assoc_L.
-    - intros X1 X2. by rewrite !gset_op_union comm_L.
-    - intros X. by rewrite gset_core_self idemp_L.
+    apply ra_total_mixin; apply _ || eauto; [].
+    intros X. by rewrite gset_core_self idemp_L.
   Qed.
   Canonical Structure gsetR := discreteR (gset K) gset_ra_mixin.
 
