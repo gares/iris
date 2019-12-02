@@ -176,12 +176,8 @@ Hint Mode CmraTotal ! : typeclass_instances.
 
 (** The function [core] returns a dummy when used on CMRAs without total
 core. *)
-Class Core (A : Type) := core : A → A.
-Hint Mode Core ! : typeclass_instances.
+Definition core `{PCore A} (x : A) : A := default x (pcore x).
 Instance: Params (@core) 2 := {}.
-
-Instance core' `{PCore A} : Core A := λ x, default x (pcore x).
-Arguments core' _ _ _ /.
 
 (** * CMRAs with a unit element *)
 Class Unit (A : Type) := ε : A.
@@ -479,7 +475,7 @@ Section total_core.
 
   Lemma cmra_pcore_core x : pcore x = Some (core x).
   Proof.
-    rewrite /core /core'. destruct (cmra_total x) as [cx ->]. done.
+    rewrite /core. destruct (cmra_total x) as [cx ->]. done.
   Qed.
   Lemma cmra_core_l x : core x ⋅ x ≡ x.
   Proof.
@@ -769,7 +765,7 @@ Section cmra_morphism.
   Local Set Default Proof Using "Type*".
   Context {A B : cmraT} (f : A → B) `{!CmraMorphism f}.
   Lemma cmra_morphism_core x : f (core x) ≡ core (f x).
-  Proof. unfold core, core'. rewrite -cmra_morphism_pcore. by destruct (pcore x). Qed.
+  Proof. unfold core. rewrite -cmra_morphism_pcore. by destruct (pcore x). Qed.
   Lemma cmra_morphism_monotone x y : x ≼ y → f x ≼ f y.
   Proof. intros [z ->]. exists (f z). by rewrite cmra_morphism_op. Qed.
   Lemma cmra_morphism_monotoneN n x y : x ≼{n} y → f x ≼{n} f y.
@@ -1037,9 +1033,7 @@ Section mnat.
   Qed.
   Lemma mnat_ra_mixin : RAMixin mnat.
   Proof.
-    apply ra_total_mixin; try by eauto.
-    - solve_proper.
-    - solve_proper.
+    apply ra_total_mixin; apply _ || eauto.
     - intros x y z. apply Nat.max_assoc.
     - intros x y. apply Nat.max_comm.
     - intros x. apply Max.max_idempotent.
@@ -1162,7 +1156,7 @@ Section prod.
   Lemma pair_core `{!CmraTotal A, !CmraTotal B} (a : A) (b : B) :
     core (a, b) = (core a, core b).
   Proof.
-    rewrite /core /core' {1}/pcore /=.
+    rewrite /core {1}/pcore /=.
     rewrite (cmra_pcore_core a) /= (cmra_pcore_core b). done.
   Qed.
 

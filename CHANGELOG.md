@@ -39,6 +39,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   explicitly (since TC search is performed less eagerly), and in few cases it is
   needed to unfold definitions explicitly (due to new unification algorithm
   behaving differently).
+* Removed `Core` type class for defining the total core; it is now always
+  defined in terms of the partial core. The only user of this type class was the
+  STS RA.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

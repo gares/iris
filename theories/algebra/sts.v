@@ -196,8 +196,8 @@ Instance sts_valid : Valid (car sts) := λ x,
   | auth s T => tok s ## T
   | frag S' T => closed S' T ∧ ∃ s, s ∈ S'
   end.
-Instance sts_core : Core (car sts) := λ x,
-  match x with
+Instance sts_core : PCore (car sts) := λ x,
+  Some match x with
   | frag S' _ => frag (up_set S' ∅ ) ∅
   | auth s _  => frag (up s ∅) ∅
   end.
@@ -394,7 +394,7 @@ Qed.
 
 Global Instance sts_frag_core_id S : CoreId (sts_frag S ∅).
 Proof.
-  constructor; split=> //= [[??]]. by rewrite /dra.dra_core /= sts.up_closed.
+  constructor; split=> //= [[??]]. by rewrite /dra.dra_pcore /= sts.up_closed.
 Qed.
 
 (** Inclusion *)
