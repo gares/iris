@@ -955,7 +955,7 @@ Ltac iSpecializePat_go H1 pats :=
 Local Tactic Notation "iSpecializePat" open_constr(H) constr(pat) :=
   let pats := spec_pat.parse pat in iSpecializePat_go H pats.
 
-(* The argument [p] denotes whether the conclusion of the specialized term is
+(** The argument [p] denotes whether the conclusion of the specialized term is
 intuitionistic. If so, one can use all spatial hypotheses for both proving the
 premises and the remaning goal. The argument [p] can either be a Boolean or an
 introduction pattern, which will be coerced into [true] when it solely contains
@@ -2579,7 +2579,7 @@ Tactic Notation "iLöb" "as" constr (IH) "forall" "(" ident(x1) ident(x2)
 (** * Assert *)
 (* The argument [p] denotes whether [Q] is persistent. It can either be a
 Boolean or an introduction pattern, which will be coerced into [true] if it
-only contains `#` or `%` patterns at the top-level, and [false] otherwise. *)
+only contains [#] or [%] patterns at the top-level, and [false] otherwise. *)
 Tactic Notation "iAssertCore" open_constr(Q)
     "with" constr(Hs) "as" constr(p) tactic3(tac) :=
   iStartProof;
