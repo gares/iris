@@ -6,7 +6,8 @@ From iris.proofmode Require Import base environments.
     do not reduce e.g. before unification happens in [iApply].*)
 Declare Reduction pm_eval := cbv [
   (* base *)
-  base.beq base.Pos_succ base.ascii_beq base.string_beq base.positive_beq base.ident_beq
+  base.negb base.beq
+  base.Pos_succ base.ascii_beq base.string_beq base.positive_beq base.ident_beq
   (* environments *)
   env_lookup env_lookup_delete env_delete env_app env_replace
   env_dom env_intuitionistic env_spatial env_counter env_spatial_is_nil envs_dom

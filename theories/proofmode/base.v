@@ -17,6 +17,10 @@ the actual operations that may appear in users' proofs. *)
 Lemma lazy_andb_true (b1 b2 : bool) : b1 &&& b2 = true ↔ b1 = true ∧ b2 = true.
 Proof. destruct b1, b2; intuition congruence. Qed.
 
+Definition negb (b : bool) : bool := if b then false else true.
+Lemma negb_true b : negb b = true ↔ b = false.
+Proof. by destruct b. Qed.
+
 Fixpoint Pos_succ (x : positive) : positive :=
   match x with
   | (p~1)%positive => ((Pos_succ p)~0)%positive
