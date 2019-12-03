@@ -66,6 +66,24 @@ In nested Ltac calls to "iClear (constr)", "iElaborateSelPat" and
 "<iris.proofmode.ltac_tactics.iElaborateSelPat_go>", last call failed.
 Tactic failure: iElaborateSelPat: "HQ" not found.
 The command has indeed failed with message:
+In nested Ltac calls to "iSpecialize (open_constr) as #",
+"iSpecializeCore (open_constr) as (constr)",
+"iSpecializeCore (open_constr) as (constr)" and
+"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
+last call failed.
+Tactic failure: iSpecialize: Q not persistent.
+"test_iAssert_intuitionistic"
+     : string
+The command has indeed failed with message:
+In nested Ltac calls to "<ssreflect_plugin::ssrtclseq@0> iAssert (|==> P)%I with "[#]" as "#HPupd2" ; first  done",
+"<ssreflect_plugin::ssrtclseq@0> iAssert (|==> P)%I with "[#]" as "#HPupd2" ; first  done",
+"iAssert (open_constr) with (constr) as (constr)",
+"iAssertCore (open_constr) with (constr) as (constr) (tactic3)",
+"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
+"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
+failed.
+Tactic failure: iSpecialize: (|==> P)%I not persistent.
+The command has indeed failed with message:
 In nested Ltac calls to "iSpecialize (open_constr)",
 "iSpecializeCore (open_constr) as (constr)",
 "iSpecializeCore (open_constr) as (constr)",

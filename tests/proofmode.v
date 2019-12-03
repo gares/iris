@@ -157,6 +157,62 @@ Lemma test_iSpecialize_Coq_entailment P Q R :
   P → (P -∗ Q) → Q.
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
 
+Lemma test_iSpecialize_intuitionistic P Q R :
+  □ P -∗ □ (P -∗ P -∗ P -∗ P -∗ □ P -∗ P -∗ Q) -∗ R -∗ R ∗ □ (P ∗ Q).
+Proof.
+  iIntros "#HP #H HR".
+  (* Test that [H] remains in the intuitionistic context *)
+  iSpecialize ("H" with "HP").
+  iSpecialize ("H" with "[HP]"); first done.
+  iSpecialize ("H" with "[]"); first done.
+  iSpecialize ("H" with "[-HR]"); first done.
+  iSpecialize ("H" with "[#]"); first done.
+  iFrame "HR".
+  iSpecialize ("H" with "[-]"); first done.
+  by iFrame "#".
+Qed.
+
+Lemma test_iSpecialize_intuitionistic_2 P Q R :
+  □ P -∗ □ (P -∗ P -∗ P -∗ P -∗ □ P -∗ P -∗ Q) -∗ R -∗ R ∗ □ (P ∗ Q).
+Proof.
+  iIntros "#HP #H HR".
+  (* Test that [H] remains in the intuitionistic context *)
+  iSpecialize ("H" with "HP") as #.
+  iSpecialize ("H" with "[HP]") as #; first done.
+  iSpecialize ("H" with "[]") as #; first done.
+  iSpecialize ("H" with "[-HR]") as #; first done.
+  iSpecialize ("H" with "[#]") as #; first done.
+  iFrame "HR".
+  iSpecialize ("H" with "[-]") as #; first done.
+  by iFrame "#".
+Qed.
+
+Lemma test_iSpecialize_intuitionistic_3 P Q R :
+  P -∗ □ (P -∗ Q) -∗ □ (P -∗ <pers> Q) -∗ □ (Q -∗ R) -∗ P ∗ □ (Q ∗ R).
+Proof.
+  iIntros "HP #H1 #H2 #H3".
+  (* Should fail, [Q] is not persistent *)
+  Fail iSpecialize ("H1" with "HP") as #.
+  (* Should succeed, [<pers> Q] is persistent *)
+  iSpecialize ("H2" with "HP") as #.
+  (* Should succeed, despite [R] not being persistent, no spatial premises are
+  needed to prove [Q] *)
+  iSpecialize ("H3" with "H2") as #.
+  by iFrame "#".
+Qed.
+
+Check "test_iAssert_intuitionistic".
+Lemma test_iAssert_intuitionistic `{!BiBUpd PROP} P :
+  □ P -∗ □ |==> P.
+Proof.
+  iIntros "#HP".
+  (* Test that [HPupd1] ends up in the intuitionistic context *)
+  iAssert (|==> P)%I with "[]" as "#HPupd1"; first done.
+  (* This should not work, [|==> P] is not persistent. *)
+  Fail iAssert (|==> P)%I with "[#]" as "#HPupd2"; first done.
+  done.
+Qed.
+
 Lemma test_iPure_intro_emp R `{!Affine R} :
   R -∗ emp.
 Proof. iIntros "HR". by iPureIntro. Qed.
