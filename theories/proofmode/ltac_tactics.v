@@ -903,15 +903,13 @@ Ltac iSpecializePat_go H1 pats :=
        fail "iSpecialize: cannot select hypotheses for intuitionistic premise"
     | SGoal (SpecGoal ?m ?lr ?Hs_frame ?Hs ?d) :: ?pats =>
        let Hs' := eval cbv in (if lr then Hs else Hs_frame ++ Hs) in
-       notypeclasses refine (tac_specialize_assert _ H1 _ lr Hs' _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert _ H1 _
+           (if m is GModal then true else false) lr Hs' _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
          |solve_to_wand H1
-         |lazymatch m with
-          | GSpatial => class_apply add_modal_id
-          | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
-          end
+         |iSolveTC || fail "iSpecialize: goal not a modality"
          |pm_reduce;
           lazymatch goal with
           | |- False =>
