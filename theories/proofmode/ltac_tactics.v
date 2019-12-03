@@ -932,15 +932,13 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reduce; solve [iFrame "∗ #"]
          |pm_reduce; iSpecializePat_go H1 pats]
     | SAutoFrame ?m :: ?pats =>
-       notypeclasses refine (tac_specialize_frame _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_frame _ H1 _
+           (if m is GModal then true else false) _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
          |solve_to_wand H1
-         |lazymatch m with
-          | GSpatial => class_apply add_modal_id
-          | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
-          end
+         |iSolveTC || fail "iSpecialize: goal not a modality"
          |pm_reduce;
           first
             [notypeclasses refine (tac_unlock_emp _ _ _)
