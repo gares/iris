@@ -98,7 +98,10 @@ Qed.
 Lemma ident_beq_reflect i1 i2 : reflect (i1 = i2) (ident_beq i1 i2).
 Proof. apply iff_reflect. by rewrite ident_beq_true. Qed.
 
-(** Copies of some [option] combinators for better reduction control. *)
+(** Copies of some functions on [list] and [option] for better reduction control. *)
+Fixpoint pm_app {A} (l1 l2 : list A) : list A :=
+  match l1 with [] => l2 | x :: l1 => x :: pm_app l1 l2 end.
+
 Definition pm_option_bind {A B} (f : A → option B) (mx : option A) : option B :=
   match mx with Some x => f x | None => None end.
 Arguments pm_option_bind {_ _} _ !_ /.
