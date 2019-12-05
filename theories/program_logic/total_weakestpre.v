@@ -4,6 +4,10 @@ From iris.program_logic Require Export weakestpre.
 Set Default Proof Using "Type".
 Import uPred.
 
+(** The definition of total weakest preconditions is very similar to the
+definition of normal (i.e. partial) weakest precondition, with the exception
+that there is no later modality. Hence, instead of taking a Banach's fixpoint,
+we take a least fixpoint. *)
 Definition twp_pre `{!irisG Λ Σ} (s : stuckness)
       (wp : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
     coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ := λ E e1 Φ,
@@ -19,6 +23,8 @@ Definition twp_pre `{!irisG Λ Σ} (s : stuckness)
          [∗ list] ef ∈ efs, wp ⊤ ef fork_post
   end%I.
 
+(** This is some uninteresting bookkeeping to prove that [twp_pre_mono] is
+monotone. The actual least fixpoint [twp_def] can be found below. *)
 Lemma twp_pre_mono `{!irisG Λ Σ} s
     (wp1 wp2 : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
   ((□ ∀ E e Φ, wp1 E e Φ -∗ wp2 E e Φ) →
