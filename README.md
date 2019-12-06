@@ -18,7 +18,7 @@ definitions and some derived forms is available in
 
 This version is known to compile with:
 
- - Coq 8.8.2 / 8.9.1 / 8.10.1
+ - Coq 8.8.2 / 8.9.1 / 8.10.2
  - A development version of [std++](https://gitlab.mpi-sws.org/iris/stdpp)
 
 For a version compatible with Coq 8.6, have a look at the
