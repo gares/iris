@@ -174,7 +174,7 @@ Lemma bin_op_eval_erase op v1 v2 v' :
   bin_op_eval op (erase_val v1) (erase_val v2) = Some v' ↔
   ∃ w, bin_op_eval op v1 v2 = Some w ∧ erase_val w = v'.
 Proof.
-  rewrite /bin_op_eval /bin_op_eval_int /bin_op_eval_bool;
+  rewrite /bin_op_eval /bin_op_eval_int /bin_op_eval_bool /bin_op_eval_loc;
     split; [intros ?|intros (?&?&?)];
       repeat (case_match; simplify_eq/=); eauto.
   - eexists _; split; eauto; simpl.

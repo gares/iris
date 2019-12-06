@@ -523,6 +523,12 @@ Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
   | OffsetOp => None (* Pointer arithmetic *)
   end.
 
+Definition bin_op_eval_loc (op : bin_op) (l1 : loc) (v2 : base_lit) : option base_lit :=
+  match op, v2 with
+  | OffsetOp, (LitInt off) => Some $ LitLoc (l1 +ₗ off)
+  | _, _ => None
+  end.
+
 Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
   if decide (op = EqOp) then
     (* Crucially, this compares the same way as [CmpXchg]! *)
@@ -534,7 +540,7 @@ Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
     match v1, v2 with
     | LitV (LitInt n1), LitV (LitInt n2) => LitV <$> bin_op_eval_int op n1 n2
     | LitV (LitBool b1), LitV (LitBool b2) => LitV <$> bin_op_eval_bool op b1 b2
-    | LitV (LitLoc l), LitV (LitInt off) => Some $ LitV $ LitLoc (l +ₗ off)
+    | LitV (LitLoc l1), LitV v2 => LitV <$> bin_op_eval_loc op l1 v2
     | _, _ => None
     end.
 
