@@ -2,8 +2,8 @@ From iris.bi Require Export derived_connectives updates plainly.
 From iris.base_logic Require Export upred.
 Import uPred_primitive.
 
-(** BI instances for uPred, and re-stating the remaining primitive laws in terms
-of the BI interface.  This file does *not* unseal. *)
+(** BI instances for [uPred], and re-stating the remaining primitive laws in
+terms of the BI interface. This file does *not* unseal. *)
 
 Definition uPred_emp {M} : uPred M := uPred_pure True.
 

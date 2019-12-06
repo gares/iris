@@ -339,7 +339,7 @@ Definition uPred_bupd_eq :
 (** Global uPred-specific Notation *)
 Notation "✓ x" := (uPred_cmra_valid x) (at level 20) : bi_scope.
 
-(** Promitive logical rules.
+(** Primitive logical rules.
     These are not directly usable later because they do not refer to the BI
     connectives. *)
 Module uPred_primitive.
