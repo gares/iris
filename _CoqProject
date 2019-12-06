@@ -42,6 +42,7 @@ theories/algebra/lib/excl_auth.v
 theories/algebra/lib/frac_auth.v
 theories/algebra/lib/ufrac_auth.v
 theories/si_logic/siprop.v
+theories/si_logic/bi.v
 theories/bi/notation.v
 theories/bi/interface.v
 theories/bi/derived_connectives.v
