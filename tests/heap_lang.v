@@ -155,6 +155,14 @@ Section tests.
     by iApply "HΦ".
   Qed.
 
+  Lemma wp_load_array l :
+    {{{ l ↦∗ [ #0;#1;#2 ] }}} !(#l +ₗ #1) {{{ RET #1; True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_op.
+    wp_apply (wp_load_offset _ _ _ 1 with "Hl"); first done.
+    iIntros "Hl". by iApply "HΦ".
+  Qed.
+
   Lemma test_array_app l vs1 vs2 :
     l ↦∗ (vs1 ++ vs2) -∗ l ↦∗ (vs1 ++ vs2).
   Proof.

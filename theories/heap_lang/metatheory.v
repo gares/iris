@@ -88,7 +88,7 @@ Lemma  bin_op_eval_closed op v1 v2 v':
   is_closed_val v1 → is_closed_val v2 → bin_op_eval op v1 v2 = Some v' →
   is_closed_val v'.
 Proof.
-  rewrite /bin_op_eval /bin_op_eval_bool /bin_op_eval_int;
+  rewrite /bin_op_eval /bin_op_eval_bool /bin_op_eval_int /bin_op_eval_loc;
     repeat case_match; by naive_solver.
 Qed.
 
