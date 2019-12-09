@@ -134,17 +134,14 @@ Arguments IntoAbsorbingly {_} _%I _%I.
 Arguments into_absorbingly {_} _%I _%I {_}.
 Hint Mode IntoAbsorbingly + - ! : typeclass_instances.
 
-(*
-Converting an assumption [R] into a wand [P -∗ Q] is done in three stages:
+(** Converting an assumption [R] into a wand [P -∗ Q] is done in three stages:
 
 - Strip modalities and universal quantifiers of [R] until an arrow or a wand
   has been obtained.
 - Balance modalities in the arguments [P] and [Q] to match the goal (which used
   for [iApply]) or the premise (when used with [iSpecialize] and a specific
   hypothesis).
-- Instantiate the premise of the wand or implication.
-*)
-
+- Instantiate the premise of the wand or implication. *)
 Class IntoWand {PROP : bi} (p q : bool) (R P Q : PROP) :=
   into_wand : □?p R ⊢ □?q P -∗ Q.
 Arguments IntoWand {_} _ _ _%I _%I _%I : simpl never.
