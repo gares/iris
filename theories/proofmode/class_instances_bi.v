@@ -4,12 +4,16 @@ From iris.proofmode Require Import base modality_instances classes ltac_tactics.
 Set Default Proof Using "Type".
 Import bi.
 
-(** The following lemma is not an instance, but defined using a [Hint Extern] to
-enable the better unification algorithm. *)
+(** The lemma [from_assumption_exact is not an instance, but defined using
+[notypeclasses refine] through [Hint Extern] to enable the better unification
+algorithm. We use [shelve] to avoid the creation of unshelved goals for evars
+by [refine], which otherwise causes TC search to fail. Such unshelved goals are
+created for example when solving [FromAssumption p ?P ?Q] where both [?P] and
+[?Q] are evars. See [test_iApply_evar] in [tests/proofmode] for an example. *)
 Lemma from_assumption_exact {PROP : bi} p (P : PROP) : FromAssumption p P P.
 Proof. by rewrite /FromAssumption /= intuitionistically_if_elim. Qed.
 Hint Extern 0 (FromAssumption _ _ _) =>
-  notypeclasses refine (from_assumption_exact _ _) : typeclass_instances.
+  notypeclasses refine (from_assumption_exact _ _); shelve : typeclass_instances.
 
 Section bi_instances.
 Context {PROP : bi}.
