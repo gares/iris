@@ -340,13 +340,13 @@ Section properties.
     rewrite /singletonM /list_singletonM app_length replicate_length /=; lia.
   Qed.
 
-  Lemma list_core_singletonM i (x : A) : core {[ i := x ]} ≡ {[ i := core x ]}.
+  Lemma list_core_singletonM i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
   Proof.
     rewrite /singletonM /list_singletonM.
     by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core ∅).
   Qed.
   Lemma list_op_singletonM i (x y : A) :
-    {[ i := x ]} ⋅ {[ i := y ]} ≡ {[ i := x ⋅ y ]}.
+    {[ i := x ]} ⋅ {[ i := y ]} ≡@{list A} {[ i := x ⋅ y ]}.
   Proof.
     rewrite /singletonM /list_singletonM /=.
     induction i; constructor; rewrite ?left_id; auto.
