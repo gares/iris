@@ -49,7 +49,7 @@ Global Instance lookup_ne k :
 Proof. by intros m1 m2. Qed.
 Global Instance lookup_proper k :
   Proper ((≡) ==> (≡)) (lookup k : gmap K A → option A) := _.
-Global Instance alter_ne f k n :
+Global Instance alter_ne (f : A → A) (k : K) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (alter f k).
 Proof.
   intros ? m m' Hm k'.
