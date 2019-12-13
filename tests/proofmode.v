@@ -114,6 +114,9 @@ Proof. by iIntros. Qed.
 Lemma test_iAssumption_evar_ex_false : ∃ R, R ⊢ ∀ P, P.
 Proof. eexists. iIntros "?" (P). iAssumption. Qed.
 
+Lemma test_iApply_evar P Q R : (∀ Q, Q -∗ P) -∗ R -∗ P.
+Proof. iIntros "H1 H2". iApply "H1". iExact "H2". Qed.
+
 Lemma test_iAssumption_affine P Q R `{!Affine P, !Affine R} : P -∗ Q -∗ R -∗ Q.
 Proof. iIntros "H1 H2 H3". iAssumption. Qed.
 
