@@ -76,8 +76,8 @@ Tactics for the heap:
 
 - `wp_alloc l as "H"`: Reduce an allocation instruction and call the new
   location `l` (in the Coq context) and the points-to assertion `H` (in the
-  spatial context).  You can leave away the `as "H"` to introduce it as an
-  anonymous assertion, i.e., that is equivalent to `as "?"`.
+  spatial context).  You can leave out the `as "H"` to introduce it as an
+  anonymous assertion, which is equivalent to `as "?"`.
 - `wp_load`: Reduce a load operation.  This automatically finds the points-to
   assertion in the spatial context, and fails if it cannot be found.
 - `wp_store`: Reduce a store operation.  This automatically finds the points-to
@@ -126,7 +126,7 @@ value lambda).  However, the *specification* for parallel composition should use
 value lambdas, because prior to applying it the term will be reduced as much as
 possible to achieve a normal form.  To facilitate this, we define a copy of the
 `e1 ||| e2` notation in the value scope that uses value lambdas.
-This is not actually a value, but we still but it in the value scope to
+This is not actually a value, but we still put it in the value scope to
 differentiate from the other notation that uses expression lambdas.  (In the
 future, we might decide to add a separate scope for this.)  Then, we write the
 canonical specification using the notation in the value scope.
