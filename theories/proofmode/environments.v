@@ -24,11 +24,10 @@ Module env_notations.
   Notation "x ← y ; z" := (y ≫= λ x, z).
   Notation "' x1 .. xn ← y ; z" := (y ≫= (λ x1, .. (λ xn, z) .. )).
   Notation "Γ !! j" := (env_lookup j Γ).
-
-  (* andb will not be simplified by pm_reduce *)
-  Notation "b1 && b2" := (if b1 then b2 else false) : bool_scope.
 End env_notations.
 Import env_notations.
+
+Local Open Scope lazy_bool_scope.
 
 Inductive env_wf {A} : env A → Prop :=
   | Enil_wf : env_wf Enil
@@ -307,7 +306,7 @@ Fixpoint envs_lookup_delete_list {PROP} (remove_intuitionistic : bool)
   | j :: js =>
      ''(p,P,Δ') ← envs_lookup_delete remove_intuitionistic j Δ;
      ''(q,Ps,Δ'') ← envs_lookup_delete_list remove_intuitionistic js Δ';
-     Some ((p:bool) && q, P :: Ps, Δ'')
+     Some ((p:bool) &&& q, P :: Ps, Δ'')
   end.
 
 Definition envs_snoc {PROP} (Δ : envs PROP)
@@ -545,7 +544,7 @@ Qed.
 Lemma envs_lookup_delete_list_cons Δ Δ' Δ'' rp j js p1 p2 P Ps :
   envs_lookup_delete rp j Δ = Some (p1, P, Δ') →
   envs_lookup_delete_list rp js Δ' = Some (p2, Ps, Δ'') →
-  envs_lookup_delete_list rp (j :: js) Δ = Some (p1 && p2, (P :: Ps), Δ'').
+  envs_lookup_delete_list rp (j :: js) Δ = Some (p1 &&& p2, (P :: Ps), Δ'').
 Proof. rewrite //= => -> //= -> //=. Qed.
 
 Lemma envs_lookup_delete_list_nil Δ rp :

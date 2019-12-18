@@ -8,12 +8,13 @@ Set Default Proof Using "Type".
 (* Directions of rewrites *)
 Inductive direction := Left | Right.
 
+Local Open Scope lazy_bool_scope.
+
 (* Some specific versions of operations on strings, booleans, positive for the
 proof mode. We need those so that we can make [cbv] unfold just them, but not
 the actual operations that may appear in users' proofs. *)
-Local Notation "b1 && b2" := (if b1 then b2 else false) : bool_scope.
 
-Lemma lazy_andb_true (b1 b2 : bool) : b1 && b2 = true ↔ b1 = true ∧ b2 = true.
+Lemma lazy_andb_true (b1 b2 : bool) : b1 &&& b2 = true ↔ b1 = true ∧ b2 = true.
 Proof. destruct b1, b2; intuition congruence. Qed.
 
 Fixpoint Pos_succ (x : positive) : positive :=
@@ -32,13 +33,13 @@ Definition beq (b1 b2 : bool) : bool :=
 Definition ascii_beq (x y : ascii) : bool :=
   let 'Ascii x1 x2 x3 x4 x5 x6 x7 x8 := x in
   let 'Ascii y1 y2 y3 y4 y5 y6 y7 y8 := y in
-  beq x1 y1 && beq x2 y2 && beq x3 y3 && beq x4 y4 &&
-    beq x5 y5 && beq x6 y6 && beq x7 y7 && beq x8 y8.
+  beq x1 y1 &&& beq x2 y2 &&& beq x3 y3 &&& beq x4 y4 &&&
+    beq x5 y5 &&& beq x6 y6 &&& beq x7 y7 &&& beq x8 y8.
 
 Fixpoint string_beq (s1 s2 : string) : bool :=
   match s1, s2 with
   | "", "" => true
-  | String a1 s1, String a2 s2 => ascii_beq a1 a2 && string_beq s1 s2
+  | String a1 s1, String a2 s2 => ascii_beq a1 a2 &&& string_beq s1 s2
   | _, _ => false
   end.
 

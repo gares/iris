@@ -5,6 +5,8 @@ Set Default Proof Using "Type".
 Import bi.
 Import env_notations.
 
+Local Open Scope lazy_bool_scope.
+
 (* Coq versions of the tactics *)
 Section bi_tactics.
 Context {PROP : bi}.
@@ -269,7 +271,7 @@ Lemma tac_specialize remove_intuitionistic Δ i p j q P1 P2 R Q :
   let Δ' := envs_delete remove_intuitionistic i p Δ in
   envs_lookup j Δ' = Some (q, R) →
   IntoWand q p R P1 P2 →
-  match envs_replace j q (p && q) (Esnoc Enil j P2) Δ' with
+  match envs_replace j q (p &&& q) (Esnoc Enil j P2) Δ' with
   | Some Δ'' => envs_entails Δ'' Q
   | None => False
   end → envs_entails Δ Q.
