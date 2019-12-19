@@ -9,7 +9,7 @@ For using the Coq library, check out the
 
 For understanding the theory of Iris, a LaTeX version of the core logic
 definitions and some derived forms is available in
-[docs/iris.tex](tex/iris.tex).  A compiled PDF version of this document is
+[tex/iris.tex](tex/iris.tex).  A compiled PDF version of this document is
 [available online](http://plv.mpi-sws.org/iris/appendix-3.2.pdf).
 
 ## Building Iris
@@ -83,7 +83,7 @@ followed by `make build-dep`.
   [MoSeL](http://iris-project.org/mosel/), which extends Coq with contexts for
   intuitionistic and spatial BI++ assertions. It also contains tactics for
   interactive proofs. Documentation can be found in
-  [ProofMode.md](docs/proof_mode.md).
+  [proof_mode.md](docs/proof_mode.md).
 * The folder [heap_lang](theories/heap_lang) defines the ML-like concurrent heap
   language
   * The subfolder [lib](theories/heap_lang/lib) contains a few derived
@@ -137,7 +137,7 @@ Contacting the developers:
 Miscellaneous:
 
 * Information on how to set up your editor for unicode input and output is
-  collected in [Editor.md](docs/editor.md).
+  collected in [editor.md](docs/editor.md).
 * If you are writing a paper that uses Iris in one way or another, you could use
   the [Iris LaTeX macros](tex/iris.sty) for typesetting the various Iris
   connectives.
