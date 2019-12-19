@@ -32,6 +32,9 @@ build-coq.dev:
   variables:
     OPAM_PINS: "coq version dev"
     CI_COQCHK: "1"
+    TIMING_CONF: "coq-dev"
+  tags:
+  - fp-timing
 
 build-coq.8.11.dev:
   <<: *template
