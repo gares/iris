@@ -3,7 +3,7 @@ Tactic overview
 
 Many of the tactics below apply to more goals than described in this document
 since the behavior of these tactics can be tuned via instances of the type
-classes in the file [proofmode/classes](proofmode/classes.v). Most notably, many
+classes in the file [proofmode/classes](theories/proofmode/classes.v). Most notably, many
 of the tactics can be applied when the connective to be introduced or to be eliminated
 appears under a later, an update modality, or in the conclusion of a
 weakest precondition.
@@ -260,12 +260,12 @@ For example, given:
 
 You can write
 
-        iIntros (x Hx) "!# $ [[] | #[HQ HR]] /= !>".
+        iIntros (x Hx) "!> $ [[] | #[HQ HR]] /= !>".
 
 which results in:
 
         x : nat
-        H : x = 0
+        Hx : x = 0
         ______________________________________(1/1)
         "HQ" : Q
         "HR" : R
@@ -361,4 +361,4 @@ HeapLang tactics
 ================
 
 If you came here looking for the `wp_` tactics, those are described in the
-[HeapLang documentation](HeapLang.md).
+[HeapLang documentation](./heap_lang.md).

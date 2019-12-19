@@ -2,9 +2,9 @@
 
 This work-in-progress document serves to explain how Iris proofs are typically
 carried out in Coq: what are the common patterns, what are the common pitfalls.
-This complements the tactic documentation for the [proof mode](ProofMode.md) and
-[HeapLang](HeapLang.md) as well as the documentation of syntactic conventions in
-the [style guide](StyleGuide.md).
+This complements the tactic documentation for the [proof mode](./proof_mode.md) and
+[HeapLang](./heap_lang.md) as well as the documentation of syntactic conventions in
+the [style guide](./style_guide.md).
 
 ## Order of `Requires`
 

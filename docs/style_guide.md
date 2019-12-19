@@ -2,8 +2,8 @@
 
 This document lays down syntactic conventions about how we usually write our
 Iris proofs in Coq.  It is a work-in-progress.  This complements the tactic
-documentation for the [proof mode](ProofMode.md) and [HeapLang](HeapLang.md) as
-well as the [proof guide](ProofGuide.md).
+documentation for the [proof mode](./proof_mode.md) and [HeapLang](./heap_lang.md) as
+well as the [proof guide](.doco/proof_guide.md).
 
 ## Implicit generalization
 
@@ -114,8 +114,8 @@ is used by clients.
 * R: cameras
 * UR: unital cameras or resources algebras
 * F: functors (can be combined with all of the above, e.g. OF is an OFE functor)
-* G: global camera functor management (typeclass; see `ProofGuide.md`)
+* G: global camera functor management (typeclass; see [proof\_guide.md](./proof_guide.md))
 * I: bunched implication logic (of type `bi`)
 * SI: step-indexed bunched implication logic (of type `sbi`)
 * T: canonical structures for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
-* Σ: global camera functor management (`gFunctors`; see `ProofGuide.md`)
+* Σ: global camera functor management (`gFunctors`; see [proof\_guide.md](./proof_guide.md))
