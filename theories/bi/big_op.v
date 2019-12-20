@@ -1068,7 +1068,7 @@ Section map2.
       naive_solver.
   Qed.
 
-  Lemma big_sepM2_fmap {A' B'} (f : A → A') (g : B → B') (Φ : nat → A' → B' → PROP) m1 m2 :
+  Lemma big_sepM2_fmap {A' B'} (f : A → A') (g : B → B') (Φ : K → A' → B' → PROP) m1 m2 :
     ([∗ map] k↦y1;y2 ∈ f <$> m1; g <$> m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k (f y1) (g y2)).
   Proof.
@@ -1082,12 +1082,12 @@ Section map2.
     - by rewrite big_sepM_fmap.
   Qed.
 
-  Lemma big_sepM2_fmap_l {A'} (f : A → A') (Φ : nat → A' → B → PROP) m1 m2 :
+  Lemma big_sepM2_fmap_l {A'} (f : A → A') (Φ : K → A' → B → PROP) m1 m2 :
     ([∗ map] k↦y1;y2 ∈ f <$> m1; m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k (f y1) y2).
   Proof. rewrite -{1}(map_fmap_id m2). apply big_sepM2_fmap. Qed.
 
-  Lemma big_sepM2_fmap_r {B'} (g : B → B') (Φ : nat → A → B' → PROP) m1 m2 :
+  Lemma big_sepM2_fmap_r {B'} (g : B → B') (Φ : K → A → B' → PROP) m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1; g <$> m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 (g y2)).
   Proof. rewrite -{1}(map_fmap_id m1). apply big_sepM2_fmap. Qed.
