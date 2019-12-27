@@ -35,11 +35,13 @@ Notation "'[^' o 'list]' x ∈ l , P" := (big_opL o (λ _ x, P) l)
   (at level 200, o at level 1, l at level 10, x at level 1, right associativity,
    format "[^ o  list]  x  ∈  l ,  P") : stdpp_scope.
 
-Definition big_opM `{Monoid M o} `{Countable K} {A} (f : K → A → M)
-    (m : gmap K A) : M := big_opL o (λ _, curry f) (map_to_list m).
+Definition big_opM_def `{Monoid M o} `{Countable K} {A} (f : K → A → M)
+  (m : gmap K A) : M := big_opL o (λ _, curry f) (map_to_list m).
+Definition big_opM_aux : seal (@big_opM_def). by eexists. Qed.
+Definition big_opM := big_opM_aux.(unseal).
+Arguments big_opM {M} o {_ K _ _ A} _ _.
+Definition big_opM_eq : @big_opM = @big_opM_def := big_opM_aux.(seal_eq).
 Instance: Params (@big_opM) 7 := {}.
-Arguments big_opM {M} o {_ K _ _ A} _ _ : simpl never.
-Typeclasses Opaque big_opM.
 Notation "'[^' o 'map]' k ↦ x ∈ m , P" := (big_opM o (λ k x, P) m)
   (at level 200, o at level 1, m at level 10, k, x at level 1, right associativity,
    format "[^  o  map]  k ↦ x  ∈  m ,  P") : stdpp_scope.
@@ -47,20 +49,24 @@ Notation "'[^' o 'map]' x ∈ m , P" := (big_opM o (λ _ x, P) m)
   (at level 200, o at level 1, m at level 10, x at level 1, right associativity,
    format "[^ o  map]  x  ∈  m ,  P") : stdpp_scope.
 
-Definition big_opS `{Monoid M o} `{Countable A} (f : A → M)
+Definition big_opS_def `{Monoid M o} `{Countable A} (f : A → M)
   (X : gset A) : M := big_opL o (λ _, f) (elements X).
+Definition big_opS_aux : seal (@big_opS_def). by eexists. Qed.
+Definition big_opS := big_opS_aux.(unseal).
+Arguments big_opS {M} o {_ A _ _} _ _.
+Definition big_opS_eq : @big_opS = @big_opS_def := big_opS_aux.(seal_eq).
 Instance: Params (@big_opS) 6 := {}.
-Arguments big_opS {M} o {_ A _ _} _ _ : simpl never.
-Typeclasses Opaque big_opS.
 Notation "'[^' o 'set]' x ∈ X , P" := (big_opS o (λ x, P) X)
   (at level 200, o at level 1, X at level 10, x at level 1, right associativity,
    format "[^ o  set]  x  ∈  X ,  P") : stdpp_scope.
 
-Definition big_opMS `{Monoid M o} `{Countable A} (f : A → M)
+Definition big_opMS_def `{Monoid M o} `{Countable A} (f : A → M)
   (X : gmultiset A) : M := big_opL o (λ _, f) (elements X).
-Instance: Params (@big_opMS) 7 := {}.
-Arguments big_opMS {M} o {_ A _ _} _ _ : simpl never.
-Typeclasses Opaque big_opMS.
+Definition big_opMS_aux : seal (@big_opMS_def). by eexists. Qed.
+Definition big_opMS := big_opMS_aux.(unseal).
+Arguments big_opMS {M} o {_ A _ _} _ _.
+Definition big_opMS_eq : @big_opMS = @big_opMS_def := big_opMS_aux.(seal_eq).
+Instance: Params (@big_opMS) 6 := {}.
 Notation "'[^' o 'mset]' x ∈ X , P" := (big_opMS o (λ x, P) X)
   (at level 200, o at level 1, X at level 10, x at level 1, right associativity,
    format "[^ o  mset]  x  ∈  X ,  P") : stdpp_scope.
@@ -171,7 +177,7 @@ Section gmap.
     (∀ k x, m !! k = Some x → R (f k x) (g k x)) →
     R ([^o map] k ↦ x ∈ m, f k x) ([^o map] k ↦ x ∈ m, g k x).
   Proof.
-    intros ?? Hf. apply (big_opL_forall R); auto.
+    intros ?? Hf. rewrite big_opM_eq. apply (big_opL_forall R); auto.
     intros k [i x] ?%elem_of_list_lookup_2. by apply Hf, elem_of_map_to_list.
   Qed.
 
@@ -194,12 +200,12 @@ Section gmap.
   Proof. intros f g Hf m ? <-. apply big_opM_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opM_empty f : ([^o map] k↦x ∈ ∅, f k x) = monoid_unit.
-  Proof. by rewrite /big_opM map_to_list_empty. Qed.
+  Proof. by rewrite big_opM_eq /big_opM_def map_to_list_empty. Qed.
 
   Lemma big_opM_insert f m i x :
     m !! i = None →
     ([^o map] k↦y ∈ <[i:=x]> m, f k y) ≡ f i x `o` [^o map] k↦y ∈ m, f k y.
-  Proof. intros ?. by rewrite /big_opM map_to_list_insert. Qed.
+  Proof. intros ?. by rewrite big_opM_eq /big_opM_def map_to_list_insert. Qed.
 
   Lemma big_opM_delete f m i x :
     m !! i = Some x →
@@ -216,12 +222,12 @@ Section gmap.
   Qed.
 
   Lemma big_opM_unit m : ([^o map] k↦y ∈ m, monoid_unit) ≡ (monoid_unit : M).
-  Proof. induction m using map_ind; rewrite /= ?big_opM_insert ?left_id //. Qed.
+  Proof. by induction m using map_ind; rewrite /= ?big_opM_insert ?left_id // big_opM_eq. Qed.
 
   Lemma big_opM_fmap {B} (h : A → B) (f : K → B → M) m :
     ([^o map] k↦y ∈ h <$> m, f k y) ≡ ([^o map] k↦y ∈ m, f k (h y)).
   Proof.
-    rewrite /big_opM map_to_list_fmap big_opL_fmap.
+    rewrite big_opM_eq /big_opM_def map_to_list_fmap big_opL_fmap.
     by apply big_opL_proper=> ? [??].
   Qed.
 
@@ -262,7 +268,7 @@ Section gmap.
   Lemma big_opM_op f g m :
     ([^o map] k↦x ∈ m, f k x `o` g k x)
     ≡ ([^o map] k↦x ∈ m, f k x) `o` ([^o map] k↦x ∈ m, g k x).
-  Proof. rewrite /big_opM -big_opL_op. by apply big_opL_proper=> ? [??]. Qed.
+  Proof. rewrite big_opM_eq /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??]. Qed.
 End gmap.
 
 
@@ -277,7 +283,7 @@ Section gset.
     (∀ x, x ∈ X → R (f x) (g x)) →
     R ([^o set] x ∈ X, f x) ([^o set] x ∈ X, g x).
   Proof.
-    intros ?? Hf. apply (big_opL_forall R); auto.
+    rewrite big_opS_eq. intros ?? Hf. apply (big_opL_forall R); auto.
     intros k x ?%elem_of_list_lookup_2. by apply Hf, elem_of_elements.
   Qed.
 
@@ -298,11 +304,11 @@ Section gset.
   Proof. intros f g Hf m ? <-. apply big_opS_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opS_empty f : ([^o set] x ∈ ∅, f x) = monoid_unit.
-  Proof. by rewrite /big_opS elements_empty. Qed.
+  Proof. by rewrite big_opS_eq /big_opS_def elements_empty. Qed.
 
   Lemma big_opS_insert f X x :
     x ∉ X → ([^o set] y ∈ {[ x ]} ∪ X, f y) ≡ (f x `o` [^o set] y ∈ X, f y).
-  Proof. intros. by rewrite /big_opS elements_union_singleton. Qed.
+  Proof. intros. by rewrite big_opS_eq /big_opS_def elements_union_singleton. Qed.
   Lemma big_opS_fn_insert {B} (f : A → B → M) h X x b :
     x ∉ X →
     ([^o set] y ∈ {[ x ]} ∪ X, f y (<[x:=b]> h y))
@@ -334,22 +340,22 @@ Section gset.
   Qed.
 
   Lemma big_opS_singleton f x : ([^o set] y ∈ {[ x ]}, f y) ≡ f x.
-  Proof. intros. by rewrite /big_opS elements_singleton /= right_id. Qed.
+  Proof. intros. by rewrite big_opS_eq /big_opS_def elements_singleton /= right_id. Qed.
 
   Lemma big_opS_unit X : ([^o set] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
-    induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id //.
+    by induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id // big_opS_eq.
   Qed.
 
   Lemma big_opS_op f g X :
     ([^o set] y ∈ X, f y `o` g y) ≡ ([^o set] y ∈ X, f y) `o` ([^o set] y ∈ X, g y).
-  Proof. by rewrite /big_opS -big_opL_op. Qed.
+  Proof. by rewrite big_opS_eq /big_opS_def -big_opL_op. Qed.
 End gset.
 
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
   ([^o map] k↦_ ∈ m, f k) ≡ ([^o set] k ∈ dom _ m, f k).
 Proof.
-  induction m as [|i x ?? IH] using map_ind; [by rewrite dom_empty_L|].
+  induction m as [|i x ?? IH] using map_ind; [by rewrite big_opM_eq big_opS_eq dom_empty_L|].
   by rewrite dom_insert_L big_opM_insert // IH big_opS_insert ?not_elem_of_dom.
 Qed.
 
@@ -364,7 +370,7 @@ Section gmultiset.
     (∀ x, x ∈ X → R (f x) (g x)) →
     R ([^o mset] x ∈ X, f x) ([^o mset] x ∈ X, g x).
   Proof.
-    intros ?? Hf. apply (big_opL_forall R); auto.
+    rewrite big_opMS_eq. intros ?? Hf. apply (big_opL_forall R); auto.
     intros k x ?%elem_of_list_lookup_2. by apply Hf, gmultiset_elem_of_elements.
   Qed.
 
@@ -385,15 +391,15 @@ Section gmultiset.
   Proof. intros f g Hf m ? <-. apply big_opMS_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opMS_empty f : ([^o mset] x ∈ ∅, f x) = monoid_unit.
-  Proof. by rewrite /big_opMS gmultiset_elements_empty. Qed.
+  Proof. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. Qed.
 
   Lemma big_opMS_disj_union f X Y :
     ([^o mset] y ∈ X ⊎ Y, f y) ≡ ([^o mset] y ∈ X, f y) `o` [^o mset] y ∈ Y, f y.
-  Proof. by rewrite /big_opMS gmultiset_elements_disj_union big_opL_app. Qed.
+  Proof. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_disj_union big_opL_app. Qed.
 
   Lemma big_opMS_singleton f x : ([^o mset] y ∈ {[ x ]}, f y) ≡ f x.
   Proof.
-    intros. by rewrite /big_opMS gmultiset_elements_singleton /= right_id.
+    intros. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_singleton /= right_id.
   Qed.
 
   Lemma big_opMS_delete f X x :
@@ -405,13 +411,13 @@ Section gmultiset.
 
   Lemma big_opMS_unit X : ([^o mset] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
-    induction X using gmultiset_ind;
-      rewrite /= ?big_opMS_disj_union ?big_opMS_singleton ?left_id //.
+    by induction X using gmultiset_ind;
+      rewrite /= ?big_opMS_disj_union ?big_opMS_singleton ?left_id // big_opMS_eq.
   Qed.
 
   Lemma big_opMS_op f g X :
     ([^o mset] y ∈ X, f y `o` g y) ≡ ([^o mset] y ∈ X, f y) `o` ([^o mset] y ∈ X, g y).
-  Proof. by rewrite /big_opMS -big_opL_op. Qed.
+  Proof. by rewrite big_opMS_eq /big_opMS_def -big_opL_op. Qed.
 End gmultiset.
 End big_op.
 

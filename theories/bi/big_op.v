@@ -50,12 +50,15 @@ Notation "'[∗' 'list]' k ↦ x1 ; x2 ∈ l1 ; l2 , P" :=
 Notation "'[∗' 'list]' x1 ; x2 ∈ l1 ; l2 , P" :=
   (big_sepL2 (λ _ x1 x2, P) l1 l2) : bi_scope.
 
-Definition big_sepM2 {PROP : bi} `{Countable K} {A B}
+Definition big_sepM2_def {PROP : bi} `{Countable K} {A B}
     (Φ : K → A → B → PROP) (m1 : gmap K A) (m2 : gmap K B) : PROP :=
   (⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
    [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2)%I.
+Definition big_sepM2_aux : seal (@big_sepM2_def). by eexists. Qed.
+Definition big_sepM2 := big_sepM2_aux.(unseal).
+Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
+Definition big_sepM2_eq : @big_sepM2 = @big_sepM2_def := big_sepM2_aux.(seal_eq).
 Instance: Params (@big_sepM2) 6 := {}.
-Typeclasses Opaque big_sepM2.
 Notation "'[∗' 'map]' k ↦ x1 ; x2 ∈ m1 ; m2 , P" :=
   (big_sepM2 (λ k x1 x2, P) m1 m2) : bi_scope.
 Notation "'[∗' 'map]' x1 ; x2 ∈ m1 ; m2 , P" :=
@@ -687,7 +690,7 @@ Section map.
   Proof. apply big_opM_proper. Qed.
   Lemma big_sepM_subseteq `{BiAffine PROP} Φ m1 m2 :
     m2 ⊆ m1 → ([∗ map] k ↦ x ∈ m1, Φ k x) ⊢ [∗ map] k ↦ x ∈ m2, Φ k x.
-  Proof. intros. by apply big_sepL_submseteq, map_to_list_submseteq. Qed.
+  Proof. rewrite big_opM_eq. intros. by apply big_sepL_submseteq, map_to_list_submseteq. Qed.
 
   Global Instance big_sepM_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
@@ -834,7 +837,7 @@ Section map.
     [∗ map] k↦x ∈ m, Ψ k x.
   Proof.
     apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
-    { by rewrite sep_elim_r. }
+    { by rewrite big_opM_eq sep_elim_r. }
     rewrite !big_sepM_insert // intuitionistically_sep_dup.
     rewrite -assoc [(□ _ ∗ _)%I]comm -!assoc assoc. apply sep_mono.
     - rewrite (forall_elim i) (forall_elim x) pure_True ?lookup_insert //.
@@ -848,17 +851,17 @@ Section map.
 
   Global Instance big_sepM_empty_persistent Φ :
     Persistent ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
   Global Instance big_sepM_persistent Φ m :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. intros. apply big_sepL_persistent=> _ [??]; apply _. Qed.
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_persistent=> _ [??]; apply _. Qed.
 
   Global Instance big_sepM_empty_affine Φ :
     Affine ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
   Global Instance big_sepM_affine Φ m :
     (∀ k x, Affine (Φ k x)) → Affine ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. intros. apply big_sepL_affine=> _ [??]; apply _. Qed.
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_affine=> _ [??]; apply _. Qed.
 End map.
 
 (** ** Big ops over two maps *)
@@ -869,7 +872,7 @@ Section map2.
   Lemma big_sepM2_dom Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) -∗ ⌜ dom (gset K) m1 = dom (gset K) m2 ⌝.
   Proof.
-    rewrite /big_sepM2 and_elim_l. apply pure_mono=>Hm.
+    rewrite big_sepM2_eq /big_sepM2_def and_elim_l. apply pure_mono=>Hm.
     set_unfold=>k. by rewrite !elem_of_dom.
   Qed.
 
@@ -877,7 +880,8 @@ Section map2.
     (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → Φ k y1 y2 ⊢ Ψ k y1 y2) →
     ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊢ [∗ map] k ↦ y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
-    intros Hm1m2. rewrite /big_sepM2. apply and_mono_r, big_sepM_mono.
+    intros Hm1m2. rewrite big_sepM2_eq /big_sepM2_def.
+    apply and_mono_r, big_sepM_mono.
     intros k [x1 x2]. rewrite map_lookup_zip_with.
     specialize (Hm1m2 k x1 x2).
     destruct (m1 !! k) as [y1|]; last done.
@@ -897,8 +901,8 @@ Section map2.
       ==> (=) ==> (=) ==> (dist n))
            (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof.
-    intros Φ1 Φ2 HΦ x1 ? <- x2 ? <-. rewrite /big_sepM2. f_equiv.
-    f_equiv=> k [y1 y2]. apply HΦ.
+    intros Φ1 Φ2 HΦ x1 ? <- x2 ? <-. rewrite big_sepM2_eq /big_sepM2_def.
+    f_equiv. f_equiv=> k [y1 y2]. apply HΦ.
   Qed.
   Global Instance big_sepM2_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊢)))
@@ -913,7 +917,7 @@ Section map2.
 
   Lemma big_sepM2_empty Φ : ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2) ⊣⊢ emp.
   Proof.
-    rewrite /big_sepM2 pure_True ?left_id //.
+    rewrite big_sepM2_eq /big_sepM2_def big_opM_eq pure_True ?left_id //.
     intros k. rewrite !lookup_empty; split; by inversion 1.
   Qed.
   Lemma big_sepM2_empty' `{BiAffine PROP} P Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
@@ -938,7 +942,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2)
     ⊣⊢ Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2.
   Proof.
-    intros Hm1 Hm2. rewrite /big_sepM2 -map_insert_zip_with.
+    intros Hm1 Hm2. rewrite big_sepM2_eq /big_sepM2_def -map_insert_zip_with.
     rewrite big_sepM_insert;
       last by rewrite map_lookup_zip_with Hm1.
     rewrite !persistent_and_affinely_sep_l /=.
@@ -959,7 +963,7 @@ Section map2.
     ([∗ map] k↦x;y ∈ m1;m2, Φ k x y) ⊣⊢
       Φ i x1 x2 ∗ [∗ map] k↦x;y ∈ delete i m1;delete i m2, Φ k x y.
   Proof.
-    rewrite /big_sepM2 => Hx1 Hx2.
+    rewrite big_sepM2_eq /big_sepM2_def => Hx1 Hx2.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite sep_assoc (sep_comm  (Φ _ _ _)) -sep_assoc.
     apply sep_proper.
@@ -993,7 +997,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
     ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2).
   Proof.
-    intros Ha. rewrite /big_sepM2.
+    intros Ha. rewrite big_sepM2_eq /big_sepM2_def.
     assert (TCOr (∀ x, Affine (Φ i x.1 x.2)) (Absorbing (Φ i x1 x2))).
     { destruct Ha; try apply _. }
     apply wand_intro_r.
@@ -1027,7 +1031,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x2, ⌜m2 !! i = Some x2⌝ ∧ Φ i x1 x2.
   Proof.
-    intros Hm1. rewrite /big_sepM2.
+    intros Hm1. rewrite big_sepM2_eq /big_sepM2_def.
     rewrite persistent_and_sep_1.
     apply wand_elim_l'. apply pure_elim'=>Hm.
     assert (is_Some (m2 !! i)) as [x2 Hm2].
@@ -1044,7 +1048,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊢ ∃ x1, ⌜m1 !! i = Some x1⌝ ∧ Φ i x1 x2.
   Proof.
-    intros Hm2. rewrite /big_sepM2.
+    intros Hm2. rewrite big_sepM2_eq /big_sepM2_def.
     rewrite persistent_and_sep_1.
     apply wand_elim_l'. apply pure_elim'=>Hm.
     assert (is_Some (m1 !! i)) as [x1 Hm1].
@@ -1059,7 +1063,8 @@ Section map2.
   Lemma big_sepM2_singleton Φ i x1 x2 :
     ([∗ map] k↦y1;y2 ∈ {[ i := x1 ]}; {[ i := x2 ]}, Φ k y1 y2) ⊣⊢ Φ i x1 x2.
   Proof.
-    rewrite /big_sepM2 map_zip_with_singleton big_sepM_singleton.
+    rewrite big_sepM2_eq /big_sepM2_def.
+    rewrite map_zip_with_singleton big_sepM_singleton.
     apply (anti_symm _).
     - apply and_elim_r.
     - rewrite <- (left_id True%I (∧)%I (Φ i x1 x2)).
@@ -1072,7 +1077,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ f <$> m1; g <$> m2, Φ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k (f y1) (g y2)).
   Proof.
-    rewrite /big_sepM2. rewrite map_fmap_zip.
+    rewrite big_sepM2_eq /big_sepM2_def. rewrite map_fmap_zip.
     apply and_proper.
     - apply pure_proper. split.
       + intros Hm k. specialize (Hm k). revert Hm.
@@ -1096,7 +1101,7 @@ Section map2.
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 ∗ Ψ k y1 y2)
     ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) ∗ ([∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2).
   Proof.
-    rewrite /big_sepM2.
+    rewrite big_sepM2_eq /big_sepM2_def.
     rewrite -{1}(and_idem ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝%I).
     rewrite -and_assoc.
     rewrite !persistent_and_affinely_sep_l /=.
@@ -1114,7 +1119,7 @@ Section map2.
     <pers> ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2)
     ⊣⊢ [∗ map] k↦y1;y2 ∈ m1;m2, <pers> (Φ k y1 y2).
   Proof.
-    by rewrite /big_sepM2 persistently_and
+    by rewrite big_sepM2_eq /big_sepM2_def persistently_and
          persistently_pure big_sepM_persistently.
   Qed.
 
@@ -1124,7 +1129,7 @@ Section map2.
      ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝
      ∧ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2).
  Proof.
-   rewrite /big_sepM2=> ?. apply and_proper=>//.
+   rewrite big_sepM2_eq /big_sepM2_def=> ?. apply and_proper=>//.
    rewrite big_sepM_forall. apply forall_proper=>k.
    apply (anti_symm _).
    - apply forall_intro=> x1. apply forall_intro=> x2.
@@ -1145,7 +1150,7 @@ Section map2.
     [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
   Proof.
     apply wand_intro_l.
-    rewrite /big_sepM2.
+    rewrite big_sepM2_eq /big_sepM2_def.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite sep_assoc. rewrite (sep_comm (□ _)%I) -sep_assoc.
     apply sep_mono_r. apply wand_elim_r'.
@@ -1164,7 +1169,7 @@ Section map2.
   Global Instance big_sepM2_persistent Φ m1 m2 :
     (∀ k x1 x2, Persistent (Φ k x1 x2)) →
     Persistent ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
-  Proof. rewrite /big_sepM2. apply _. Qed.
+  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 
   Global Instance big_sepM2_empty_affine Φ :
     Affine ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
@@ -1172,7 +1177,7 @@ Section map2.
   Global Instance big_sepM2_affine Φ m1 m2 :
     (∀ k x1 x2, Affine (Φ k x1 x2)) →
     Affine ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
-  Proof. rewrite /big_sepM2. apply _. Qed.
+  Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
 
 (** ** Big ops over finite sets *)
@@ -1191,7 +1196,7 @@ Section gset.
   Proof. apply big_opS_proper. Qed.
   Lemma big_sepS_subseteq `{BiAffine PROP} Φ X Y :
     Y ⊆ X → ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ Y, Φ x.
-  Proof. intros. by apply big_sepL_submseteq, elements_submseteq. Qed.
+  Proof. rewrite big_opS_eq. intros. by apply big_sepL_submseteq, elements_submseteq. Qed.
 
   Global Instance big_sepS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
@@ -1309,7 +1314,7 @@ Section gset.
     [∗ set] x ∈ X, Ψ x.
   Proof.
     apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
-    { by rewrite sep_elim_r. }
+    { by rewrite big_opS_eq sep_elim_r. }
     rewrite !big_sepS_insert // intuitionistically_sep_dup.
     rewrite -assoc [(□ _ ∗ _)%I]comm -!assoc assoc. apply sep_mono.
     - rewrite (forall_elim x) pure_True; last set_solver.
@@ -1321,16 +1326,16 @@ Section gset.
 
   Global Instance big_sepS_empty_persistent Φ :
     Persistent ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opS elements_empty. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
   Global Instance big_sepS_persistent Φ X :
     (∀ x, Persistent (Φ x)) → Persistent ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite /big_opS. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 
   Global Instance big_sepS_empty_affine Φ : Affine ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opS elements_empty. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
   Global Instance big_sepS_affine Φ X :
     (∀ x, Affine (Φ x)) → Affine ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite /big_opS. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 End gset.
 
 Lemma big_sepM_dom `{Countable K} {A} (Φ : K → PROP) (m : gmap K A) :
@@ -1353,7 +1358,7 @@ Section gmultiset.
   Proof. apply big_opMS_proper. Qed.
   Lemma big_sepMS_subseteq `{BiAffine PROP} Φ X Y :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
-  Proof. intros. by apply big_sepL_submseteq, gmultiset_elements_submseteq. Qed.
+  Proof. rewrite big_opMS_eq. intros. by apply big_sepL_submseteq, gmultiset_elements_submseteq. Qed.
 
   Global Instance big_sepMS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opMS (@bi_sep PROP) (A:=A)).
@@ -1400,16 +1405,16 @@ Section gmultiset.
 
   Global Instance big_sepMS_empty_persistent Φ :
     Persistent ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
   Global Instance big_sepMS_persistent Φ X :
     (∀ x, Persistent (Φ x)) → Persistent ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite /big_opMS. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 
   Global Instance big_sepMS_empty_affine Φ : Affine ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
   Global Instance big_sepMS_affine Φ X :
     (∀ x, Affine (Φ x)) → Affine ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite /big_opMS. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 End gmultiset.
 End bi_big_op.
 
@@ -1513,10 +1518,10 @@ Section gmap.
 
   Global Instance big_sepM_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
     Timeless ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
+  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
   Global Instance big_sepM_timeless `{!Timeless (emp%I : PROP)} Φ m :
     (∀ k x, Timeless (Φ k x)) → Timeless ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
+  Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
 End gmap.
 
 Section gmap2.
@@ -1527,7 +1532,7 @@ Section gmap2.
     (▷ [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2)
     ⊢ ◇ ([∗ map] k↦x1;x2 ∈ m1;m2, ▷ Φ k x1 x2).
   Proof.
-    rewrite /big_sepM2 later_and (timeless ⌜_⌝%I).
+    rewrite big_sepM2_eq /big_sepM2_def later_and (timeless ⌜_⌝%I).
     rewrite big_sepM_later except_0_and.
     auto using and_mono_r, except_0_intro.
   Qed.
@@ -1535,7 +1540,7 @@ Section gmap2.
     ([∗ map] k↦x1;x2 ∈ m1;m2, ▷ Φ k x1 x2)
     ⊢ ▷ [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2.
   Proof.
-    rewrite /big_sepM2 later_and -(later_intro ⌜_⌝%I).
+    rewrite big_sepM2_eq /big_sepM2_def later_and -(later_intro ⌜_⌝%I).
     apply and_mono_r. by rewrite big_opM_commute.
   Qed.
 
@@ -1551,18 +1556,18 @@ Section gmap2.
   Lemma big_sepM2_flip Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m2; m1, Φ k y2 y1) ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2).
   Proof.
-    rewrite /big_sepM2. apply and_proper; [apply pure_proper; naive_solver |].
+    rewrite big_sepM2_eq /big_sepM2_def. apply and_proper; [apply pure_proper; naive_solver |].
     rewrite -map_zip_with_flip map_zip_with_map_zip big_sepM_fmap.
     apply big_sepM_proper. by intros k [b a].
   Qed.
 
   Global Instance big_sepM2_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
     Timeless ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
-  Proof. rewrite /big_sepM2 map_zip_with_empty. apply _. Qed.
+  Proof. rewrite big_sepM2_eq /big_sepM2_def map_zip_with_empty. apply _. Qed.
   Global Instance big_sepM2_timeless `{!Timeless (emp%I : PROP)} Φ m1 m2 :
     (∀ k x1 x2, Timeless (Φ k x1 x2)) →
     Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
-  Proof. intros. rewrite /big_sepM2. apply _. Qed.
+  Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End gmap2.
 
 (** ** Big ops over finite sets *)
@@ -1587,10 +1592,10 @@ Section gset.
 
   Global Instance big_sepS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
     Timeless ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opS elements_empty. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
   Global Instance big_sepS_timeless `{!Timeless (emp%I : PROP)} Φ X :
     (∀ x, Timeless (Φ x)) → Timeless ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite /big_opS. apply _. Qed.
+  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 End gset.
 
 (** ** Big ops over finite multisets *)
@@ -1615,9 +1620,9 @@ Section gmultiset.
 
   Global Instance big_sepMS_empty_timeless `{!Timeless (emp%I : PROP)} Φ :
     Timeless ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
   Global Instance big_sepMS_timeless `{!Timeless (emp%I : PROP)} Φ X :
     (∀ x, Timeless (Φ x)) → Timeless ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite /big_opMS. apply _. Qed.
+  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 End gmultiset.
 End sbi_big_op.

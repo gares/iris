@@ -13,7 +13,7 @@ Qed.
 Lemma big_opM_None {M : cmraT} `{Countable K} {A} (f : K → A → option M) m :
   ([^op map] k↦x ∈ m, f k x) = None ↔ ∀ k x, m !! k = Some x → f k x = None.
 Proof.
-  induction m as [|i x m ? IH] using map_ind=> //=.
+  induction m as [|i x m ? IH] using map_ind=> /=; first by rewrite big_opM_eq.
   rewrite -equiv_None big_opM_insert // equiv_None op_None IH. split.
   { intros [??] k y. rewrite lookup_insert_Some; naive_solver. }
   intros Hm; split.
@@ -23,7 +23,7 @@ Qed.
 Lemma big_opS_None {M : cmraT} `{Countable A} (f : A → option M) X :
   ([^op set] x ∈ X, f x) = None ↔ ∀ x, x ∈ X → f x = None.
 Proof.
-  induction X as [|x X ? IH] using set_ind_L; [done|].
+  induction X as [|x X ? IH] using set_ind_L; [by rewrite big_opS_eq |].
   rewrite -equiv_None big_opS_insert // equiv_None op_None IH. set_solver.
 Qed.
 Lemma big_opMS_None {M : cmraT} `{Countable A} (f : A → option M) X :

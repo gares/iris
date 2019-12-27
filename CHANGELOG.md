@@ -44,6 +44,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   STS RA.
 * Added the type `siProp` of "plain" step-indexed propositions, together with
   basic proofmode support.
+* Sealed the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
+  to prevent undesired simplification.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

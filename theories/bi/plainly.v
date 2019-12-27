@@ -295,7 +295,7 @@ Section plainly_affine_bi.
   Lemma impl_wand_plainly P Q : (■ P → Q) ⊣⊢ (■ P -∗ Q).
   Proof.
     apply (anti_symm (⊢)). by rewrite -impl_wand_1. by rewrite impl_wand_plainly_2.
-  Qed. 
+  Qed.
 End plainly_affine_bi.
 
 (* Conditional plainly *)
@@ -419,7 +419,7 @@ Proof. apply (big_opM_commute _). Qed.
 
 Lemma big_sepM2_plainly `{BiAffine PROP, Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
   ■ ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢ [∗ map] k↦x1;x2 ∈ m1;m2, ■ (Φ k x1 x2).
-Proof. by rewrite /big_sepM2 plainly_and plainly_pure big_sepM_plainly. Qed.
+Proof. by rewrite big_sepM2_eq /big_sepM2_def plainly_and plainly_pure big_sepM_plainly. Qed.
 
 Lemma big_sepS_plainly `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
   ■ ([∗ set] y ∈ X, Φ y) ⊣⊢ [∗ set] y ∈ X, ■ (Φ y).
@@ -510,34 +510,34 @@ Proof. rewrite big_sepL2_alt. apply _. Qed.
 
 Global Instance big_sepM_empty_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) :
   Plain ([∗ map] k↦x ∈ ∅, Φ k x).
-Proof. rewrite /big_opM map_to_list_empty. apply _. Qed.
+Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
 Global Instance big_sepM_plain `{BiAffine PROP, Countable K} {A} (Φ : K → A → PROP) m :
   (∀ k x, Plain (Φ k x)) → Plain ([∗ map] k↦x  ∈ m, Φ k x).
-Proof. intros. apply (big_sepL_plain _ _)=> _ [??]; apply _. Qed.
+Proof. rewrite big_opM_eq. intros. apply (big_sepL_plain _ _)=> _ [??]; apply _. Qed.
 
 Global Instance big_sepM2_empty_plain `{BiAffine PROP, Countable K}
     {A B} (Φ : K → A → B → PROP) :
   Plain ([∗ map] k↦x1;x2 ∈ ∅;∅, Φ k x1 x2).
-Proof. rewrite /big_sepM2 map_zip_with_empty. apply _. Qed.
+Proof. rewrite big_sepM2_eq /big_sepM2_def map_zip_with_empty. apply _. Qed.
 Global Instance big_sepM2_plain `{BiAffine PROP, Countable K}
     {A B} (Φ : K → A → B → PROP) m1 m2 :
   (∀ k x1 x2, Plain (Φ k x1 x2)) →
   Plain ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
-Proof. intros. rewrite /big_sepM2. apply _. Qed.
+Proof. intros. rewrite big_sepM2_eq. apply _. Qed.
 
 Global Instance big_sepS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
   Plain ([∗ set] x ∈ ∅, Φ x).
-Proof. rewrite /big_opS elements_empty. apply _. Qed.
+Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
 Global Instance big_sepS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
   (∀ x, Plain (Φ x)) → Plain ([∗ set] x ∈ X, Φ x).
-Proof. rewrite /big_opS. apply _. Qed.
+Proof. rewrite big_opS_eq. apply _. Qed.
 
 Global Instance big_sepMS_empty_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) :
   Plain ([∗ mset] x ∈ ∅, Φ x).
-Proof. rewrite /big_opMS gmultiset_elements_empty. apply _. Qed.
+Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
 Global Instance big_sepMS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) X :
   (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
-Proof. rewrite /big_opMS. apply _. Qed.
+Proof. rewrite big_opMS_eq. apply _. Qed.
 
 (* Interaction with equality *)
 Lemma plainly_internal_eq {A:ofeT} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.
