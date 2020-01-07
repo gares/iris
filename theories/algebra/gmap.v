@@ -353,9 +353,10 @@ Qed.
 Section freshness.
   Local Set Default Proof Using "Type*".
   Context `{!Infinite K}.
-  Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : K → Prop) m x :
+  Lemma alloc_updateP_strong_dep (Q : gmap K A → Prop) (I : K → Prop) m (f : K → A) :
     pred_infinite I →
-    ✓ x → (∀ i, m !! i = None → I i → Q (<[i:=x]>m)) → m ~~>: Q.
+    (∀ i, ✓ (f i)) →
+    (∀ i, m !! i = None → I i → Q (<[i:=f i]>m)) → m ~~>: Q.
   Proof.
     move=> /(pred_infinite_set I (C:=gset K)) HP ? HQ.
     apply cmra_total_updateP. intros n mf Hm.
@@ -363,12 +364,18 @@ Section freshness.
     assert (m !! i = None).
     { eapply (not_elem_of_dom (D:=gset K)). revert Hi2.
       rewrite dom_op not_elem_of_union. naive_solver. }
-    exists (<[i:=x]>m); split.
+    exists (<[i:=f i]>m); split.
     - by apply HQ.
     - rewrite insert_singleton_op //.
       rewrite -assoc -insert_singleton_op;
         last by eapply (not_elem_of_dom (D:=gset K)).
     by apply insert_validN; [apply cmra_valid_validN|].
+  Qed.
+  Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : K → Prop) m x :
+    pred_infinite I →
+    ✓ x → (∀ i, m !! i = None → I i → Q (<[i:=x]>m)) → m ~~>: Q.
+  Proof.
+    move=> HP ? HQ. eapply alloc_updateP_strong_dep with (f := λ _, x); eauto.
   Qed.
   Lemma alloc_updateP (Q : gmap K A → Prop) m x :
     ✓ x → (∀ i, m !! i = None → Q (<[i:=x]>m)) → m ~~>: Q.
@@ -377,13 +384,6 @@ Section freshness.
     eapply alloc_updateP_strong with (I:=λ _, True);
     eauto using pred_infinite_True.
   Qed.
-  Lemma alloc_updateP_strong' m x (I : K → Prop) :
-    pred_infinite I →
-    ✓ x → m ~~>: λ m', ∃ i, I i ∧ m' = <[i:=x]>m ∧ m !! i = None.
-  Proof. eauto using alloc_updateP_strong. Qed.
-  Lemma alloc_updateP' m x :
-    ✓ x → m ~~>: λ m', ∃ i, m' = <[i:=x]>m ∧ m !! i = None.
-  Proof. eauto using alloc_updateP. Qed.
   Lemma alloc_updateP_cofinite (Q : gmap K A → Prop) (J : gset K) m x :
     ✓ x → (∀ i, m !! i = None → i ∉ J → Q (<[i:=x]>m)) → m ~~>: Q.
   Proof.
@@ -392,6 +392,20 @@ Section freshness.
     intros E. exists (fresh (J ∪ E)).
     apply not_elem_of_union, is_fresh.
   Qed.
+
+  (* Variants without the universally quantified Q, for use in case that is an evar. *)
+  Lemma alloc_updateP_strong_dep' m (f : K → A) (I : K → Prop) :
+    pred_infinite I →
+    (∀ i, ✓ (f i)) →
+    m ~~>: λ m', ∃ i, I i ∧ m' = <[i:=f i]>m ∧ m !! i = None.
+  Proof. eauto using alloc_updateP_strong_dep. Qed.
+  Lemma alloc_updateP_strong' m x (I : K → Prop) :
+    pred_infinite I →
+    ✓ x → m ~~>: λ m', ∃ i, I i ∧ m' = <[i:=x]>m ∧ m !! i = None.
+  Proof. eauto using alloc_updateP_strong. Qed.
+  Lemma alloc_updateP' m x :
+    ✓ x → m ~~>: λ m', ∃ i, m' = <[i:=x]>m ∧ m !! i = None.
+  Proof. eauto using alloc_updateP. Qed.
   Lemma alloc_updateP_cofinite' m x (J : gset K) :
     ✓ x → m ~~>: λ m', ∃ i, i ∉ J ∧ m' = <[i:=x]>m ∧ m !! i = None.
   Proof. eauto using alloc_updateP_cofinite. Qed.
