@@ -148,7 +148,7 @@ Qed.
    assertion. However, the map_updateP_alloc does not suffice to show this. *)
 Lemma own_alloc_strong_dep (f : gname → A) (P : gname → Prop) :
   pred_infinite P →
-  (∀ γ, ✓ (f γ)) →
+  (∀ γ, P γ → ✓ (f γ)) →
   (|==> ∃ γ, ⌜P γ⌝ ∧ own γ (f γ))%I.
 Proof.
   intros HP Ha.
@@ -156,7 +156,7 @@ Proof.
   - rewrite /uPred_valid /bi_emp_valid (ownM_unit emp).
     eapply bupd_ownM_updateP, (discrete_fun_singleton_updateP_empty (inG_id Hin)).
     + eapply alloc_updateP_strong_dep'; first done.
-      intros i. eapply cmra_transport_valid, Ha.
+      intros i _ ?. eapply cmra_transport_valid, Ha. done.
     + naive_solver.
   - apply exist_elim=>m; apply pure_elim_l=>-[γ [Hfresh ->]].
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
@@ -168,7 +168,7 @@ Proof.
   intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto.
 Qed.
 Lemma own_alloc_cofinite_dep (f : gname → A) (G : gset gname) :
-  (∀ γ, ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
+  (∀ γ, γ ∉ G → ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
 Proof.
   intros Ha.
   apply (own_alloc_strong_dep f (λ γ, γ ∉ G))=> //.

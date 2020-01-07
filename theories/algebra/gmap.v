@@ -355,7 +355,7 @@ Section freshness.
   Context `{!Infinite K}.
   Lemma alloc_updateP_strong_dep (Q : gmap K A → Prop) (I : K → Prop) m (f : K → A) :
     pred_infinite I →
-    (∀ i, ✓ (f i)) →
+    (∀ i, m !! i = None → I i → ✓ (f i)) →
     (∀ i, m !! i = None → I i → Q (<[i:=f i]>m)) → m ~~>: Q.
   Proof.
     move=> /(pred_infinite_set I (C:=gset K)) HP ? HQ.
@@ -369,7 +369,7 @@ Section freshness.
     - rewrite insert_singleton_op //.
       rewrite -assoc -insert_singleton_op;
         last by eapply (not_elem_of_dom (D:=gset K)).
-    by apply insert_validN; [apply cmra_valid_validN|].
+    apply insert_validN; [apply cmra_valid_validN|]; auto.
   Qed.
   Lemma alloc_updateP_strong (Q : gmap K A → Prop) (I : K → Prop) m x :
     pred_infinite I →
@@ -396,7 +396,7 @@ Section freshness.
   (* Variants without the universally quantified Q, for use in case that is an evar. *)
   Lemma alloc_updateP_strong_dep' m (f : K → A) (I : K → Prop) :
     pred_infinite I →
-    (∀ i, ✓ (f i)) →
+    (∀ i, m !! i = None → I i → ✓ (f i)) →
     m ~~>: λ m', ∃ i, I i ∧ m' = <[i:=f i]>m ∧ m !! i = None.
   Proof. eauto using alloc_updateP_strong_dep. Qed.
   Lemma alloc_updateP_strong' m x (I : K → Prop) :
