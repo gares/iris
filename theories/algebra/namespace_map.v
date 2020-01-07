@@ -46,9 +46,9 @@ Instance namespace_map_dist : Dist (namespace_map A) := λ n x y,
   namespace_map_data_proj x ≡{n}≡ namespace_map_data_proj y ∧
   namespace_map_token_proj x = namespace_map_token_proj y.
 
-Global Instance Awesome_ne : NonExpansive2 (@NamespaceMap A).
+Global Instance NamespaceMap_ne : NonExpansive2 (@NamespaceMap A).
 Proof. by split. Qed.
-Global Instance Awesome_proper : Proper ((≡) ==> (=) ==> (≡)) (@NamespaceMap A).
+Global Instance NamespaceMap_proper : Proper ((≡) ==> (=) ==> (≡)) (@NamespaceMap A).
 Proof. by split. Qed.
 Global Instance namespace_map_data_proj_ne: NonExpansive (@namespace_map_data_proj A).
 Proof. by destruct 1. Qed.
