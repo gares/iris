@@ -148,7 +148,7 @@ Qed.
    assertion. However, the map_updateP_alloc does not suffice to show this. *)
 Lemma own_alloc_strong_dep (f : gname → A) (P : gname → Prop) :
   pred_infinite P →
-  (forall γ, ✓ (f γ)) →
+  (∀ γ, ✓ (f γ)) →
   (|==> ∃ γ, ⌜P γ⌝ ∧ own γ (f γ))%I.
 Proof.
   intros HP Ha.
@@ -168,7 +168,7 @@ Proof.
   intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto.
 Qed.
 Lemma own_alloc_cofinite_dep (f : gname → A) (G : gset gname) :
-  (forall γ, ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
+  (∀ γ, ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
 Proof.
   intros Ha.
   apply (own_alloc_strong_dep f (λ γ, γ ∉ G))=> //.
@@ -182,7 +182,7 @@ Proof.
   intros Ha. eapply own_alloc_cofinite_dep with (f := λ _, a); eauto.
 Qed.
 Lemma own_alloc_dep (f : gname → A) :
-  (forall γ, ✓ (f γ)) → (|==> ∃ γ, own γ (f γ))%I.
+  (∀ γ, ✓ (f γ)) → (|==> ∃ γ, own γ (f γ))%I.
 Proof.
   intros Ha. rewrite /uPred_valid /bi_emp_valid (own_alloc_cofinite_dep f ∅) //; [].
   apply bupd_mono, exist_mono=>?. eauto using and_elim_r.
