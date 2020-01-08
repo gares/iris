@@ -435,9 +435,11 @@ the context, which is intended to be the non-laterable assertions that iAuIntro
 would choke on.  You get them all back in the continuation of the atomic
 operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
-  wp_apply_core lem (fun H => iApplyHyp H; last iAuIntro).
+  (wp_apply_core lem (fun H => iApplyHyp H));
+  last iAuIntro.
 Tactic Notation "awp_apply" open_constr(lem) "without" constr(Hs) :=
-  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H; last iAuIntro]).
+  (wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H]));
+  last iAuIntro.
 
 Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
   let Htmp := iFresh in

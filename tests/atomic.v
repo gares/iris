@@ -30,7 +30,7 @@ Section error.
   Restart.
     iIntros "HP". Fail awp_apply load_spec.
   Abort.
-End error.  
+End error.
 
 
 (* Test if AWP and the AU obtained from AWP print. *)
