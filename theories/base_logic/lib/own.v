@@ -161,12 +161,6 @@ Proof.
   - apply exist_elim=>m; apply pure_elim_l=>-[γ [Hfresh ->]].
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
 Qed.
-Lemma own_alloc_strong a (P : gname → Prop) :
-  pred_infinite P →
-  ✓ a → (|==> ∃ γ, ⌜P γ⌝ ∧ own γ a)%I.
-Proof.
-  intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto.
-Qed.
 Lemma own_alloc_cofinite_dep (f : gname → A) (G : gset gname) :
   (∀ γ, γ ∉ G → ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
 Proof.
@@ -176,21 +170,22 @@ Proof.
   intros E. set (i := fresh (G ∪ E)).
   exists i. apply not_elem_of_union, is_fresh.
 Qed.
-Lemma own_alloc_cofinite a (G : gset gname) :
-  ✓ a → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a)%I.
-Proof.
-  intros Ha. eapply own_alloc_cofinite_dep with (f := λ _, a); eauto.
-Qed.
 Lemma own_alloc_dep (f : gname → A) :
   (∀ γ, ✓ (f γ)) → (|==> ∃ γ, own γ (f γ))%I.
 Proof.
   intros Ha. rewrite /uPred_valid /bi_emp_valid (own_alloc_cofinite_dep f ∅) //; [].
   apply bupd_mono, exist_mono=>?. eauto using and_elim_r.
 Qed.
+
+Lemma own_alloc_strong a (P : gname → Prop) :
+  pred_infinite P →
+  ✓ a → (|==> ∃ γ, ⌜P γ⌝ ∧ own γ a)%I.
+Proof. intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto. Qed.
+Lemma own_alloc_cofinite a (G : gset gname) :
+  ✓ a → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a)%I.
+Proof. intros Ha. eapply own_alloc_cofinite_dep with (f := λ _, a); eauto. Qed.
 Lemma own_alloc a : ✓ a → (|==> ∃ γ, own γ a)%I.
-Proof.
-  intros Ha. eapply own_alloc_dep with (f := λ _, a); eauto.
-Qed.
+Proof. intros Ha. eapply own_alloc_dep with (f := λ _, a); eauto. Qed.
 
 (** ** Frame preserving updates *)
 Lemma own_updateP P γ a : a ~~>: P → own γ a ==∗ ∃ a', ⌜P a'⌝ ∧ own γ a'.
