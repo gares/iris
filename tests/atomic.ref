@@ -15,8 +15,12 @@
 "non_laterable"
      : string
 The command has indeed failed with message:
+Ltac call to "iAuIntro" failed.
 Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 The command has indeed failed with message:
+In nested Ltac calls to "awp_apply (open_constr)",
+"<ssreflect_plugin::ssrtclseq@0> wp_apply_core lem fun H => iApplyHyp H ; last  iAuIntro" and
+"iAuIntro", last call failed.
 Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 "printing"
      : string
