@@ -16,7 +16,7 @@ Lemma tac_twp_expr_eval `{!heapG Σ} Δ s E Φ e e' :
   envs_entails Δ (WP e' @ s; E [{ Φ }]) → envs_entails Δ (WP e @ s; E [{ Φ }]).
 Proof. by intros ->. Qed.
 
-Tactic Notation "wp_expr_eval" tactic(t) :=
+Tactic Notation "wp_expr_eval" tactic3(t) :=
   iStartProof;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
@@ -408,7 +408,7 @@ End heap.
 [wp_bind K; tac H] for every possible evaluation context.  [tac] can do
 [iApplyHyp H] to actually apply the hypothesis.  TC resolution of [lem] premises
 happens *after* [tac H] got executed. *)
-Tactic Notation "wp_apply_core" open_constr(lem) tactic(tac) :=
+Tactic Notation "wp_apply_core" open_constr(lem) tactic3(tac) :=
   wp_pures;
   iPoseProofCore lem as false (fun H =>
     lazymatch goal with
@@ -435,9 +435,11 @@ the context, which is intended to be the non-laterable assertions that iAuIntro
 would choke on.  You get them all back in the continuation of the atomic
 operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
-  wp_apply_core lem (fun H => iApplyHyp H; last iAuIntro).
+  wp_apply_core lem (fun H => iApplyHyp H);
+  last iAuIntro.
 Tactic Notation "awp_apply" open_constr(lem) "without" constr(Hs) :=
-  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H; last iAuIntro]).
+  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H]);
+  last iAuIntro.
 
 Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
   let Htmp := iFresh in

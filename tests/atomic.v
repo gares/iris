@@ -17,7 +17,24 @@ Section tests.
   Qed.
 End tests.
 
+(* Test if we get reasonable error messages with non-laterable assertions in the context. *)
+Section error.
+  Context `{!heapG Σ} {aheap: atomic_heap Σ}.
+  Import atomic_heap.notation.
+
+  Check "non_laterable".
+  Lemma non_laterable (P : iProp Σ) (l : loc) :
+    P -∗ WP !#l {{ _, True }}.
+  Proof.
+    iIntros "HP". wp_apply load_spec. Fail iAuIntro.
+  Restart.
+    iIntros "HP". Fail awp_apply load_spec.
+  Abort.
+End error.
+
+
 (* Test if AWP and the AU obtained from AWP print. *)
+Check "printing".
 Section printing.
   Context `{!heapG Σ}.
 

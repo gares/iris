@@ -12,6 +12,14 @@
   AACC << ∀ (v0 : val) (q : Qp), l ↦{q} v0 ABORT l ↦ v >> @ ⊤, ∅
        << l ↦{q} v0, COMM Q -∗ Q >>
   
+"non_laterable"
+     : string
+The command has indeed failed with message:
+Tactic failure: iAuIntro: not all spatial assumptions are laterable.
+The command has indeed failed with message:
+Tactic failure: iAuIntro: not all spatial assumptions are laterable.
+"printing"
+     : string
 1 subgoal
   
   Σ : gFunctors
