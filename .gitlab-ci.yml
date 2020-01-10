@@ -44,8 +44,8 @@ build-coq.8.10.2:
   variables:
     OPAM_PINS: "coq version 8.10.2"
     OPAM_PKG: "coq-iris"
-    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
-    DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
+#    DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
+#    DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
     TIMING_CONF: "coq-8.10.2"
   tags:
   - fp-timing
