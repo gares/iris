@@ -2,14 +2,14 @@ opam-version: "2.0"
 name: "coq-iris"
 maintainer: "Ralf Jung <jung@mpi-sws.org>"
 authors: "The Iris Team"
+license: "BSD"
 homepage: "http://iris-project.org/"
 bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
-license: "BSD"
+
 synopsis: "This is the Coq development of the Iris Project"
 
 depends: [
-  "ocaml"
   "coq" { (= "8.8.2") | (>= "8.9.1" & < "8.12~") | (= "dev") }
   "coq-stdpp" { (= "dev.2019-11-22.2.16eb222f") | (= "dev") }
 ]
