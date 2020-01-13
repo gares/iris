@@ -46,7 +46,7 @@ developments.
 ### Working *on* Iris
 
 To work on Iris itself, you need to install its build-dependencies.  Again we
-recommend you do that with opam (1.2.2 or newer).  This requires the following
+recommend you do that with opam (2.0.0 or newer).  This requires the following
 two repositories:
 
     opam repo add coq-released https://coq.inria.fr/opam/released
