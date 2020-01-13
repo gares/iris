@@ -3,7 +3,7 @@ name: "coq-iris"
 maintainer: "Ralf Jung <jung@mpi-sws.org>"
 authors: "The Iris Team"
 license: "BSD"
-homepage: "http://iris-project.org/"
+homepage: "https://iris-project.org/"
 bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
 
