@@ -28,7 +28,7 @@ If you need to work with Coq 8.5, please check out the
 
 ### Working *with* Iris
 
-To use Iris in your own proofs, we recommend you install Iris via opam (1.2.2 or
+To use Iris in your own proofs, we recommend you install Iris via opam (2.0.0 or
 newer).  To obtain the latest stable release, you have to add the Coq opam
 repository:
 
