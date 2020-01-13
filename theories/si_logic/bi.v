@@ -5,6 +5,9 @@ Import siProp_primitive.
 (** BI instances for [siProp], and re-stating the remaining primitive laws in
 terms of the BI interface.  This file does *not* unseal. *)
 
+(** We pick [*] and [-*] to coincide with [∧] and [→], respectively. This seems
+to be the most reasonable choice to fit a "pure" higher-order logic into the
+proofmode's BI framework. *)
 Definition siProp_emp : siProp := siProp_pure True.
 Definition siProp_sep : siProp → siProp → siProp := siProp_and.
 Definition siProp_wand : siProp → siProp → siProp := siProp_impl.

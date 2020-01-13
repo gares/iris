@@ -1,6 +1,9 @@
 From iris.algebra Require Export ofe.
 From iris.bi Require Import notation.
 
+(** The type [siProp] defines "plain" step-indexed propositions, on which we
+define the usual connectives of higher-order logic, and prove that these satisfy
+the usual laws of higher-order logic. *)
 Record siProp := SiProp {
   siProp_holds :> nat → Prop;
   siProp_closed n1 n2 : siProp_holds n1 → n2 ≤ n1 → siProp_holds n2
