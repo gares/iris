@@ -619,6 +619,8 @@ Instance from_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   FromExist P Φ → FromExist (tc_opaque P) Φ := id.
 Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   IntoExist P Φ → IntoExist (tc_opaque P) Φ := id.
+Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
+  FromForall P Φ → FromForall (tc_opaque P) Φ := id.
 Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (tc_opaque P) Φ := id.
 Instance from_modal_tc_opaque {PROP1 PROP2 : bi} {A}
