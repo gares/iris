@@ -138,19 +138,6 @@ Proof.
   - case_match; try apply map_Forall_insert_2; by naive_solver.
 Qed.
 
-(* Parallel substitution with maps of values indexed by strings *)
-Definition binder_delete {A} (x : binder) (vs : gmap string A) : gmap string A :=
-  if x is BNamed x' then delete x' vs else vs.
-Definition binder_insert {A} (x : binder) (v : A) (vs : gmap string A) : gmap string A :=
-  if x is BNamed x' then <[x':=v]>vs else vs.
-
-Lemma binder_insert_fmap {A B : Type} (f : A → B) (x : A) b vs :
-  f <$> binder_insert b x vs = binder_insert b (f x) (f <$> vs).
-Proof. destruct b; rewrite ?fmap_insert //. Qed.
-Lemma lookup_binder_delete_None {A : Type} (vs : gmap string A) x y :
-  binder_delete x vs !! y = None ↔ x = BNamed y ∨ vs !! y = None.
-Proof. destruct x; rewrite /= ?lookup_delete_None; naive_solver. Qed.
-
 Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   match e with
   | Val _ => e
@@ -185,21 +172,16 @@ Qed.
 Lemma subst_map_insert x v vs e :
   subst_map (<[x:=v]>vs) e = subst x v (subst_map (delete x vs) e).
 Proof.
-  revert vs. assert (∀ (y : binder) (vs : gmap _ val), y ≠ BNamed x →
-    binder_delete y (<[x:=v]> vs) = <[x:=v]> (binder_delete y vs)) as Hins.
-  { intros [|y] vs ?; rewrite /= ?delete_insert_ne //; congruence. }
-  assert (∀ (y : binder) (vs : gmap _ val),
-    binder_delete y (delete x vs) = delete x (binder_delete y vs)) as Hdel.
-  { by intros [|y] ?; rewrite /= 1?delete_commute. }
-  induction e=> vs; simplify_map_eq; auto with f_equal.
+  revert vs. induction e=> vs; simplify_map_eq; auto with f_equal.
   - match goal with
     | |- context [ <[?x:=_]> _ !! ?y ] =>
        destruct (decide (x = y)); simplify_map_eq=> //
     end. by case (vs !! _); simplify_option_eq.
   - destruct (decide _) as [[??]|[<-%dec_stable|[<-%dec_stable ?]]%not_and_l_alt].
-    + rewrite !Hins // !Hdel. eauto with f_equal.
+    + rewrite !binder_delete_insert // !binder_delete_delete; eauto with f_equal.
     + by rewrite /= delete_insert_delete delete_idemp.
-    + by rewrite /= Hins // delete_insert_delete !Hdel delete_idemp.
+    + by rewrite /= binder_delete_insert // delete_insert_delete
+        !binder_delete_delete delete_idemp.
 Qed.
 Lemma subst_map_binder_insert b v vs e :
   subst_map (binder_insert b v vs) e =
