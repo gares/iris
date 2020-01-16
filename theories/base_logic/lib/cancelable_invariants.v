@@ -99,6 +99,14 @@ Section proofs.
     iExists γ. iFrame "Hγ". by iApply "Halloc".
   Qed.
 
+  Lemma cinv_alloc_open E N P :
+    ↑N ⊆ E → (|={E,E∖↑N}=> ∃ γ, cinv N γ P ∗ cinv_own γ 1 ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
+  Proof.
+    iIntros (?). iMod (own_alloc 1%Qp) as (γ) "Hγ"; [done..|].
+    iMod (inv_alloc_open N _ (P ∨ cinv_own γ 1)) as "[Hinv Hclose]"; [done..|].
+    iExists γ; iIntros "!> {$Hγ $Hinv} HP". iApply "Hclose". by eauto.
+  Qed.
+
   Lemma cinv_cancel E N γ P : ↑N ⊆ E → cinv N γ P -∗ cinv_own γ 1 ={E}=∗ ▷ P.
   Proof.
     iIntros (?) "#Hinv Hγ".
