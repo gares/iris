@@ -101,19 +101,36 @@ Section list.
   Lemma big_opL_unit l : ([^o list] k↦y ∈ l, monoid_unit) ≡ (monoid_unit : M).
   Proof. induction l; rewrite /= ?left_id //. Qed.
 
-  Lemma big_opL_forall R f g l :
+  Lemma big_opL_gen_proper_2 (R : relation M) f g l1 l2 :
+    R monoid_unit monoid_unit →
+    Proper (R ==> R ==> R) o →
+    (∀ k,
+      match l1 !! k, l2 !! k with
+      | Some y1, Some y2 => R (f k y1) (g k y2)
+      | None, None => True
+      | _, _ => False
+      end) →
+    R ([^o list] k ↦ y ∈ l1, f k y) ([^o list] k ↦ y ∈ l2, g k y).
+  Proof.
+    intros ??. revert l2 f g. induction l1 as [|x1 l1 IH]=> -[|x2 l2] //= f g Hfg.
+    - by specialize (Hfg 0).
+    - by specialize (Hfg 0).
+    - f_equiv; [apply (Hfg 0)|]. apply IH. intros k. apply (Hfg (S k)).
+  Qed.
+  Lemma big_opL_gen_proper R f g l :
     Reflexive R →
     Proper (R ==> R ==> R) o →
     (∀ k y, l !! k = Some y → R (f k y) (g k y)) →
     R ([^o list] k ↦ y ∈ l, f k y) ([^o list] k ↦ y ∈ l, g k y).
   Proof.
-    intros ??. revert f g. induction l as [|x l IH]=> f g ? //=; f_equiv; eauto.
+    intros. apply big_opL_gen_proper_2; [done..|].
+    intros k. destruct (l !! k) eqn:?; auto.
   Qed.
 
   Lemma big_opL_ext f g l :
     (∀ k y, l !! k = Some y → f k y = g k y) →
     ([^o list] k ↦ y ∈ l, f k y) = [^o list] k ↦ y ∈ l, g k y.
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
 
   Lemma big_opL_permutation (f : A → M) l1 l2 :
     l1 ≡ₚ l2 → ([^o list] x ∈ l1, f x) ≡ ([^o list] x ∈ l2, f x).
@@ -132,11 +149,11 @@ Section list.
   Lemma big_opL_ne f g l n :
     (∀ k y, l !! k = Some y → f k y ≡{n}≡ g k y) →
     ([^o list] k ↦ y ∈ l, f k y) ≡{n}≡ ([^o list] k ↦ y ∈ l, g k y).
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
   Lemma big_opL_proper f g l :
     (∀ k y, l !! k = Some y → f k y ≡ g k y) →
     ([^o list] k ↦ y ∈ l, f k y) ≡ ([^o list] k ↦ y ∈ l, g k y).
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
 
   Global Instance big_opL_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
@@ -179,40 +196,6 @@ Section gmap.
   Implicit Types m : gmap K A.
   Implicit Types f g : K → A → M.
 
-  Lemma big_opM_forall R f g m :
-    Reflexive R → Proper (R ==> R ==> R) o →
-    (∀ k x, m !! k = Some x → R (f k x) (g k x)) →
-    R ([^o map] k ↦ x ∈ m, f k x) ([^o map] k ↦ x ∈ m, g k x).
-  Proof.
-    intros ?? Hf. rewrite big_opM_eq. apply (big_opL_forall R); auto.
-    intros k [i x] ?%elem_of_list_lookup_2. by apply Hf, elem_of_map_to_list.
-  Qed.
-
-  Lemma big_opM_ext f g m :
-    (∀ k x, m !! k = Some x → f k x = g k x) →
-    ([^o map] k ↦ x ∈ m, f k x) = ([^o map] k ↦ x ∈ m, g k x).
-  Proof. apply big_opM_forall; apply _. Qed.
-
-  (** The lemmas [big_opM_ne] and [big_opM_proper] are more generic than the
-  instances as they also give [m !! k = Some y] in the premise. *)
-  Lemma big_opM_ne f g m n :
-    (∀ k x, m !! k = Some x → f k x ≡{n}≡ g k x) →
-    ([^o map] k ↦ x ∈ m, f k x) ≡{n}≡ ([^o map] k ↦ x ∈ m, g k x).
-  Proof. apply big_opM_forall; apply _. Qed.
-  Lemma big_opM_proper f g m :
-    (∀ k x, m !! k = Some x → f k x ≡ g k x) →
-    ([^o map] k ↦ x ∈ m, f k x) ≡ ([^o map] k ↦ x ∈ m, g k x).
-  Proof. apply big_opM_forall; apply _. Qed.
-
-  Global Instance big_opM_ne' n :
-    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
-           (big_opM o (K:=K) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opM_ne; intros; apply Hf. Qed.
-  Global Instance big_opM_proper' :
-    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
-           (big_opM o (K:=K) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opM_proper; intros; apply Hf. Qed.
-
   Lemma big_opM_empty f : ([^o map] k↦x ∈ ∅, f k x) = monoid_unit.
   Proof. by rewrite big_opM_eq /big_opM_def map_to_list_empty. Qed.
 
@@ -228,6 +211,66 @@ Section gmap.
     intros. rewrite -big_opM_insert ?lookup_delete //.
     by rewrite insert_delete insert_id.
   Qed.
+
+  Lemma big_opM_gen_proper_2 (R : relation M) f g m1 m2 :
+    subrelation (≡) R → Equivalence R →
+    Proper (R ==> R ==> R) o →
+    (∀ k,
+      match m1 !! k, m2 !! k with
+      | Some y1, Some y2 => R (f k y1) (g k y2)
+      | None, None => True
+      | _, _ => False
+      end) →
+    R ([^o map] k ↦ x ∈ m1, f k x) ([^o map] k ↦ x ∈ m2, g k x).
+  Proof.
+    intros HR ??. revert m2 f g.
+    induction m1 as [|k x1 m1 Hm1k IH] using map_ind=> m2 f g Hfg.
+    { destruct m2 as [|k x2 m2 _ _] using map_ind.
+      { rewrite !big_opM_empty. by apply HR. }
+      generalize (Hfg k). by rewrite lookup_empty lookup_insert. }
+    generalize (Hfg k). rewrite lookup_insert.
+    destruct (m2 !! k) as [x2|] eqn:Hm2k; [intros Hk|done].
+    etrans; [by apply HR, big_opM_insert|].
+    etrans; [|by symmetry; apply HR, big_opM_delete].
+    f_equiv; [done|]. apply IH=> k'. destruct (decide (k = k')) as [->|?].
+    - by rewrite lookup_delete Hm1k.
+    - generalize (Hfg k'). rewrite lookup_insert_ne // lookup_delete_ne //.
+  Qed.
+
+  Lemma big_opM_gen_proper R f g m :
+    Reflexive R →
+    Proper (R ==> R ==> R) o →
+    (∀ k x, m !! k = Some x → R (f k x) (g k x)) →
+    R ([^o map] k ↦ x ∈ m, f k x) ([^o map] k ↦ x ∈ m, g k x).
+  Proof.
+    intros ?? Hf. rewrite big_opM_eq. apply (big_opL_gen_proper R); auto.
+    intros k [i x] ?%elem_of_list_lookup_2. by apply Hf, elem_of_map_to_list.
+  Qed.
+
+  Lemma big_opM_ext f g m :
+    (∀ k x, m !! k = Some x → f k x = g k x) →
+    ([^o map] k ↦ x ∈ m, f k x) = ([^o map] k ↦ x ∈ m, g k x).
+  Proof. apply big_opM_gen_proper; apply _. Qed.
+
+  (** The lemmas [big_opM_ne] and [big_opM_proper] are more generic than the
+  instances as they also give [m !! k = Some y] in the premise. *)
+  Lemma big_opM_ne f g m n :
+    (∀ k x, m !! k = Some x → f k x ≡{n}≡ g k x) →
+    ([^o map] k ↦ x ∈ m, f k x) ≡{n}≡ ([^o map] k ↦ x ∈ m, g k x).
+  Proof. apply big_opM_gen_proper; apply _. Qed.
+  Lemma big_opM_proper f g m :
+    (∀ k x, m !! k = Some x → f k x ≡ g k x) →
+    ([^o map] k ↦ x ∈ m, f k x) ≡ ([^o map] k ↦ x ∈ m, g k x).
+  Proof. apply big_opM_gen_proper; apply _. Qed.
+
+  Global Instance big_opM_ne' n :
+    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
+           (big_opM o (K:=K) (A:=A)).
+  Proof. intros f g Hf m ? <-. apply big_opM_ne; intros; apply Hf. Qed.
+  Global Instance big_opM_proper' :
+    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
+           (big_opM o (K:=K) (A:=A)).
+  Proof. intros f g Hf m ? <-. apply big_opM_proper; intros; apply Hf. Qed.
 
   Lemma big_opM_singleton f i x : ([^o map] k↦y ∈ {[i:=x]}, f k y) ≡ f i x.
   Proof.
@@ -292,30 +335,30 @@ Section gset.
   Implicit Types X : gset A.
   Implicit Types f : A → M.
 
-  Lemma big_opS_forall R f g X :
+  Lemma big_opS_gen_proper R f g X :
     Reflexive R → Proper (R ==> R ==> R) o →
     (∀ x, x ∈ X → R (f x) (g x)) →
     R ([^o set] x ∈ X, f x) ([^o set] x ∈ X, g x).
   Proof.
-    rewrite big_opS_eq. intros ?? Hf. apply (big_opL_forall R); auto.
+    rewrite big_opS_eq. intros ?? Hf. apply (big_opL_gen_proper R); auto.
     intros k x ?%elem_of_list_lookup_2. by apply Hf, elem_of_elements.
   Qed.
 
   Lemma big_opS_ext f g X :
     (∀ x, x ∈ X → f x = g x) →
     ([^o set] x ∈ X, f x) = ([^o set] x ∈ X, g x).
-  Proof. apply big_opS_forall; apply _. Qed.
+  Proof. apply big_opS_gen_proper; apply _. Qed.
 
   (** The lemmas [big_opS_ne] and [big_opS_proper] are more generic than the
   instances as they also give [x ∈ X] in the premise. *)
   Lemma big_opS_ne f g X n :
     (∀ x, x ∈ X → f x ≡{n}≡ g x) →
     ([^o set] x ∈ X, f x) ≡{n}≡ ([^o set] x ∈ X, g x).
-  Proof. apply big_opS_forall; apply _. Qed.
+  Proof. apply big_opS_gen_proper; apply _. Qed.
   Lemma big_opS_proper f g X :
     (∀ x, x ∈ X → f x ≡ g x) →
     ([^o set] x ∈ X, f x) ≡ ([^o set] x ∈ X, g x).
-  Proof. apply big_opS_forall; apply _. Qed.
+  Proof. apply big_opS_gen_proper; apply _. Qed.
 
   Global Instance big_opS_ne' n :
     Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opS o (A:=A)).
@@ -386,30 +429,30 @@ Section gmultiset.
   Implicit Types X : gmultiset A.
   Implicit Types f : A → M.
 
-  Lemma big_opMS_forall R f g X :
+  Lemma big_opMS_gen_proper R f g X :
     Reflexive R → Proper (R ==> R ==> R) o →
     (∀ x, x ∈ X → R (f x) (g x)) →
     R ([^o mset] x ∈ X, f x) ([^o mset] x ∈ X, g x).
   Proof.
-    rewrite big_opMS_eq. intros ?? Hf. apply (big_opL_forall R); auto.
+    rewrite big_opMS_eq. intros ?? Hf. apply (big_opL_gen_proper R); auto.
     intros k x ?%elem_of_list_lookup_2. by apply Hf, gmultiset_elem_of_elements.
   Qed.
 
   Lemma big_opMS_ext f g X :
     (∀ x, x ∈ X → f x = g x) →
     ([^o mset] x ∈ X, f x) = ([^o mset] x ∈ X, g x).
-  Proof. apply big_opMS_forall; apply _. Qed.
+  Proof. apply big_opMS_gen_proper; apply _. Qed.
 
   (** The lemmas [big_opMS_ne] and [big_opMS_proper] are more generic than the
   instances as they also give [x ∈ X] in the premise. *)
   Lemma big_opMS_ne f g X n :
     (∀ x, x ∈ X → f x ≡{n}≡ g x) →
     ([^o mset] x ∈ X, f x) ≡{n}≡ ([^o mset] x ∈ X, g x).
-  Proof. apply big_opMS_forall; apply _. Qed.
+  Proof. apply big_opMS_gen_proper; apply _. Qed.
   Lemma big_opMS_proper f g X :
     (∀ x, x ∈ X → f x ≡ g x) →
     ([^o mset] x ∈ X, f x) ≡ ([^o mset] x ∈ X, g x).
-  Proof. apply big_opMS_forall; apply _. Qed.
+  Proof. apply big_opMS_gen_proper; apply _. Qed.
 
   Global Instance big_opMS_ne' n :
     Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opMS o (A:=A)).

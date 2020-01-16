@@ -102,7 +102,7 @@ Section sep_list.
   Lemma big_sepL_mono Φ Ψ l :
     (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
     ([∗ list] k ↦ y ∈ l, Φ k y) ⊢ [∗ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
   Lemma big_sepL_ne Φ Ψ l n :
     (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
     ([∗ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∗ list] k ↦ y ∈ l, Ψ k y)%I.
@@ -525,7 +525,7 @@ Section and_list.
   Lemma big_andL_mono Φ Ψ l :
     (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
     ([∧ list] k ↦ y ∈ l, Φ k y) ⊢ [∧ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
   Lemma big_andL_ne Φ Ψ l n :
     (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
     ([∧ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∧ list] k ↦ y ∈ l, Ψ k y)%I.
@@ -624,7 +624,7 @@ Section or_list.
   Lemma big_orL_mono Φ Ψ l :
     (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
     ([∨ list] k ↦ y ∈ l, Φ k y) ⊢ [∨ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
   Lemma big_orL_ne Φ Ψ l n :
     (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
     ([∨ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∨ list] k ↦ y ∈ l, Ψ k y)%I.
@@ -722,7 +722,7 @@ Section map.
   Lemma big_sepM_mono Φ Ψ m :
     (∀ k x, m !! k = Some x → Φ k x ⊢ Ψ k x) →
     ([∗ map] k ↦ x ∈ m, Φ k x) ⊢ [∗ map] k ↦ x ∈ m, Ψ k x.
-  Proof. apply big_opM_forall; apply _ || auto. Qed.
+  Proof. apply big_opM_gen_proper; apply _ || auto. Qed.
   Lemma big_sepM_ne Φ Ψ m n :
     (∀ k x, m !! k = Some x → Φ k x ≡{n}≡ Ψ k x) →
     ([∗ map] k ↦ x ∈ m, Φ k x)%I ≡{n}≡ ([∗ map] k ↦ x ∈ m, Ψ k x)%I.
@@ -1243,7 +1243,7 @@ Section gset.
   Lemma big_sepS_mono Φ Ψ X :
     (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
     ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ X, Ψ x.
-  Proof. intros. apply big_opS_forall; apply _ || auto. Qed.
+  Proof. intros. apply big_opS_gen_proper; apply _ || auto. Qed.
   Lemma big_sepS_ne Φ Ψ X n :
     (∀ x, x ∈ X → Φ x ≡{n}≡ Ψ x) →
     ([∗ set] x ∈ X, Φ x)%I ≡{n}≡ ([∗ set] x ∈ X, Ψ x)%I.
@@ -1414,7 +1414,7 @@ Section gmultiset.
   Lemma big_sepMS_mono Φ Ψ X :
     (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
     ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ X, Ψ x.
-  Proof. intros. apply big_opMS_forall; apply _ || auto. Qed.
+  Proof. intros. apply big_opMS_gen_proper; apply _ || auto. Qed.
   Lemma big_sepMS_ne Φ Ψ X n :
     (∀ x, x ∈ X → Φ x ≡{n}≡ Ψ x) →
     ([∗ mset] x ∈ X, Φ x)%I ≡{n}≡ ([∗ mset] x ∈ X, Ψ x)%I.
