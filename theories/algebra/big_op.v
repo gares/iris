@@ -155,6 +155,22 @@ Section list.
     ([^o list] k ↦ y ∈ l, f k y) ≡ ([^o list] k ↦ y ∈ l, g k y).
   Proof. apply big_opL_gen_proper; apply _. Qed.
 
+  (** The version [big_opL_proper_2] with [≡] for the list arguments can only be
+  used if there is a setoid on [A]. The version for [dist n] can be found in
+  [algebra.list]. We do not define this lemma as a [Proper] instance, since
+  [f_equiv] will then use sometimes use this one, and other times
+  [big_opL_proper'], depending on whether a setoid on [A] exists. *)
+  Lemma big_opL_proper_2 `{!Equiv A} f g l1 l2 :
+    l1 ≡ l2 →
+    (∀ k y1 y2,
+      l1 !! k = Some y1 → l2 !! k = Some y2 → y1 ≡ y2 → f k y1 ≡ g k y2) →
+    ([^o list] k ↦ y ∈ l1, f k y) ≡ ([^o list] k ↦ y ∈ l2, g k y).
+  Proof.
+    intros Hl Hf. apply big_opL_gen_proper_2; try (apply _ || done).
+    intros k. assert (l1 !! k ≡ l2 !! k) as Hlk by (by f_equiv).
+    destruct (l1 !! k) eqn:?, (l2 !! k) eqn:?; inversion Hlk; naive_solver.
+  Qed.
+
   Global Instance big_opL_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
            (big_opL o (A:=A)).
@@ -262,6 +278,21 @@ Section gmap.
     (∀ k x, m !! k = Some x → f k x ≡ g k x) →
     ([^o map] k ↦ x ∈ m, f k x) ≡ ([^o map] k ↦ x ∈ m, g k x).
   Proof. apply big_opM_gen_proper; apply _. Qed.
+  (** The version [big_opL_proper_2] with [≡] for the map arguments can only be
+  used if there is a setoid on [A]. The version for [dist n] can be found in
+  [algebra.gmap]. We do not define this lemma as a [Proper] instance, since
+  [f_equiv] will then use sometimes use this one, and other times
+  [big_opM_proper'], depending on whether a setoid on [A] exists. *)
+  Lemma big_opM_proper_2 `{!Equiv A} f g m1 m2 :
+    m1 ≡ m2 →
+    (∀ k y1 y2,
+      m1 !! k = Some y1 → m2 !! k = Some y2 → y1 ≡ y2 → f k y1 ≡ g k y2) →
+    ([^o map] k ↦ y ∈ m1, f k y) ≡ ([^o map] k ↦ y ∈ m2, g k y).
+  Proof.
+    intros Hl Hf. apply big_opM_gen_proper_2; try (apply _ || done).
+    intros k. assert (m1 !! k ≡ m2 !! k) as Hlk by (by f_equiv).
+    destruct (m1 !! k) eqn:?, (m2 !! k) eqn:?; inversion Hlk; naive_solver.
+  Qed.
 
   Global Instance big_opM_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)

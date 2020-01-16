@@ -381,6 +381,20 @@ Section sep_list2.
     intros; apply (anti_symm _);
       apply big_sepL2_mono; auto using equiv_entails, equiv_entails_sym.
   Qed.
+  Lemma big_sepL2_proper_2 `{!Equiv A, !Equiv B} Φ Ψ l1 l2 l1' l2' :
+    l1 ≡ l1' → l2 ≡ l2' →
+    (∀ k y1 y1' y2 y2',
+      l1 !! k = Some y1 → l1' !! k = Some y1' → y1 ≡ y1' →
+      l2 !! k = Some y2 → l2' !! k = Some y2' → y2 ≡ y2' →
+      Φ k y1 y2 ⊣⊢ Ψ k y1' y2') →
+    ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2) ⊣⊢ [∗ list] k ↦ y1;y2 ∈ l1';l2', Ψ k y1 y2.
+  Proof.
+    intros Hl1 Hl2 Hf. rewrite !big_sepL2_alt. f_equiv.
+    { do 2 f_equiv; by apply length_proper. }
+    apply big_opL_proper_2; [by f_equiv|].
+    intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%lookup_zip_with_Some
+      (?&?&[=<- <-]&?&?)%lookup_zip_with_Some [??]; naive_solver.
+  Qed.
 
   Global Instance big_sepL2_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (dist n)))
@@ -949,6 +963,24 @@ Section map2.
   Proof.
     intros; apply (anti_symm _);
       apply big_sepM2_mono; auto using equiv_entails, equiv_entails_sym.
+  Qed.
+  Lemma big_sepM2_proper_2 `{!Equiv A, !Equiv B} Φ Ψ m1 m2 m1' m2' :
+    m1 ≡ m1' → m2 ≡ m2' →
+    (∀ k y1 y1' y2 y2',
+      m1 !! k = Some y1 → m1' !! k = Some y1' → y1 ≡ y1' →
+      m2 !! k = Some y2 → m2' !! k = Some y2' → y2 ≡ y2' →
+      Φ k y1 y2 ⊣⊢ Ψ k y1' y2') →
+    ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊣⊢ [∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2.
+  Proof.
+    intros Hm1 Hm2 Hf. rewrite big_sepM2_eq /big_sepM2_def. f_equiv.
+    { f_equiv; split; intros Hm k.
+      - trans (is_Some (m1 !! k)); [symmetry; apply is_Some_proper; by f_equiv|].
+        rewrite Hm. apply is_Some_proper; by f_equiv.
+      - trans (is_Some (m1' !! k)); [apply is_Some_proper; by f_equiv|].
+        rewrite Hm. symmetry. apply is_Some_proper; by f_equiv. }
+    apply big_opM_proper_2; [by f_equiv|].
+    intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
+      (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
   Qed.
 
   Global Instance big_sepM2_ne' n :

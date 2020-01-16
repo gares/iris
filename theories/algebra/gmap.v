@@ -119,6 +119,39 @@ Proof.
   destruct 1; destruct 1; repeat f_equiv; constructor || done.
 Qed.
 
+Lemma big_opM_ne_2 `{Monoid M o} `{Countable K} {A : ofeT} (f g : K → A → M) m1 m2 n :
+  m1 ≡{n}≡ m2 →
+  (∀ k y1 y2,
+    m1 !! k = Some y1 → m2 !! k = Some y2 → y1 ≡{n}≡ y2 → f k y1 ≡{n}≡ g k y2) →
+  ([^o map] k ↦ y ∈ m1, f k y) ≡{n}≡ ([^o map] k ↦ y ∈ m2, g k y).
+Proof.
+  intros Hl Hf. apply big_opM_gen_proper_2; try (apply _ || done).
+  { by intros ?? ->. }
+  { apply monoid_ne. }
+  intros k. assert (m1 !! k ≡{n}≡ m2 !! k) as Hlk by (by f_equiv).
+  destruct (m1 !! k) eqn:?, (m2 !! k) eqn:?; inversion Hlk; naive_solver.
+Qed.
+
+Lemma big_sepM2_ne_2 {PROP : bi} `{Countable K} (A B : ofeT)
+    (Φ Ψ : K → A → B → PROP) m1 m2 m1' m2' n :
+  m1 ≡{n}≡ m1' → m2 ≡{n}≡ m2' →
+  (∀ k y1 y1' y2 y2',
+    m1 !! k = Some y1 → m1' !! k = Some y1' → y1 ≡{n}≡ y1' →
+    m2 !! k = Some y2 → m2' !! k = Some y2' → y2 ≡{n}≡ y2' →
+    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
+  ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2)%I ≡{n}≡ ([∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2)%I.
+Proof.
+  intros Hm1 Hm2 Hf. rewrite big_sepM2_eq /big_sepM2_def. f_equiv.
+  { f_equiv; split; intros Hm k.
+    - trans (is_Some (m1 !! k)); [symmetry; apply: is_Some_ne; by f_equiv|].
+      rewrite Hm. apply: is_Some_ne; by f_equiv.
+    - trans (is_Some (m1' !! k)); [apply: is_Some_ne; by f_equiv|].
+      rewrite Hm. symmetry. apply: is_Some_ne; by f_equiv. }
+  apply big_opM_ne_2; [by f_equiv|].
+  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
+    (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
+Qed.
+
 (* CMRA *)
 Section cmra.
 Context `{Countable K} {A : cmraT}.
