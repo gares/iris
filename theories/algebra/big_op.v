@@ -132,11 +132,11 @@ Section list.
   Proof. intros xs1 xs2. apply big_opL_permutation. Qed.
 
   Global Instance big_opL_ne n :
-    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==>
-            eq ==> dist n) (big_opL o (A:=A)).
+    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
+           (big_opL o (A:=A)).
   Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
   Global Instance big_opL_proper' :
-    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> eq ==> (≡))
+    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
            (big_opL o (A:=A)).
   Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
 
@@ -191,11 +191,11 @@ Section gmap.
   Proof. apply big_opM_forall; apply _. Qed.
 
   Global Instance big_opM_ne n :
-    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> eq ==> dist n)
+    Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
            (big_opM o (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opM_forall; apply _ || intros; apply Hf. Qed.
   Global Instance big_opM_proper' :
-    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> eq ==> (≡))
+    Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
            (big_opM o (K:=K) (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opM_forall; apply _ || intros; apply Hf. Qed.
 
@@ -297,10 +297,10 @@ Section gset.
   Proof. apply big_opS_forall; apply _. Qed.
 
   Global Instance big_opS_ne n :
-    Proper (pointwise_relation _ (dist n) ==> eq ==> dist n) (big_opS o (A:=A)).
+    Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opS_forall; apply _ || intros; apply Hf. Qed.
   Global Instance big_opS_proper' :
-    Proper (pointwise_relation _ (≡) ==> eq ==> (≡)) (big_opS o (A:=A)).
+    Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opS_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opS_empty f : ([^o set] x ∈ ∅, f x) = monoid_unit.
@@ -384,10 +384,10 @@ Section gmultiset.
   Proof. apply big_opMS_forall; apply _. Qed.
 
   Global Instance big_opMS_ne n :
-    Proper (pointwise_relation _ (dist n) ==> eq ==> dist n) (big_opMS o (A:=A)).
+    Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opMS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opMS_forall; apply _ || intros; apply Hf. Qed.
   Global Instance big_opMS_proper' :
-    Proper (pointwise_relation _ (≡) ==> eq ==> (≡)) (big_opMS o (A:=A)).
+    Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opMS o (A:=A)).
   Proof. intros f g Hf m ? <-. apply big_opMS_forall; apply _ || intros; apply Hf. Qed.
 
   Lemma big_opMS_empty f : ([^o mset] x ∈ ∅, f x) = monoid_unit.
