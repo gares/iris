@@ -906,13 +906,11 @@ Section map2.
   Qed.
   Global Instance big_sepM2_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊢)))
-      ==> (=) ==> (=) ==> (⊢))
-           (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
+      ==> (=) ==> (=) ==> (⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_mono; intros; apply Hf. Qed.
   Global Instance big_sepM2_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊣⊢)))
-      ==> (=) ==> (=) ==> (⊣⊢))
-           (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
+      ==> (=) ==> (=) ==> (⊣⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
   Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_proper; intros; apply Hf. Qed.
 
   Lemma big_sepM2_empty Φ : ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2) ⊣⊢ emp.
@@ -923,15 +921,13 @@ Section map2.
   Lemma big_sepM2_empty' `{BiAffine PROP} P Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
   Proof. rewrite big_sepM2_empty. apply (affine _). Qed.
 
-  Lemma big_sepM2_empty_l m1 Φ :
-    ([∗ map] k↦y1;y2 ∈ m1; ∅, Φ k y1 y2) ⊢ ⌜m1 = ∅⌝.
+  Lemma big_sepM2_empty_l m1 Φ : ([∗ map] k↦y1;y2 ∈ m1; ∅, Φ k y1 y2) ⊢ ⌜m1 = ∅⌝.
   Proof.
     rewrite big_sepM2_dom dom_empty_L.
     apply pure_mono, dom_empty_inv_L.
   Qed.
 
-  Lemma big_sepM2_empty_r m2 Φ :
-    ([∗ map] k↦y1;y2 ∈ ∅; m2, Φ k y1 y2) ⊢ ⌜m2 = ∅⌝.
+  Lemma big_sepM2_empty_r m2 Φ : ([∗ map] k↦y1;y2 ∈ ∅; m2, Φ k y1 y2) ⊢ ⌜m2 = ∅⌝.
   Proof.
     rewrite big_sepM2_dom dom_empty_L.
     apply pure_mono=>?. eapply (dom_empty_inv_L (D:=gset K)). eauto.

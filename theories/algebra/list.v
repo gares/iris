@@ -21,30 +21,24 @@ Global Instance take_ne : NonExpansive (@take A n) := _.
 Global Instance drop_ne : NonExpansive (@drop A n) := _.
 Global Instance head_ne : NonExpansive (head (A:=A)).
 Proof. destruct 1; by constructor. Qed.
-Global Instance list_lookup_ne i :
-  NonExpansive (lookup (M:=list A) i).
+Global Instance list_lookup_ne i : NonExpansive (lookup (M:=list A) i).
 Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
 Global Instance list_alter_ne n f i :
   Proper (dist n ==> dist n) f →
   Proper (dist n ==> dist n) (alter (M:=list A) f i) := _.
-Global Instance list_insert_ne i :
-  NonExpansive2 (insert (M:=list A) i) := _.
-Global Instance list_inserts_ne i :
-  NonExpansive2 (@list_inserts A i) := _.
-Global Instance list_delete_ne i :
-  NonExpansive (delete (M:=list A) i) := _.
+Global Instance list_insert_ne i : NonExpansive2 (insert (M:=list A) i) := _.
+Global Instance list_inserts_ne i : NonExpansive2 (@list_inserts A i) := _.
+Global Instance list_delete_ne i : NonExpansive (delete (M:=list A) i) := _.
 Global Instance option_list_ne : NonExpansive (@option_list A).
 Proof. intros ????; by apply Forall2_option_list, dist_option_Forall2. Qed.
 Global Instance list_filter_ne n P `{∀ x, Decision (P x)} :
   Proper (dist n ==> iff) P →
   Proper (dist n ==> dist n) (filter (B:=list A) P) := _.
-Global Instance replicate_ne :
-  NonExpansive (@replicate A n) := _.
+Global Instance replicate_ne : NonExpansive (@replicate A n) := _.
 Global Instance reverse_ne : NonExpansive (@reverse A) := _.
 Global Instance last_ne : NonExpansive (@last A).
 Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
-Global Instance resize_ne n :
-  NonExpansive2 (@resize A n) := _.
+Global Instance resize_ne n : NonExpansive2 (@resize A n) := _.
 
 Lemma list_dist_cons_inv_l n x l k :
   x :: l ≡{n}≡ k → ∃ y k', x ≡{n}≡ y ∧ l ≡{n}≡ k' ∧ k = y :: k'.
