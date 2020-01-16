@@ -114,10 +114,6 @@ Section list.
     (∀ k y, l !! k = Some y → f k y = g k y) →
     ([^o list] k ↦ y ∈ l, f k y) = [^o list] k ↦ y ∈ l, g k y.
   Proof. apply big_opL_forall; apply _. Qed.
-  Lemma big_opL_proper f g l :
-    (∀ k y, l !! k = Some y → f k y ≡ g k y) →
-    ([^o list] k ↦ y ∈ l, f k y) ≡ ([^o list] k ↦ y ∈ l, g k y).
-  Proof. apply big_opL_forall; apply _. Qed.
 
   Lemma big_opL_permutation (f : A → M) l1 l2 :
     l1 ≡ₚ l2 → ([^o list] x ∈ l1, f x) ≡ ([^o list] x ∈ l2, f x).
@@ -131,14 +127,25 @@ Section list.
     Proper ((≡ₚ) ==> (≡)) (big_opL o (λ _, f)).
   Proof. intros xs1 xs2. apply big_opL_permutation. Qed.
 
-  Global Instance big_opL_ne n :
+  (** The lemmas [big_opL_ne] and [big_opL_proper] are more generic than the
+  instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_opL_ne f g l n :
+    (∀ k y, l !! k = Some y → f k y ≡{n}≡ g k y) →
+    ([^o list] k ↦ y ∈ l, f k y) ≡{n}≡ ([^o list] k ↦ y ∈ l, g k y).
+  Proof. apply big_opL_forall; apply _. Qed.
+  Lemma big_opL_proper f g l :
+    (∀ k y, l !! k = Some y → f k y ≡ g k y) →
+    ([^o list] k ↦ y ∈ l, f k y) ≡ ([^o list] k ↦ y ∈ l, g k y).
+  Proof. apply big_opL_forall; apply _. Qed.
+
+  Global Instance big_opL_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
            (big_opL o (A:=A)).
-  Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f f' Hf l ? <-. apply big_opL_ne; intros; apply Hf. Qed.
   Global Instance big_opL_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
            (big_opL o (A:=A)).
-  Proof. intros f f' Hf l ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f f' Hf l ? <-. apply big_opL_proper; intros; apply Hf. Qed.
 
   Lemma big_opL_consZ_l (f : Z → A → M) x l :
     ([^o list] k↦y ∈ x :: l, f k y) = f 0 x `o` [^o list] k↦y ∈ l, f (1 + k)%Z y.
@@ -185,19 +192,26 @@ Section gmap.
     (∀ k x, m !! k = Some x → f k x = g k x) →
     ([^o map] k ↦ x ∈ m, f k x) = ([^o map] k ↦ x ∈ m, g k x).
   Proof. apply big_opM_forall; apply _. Qed.
+
+  (** The lemmas [big_opM_ne] and [big_opM_proper] are more generic than the
+  instances as they also give [m !! k = Some y] in the premise. *)
+  Lemma big_opM_ne f g m n :
+    (∀ k x, m !! k = Some x → f k x ≡{n}≡ g k x) →
+    ([^o map] k ↦ x ∈ m, f k x) ≡{n}≡ ([^o map] k ↦ x ∈ m, g k x).
+  Proof. apply big_opM_forall; apply _. Qed.
   Lemma big_opM_proper f g m :
     (∀ k x, m !! k = Some x → f k x ≡ g k x) →
     ([^o map] k ↦ x ∈ m, f k x) ≡ ([^o map] k ↦ x ∈ m, g k x).
   Proof. apply big_opM_forall; apply _. Qed.
 
-  Global Instance big_opM_ne n :
+  Global Instance big_opM_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (dist n)) ==> (=) ==> dist n)
            (big_opM o (K:=K) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opM_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opM_ne; intros; apply Hf. Qed.
   Global Instance big_opM_proper' :
     Proper (pointwise_relation _ (pointwise_relation _ (≡)) ==> (=) ==> (≡))
            (big_opM o (K:=K) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opM_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opM_proper; intros; apply Hf. Qed.
 
   Lemma big_opM_empty f : ([^o map] k↦x ∈ ∅, f k x) = monoid_unit.
   Proof. by rewrite big_opM_eq /big_opM_def map_to_list_empty. Qed.
@@ -291,17 +305,24 @@ Section gset.
     (∀ x, x ∈ X → f x = g x) →
     ([^o set] x ∈ X, f x) = ([^o set] x ∈ X, g x).
   Proof. apply big_opS_forall; apply _. Qed.
+
+  (** The lemmas [big_opS_ne] and [big_opS_proper] are more generic than the
+  instances as they also give [x ∈ X] in the premise. *)
+  Lemma big_opS_ne f g X n :
+    (∀ x, x ∈ X → f x ≡{n}≡ g x) →
+    ([^o set] x ∈ X, f x) ≡{n}≡ ([^o set] x ∈ X, g x).
+  Proof. apply big_opS_forall; apply _. Qed.
   Lemma big_opS_proper f g X :
     (∀ x, x ∈ X → f x ≡ g x) →
     ([^o set] x ∈ X, f x) ≡ ([^o set] x ∈ X, g x).
   Proof. apply big_opS_forall; apply _. Qed.
 
-  Global Instance big_opS_ne n :
+  Global Instance big_opS_ne' n :
     Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opS o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opS_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opS_ne; intros; apply Hf. Qed.
   Global Instance big_opS_proper' :
     Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opS o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opS_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opS_proper; intros; apply Hf. Qed.
 
   Lemma big_opS_empty f : ([^o set] x ∈ ∅, f x) = monoid_unit.
   Proof. by rewrite big_opS_eq /big_opS_def elements_empty. Qed.
@@ -378,17 +399,24 @@ Section gmultiset.
     (∀ x, x ∈ X → f x = g x) →
     ([^o mset] x ∈ X, f x) = ([^o mset] x ∈ X, g x).
   Proof. apply big_opMS_forall; apply _. Qed.
+
+  (** The lemmas [big_opMS_ne] and [big_opMS_proper] are more generic than the
+  instances as they also give [x ∈ X] in the premise. *)
+  Lemma big_opMS_ne f g X n :
+    (∀ x, x ∈ X → f x ≡{n}≡ g x) →
+    ([^o mset] x ∈ X, f x) ≡{n}≡ ([^o mset] x ∈ X, g x).
+  Proof. apply big_opMS_forall; apply _. Qed.
   Lemma big_opMS_proper f g X :
     (∀ x, x ∈ X → f x ≡ g x) →
     ([^o mset] x ∈ X, f x) ≡ ([^o mset] x ∈ X, g x).
   Proof. apply big_opMS_forall; apply _. Qed.
 
-  Global Instance big_opMS_ne n :
+  Global Instance big_opMS_ne' n :
     Proper (pointwise_relation _ (dist n) ==> (=) ==> dist n) (big_opMS o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opMS_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opMS_ne; intros; apply Hf. Qed.
   Global Instance big_opMS_proper' :
     Proper (pointwise_relation _ (≡) ==> (=) ==> (≡)) (big_opMS o (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opMS_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_opMS_proper; intros; apply Hf. Qed.
 
   Lemma big_opMS_empty f : ([^o mset] x ∈ ∅, f x) = monoid_unit.
   Proof. by rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. Qed.
