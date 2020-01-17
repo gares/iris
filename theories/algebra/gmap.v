@@ -44,32 +44,28 @@ Proof. intros ? m m' ? i. by apply (discrete _). Qed.
 Global Instance gmapO_leibniz: LeibnizEquiv A → LeibnizEquiv gmapO.
 Proof. intros; change (LeibnizEquiv (gmap K A)); apply _. Qed.
 
-Global Instance lookup_ne k :
-  NonExpansive (lookup k : gmap K A → option A).
+Global Instance lookup_ne k : NonExpansive (lookup k : gmap K A → option A).
 Proof. by intros m1 m2. Qed.
-Global Instance lookup_proper k :
-  Proper ((≡) ==> (≡)) (lookup k : gmap K A → option A) := _.
-Global Instance alter_ne (f : A → A) (k : K) n :
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (alter f k).
+Global Instance partial_alter_ne n :
+  Proper ((dist n ==> dist n) ==> (=) ==> dist n ==> dist n)
+         (partial_alter (M:=gmap K A)).
 Proof.
-  intros ? m m' Hm k'.
-  by destruct (decide (k = k')); simplify_map_eq; rewrite (Hm k').
+  by intros f1 f2 Hf i ? <- m1 m2 Hm j; destruct (decide (i = j)) as [->|];
+    rewrite ?lookup_partial_alter ?lookup_partial_alter_ne //;
+    try apply Hf; apply lookup_ne.
 Qed.
-Global Instance insert_ne i :
-  NonExpansive2 (insert (M:=gmap K A) i).
-Proof.
-  intros n x y ? m m' ? j; destruct (decide (i = j)); simplify_map_eq;
-    [by constructor|by apply lookup_ne].
-Qed.
-Global Instance singleton_ne i :
-  NonExpansive (singletonM i : A → gmap K A).
+Global Instance insert_ne i : NonExpansive2 (insert (M:=gmap K A) i).
+Proof. intros n x y ? m m' ? j; apply partial_alter_ne; by try constructor. Qed.
+Global Instance singleton_ne i : NonExpansive (singletonM i : A → gmap K A).
 Proof. by intros ????; apply insert_ne. Qed.
-Global Instance delete_ne i :
-  NonExpansive (delete (M:=gmap K A) i).
+Global Instance delete_ne i : NonExpansive (delete (M:=gmap K A) i).
 Proof.
   intros n m m' ? j; destruct (decide (i = j)); simplify_map_eq;
     [by constructor|by apply lookup_ne].
 Qed.
+Global Instance alter_ne (f : A → A) (k : K) n :
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (alter f k).
+Proof. intros ? m m' Hm k'. by apply partial_alter_ne; [solve_proper|..]. Qed.
 
 Global Instance gmap_empty_discrete : Discrete (∅ : gmap K A).
 Proof.
@@ -98,6 +94,30 @@ Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 End cofe.
 
 Arguments gmapO _ {_ _} _.
+
+(** Non-expansiveness of higher-order map functions and big-ops *)
+Lemma merge_ne `{Countable K} {A B C : ofeT} (f g : option A → option B → option C)
+    `{!DiagNone f, !DiagNone g} n :
+  ((dist n) ==> (dist n) ==> (dist n))%signature f g →
+  ((dist n) ==> (dist n) ==> (dist n))%signature (merge (M:=gmap K) f) (merge g).
+Proof. by intros Hf ?? Hm1 ?? Hm2 i; rewrite !lookup_merge //; apply Hf. Qed.
+Instance union_with_proper `{Countable K} {A : ofeT} n :
+  Proper (((dist n) ==> (dist n) ==> (dist n)) ==>
+          (dist n) ==> (dist n) ==>(dist n)) (union_with (M:=gmap K A)).
+Proof.
+  intros ?? Hf ?? Hm1 ?? Hm2 i; apply (merge_ne _ _); auto.
+  by do 2 destruct 1; first [apply Hf | constructor].
+Qed.
+Instance map_fmap_proper `{Countable K} {A B : ofeT} (f : A → B) n :
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=gmap K) f).
+Proof. intros ? m m' ? k; rewrite !lookup_fmap. by repeat f_equiv. Qed.
+Instance map_zip_with_proper `{Countable K} {A B C : ofeT} (f : A → B → C) n :
+  Proper (dist n ==> dist n ==> dist n) f →
+  Proper (dist n ==> dist n ==> dist n) (map_zip_with (M:=gmap K) f).
+Proof.
+  intros Hf m1 m1' Hm1 m2 m2' Hm2. apply merge_ne; try done.
+  destruct 1; destruct 1; repeat f_equiv; constructor || done.
+Qed.
 
 (* CMRA *)
 Section cmra.
