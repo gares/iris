@@ -94,13 +94,64 @@ End cofe.
 
 Arguments listO : clear implicits.
 
+(** Non-expansiveness of higher-order list functions and big-ops *)
+Instance list_fmap_ne {A B : ofeT} (f : A → B) n :
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
+Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
+Instance list_omap_ne {A B : ofeT} (f : A → option B) n :
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (omap (M:=list) f).
+Proof.
+  intros Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
+  destruct (Hf _ _ Hx); [f_equiv|]; auto.
+Qed.
+Instance imap_ne {A B : ofeT} (f : nat → A → B) n :
+  (∀ i, Proper (dist n ==> dist n) (f i)) → Proper (dist n ==> dist n) (imap f).
+Proof.
+  intros Hf l1 l2 Hl. revert f Hf.
+  induction Hl; intros f Hf; simpl; [constructor|f_equiv; naive_solver].
+Qed.
+Instance list_bind_ne {A B : ofeT} (f : A → list A) n :
+  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (mbind f).
+Proof. induction 2; simpl; [constructor|solve_proper]. Qed.
+Instance list_join_ne {A : ofeT} : NonExpansive (mjoin (M:=list) (A:=A)).
+Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
+Instance zip_with_ne {A B C : ofeT} (f : A → B → C) :
+  Proper (dist n ==> dist n ==> dist n) f →
+  Proper (dist n ==> dist n ==> dist n) (zip_with f).
+Proof. induction 2; destruct 1; simpl; [constructor..|f_equiv; [f_equiv|]; auto]. Qed.
+
+Lemma big_opL_ne_2 `{Monoid M o} {A : ofeT} (f g : nat → A → M) l1 l2 n :
+  l1 ≡{n}≡ l2 →
+  (∀ k y1 y2,
+    l1 !! k = Some y1 → l2 !! k = Some y2 → y1 ≡{n}≡ y2 → f k y1 ≡{n}≡ g k y2) →
+  ([^o list] k ↦ y ∈ l1, f k y) ≡{n}≡ ([^o list] k ↦ y ∈ l2, g k y).
+Proof.
+  intros Hl Hf. apply big_opL_gen_proper_2; try (apply _ || done).
+  { apply monoid_ne. }
+  intros k. assert (l1 !! k ≡{n}≡ l2 !! k) as Hlk by (by f_equiv).
+  destruct (l1 !! k) eqn:?, (l2 !! k) eqn:?; inversion Hlk; naive_solver.
+Qed.
+
+Lemma big_sepL2_ne_2 {PROP : bi} {A B : ofeT}
+    (Φ Ψ : nat → A → B → PROP) l1 l2 l1' l2' n :
+  l1 ≡{n}≡ l1' → l2 ≡{n}≡ l2' →
+  (∀ k y1 y1' y2 y2',
+    l1 !! k = Some y1 → l1' !! k = Some y1' → y1 ≡{n}≡ y1' →
+    l2 !! k = Some y2 → l2' !! k = Some y2' → y2 ≡{n}≡ y2' →
+    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
+  ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2)%I ≡{n}≡ ([∗ list] k ↦ y1;y2 ∈ l1';l2', Ψ k y1 y2)%I.
+Proof.
+  intros Hl1 Hl2 Hf. rewrite !big_sepL2_alt. f_equiv.
+  { do 2 f_equiv; by apply: length_ne. }
+  apply big_opL_ne_2; [by f_equiv|].
+  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%lookup_zip_with_Some
+    (?&?&[=<- <-]&?&?)%lookup_zip_with_Some [??]; naive_solver.
+Qed.
+
 (** Functor *)
 Lemma list_fmap_ext_ne {A} {B : ofeT} (f g : A → B) (l : list A) n :
   (∀ x, f x ≡{n}≡ g x) → f <$> l ≡{n}≡ g <$> l.
 Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2, Forall_true. Qed.
-Instance list_fmap_ne {A B : ofeT} (f : A → B) n:
-  Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
-Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
 Definition listO_map {A B} (f : A -n> B) : listO A -n> listO B :=
   OfeMor (fmap f : listO A → listO B).
 Instance listO_map_ne A B : NonExpansive (@listO_map A B).

@@ -91,24 +91,33 @@ Section sep_list.
     ⊣⊢ ([∗ list] k↦y ∈ l1, Φ k y) ∗ ([∗ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
 
-  Lemma big_sepL_mono Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
-    ([∗ list] k ↦ y ∈ l, Φ k y) ⊢ [∗ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
-  Lemma big_sepL_proper Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
-    ([∗ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∗ list] k ↦ y ∈ l, Ψ k y).
-  Proof. apply big_opL_proper. Qed.
   Lemma big_sepL_submseteq `{BiAffine PROP} (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∗ list] y ∈ l2, Φ y) ⊢ [∗ list] y ∈ l1, Φ y.
   Proof.
     intros [l ->]%submseteq_Permutation. by rewrite big_sepL_app sep_elim_l.
   Qed.
 
+  (** The lemmas [big_sepL_mono], [big_sepL_ne] and [big_sepL_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_sepL_mono Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
+    ([∗ list] k ↦ y ∈ l, Φ k y) ⊢ [∗ list] k ↦ y ∈ l, Ψ k y.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
+  Lemma big_sepL_ne Φ Ψ l n :
+    (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
+    ([∗ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∗ list] k ↦ y ∈ l, Ψ k y)%I.
+  Proof. apply big_opL_ne. Qed.
+  Lemma big_sepL_proper Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
+    ([∗ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∗ list] k ↦ y ∈ l, Ψ k y).
+  Proof. apply big_opL_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opL] instances. *)
   Global Instance big_sepL_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opL (@bi_sep PROP) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_sepL_mono; intros; apply Hf. Qed.
   Global Instance big_sepL_id_mono' :
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_sep PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
@@ -349,11 +358,20 @@ Section sep_list2.
     - by rewrite -assoc IH.
   Qed.
 
+  (** The lemmas [big_sepL2_mono], [big_sepL2_ne] and [big_sepL2_proper] are more
+  generic than the instances as they also give [li !! k = Some yi] in the premise. *)
   Lemma big_sepL2_mono Φ Ψ l1 l2 :
     (∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → Φ k y1 y2 ⊢ Ψ k y1 y2) →
     ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢ [∗ list] k ↦ y1;y2 ∈ l1;l2, Ψ k y1 y2.
   Proof.
     intros H. rewrite !big_sepL2_alt. f_equiv. apply big_sepL_mono=> k [y1 y2].
+    rewrite lookup_zip_with=> ?; simplify_option_eq; auto.
+  Qed.
+  Lemma big_sepL2_ne Φ Ψ l1 l2 n :
+    (∀ k y1 y2, l1 !! k = Some y1 → l2 !! k = Some y2 → Φ k y1 y2 ≡{n}≡ Ψ k y1 y2) →
+    ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2)%I ≡{n}≡ ([∗ list] k ↦ y1;y2 ∈ l1;l2, Ψ k y1 y2)%I.
+  Proof.
+    intros H. rewrite !big_sepL2_alt. f_equiv. apply big_sepL_ne=> k [y1 y2].
     rewrite lookup_zip_with=> ?; simplify_option_eq; auto.
   Qed.
   Lemma big_sepL2_proper Φ Ψ l1 l2 :
@@ -363,15 +381,26 @@ Section sep_list2.
     intros; apply (anti_symm _);
       apply big_sepL2_mono; auto using equiv_entails, equiv_entails_sym.
   Qed.
+  Lemma big_sepL2_proper_2 `{!Equiv A, !Equiv B} Φ Ψ l1 l2 l1' l2' :
+    l1 ≡ l1' → l2 ≡ l2' →
+    (∀ k y1 y1' y2 y2',
+      l1 !! k = Some y1 → l1' !! k = Some y1' → y1 ≡ y1' →
+      l2 !! k = Some y2 → l2' !! k = Some y2' → y2 ≡ y2' →
+      Φ k y1 y2 ⊣⊢ Ψ k y1' y2') →
+    ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2) ⊣⊢ [∗ list] k ↦ y1;y2 ∈ l1';l2', Ψ k y1 y2.
+  Proof.
+    intros Hl1 Hl2 Hf. rewrite !big_sepL2_alt. f_equiv.
+    { do 2 f_equiv; by apply length_proper. }
+    apply big_opL_proper_2; [by f_equiv|].
+    intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%lookup_zip_with_Some
+      (?&?&[=<- <-]&?&?)%lookup_zip_with_Some [??]; naive_solver.
+  Qed.
 
-  Global Instance big_sepL2_ne n :
+  Global Instance big_sepL2_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (dist n)))
       ==> (=) ==> (=) ==> (dist n))
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
-  Proof.
-    intros Φ1 Φ2 HΦ x1 ? <- x2 ? <-. rewrite !big_sepL2_alt. f_equiv.
-    f_equiv=> k [y1 y2]. apply HΦ.
-  Qed.
+  Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_ne; intros; apply Hf. Qed.
   Global Instance big_sepL2_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊢)))
       ==> (=) ==> (=) ==> (⊢))
@@ -499,24 +528,33 @@ Section and_list.
     ⊣⊢ ([∧ list] k↦y ∈ l1, Φ k y) ∧ ([∧ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
 
-  Lemma big_andL_mono Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
-    ([∧ list] k ↦ y ∈ l, Φ k y) ⊢ [∧ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
-  Lemma big_andL_proper Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
-    ([∧ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∧ list] k ↦ y ∈ l, Ψ k y).
-  Proof. apply big_opL_proper. Qed.
   Lemma big_andL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∧ list] y ∈ l2, Φ y) ⊢ [∧ list] y ∈ l1, Φ y.
   Proof.
     intros [l ->]%submseteq_Permutation. by rewrite big_andL_app and_elim_l.
   Qed.
 
+  (** The lemmas [big_andL_mono], [big_andL_ne] and [big_andL_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_andL_mono Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
+    ([∧ list] k ↦ y ∈ l, Φ k y) ⊢ [∧ list] k ↦ y ∈ l, Ψ k y.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
+  Lemma big_andL_ne Φ Ψ l n :
+    (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
+    ([∧ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∧ list] k ↦ y ∈ l, Ψ k y)%I.
+  Proof. apply big_opL_ne. Qed.
+  Lemma big_andL_proper Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
+    ([∧ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∧ list] k ↦ y ∈ l, Ψ k y).
+  Proof. apply big_opL_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opL] instances. *)
   Global Instance big_andL_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opL (@bi_and PROP) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_andL_mono; intros; apply Hf. Qed.
   Global Instance big_andL_id_mono' :
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_and PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
@@ -589,24 +627,33 @@ Section or_list.
     ⊣⊢ ([∨ list] k↦y ∈ l1, Φ k y) ∨ ([∨ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
 
-  Lemma big_orL_mono Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
-    ([∨ list] k ↦ y ∈ l, Φ k y) ⊢ [∨ list] k ↦ y ∈ l, Ψ k y.
-  Proof. apply big_opL_forall; apply _. Qed.
-  Lemma big_orL_proper Φ Ψ l :
-    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
-    ([∨ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∨ list] k ↦ y ∈ l, Ψ k y).
-  Proof. apply big_opL_proper. Qed.
   Lemma big_orL_submseteq (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∨ list] y ∈ l1, Φ y) ⊢ [∨ list] y ∈ l2, Φ y.
   Proof.
     intros [l ->]%submseteq_Permutation. by rewrite big_orL_app -or_intro_l.
   Qed.
 
+  (** The lemmas [big_orL_mono], [big_orL_ne] and [big_orL_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_orL_mono Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊢ Ψ k y) →
+    ([∨ list] k ↦ y ∈ l, Φ k y) ⊢ [∨ list] k ↦ y ∈ l, Ψ k y.
+  Proof. apply big_opL_gen_proper; apply _. Qed.
+  Lemma big_orL_ne Φ Ψ l n :
+    (∀ k y, l !! k = Some y → Φ k y ≡{n}≡ Ψ k y) →
+    ([∨ list] k ↦ y ∈ l, Φ k y)%I ≡{n}≡ ([∨ list] k ↦ y ∈ l, Ψ k y)%I.
+  Proof. apply big_opL_ne. Qed.
+  Lemma big_orL_proper Φ Ψ l :
+    (∀ k y, l !! k = Some y → Φ k y ⊣⊢ Ψ k y) →
+    ([∨ list] k ↦ y ∈ l, Φ k y) ⊣⊢ ([∨ list] k ↦ y ∈ l, Ψ k y).
+  Proof. apply big_opL_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opL] instances. *)
   Global Instance big_orL_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opL (@bi_or PROP) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_opL_forall; apply _ || intros; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_orL_mono; intros; apply Hf. Qed.
   Global Instance big_orL_id_mono' :
     Proper (Forall2 (⊢) ==> (⊢)) (big_opL (@bi_or PROP) (λ _ P, P)).
   Proof. by induction 1 as [|P Q Ps Qs HPQ ? IH]; rewrite /= ?HPQ ?IH. Qed.
@@ -680,22 +727,31 @@ Section map.
   Implicit Types m : gmap K A.
   Implicit Types Φ Ψ : K → A → PROP.
 
-  Lemma big_sepM_mono Φ Ψ m :
-    (∀ k x, m !! k = Some x → Φ k x ⊢ Ψ k x) →
-    ([∗ map] k ↦ x ∈ m, Φ k x) ⊢ [∗ map] k ↦ x ∈ m, Ψ k x.
-  Proof. apply big_opM_forall; apply _ || auto. Qed.
-  Lemma big_sepM_proper Φ Ψ m :
-    (∀ k x, m !! k = Some x → Φ k x ⊣⊢ Ψ k x) →
-    ([∗ map] k ↦ x ∈ m, Φ k x) ⊣⊢ ([∗ map] k ↦ x ∈ m, Ψ k x).
-  Proof. apply big_opM_proper. Qed.
   Lemma big_sepM_subseteq `{BiAffine PROP} Φ m1 m2 :
     m2 ⊆ m1 → ([∗ map] k ↦ x ∈ m1, Φ k x) ⊢ [∗ map] k ↦ x ∈ m2, Φ k x.
   Proof. rewrite big_opM_eq. intros. by apply big_sepL_submseteq, map_to_list_submseteq. Qed.
 
+  (** The lemmas [big_sepM_mono], [big_sepM_ne] and [big_sepM_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_sepM_mono Φ Ψ m :
+    (∀ k x, m !! k = Some x → Φ k x ⊢ Ψ k x) →
+    ([∗ map] k ↦ x ∈ m, Φ k x) ⊢ [∗ map] k ↦ x ∈ m, Ψ k x.
+  Proof. apply big_opM_gen_proper; apply _ || auto. Qed.
+  Lemma big_sepM_ne Φ Ψ m n :
+    (∀ k x, m !! k = Some x → Φ k x ≡{n}≡ Ψ k x) →
+    ([∗ map] k ↦ x ∈ m, Φ k x)%I ≡{n}≡ ([∗ map] k ↦ x ∈ m, Ψ k x)%I.
+  Proof. apply big_opM_ne. Qed.
+  Lemma big_sepM_proper Φ Ψ m :
+    (∀ k x, m !! k = Some x → Φ k x ⊣⊢ Ψ k x) →
+    ([∗ map] k ↦ x ∈ m, Φ k x) ⊣⊢ ([∗ map] k ↦ x ∈ m, Ψ k x).
+  Proof. apply big_opM_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opM] instances. *)
   Global Instance big_sepM_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (⊢)) ==> (=) ==> (⊢))
            (big_opM (@bi_sep PROP) (K:=K) (A:=A)).
-  Proof. intros f g Hf m ? <-. apply big_sepM_mono=> ???; apply Hf. Qed.
+  Proof. intros f g Hf m ? <-. apply big_sepM_mono; intros; apply Hf. Qed.
 
   Lemma big_sepM_empty Φ : ([∗ map] k↦x ∈ ∅, Φ k x) ⊣⊢ emp.
   Proof. by rewrite big_opM_empty. Qed.
@@ -876,6 +932,8 @@ Section map2.
     set_unfold=>k. by rewrite !elem_of_dom.
   Qed.
 
+  (** The lemmas [big_sepM2_mono], [big_sepM2_ne] and [big_sepM2_proper] are more
+  generic than the instances as they also give [mi !! k = Some yi] in the premise. *)
   Lemma big_sepM2_mono Φ Ψ m1 m2 :
     (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → Φ k y1 y2 ⊢ Ψ k y1 y2) →
     ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊢ [∗ map] k ↦ y1;y2 ∈ m1;m2, Ψ k y1 y2.
@@ -888,6 +946,17 @@ Section map2.
     destruct (m2 !! k) as [y2|]; simpl; last done.
     intros ?; simplify_eq. by apply Hm1m2.
   Qed.
+  Lemma big_sepM2_ne Φ Ψ m1 m2 n :
+    (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → Φ k y1 y2 ≡{n}≡ Ψ k y1 y2) →
+    ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2)%I ≡{n}≡ ([∗ map] k ↦ y1;y2 ∈ m1;m2, Ψ k y1 y2)%I.
+  Proof.
+    intros Hm1m2. rewrite big_sepM2_eq /big_sepM2_def.
+    f_equiv. apply big_sepM_ne=> k [x1 x2]. rewrite map_lookup_zip_with.
+    specialize (Hm1m2 k x1 x2).
+    destruct (m1 !! k) as [y1|]; last done.
+    destruct (m2 !! k) as [y2|]; simpl; last done.
+    intros ?; simplify_eq. by apply Hm1m2.
+  Qed.
   Lemma big_sepM2_proper Φ Ψ m1 m2 :
     (∀ k y1 y2, m1 !! k = Some y1 → m2 !! k = Some y2 → Φ k y1 y2 ⊣⊢ Ψ k y1 y2) →
     ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊣⊢ [∗ map] k ↦ y1;y2 ∈ m1;m2, Ψ k y1 y2.
@@ -895,15 +964,30 @@ Section map2.
     intros; apply (anti_symm _);
       apply big_sepM2_mono; auto using equiv_entails, equiv_entails_sym.
   Qed.
+  Lemma big_sepM2_proper_2 `{!Equiv A, !Equiv B} Φ Ψ m1 m2 m1' m2' :
+    m1 ≡ m1' → m2 ≡ m2' →
+    (∀ k y1 y1' y2 y2',
+      m1 !! k = Some y1 → m1' !! k = Some y1' → y1 ≡ y1' →
+      m2 !! k = Some y2 → m2' !! k = Some y2' → y2 ≡ y2' →
+      Φ k y1 y2 ⊣⊢ Ψ k y1' y2') →
+    ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2) ⊣⊢ [∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2.
+  Proof.
+    intros Hm1 Hm2 Hf. rewrite big_sepM2_eq /big_sepM2_def. f_equiv.
+    { f_equiv; split; intros Hm k.
+      - trans (is_Some (m1 !! k)); [symmetry; apply is_Some_proper; by f_equiv|].
+        rewrite Hm. apply is_Some_proper; by f_equiv.
+      - trans (is_Some (m1' !! k)); [apply is_Some_proper; by f_equiv|].
+        rewrite Hm. symmetry. apply is_Some_proper; by f_equiv. }
+    apply big_opM_proper_2; [by f_equiv|].
+    intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
+      (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
+  Qed.
 
-  Global Instance big_sepM2_ne n :
+  Global Instance big_sepM2_ne' n :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (dist n)))
       ==> (=) ==> (=) ==> (dist n))
            (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
-  Proof.
-    intros Φ1 Φ2 HΦ x1 ? <- x2 ? <-. rewrite big_sepM2_eq /big_sepM2_def.
-    f_equiv. f_equiv=> k [y1 y2]. apply HΦ.
-  Qed.
+  Proof. intros f g Hf m1 ? <- m2 ? <-. apply big_sepM2_ne; intros; apply Hf. Qed.
   Global Instance big_sepM2_mono' :
     Proper (pointwise_relation _ (pointwise_relation _ (pointwise_relation _ (⊢)))
       ==> (=) ==> (=) ==> (⊢)) (big_sepM2 (PROP:=PROP) (K:=K) (A:=A) (B:=B)).
@@ -1182,18 +1266,27 @@ Section gset.
   Implicit Types X : gset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepS_mono Φ Ψ X :
-    (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
-    ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ X, Ψ x.
-  Proof. intros. apply big_opS_forall; apply _ || auto. Qed.
-  Lemma big_sepS_proper Φ Ψ X :
-    (∀ x, x ∈ X → Φ x ⊣⊢ Ψ x) →
-    ([∗ set] x ∈ X, Φ x) ⊣⊢ ([∗ set] x ∈ X, Ψ x).
-  Proof. apply big_opS_proper. Qed.
   Lemma big_sepS_subseteq `{BiAffine PROP} Φ X Y :
     Y ⊆ X → ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ Y, Φ x.
   Proof. rewrite big_opS_eq. intros. by apply big_sepL_submseteq, elements_submseteq. Qed.
 
+  (** The lemmas [big_sepS_mono], [big_sepS_ne] and [big_sepS_proper] are more
+  generic than the instances as they also give [x ∈ X] in the premise. *)
+  Lemma big_sepS_mono Φ Ψ X :
+    (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
+    ([∗ set] x ∈ X, Φ x) ⊢ [∗ set] x ∈ X, Ψ x.
+  Proof. intros. apply big_opS_gen_proper; apply _ || auto. Qed.
+  Lemma big_sepS_ne Φ Ψ X n :
+    (∀ x, x ∈ X → Φ x ≡{n}≡ Ψ x) →
+    ([∗ set] x ∈ X, Φ x)%I ≡{n}≡ ([∗ set] x ∈ X, Ψ x)%I.
+  Proof. apply big_opS_ne. Qed.
+  Lemma big_sepS_proper Φ Ψ X :
+    (∀ x, x ∈ X → Φ x ⊣⊢ Ψ x) →
+    ([∗ set] x ∈ X, Φ x) ⊣⊢ ([∗ set] x ∈ X, Ψ x).
+  Proof. apply big_opS_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opS] instances. *)
   Global Instance big_sepS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepS_mono. Qed.
@@ -1344,18 +1437,27 @@ Section gmultiset.
   Implicit Types X : gmultiset A.
   Implicit Types Φ : A → PROP.
 
-  Lemma big_sepMS_mono Φ Ψ X :
-    (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
-    ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ X, Ψ x.
-  Proof. intros. apply big_opMS_forall; apply _ || auto. Qed.
-  Lemma big_sepMS_proper Φ Ψ X :
-    (∀ x, x ∈ X → Φ x ⊣⊢ Ψ x) →
-    ([∗ mset] x ∈ X, Φ x) ⊣⊢ ([∗ mset] x ∈ X, Ψ x).
-  Proof. apply big_opMS_proper. Qed.
   Lemma big_sepMS_subseteq `{BiAffine PROP} Φ X Y :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
   Proof. rewrite big_opMS_eq. intros. by apply big_sepL_submseteq, gmultiset_elements_submseteq. Qed.
 
+  (** The lemmas [big_sepMS_mono], [big_sepMS_ne] and [big_sepMS_proper] are more
+  generic than the instances as they also give [l !! k = Some y] in the premise. *)
+  Lemma big_sepMS_mono Φ Ψ X :
+    (∀ x, x ∈ X → Φ x ⊢ Ψ x) →
+    ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ X, Ψ x.
+  Proof. intros. apply big_opMS_gen_proper; apply _ || auto. Qed.
+  Lemma big_sepMS_ne Φ Ψ X n :
+    (∀ x, x ∈ X → Φ x ≡{n}≡ Ψ x) →
+    ([∗ mset] x ∈ X, Φ x)%I ≡{n}≡ ([∗ mset] x ∈ X, Ψ x)%I.
+  Proof. apply big_opMS_ne. Qed.
+  Lemma big_sepMS_proper Φ Ψ X :
+    (∀ x, x ∈ X → Φ x ⊣⊢ Ψ x) →
+    ([∗ mset] x ∈ X, Φ x) ⊣⊢ ([∗ mset] x ∈ X, Ψ x).
+  Proof. apply big_opMS_proper. Qed.
+
+  (** No need to declare instances for non-expansiveness and properness, we
+  get both from the generic [big_opMS] instances. *)
   Global Instance big_sepMS_mono' :
      Proper (pointwise_relation _ (⊢) ==> (=) ==> (⊢)) (big_opMS (@bi_sep PROP) (A:=A)).
   Proof. intros f g Hf m ? <-. by apply big_sepMS_mono. Qed.
