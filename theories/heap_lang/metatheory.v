@@ -187,6 +187,10 @@ Lemma subst_map_binder_insert b v vs e :
   subst_map (binder_insert b v vs) e =
   subst' b v (subst_map (binder_delete b vs) e).
 Proof. destruct b; rewrite ?subst_map_insert //. Qed.
+Lemma subst_map_binder_insert_empty b v e :
+  subst_map (binder_insert b v ∅) e = subst' b v e.
+Proof. by rewrite subst_map_binder_insert binder_delete_empty subst_map_empty. Qed.
+
 Lemma subst_map_binder_insert_2 b1 v1 b2 v2 vs e :
   subst_map (binder_insert b1 v1 (binder_insert b2 v2 vs)) e =
   subst' b2 v2 (subst' b1 v1 (subst_map (binder_delete b2 (binder_delete b1 vs)) e)).
@@ -195,6 +199,12 @@ Proof.
   rewrite subst_map_insert. destruct (decide (s1 = s2)) as [->|].
   - by rewrite delete_idemp subst_subst delete_insert_delete.
   - by rewrite delete_insert_ne // subst_map_insert subst_subst_ne.
+Qed.
+Lemma subst_map_binder_insert_2_empty b1 v1 b2 v2 e :
+  subst_map (binder_insert b1 v1 (binder_insert b2 v2 ∅)) e =
+  subst' b2 v2 (subst' b1 v1 e).
+Proof.
+  by rewrite subst_map_binder_insert_2 !binder_delete_empty subst_map_empty.
 Qed.
 
 (* subst_map on closed expressions *)
