@@ -589,6 +589,10 @@ Tactic failure: iApply: remaining hypotheses not affine and the goal not absorbi
      : string
 The command has indeed failed with message:
 Tactic failure: iAssumption: remaining hypotheses not affine and the goal not absorbing.
+"iAssumption_fail_not_affine_2"
+     : string
+The command has indeed failed with message:
+Tactic failure: iAssumption: remaining hypotheses not affine and the goal not absorbing.
 "iRevert_wrong_var"
      : string
 The command has indeed failed with message:

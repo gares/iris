@@ -261,6 +261,17 @@ Tactic Notation "iAssumptionCore" :=
      is_evar i; first [find Γp i P | find Γs i P]; pm_reflexivity
   end.
 
+Tactic Notation "iAssumptionCoq" :=
+  let Hass := fresh in
+  match goal with
+  | H : ⊢ ?P |- envs_entails _ ?Q =>
+     pose proof (_ : FromAssumption true P Q) as Hass;
+     notypeclasses refine (tac_assumption_coq _ P _ H _ _);
+       [exact Hass
+       |pm_reduce; iSolveTC ||
+        fail 2 "iAssumption: remaining hypotheses not affine and the goal not absorbing"]
+  end.
+
 Tactic Notation "iAssumption" :=
   let Hass := fresh in
   let rec find p Γ Q :=
@@ -280,7 +291,9 @@ Tactic Notation "iAssumption" :=
     end in
   lazymatch goal with
   | |- envs_entails (Envs ?Γp ?Γs _) ?Q =>
-     first [find true Γp Q | find false Γs Q
+     first [find true Γp Q
+           |find false Γs Q
+           |iAssumptionCoq
            |fail "iAssumption:" Q "not found"]
   end.
 
