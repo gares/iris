@@ -363,6 +363,12 @@ Section properties.
   Qed.
   Lemma list_lookup_singletonM i x : ({[ i := x ]} : list A) !! i = Some x.
   Proof. induction i; by f_equal/=. Qed.
+  Lemma list_lookup_singletonM_lt i i' x:
+    (i' < i)%nat → ({[ i := x ]} : list A) !! i' = Some ε.
+  Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
+  Lemma list_lookup_singletonM_gt i i' x:
+    (i < i')%nat → ({[ i := x ]} : list A) !! i' = None.
+  Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
   Lemma list_lookup_singletonM_ne i j x :
     i ≠ j →
     ({[ i := x ]} : list A) !! j = None ∨ ({[ i := x ]} : list A) !! j = Some ε.
