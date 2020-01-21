@@ -296,11 +296,16 @@ Section cmra.
     by apply cmra_discrete_valid.
   Qed.
 
-  Global Instance list_core_id l : (∀ x : A, CoreId x) → CoreId l.
+  Lemma list_core_id' l : (∀ x, x ∈ l → CoreId x) → CoreId l.
   Proof.
-    intros ?; constructor; apply list_equiv_lookup=> i.
-    by rewrite list_lookup_core (core_id_core (l !! i)).
+    intros Hyp. constructor. apply list_equiv_lookup=> i.
+    rewrite list_lookup_core.
+    destruct (l !! i) eqn:E; last done.
+    by eapply Hyp, elem_of_list_lookup_2.
   Qed.
+
+  Global Instance list_core_id l : (∀ x : A, CoreId x) → CoreId l.
+  Proof. intros Hyp; by apply list_core_id'. Qed.
 
   (** Internalized properties *)
   Lemma list_equivI {M} l1 l2 : l1 ≡ l2 ⊣⊢@{uPredI M} ∀ i, l1 !! i ≡ l2 !! i.
