@@ -278,7 +278,7 @@ Section gmap.
     (∀ k x, m !! k = Some x → f k x ≡ g k x) →
     ([^o map] k ↦ x ∈ m, f k x) ≡ ([^o map] k ↦ x ∈ m, g k x).
   Proof. apply big_opM_gen_proper; apply _. Qed.
-  (** The version [big_opL_proper_2] with [≡] for the map arguments can only be
+  (** The version [big_opM_proper_2] with [≡] for the map arguments can only be
   used if there is a setoid on [A]. The version for [dist n] can be found in
   [algebra.gmap]. We do not define this lemma as a [Proper] instance, since
   [f_equiv] will then use sometimes use this one, and other times
