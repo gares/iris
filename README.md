@@ -108,6 +108,9 @@ that should be compatible with this version:
 * [Iron](https://gitlab.mpi-sws.org/iris/iron) is a linear separation logic
   built on top of Iris for precise reasoning about resources (such as making
   sure there are no memory leaks).
+* [Actris](https://gitlab.mpi-sws.org/iris/actris) is a separation logic
+  built on top of Iris for session-type based reasoning of message-passing
+  programs.
 
 ## Further Resources
 
