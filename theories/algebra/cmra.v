@@ -1313,6 +1313,13 @@ Section option.
       + exists None; by constructor.
       + exists (Some c); by constructor.
   Qed.
+  Lemma option_included_total `{!CmraTotal A} ma mb :
+    ma ≼ mb ↔ ma = None ∨ ∃ a b, ma = Some a ∧ mb = Some b ∧ a ≼ b.
+  Proof.
+    rewrite option_included. split; last naive_solver.
+    intros [->|(a&b&->&->&[Hab|?])]; [by eauto| |by eauto 10].
+    right. exists a, b. by rewrite {3}Hab.
+  Qed.
 
   Lemma option_includedN n ma mb :
     ma ≼{n} mb ↔ ma = None ∨ ∃ x y, ma = Some x ∧ mb = Some y ∧ (x ≡{n}≡ y ∨ x ≼{n} y).
@@ -1327,6 +1334,13 @@ Section option.
       + exists mb. by destruct mb.
       + exists None; by constructor.
       + exists (Some c); by constructor.
+  Qed.
+  Lemma option_includedN_total `{!CmraTotal A} n ma mb :
+    ma ≼{n} mb ↔ ma = None ∨ ∃ a b, ma = Some a ∧ mb = Some b ∧ a ≼{n} b.
+  Proof.
+    rewrite option_includedN. split; last naive_solver.
+    intros [->|(a&b&->&->&[Hab|?])]; [by eauto| |by eauto 10].
+    right. exists a, b. by rewrite {3}Hab.
   Qed.
 
   Lemma option_cmra_mixin : CmraMixin (option A).
