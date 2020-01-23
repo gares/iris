@@ -1204,7 +1204,7 @@ Section prod_unit.
   Qed.
   Canonical Structure prodUR := UcmraT (prod A B) prod_ucmra_mixin.
 
-  Lemma pair_split (x : A) (y : B) : (x, y) ≡ (x, ε) ⋅ (ε, y).
+  Lemma pair_split (a : A) (b : B) : (a, b) ≡ (a, ε) ⋅ (ε, b).
   Proof. by rewrite -pair_op left_id right_id. Qed.
 
   Lemma pair_split_L `{!LeibnizEquiv A, !LeibnizEquiv B} (x : A) (y : B) :
