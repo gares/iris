@@ -1204,12 +1204,26 @@ Section prod_unit.
   Qed.
   Canonical Structure prodUR := UcmraT (prod A B) prod_ucmra_mixin.
 
-  Lemma pair_split (x : A) (y : B) : (x, y) ≡ (x, ε) ⋅ (ε, y).
+  Lemma pair_split (a : A) (b : B) : (a, b) ≡ (a, ε) ⋅ (ε, b).
   Proof. by rewrite -pair_op left_id right_id. Qed.
 
   Lemma pair_split_L `{!LeibnizEquiv A, !LeibnizEquiv B} (x : A) (y : B) :
     (x, y) = (x, ε) ⋅ (ε, y).
   Proof. unfold_leibniz. apply pair_split. Qed.
+
+  Lemma pair_op_1 (a a': A) : (a ⋅ a', ε) ≡@{A*B} (a, ε) ⋅ (a', ε).
+  Proof. by rewrite -pair_op ucmra_unit_left_id. Qed.
+
+  Lemma pair_op_1_L `{!LeibnizEquiv A, !LeibnizEquiv B} (a a': A) :
+    (a ⋅ a', ε) =@{A*B} (a, ε) ⋅ (a', ε).
+  Proof. unfold_leibniz. apply pair_op_1. Qed.
+
+  Lemma pair_op_2 (b b': B) : (ε, b ⋅ b') ≡@{A*B} (ε, b) ⋅ (ε, b').
+  Proof. by rewrite -pair_op ucmra_unit_left_id. Qed.
+
+  Lemma pair_op_2_L `{!LeibnizEquiv A, !LeibnizEquiv B} (b b': B) :
+    (ε, b ⋅ b') =@{A*B} (ε, b) ⋅ (ε, b').
+  Proof. unfold_leibniz. apply pair_op_2. Qed.
 End prod_unit.
 
 Arguments prodUR : clear implicits.
