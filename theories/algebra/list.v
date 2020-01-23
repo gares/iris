@@ -368,6 +368,12 @@ Section properties.
   Qed.
   Lemma list_lookup_singletonM i x : ({[ i := x ]} : list A) !! i = Some x.
   Proof. induction i; by f_equal/=. Qed.
+  Lemma list_lookup_singletonM_lt i i' x:
+    (i' < i)%nat → ({[ i := x ]} : list A) !! i' = Some ε.
+  Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
+  Lemma list_lookup_singletonM_gt i i' x:
+    (i < i')%nat → ({[ i := x ]} : list A) !! i' = None.
+  Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
   Lemma list_lookup_singletonM_ne i j x :
     i ≠ j →
     ({[ i := x ]} : list A) !! j = None ∨ ({[ i := x ]} : list A) !! j = Some ε.
@@ -412,6 +418,20 @@ Section properties.
   Lemma list_singleton_snoc l x:
     {[length l := x]} ⋅ l ≡ l ++ [x].
   Proof. elim: l => //= ?? <-. by rewrite left_id. Qed.
+  Lemma list_singletonM_included i x l:
+    {[i := x]} ≼ l ↔ (∃ x', l !! i = Some x' ∧ x ≼ x').
+  Proof.
+    rewrite list_lookup_included. split.
+    { move /(_ i). rewrite list_lookup_singletonM option_included_total.
+      naive_solver. }
+    intros (y&Hi&?) j. destruct (Nat.lt_total j i) as [?|[->|?]].
+    - rewrite list_lookup_singletonM_lt //.
+      destruct (lookup_lt_is_Some_2 l j) as [z Hz].
+      { trans i; eauto using lookup_lt_Some. }
+      rewrite Hz. by apply Some_included_2, ucmra_unit_least.
+    - rewrite list_lookup_singletonM Hi. by apply Some_included_2.
+    - rewrite list_lookup_singletonM_gt //. apply: ucmra_unit_least.
+  Qed.
 
   (* Update *)
   Lemma list_singleton_updateP (P : A → Prop) (Q : list A → Prop) x :
