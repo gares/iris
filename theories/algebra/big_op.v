@@ -101,7 +101,8 @@ Section list.
   Lemma big_opL_unit l : ([^o list] k↦y ∈ l, monoid_unit) ≡ (monoid_unit : M).
   Proof. induction l; rewrite /= ?left_id //. Qed.
 
-  Lemma big_opL_gen_proper_2 (R : relation M) f g l1 l2 :
+  Lemma big_opL_gen_proper_2 {B} (R : relation M) f (g : nat → B → M)
+        l1 (l2 : list B) :
     R monoid_unit monoid_unit →
     Proper (R ==> R ==> R) o →
     (∀ k,
@@ -230,8 +231,8 @@ Section gmap.
   Implicit Types m : gmap K A.
   Implicit Types f g : K → A → M.
 
-
-  Lemma big_opM_gen_proper_2 (R : relation M) f g m1 m2 :
+  Lemma big_opM_gen_proper_2 {B} (R : relation M) f (g : K → B → M)
+        m1 (m2 : gmap K B) :
     subrelation (≡) R → Equivalence R →
     Proper (R ==> R ==> R) o →
     (∀ k,
