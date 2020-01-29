@@ -207,26 +207,29 @@ Proof.
 Qed.
 
 (** ** Big ops over finite maps *)
+
+Lemma big_opM_empty `{Countable K} {B} (f : K → B → M) :
+  ([^o map] k↦x ∈ ∅, f k x) = monoid_unit.
+Proof. by rewrite big_opM_eq /big_opM_def map_to_list_empty. Qed.
+
+Lemma big_opM_insert `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
+  m !! i = None →
+  ([^o map] k↦y ∈ <[i:=x]> m, f k y) ≡ f i x `o` [^o map] k↦y ∈ m, f k y.
+Proof. intros ?. by rewrite big_opM_eq /big_opM_def map_to_list_insert. Qed.
+
+Lemma big_opM_delete `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
+  m !! i = Some x →
+  ([^o map] k↦y ∈ m, f k y) ≡ f i x `o` [^o map] k↦y ∈ delete i m, f k y.
+Proof.
+  intros. rewrite -big_opM_insert ?lookup_delete //.
+  by rewrite insert_delete insert_id.
+Qed.
+
 Section gmap.
   Context `{Countable K} {A : Type}.
   Implicit Types m : gmap K A.
   Implicit Types f g : K → A → M.
 
-  Lemma big_opM_empty f : ([^o map] k↦x ∈ ∅, f k x) = monoid_unit.
-  Proof. by rewrite big_opM_eq /big_opM_def map_to_list_empty. Qed.
-
-  Lemma big_opM_insert f m i x :
-    m !! i = None →
-    ([^o map] k↦y ∈ <[i:=x]> m, f k y) ≡ f i x `o` [^o map] k↦y ∈ m, f k y.
-  Proof. intros ?. by rewrite big_opM_eq /big_opM_def map_to_list_insert. Qed.
-
-  Lemma big_opM_delete f m i x :
-    m !! i = Some x →
-    ([^o map] k↦y ∈ m, f k y) ≡ f i x `o` [^o map] k↦y ∈ delete i m, f k y.
-  Proof.
-    intros. rewrite -big_opM_insert ?lookup_delete //.
-    by rewrite insert_delete insert_id.
-  Qed.
 
   Lemma big_opM_gen_proper_2 (R : relation M) f g m1 m2 :
     subrelation (≡) R → Equivalence R →
