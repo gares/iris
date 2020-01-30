@@ -6,6 +6,12 @@ Local Arguments valid _ _ !_ /.
 Local Arguments op _ _ !_ !_ /.
 Local Arguments core _ _ !_ /.
 
+(** DISCLAIMER: The definition of STSs is included in the Iris development for
+historical purposes. If you plan to mechanize an Iris proof in Coq, it is
+usually better to use a more direct encoding of the ghost state you need as a
+resource algebra (camera). STSs are very painful to use in Coq, and they are
+therefore barely used in practice. *)
+
 (** * Definition of STSs *)
 Module sts.
 Structure stsT := Sts {
