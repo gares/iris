@@ -82,7 +82,7 @@ Section cofe.
   Canonical Structure uPredO : ofeT := OfeT (uPred M) uPred_ofe_mixin.
 
   Program Definition uPred_compl : Compl uPredO := λ c,
-    {| uPred_holds n x := ∀ n', n' ≤ n → ✓{n'}x → c n' n' x |}.
+    {| uPred_holds n x := ∀ n', n' ≤ n → ✓{n'} x → c n' n' x |}.
   Next Obligation.
     move=> /= c n1 n2 x1 x2 HP Hx12 Hn12 n3 Hn23 Hv. eapply uPred_mono.
     eapply HP, cmra_validN_includedN, cmra_includedN_le=>//; lia.
