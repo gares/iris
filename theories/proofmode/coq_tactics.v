@@ -286,13 +286,14 @@ Proof.
   - by rewrite HR assoc !wand_elim_r.
 Qed.
 
-Lemma tac_specialize_assert Δ j q neg js R P1 P2 P1' Q :
+Lemma tac_specialize_assert Δ j (q am neg : bool) js R P1 P2 P1' Q :
   envs_lookup j Δ = Some (q, R) →
-  IntoWand q false R P1 P2 → AddModal P1' P1 Q →
+  IntoWand q false R P1 P2 →
+  (if am then AddModal P1' P1 Q else TCEq P1' P1) →
   match
     ''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
-    js (envs_delete true j q Δ);
-    Δ2' ← envs_app false (Esnoc Enil j P2) Δ2;
+                           js (envs_delete true j q Δ);
+    Δ2' ← envs_app (negb am &&& q &&& env_spatial_is_nil Δ1) (Esnoc Enil j P2) Δ2;
     Some (Δ1,Δ2') (* does not preserve position of [j] *)
   with
   | Some (Δ1,Δ2') =>
@@ -301,15 +302,21 @@ Lemma tac_specialize_assert Δ j q neg js R P1 P2 P1' Q :
   | None => False
   end → envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros ??? HQ.
+  rewrite envs_entails_eq. intros ?? Hmod HQ.
   destruct (_ ≫= _) as [[Δ1 Δ2']|] eqn:?; last done.
   destruct HQ as [HP1 HQ].
   destruct (envs_split _ _ _) as [[? Δ2]|] eqn:?; simplify_eq/=;
     destruct (envs_app _ _ _) eqn:?; simplify_eq/=.
   rewrite envs_lookup_sound // envs_split_sound //.
   rewrite (envs_app_singleton_sound Δ2) //; simpl.
-  rewrite HP1 (into_wand q false) /= -(add_modal P1' P1 Q). cancel [P1'].
-  apply wand_intro_l. by rewrite assoc !wand_elim_r.
+  rewrite -intuitionistically_if_idemp (into_wand q false) /=.
+  destruct (negb am &&& q &&& env_spatial_is_nil Δ1) eqn:Hp; simpl.
+  - move: Hp. rewrite !lazy_andb_true negb_true. intros [[-> ->] ?]; simpl.
+    destruct Hmod. rewrite env_spatial_is_nil_intuitionistically // HP1.
+    by rewrite assoc intuitionistically_sep_2 wand_elim_l wand_elim_r HQ.
+  - rewrite intuitionistically_if_elim HP1. destruct am; last destruct Hmod.
+    + by rewrite assoc -(comm _ P1') -assoc wand_trans HQ.
+    + by rewrite assoc wand_elim_l wand_elim_r HQ.
 Qed.
 
 Lemma tac_unlock_emp Δ Q : envs_entails Δ Q → envs_entails Δ (emp ∗ locked Q).
@@ -319,18 +326,18 @@ Proof. rewrite envs_entails_eq=> ->. by rewrite -lock -True_sep_2. Qed.
 Lemma tac_unlock Δ Q : envs_entails Δ Q → envs_entails Δ (locked Q).
 Proof. by unlock. Qed.
 
-Lemma tac_specialize_frame Δ j q R P1 P2 P1' Q Q' :
+Lemma tac_specialize_frame Δ j (q am : bool) R P1 P2 P1' Q Q' :
   envs_lookup j Δ = Some (q, R) →
   IntoWand q false R P1 P2 →
-  AddModal P1' P1 Q →
+  (if am then AddModal P1' P1 Q else TCEq P1' P1) →
   envs_entails (envs_delete true j q Δ) (P1' ∗ locked Q') →
   Q' = (P2 -∗ Q)%I →
   envs_entails Δ Q.
 Proof.
-  rewrite envs_entails_eq. intros ??? HPQ ->.
+  rewrite envs_entails_eq. intros ?? Hmod HPQ ->.
   rewrite envs_lookup_sound //. rewrite HPQ -lock.
-  rewrite (into_wand q false) -{2}(add_modal P1' P1 Q). cancel [P1'].
-  apply wand_intro_l. by rewrite assoc !wand_elim_r.
+  rewrite (into_wand q false) /= assoc -(comm _ P1') -assoc wand_trans.
+  destruct am; [done|destruct Hmod]. by rewrite wand_elim_r.
 Qed.
 
 Lemma tac_specialize_assert_pure Δ j q a R P1 P2 φ Q :

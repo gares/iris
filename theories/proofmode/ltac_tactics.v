@@ -903,15 +903,13 @@ Ltac iSpecializePat_go H1 pats :=
        fail "iSpecialize: cannot select hypotheses for intuitionistic premise"
     | SGoal (SpecGoal ?m ?lr ?Hs_frame ?Hs ?d) :: ?pats =>
        let Hs' := eval cbv in (if lr then Hs else Hs_frame ++ Hs) in
-       notypeclasses refine (tac_specialize_assert _ H1 _ lr Hs' _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_assert _ H1 _
+           (if m is GModal then true else false) lr Hs' _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
          |solve_to_wand H1
-         |lazymatch m with
-          | GSpatial => class_apply add_modal_id
-          | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
-          end
+         |iSolveTC || fail "iSpecialize: goal not a modality"
          |pm_reduce;
           lazymatch goal with
           | |- False =>
@@ -934,15 +932,13 @@ Ltac iSpecializePat_go H1 pats :=
          |pm_reduce; solve [iFrame "∗ #"]
          |pm_reduce; iSpecializePat_go H1 pats]
     | SAutoFrame ?m :: ?pats =>
-       notypeclasses refine (tac_specialize_frame _ H1 _ _ _ _ _ _ _ _ _ _ _ _);
+       notypeclasses refine (tac_specialize_frame _ H1 _
+           (if m is GModal then true else false) _ _ _ _ _ _ _ _ _ _ _);
          [pm_reflexivity ||
           let H1 := pretty_ident H1 in
           fail "iSpecialize:" H1 "not found"
          |solve_to_wand H1
-         |lazymatch m with
-          | GSpatial => class_apply add_modal_id
-          | GModal => iSolveTC || fail "iSpecialize: goal not a modality"
-          end
+         |iSolveTC || fail "iSpecialize: goal not a modality"
          |pm_reduce;
           first
             [notypeclasses refine (tac_unlock_emp _ _ _)
@@ -955,15 +951,66 @@ Ltac iSpecializePat_go H1 pats :=
 Local Tactic Notation "iSpecializePat" open_constr(H) constr(pat) :=
   let pats := spec_pat.parse pat in iSpecializePat_go H pats.
 
-(** The argument [p] denotes whether the conclusion of the specialized term is
-intuitionistic. If so, one can use all spatial hypotheses for both proving the
-premises and the remaning goal. The argument [p] can either be a Boolean or an
-introduction pattern, which will be coerced into [true] when it solely contains
-`#` or `%` patterns at the top-level.
+(** The tactics [iSpecialize trm as #] and [iSpecializeCore trm as true] allow
+one to use the entire spatial context /twice/: the first time for proving the
+premises [Q1 .. Qn] of [H : Q1 -* .. -∗ Qn -∗ R], and the second time for
+proving the remaining goal. This is possible if all of the following properties
+hold:
+1. The conclusion [R] of the hypothesis [H] is persistent.
+2. The specialization pattern [[> ..]] for wrapping a modality is not used for
+   any of the premises [Q1 .. Qn].
+3. The BI is either affine, or the hypothesis [H] resides in the intuitionistic
+   context.
 
-In case the specialization pattern in [t] states that the modality of the goal
-should be kept for one of the premises (i.e. [>[H1 .. Hn]] is used) then [p]
-defaults to [false] (i.e. spatial hypotheses are not preserved). *)
+The copying of the context for proving the premises of [H] and the remaining
+goal is implemented using the lemma [tac_specialize_intuitionistic_helper].
+
+Since the tactic [iSpecialize .. as #] is used a helper to implement
+[iDestruct .. as "#.."], [iPoseProof .. as "#.."], [iSpecialize .. as "#.."],
+and friends, the behavior on violations of these conditions is as follows:
+
+- If condition 1 is violated (i.e. the conclusion [R] of [H] is not persistent),
+  the tactic will fail.
+- If condition 2 or 3 is violated, the tactic will fall back to consuming the
+  hypotheses for proving the premises [Q1 .. Qn]. That is, it will fall back to
+  not using [tac_specialize_intuitionistic_helper].
+
+The function [use_tac_specialize_intuitionistic_helper Δ pat] below returns
+[true] iff the specialization pattern [pat] consumes any spatial hypotheses,
+and does not contain the pattern [[> ..]] (cf. condition 2). If the function
+returns [false], then the conclusion can be moved in the intuitionistic context
+even if conditions 1 and 3 do not hold. Therefore, in that case, we prefer
+putting the conclusion to the intuitionistic context directly and not using
+[tac_specialize_intuitionistic_helper], which requires conditions 1 and 3. *)
+Fixpoint use_tac_specialize_intuitionistic_helper {M}
+    (Δ : envs M) (pats : list spec_pat) : bool :=
+  match pats with
+  | [] => false
+  | (SForall | SPureGoal _) :: pats =>
+     use_tac_specialize_intuitionistic_helper Δ pats
+  | SAutoFrame _ :: _ => true
+  | SIdent H _ :: pats =>
+     match envs_lookup_delete false H Δ with
+     | Some (false, _, Δ) => true
+     | Some (true, _, Δ) => use_tac_specialize_intuitionistic_helper Δ pats
+     | None => false (* dummy case (invalid pattern, will fail in the tactic anyway) *)
+     end
+  | SGoal (SpecGoal GModal _ _ _ _) :: _ => false
+  | SGoal (SpecGoal GIntuitionistic _ _ _ _) :: pats =>
+     use_tac_specialize_intuitionistic_helper Δ pats
+  | SGoal (SpecGoal GSpatial neg Hs_frame Hs _) :: pats =>
+     match envs_split (if neg is true then Right else Left)
+                      (if neg then Hs else pm_app Hs_frame Hs) Δ with
+     | Some (Δ1,Δ2) => if env_spatial_is_nil Δ1
+                       then use_tac_specialize_intuitionistic_helper Δ2 pats
+                       else true
+     | None => false (* dummy case (invalid pattern, will fail in the tactic anyway) *)
+     end
+  end.
+
+(** The argument [p] of [iSpecializeCore] can either be a Boolean, or an
+introduction pattern that is coerced into [true] when it solely contains [#] or
+[%] patterns at the top-level. *)
 Tactic Notation "iSpecializeCore" open_constr(H)
     "with" open_constr(xs) open_constr(pat) "as" constr(p) :=
   let p := intro_pat_intuitionistic p in
@@ -976,25 +1023,17 @@ Tactic Notation "iSpecializeCore" open_constr(H)
   iSpecializeArgs H xs; [..|
     lazymatch type of H with
     | ident =>
-       (* The lemma [tac_specialize_intuitionistic_helper] allows one to use the
-       whole spatial context for:
-       - proving the premises of the lemma we specialize, and,
-       - the remaining goal.
-
-       We can only use if all of the following properties hold:
-       - The result of the specialization is persistent.
-       - No modality is eliminated.
-       - If the BI is not affine, the hypothesis should be in the intuitionistic
-         context.
-
-       As an optimization, we do only use [tac_specialize_intuitionistic_helper]
-       if no implications nor wands are eliminated, i.e. [pat ≠ []]. *)
        let pat := spec_pat.parse pat in
-       lazymatch eval compute in
-         (p && bool_decide (pat ≠ []) && negb (existsb spec_pat_modal pat)) with
+       let Δ := iGetCtx in
+       (* Check if we should use [tac_specialize_intuitionistic_helper]. Notice
+       that [pm_eval] does not unfold [use_tac_specialize_intuitionistic_helper],
+       so we should do that first. *)
+       let b := eval cbv [use_tac_specialize_intuitionistic_helper] in
+         (if p then use_tac_specialize_intuitionistic_helper Δ pat else false) in
+       lazymatch eval pm_eval in b with
        | true =>
-          (* Check that if the BI is not affine, the hypothesis is in the
-          intuitionistic context. *)
+          (* Check that the BI is either affine, or the hypothesis [H] resides
+          in the intuitionistic context. *)
           lazymatch iTypeOf H with
           | Some (?q, _) =>
              let PROP := iBiOfGoal in
@@ -1003,10 +1042,11 @@ Tactic Notation "iSpecializeCore" open_constr(H)
                 notypeclasses refine (tac_specialize_intuitionistic_helper _ H _ _ _ _ _ _ _ _ _ _);
                   [pm_reflexivity
                    (* This premise, [envs_lookup j Δ = Some (q,P)],
-                   holds because [iTypeOf] succeeded *)
+                   holds because the [iTypeOf] above succeeded *)
                   |pm_reduce; iSolveTC
-                   (* This premise, [if q then TCTrue else BiAffine PROP],
-                   holds because [q || TC_to_bool (BiAffine PROP)] is true *)
+                   (* This premise, [if q then TCTrue else BiAffine PROP], holds
+                   because we established that [q || TC_to_bool (BiAffine PROP)]
+                   is true *)
                   |iSpecializePat H pat;
                     [..
                     |notypeclasses refine (tac_specialize_intuitionistic_helper_done _ H _ _ _);

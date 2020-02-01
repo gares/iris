@@ -46,6 +46,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   basic proofmode support.
 * Sealed the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
   to prevent undesired simplification.
+* Better handling of persistent results in `iDestruct`, `iPoseProof`, `iAssert`,
+  and friends. See https://gitlab.mpi-sws.org/iris/iris/merge_requests/341 for
+  more details.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

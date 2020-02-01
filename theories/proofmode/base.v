@@ -17,6 +17,10 @@ the actual operations that may appear in users' proofs. *)
 Lemma lazy_andb_true (b1 b2 : bool) : b1 &&& b2 = true ↔ b1 = true ∧ b2 = true.
 Proof. destruct b1, b2; intuition congruence. Qed.
 
+Definition negb (b : bool) : bool := if b then false else true.
+Lemma negb_true b : negb b = true ↔ b = false.
+Proof. by destruct b. Qed.
+
 Fixpoint Pos_succ (x : positive) : positive :=
   match x with
   | (p~1)%positive => ((Pos_succ p)~0)%positive
@@ -94,7 +98,10 @@ Qed.
 Lemma ident_beq_reflect i1 i2 : reflect (i1 = i2) (ident_beq i1 i2).
 Proof. apply iff_reflect. by rewrite ident_beq_true. Qed.
 
-(** Copies of some [option] combinators for better reduction control. *)
+(** Copies of some functions on [list] and [option] for better reduction control. *)
+Fixpoint pm_app {A} (l1 l2 : list A) : list A :=
+  match l1 with [] => l2 | x :: l1 => x :: pm_app l1 l2 end.
+
 Definition pm_option_bind {A B} (f : A → option B) (mx : option A) : option B :=
   match mx with Some x => f x | None => None end.
 Arguments pm_option_bind {_ _} _ !_ /.
