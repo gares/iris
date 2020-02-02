@@ -46,9 +46,14 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   basic proofmode support.
 * Sealed the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
   to prevent undesired simplification.
-* Better handling of persistent results in `iDestruct`, `iPoseProof`, `iAssert`,
-  and friends. See https://gitlab.mpi-sws.org/iris/iris/merge_requests/341 for
-  more details.
+* The tactics `iDestruct`, `iPoseProof`, and `iAssert` have become stronger:
+  - They succeed in certain cases where they used to fail.
+  - They keep certain hypotheses in the intuitionistic context, where they were
+    moved to the spatial context before.
+  The latter can lead to stronger proof mode contexts, and therefore to
+  backwards incompatibility. This can usually be fixed by manually clearing some
+  hypotheses. A more detailed description of the changes can be found in
+  https://gitlab.mpi-sws.org/iris/iris/merge_requests/341.
 
 ## Iris 3.2.0 (released 2019-08-29)
 
