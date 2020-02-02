@@ -258,7 +258,7 @@ Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
 Definition envs_entails_aux :
-  seal (λ {PROP : bi} (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
+  seal (λ (PROP : bi) (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
 Proof. by eexists. Qed.
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
   envs_entails_aux.(unseal) PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
