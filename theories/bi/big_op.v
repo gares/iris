@@ -125,14 +125,24 @@ Section sep_list.
   Lemma big_sepL_emp l : ([∗ list] k↦y ∈ l, emp) ⊣⊢@{PROP} emp.
   Proof. by rewrite big_opL_unit. Qed.
 
+  Lemma big_sepL_insert_acc Φ l i x :
+    l !! i = Some x →
+    ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x ∗ (∀ y, Φ i y -∗ ([∗ list] k↦y ∈ <[i:=y]>l, Φ k y)).
+  Proof.
+    intros Hli. assert (i ≤ length l) by eauto using lookup_lt_Some, Nat.lt_le_incl.
+    rewrite -(take_drop_middle l i x) // big_sepL_app /=.
+    rewrite Nat.add_0_r take_length_le //.
+    rewrite assoc -!(comm _ (Φ _ _)) -assoc. apply sep_mono_r, forall_intro=> y.
+    rewrite insert_app_r_alt ?take_length_le //.
+    rewrite Nat.sub_diag /=. apply wand_intro_l.
+    rewrite assoc !(comm _ (Φ _ _)) -assoc big_sepL_app /=.
+    by rewrite Nat.add_0_r take_length_le.
+  Qed.
+
   Lemma big_sepL_lookup_acc Φ l i x :
     l !! i = Some x →
     ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x ∗ (Φ i x -∗ ([∗ list] k↦y ∈ l, Φ k y)).
-  Proof.
-    intros Hli. rewrite -(take_drop_middle l i x) // big_sepL_app /=.
-    rewrite Nat.add_0_r take_length_le; eauto using lookup_lt_Some, Nat.lt_le_incl.
-    rewrite assoc -!(comm _ (Φ _ _)) -assoc. by apply sep_mono_r, wand_intro_l.
-  Qed.
+  Proof. intros. by rewrite {1}big_sepL_insert_acc // (forall_elim x) list_insert_id. Qed.
 
   Lemma big_sepL_lookup Φ l i x `{!Absorbing (Φ i x)} :
     l !! i = Some x → ([∗ list] k↦y ∈ l, Φ k y) ⊢ Φ i x.
@@ -412,14 +422,25 @@ Section sep_list2.
            (big_sepL2 (PROP:=PROP) (A:=A) (B:=B)).
   Proof. intros f g Hf l1 ? <- l2 ? <-. apply big_sepL2_proper; intros; apply Hf. Qed.
 
+  Lemma big_sepL2_insert_acc Φ l1 l2 i x1 x2 :
+    l1 !! i = Some x1 → l2 !! i = Some x2 →
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢
+    Φ i x1 x2 ∗ (∀ y1 y2, Φ i y1 y2 -∗ ([∗ list] k↦y1;y2 ∈ <[i:=y1]>l1;<[i:=y2]>l2, Φ k y1 y2)).
+  Proof.
+    intros Hl1 Hl2. rewrite big_sepL2_alt. apply pure_elim_l=> Hl.
+    rewrite {1}big_sepL_insert_acc; last by rewrite lookup_zip_with; simplify_option_eq.
+    apply sep_mono_r. apply forall_intro => y1. apply forall_intro => y2.
+    rewrite big_sepL2_alt !insert_length pure_True // left_id -insert_zip_with.
+    by rewrite (forall_elim (y1, y2)).
+  Qed.
+
   Lemma big_sepL2_lookup_acc Φ l1 l2 i x1 x2 :
     l1 !! i = Some x1 → l2 !! i = Some x2 →
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊢
     Φ i x1 x2 ∗ (Φ i x1 x2 -∗ ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2)).
   Proof.
-    intros Hl1 Hl2. rewrite big_sepL2_alt. apply pure_elim_l=> Hl.
-    rewrite {1}big_sepL_lookup_acc; last by rewrite lookup_zip_with; simplify_option_eq.
-    by rewrite pure_True // left_id.
+    intros. rewrite {1}big_sepL2_insert_acc // (forall_elim x1) (forall_elim x2).
+    by rewrite !list_insert_id.
   Qed.
 
   Lemma big_sepL2_lookup Φ l1 l2 i x1 x2 `{!Absorbing (Φ i x1 x2)} :
