@@ -182,6 +182,22 @@ Proof.
         absorbingly_sep_l wand_elim_r HQ.
 Qed.
 
+Lemma tac_spatial Δ i p P P' Q :
+  envs_lookup i Δ = Some (p, P) →
+  (if p then FromAffinely P' P else TCEq P' P) →
+  match envs_replace i p false (Esnoc Enil i P') Δ with
+  | None => False
+  | Some Δ' => envs_entails Δ' Q
+  end →
+  envs_entails Δ Q.
+Proof.
+  intros ? HP. destruct (envs_replace _ _ _ _ _) as [Δ'|] eqn:Hrep; last done.
+  rewrite envs_entails_eq=> <-. rewrite envs_replace_singleton_sound //; simpl.
+  destruct p; simpl; last destruct HP.
+  - by rewrite intuitionistically_affinely (from_affinely P' P) wand_elim_r.
+  - by rewrite wand_elim_r.
+Qed.
+
 (** * Implication and wand *)
 Lemma tac_impl_intro Δ i P P' Q R :
   FromImpl R P Q →
