@@ -234,7 +234,7 @@ Module linear1. Section linear1.
   Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.
   Hypothesis fupd_frame_l : ∀ E1 E2 P Q, P ∗ fupd E1 E2 Q ⊢ fupd E1 E2 (P ∗ Q).
 
-  (** We have cancellable invariants. (Really they would have fractions at
+  (** We have cancelable invariants. (Really they would have fractions at
   [cinv_own] but we do not need that. They would also have a name matching
   the [mask] type, but we do not need that either.) *)
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
@@ -288,7 +288,7 @@ Module linear2. Section linear2.
   Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.
   Hypothesis fupd_frame_l : ∀ E1 E2 P Q, P ∗ fupd E1 E2 Q ⊢ fupd E1 E2 (P ∗ Q).
 
-  (** We have cancellable invariants. (Really they would have fractions at
+  (** We have cancelable invariants. (Really they would have fractions at
   [cinv_own] but we do not need that. They would also have a name matching
   the [mask] type, but we do not need that either.) *)
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
