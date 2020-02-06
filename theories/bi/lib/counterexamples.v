@@ -292,8 +292,11 @@ Module linear2. Section linear2.
   [cinv_own] but we do not need that. They would also have a name matching
   the [mask] type, but we do not need that either.) *)
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
+  (** [cinv_alloc] delays handing out the [cinv_own] token until after the
+  invariant has been created so that this can match Iron by picking
+  [cinv_own γ := fcinv_own γ 1 ∗ fcinv_cancel_own γ 1]. *)
   Hypothesis cinv_alloc : ∀ E,
-    fupd E E (∃ γ, cinv_own γ ∗ (∀ P, ▷ P -∗ fupd E E (cinv γ P)))%I.
+    fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
   Hypothesis cinv_access : ∀ P γ,
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
   Hypothesis cinv_own_excl : ∀ E γ,
@@ -321,9 +324,9 @@ Module linear2. Section linear2.
   Lemma leak P : P -∗ fupd M1 M1 emp.
   Proof.
     iIntros "HP".
-    iMod cinv_alloc as (γ) "(Htok & Hmkinv)".
+    iMod cinv_alloc as (γ) "Hmkinv".
     set (INV := (P ∨ cinv_own γ ∗ P)%I).
-    iMod ("Hmkinv" $! INV with "[HP]") as "Hinv".
+    iMod ("Hmkinv" $! INV with "[HP]") as "(Hinv & Htok)".
     { iLeft. done. }
     iMod (cinv_access with "Hinv Htok") as "([HP|Hinv] & Htok & Hclose)"; last first.
     { iDestruct "Hinv" as "(Htok' & ?)".
