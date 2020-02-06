@@ -56,6 +56,7 @@ Section inv.
     do 2 iModIntro. iExists i. auto.
   Qed.
 
+  (* This does not imply [own_inv_alloc] due to the extra assumption [↑N ⊆ E]. *)
   Lemma own_inv_alloc_open N E P :
     ↑N ⊆ E → (|={E, E∖↑N}=> own_inv N P ∗ (▷P ={E∖↑N, E}=∗ True))%I.
   Proof.

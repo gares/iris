@@ -62,7 +62,7 @@ Section proofs.
 
   (*** Allocation rules. *)
   (** The "strong" variants permit any infinite [I], and choosing [P] is delayed
-  until after [γ] was chosen. *)
+  until after [γ] was chosen.*)
   Lemma cinv_alloc_strong (I : gname → Prop) E N :
     pred_infinite I →
     (|={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
@@ -73,7 +73,8 @@ Section proofs.
   Qed.
 
   (** The "open" variants create the invariant in the open state, and delay
-  having to prove [P]. *)
+  having to prove [P].
+  These do not imply the other variants because of the extra assumption [↑N ⊆ E]. *)
   Lemma cinv_alloc_strong_open (I : gname → Prop) E N :
     pred_infinite I →
     ↑N ⊆ E →
