@@ -299,8 +299,6 @@ Module linear2. Section linear2.
     fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
   Hypothesis cinv_access : ∀ P γ,
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
-  Hypothesis cinv_own_excl : ∀ E γ,
-    ▷ cinv_own γ -∗ ▷ cinv_own γ -∗ fupd E E False.
 
   (** Some general lemmas and proof mode compatibility. *)
   Instance fupd_mono' E1 E2 : Proper ((⊢) ==> (⊢)) (fupd E1 E2).
