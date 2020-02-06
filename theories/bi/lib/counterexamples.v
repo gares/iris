@@ -271,7 +271,7 @@ End linear1. End linear1.
 
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
-Variant 2: the invariant can depend on the chose gname, and we also have
+Variant 2: the invariant can depend on the chosen [γ], and we also have
 an accessor that gives back the invariant token immediately,
 not just after the invariant got closed again. *)
 Module linear2. Section linear2.
