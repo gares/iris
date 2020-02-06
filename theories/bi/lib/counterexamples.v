@@ -325,12 +325,8 @@ Module linear2. Section linear2.
   Proof.
     iIntros "HP".
     iMod cinv_alloc as (γ) "Hmkinv".
-    set (INV := (P ∨ cinv_own γ ∗ P)%I).
-    iMod ("Hmkinv" $! INV with "[HP]") as "(Hinv & Htok)".
-    { iLeft. done. }
-    iMod (cinv_access with "Hinv Htok") as "([HP|Hinv] & Htok & Hclose)"; last first.
-    { iDestruct "Hinv" as "(Htok' & ?)".
-      iMod (cinv_own_excl with "Htok Htok'") as "[]". }
-    iApply "Hclose". iNext. iRight. iFrame.
+    iMod ("Hmkinv" $! True%I with "[//]") as "[Hinv Htok]".
+    iMod (cinv_access with "Hinv Htok") as "(Htrue & Htok & Hclose)".
+    iApply "Hclose". done.
   Qed.
 End linear2. End linear2.
