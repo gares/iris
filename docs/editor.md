@@ -4,7 +4,7 @@ and output the unicode characters used throughout Iris.
 ## General: Unicode Fonts
 
 Most editors will just use system fonts for rendering unicode characters and do
-not need furhter configuration once the fonts are installed.  Here are some
+not need further configuration once the fonts are installed.  Here are some
 combinations of fonts that are known to give readable results (i.e., each of
 these sets of fonts covers all the required characters):
 
@@ -34,10 +34,13 @@ on the math symbol list, and with some custom aliases for symbols used a lot in 
 ; Define the actual input method
 (quail-define-package "math" "UTF-8" "Ω" t)
 (quail-define-rules ; add whatever extra rules you want to define here...
+ ("\\fun"    ?λ)
  ("\\mult"   ?⋅)
  ("\\ent"    ?⊢)
  ("\\valid"  ?✓)
+ ("\\diamond" ?◇)
  ("\\box"    ?□)
+ ("\\bbox"   ?■)
  ("\\later"  ?▷)
  ("\\pred"   ?φ)
  ("\\and"    ?∧)
@@ -50,6 +53,8 @@ on the math symbol list, and with some custom aliases for symbols used a lot in 
  ("\\sep"    ?∗)
  ("\\lc"     ?⌜)
  ("\\rc"     ?⌝)
+ ("\\Lc"     ?⎡)
+ ("\\Rc"     ?⎤)
  ("\\lam"    ?λ)
  ("\\empty"  ?∅)
  ("\\Lam"    ?Λ)
@@ -57,10 +62,25 @@ on the math symbol list, and with some custom aliases for symbols used a lot in 
  ("\\-"      ?∖)
  ("\\aa"     ?●)
  ("\\af"     ?◯)
+ ("\\auth"   ?●)
+ ("\\frag"   ?◯)
  ("\\iff"    ?↔)
  ("\\gname"  ?γ)
  ("\\incl"   ?≼)
  ("\\latert" ?▶)
+ ("\\update" ?⇝)
+
+ ;; accents (for iLöb)
+ ("\\\"o" ?ö)
+
+ ;; subscripts and superscripts
+ ("^^+" ?⁺) ("__+" ?₊) ("^^-" ?⁻)
+ ("__0" ?₀) ("__1" ?₁) ("__2" ?₂) ("__3" ?₃) ("__4" ?₄)
+ ("__5" ?₅) ("__6" ?₆) ("__7" ?₇) ("__8" ?₈) ("__9" ?₉)
+
+ ("__a" ?ₐ) ("__e" ?ₑ) ("__h" ?ₕ) ("__i" ?ᵢ) ("__k" ?ₖ)
+ ("__l" ?ₗ) ("__m" ?ₘ) ("__n" ?ₙ) ("__o" ?ₒ) ("__p" ?ₚ)
+ ("__r" ?ᵣ) ("__s" ?ₛ) ("__t" ?ₜ) ("__u" ?ᵤ) ("__v" ?ᵥ) ("__x" ?ₓ)
 )
 (mapc (lambda (x)
         (if (cddr x)
@@ -94,10 +114,10 @@ results in a decent choice for the symbols used in Iris:
 (set-fontset-font t nil (font-spec :name "Symbola"))
 ```
 
-## CoqIDE
+## CoqIDE 8.9 and earlier on Linux (ibus-m17n)
 
-CoqIDE does not have support for unicode itself, but you can use the Intelligent
-Input Bus (IBus) framework for multilingual input. First, install `ibus-m17n`
+On Linux with old versions of CoqIDE you can use the Intelligent
+Input Bus (IBus) framework to input Unicode symbols. First, install `ibus-m17n`
 via your system's package manager. Next, create a file `~/.m17n.d/coq.mim` to
 configure an input method based on the math symbol list, and with some custom
 aliases for symbols used a lot in Iris:
@@ -111,10 +131,10 @@ aliases for symbols used a lot in Iris:
 
 (map (trans
 
-;; Standard math notations
+;; Standard LaTeX math notations
   ("\\forall"         "∀")
-  ("\\fun"            "λ")
   ("\\exists"         "∃")
+  ("\\lam"            "λ")
   ("\\not"            "¬")
   ("\\/"              "∨")
   ("/\\"              "∧")
@@ -135,7 +155,6 @@ aliases for symbols used a lot in Iris:
   ("\\sqsubseteq"     "⊑")
   ("\\sqsubseteq"     "⊑")
   ("\\notsubseteq"    "⊈")
-  ("\\empty"          "∅")
   ("\\meet"           "⊓")
   ("\\join"           "⊔")
   ("\\top"            "⊤")
@@ -152,34 +171,53 @@ aliases for symbols used a lot in Iris:
   ("\\uparrow"        "↑")
 
 ;; Iris specific
-  ("\\check"          "✓")
-  ("\\later"          "▷")
-  ("\\latert"         "▶")
+  ("\\fun"            "λ")
+  ("\\mult"           "⋅")
+  ("\\ent"            "⊢")
+  ("\\valid"          "✓")
   ("\\diamond"        "◇")
-  ("\\square"         "□")
-  ("\\bsquare"        "■")
-  ("\\*"              "∗")
-  ("\\included"       "≼")
-  ("\\op"             "⋅")
-  ("\\update"         "⇝")
-  ("\\auth"           "●")
-  ("\\frag"           "◯")
+  ("\\box"            "□")
+  ("\\bbox"           "■")
+  ("\\later"          "▷")
+  ("\\pred"           "φ")
+  ("\\and"            "∧")
+  ("\\or"             "∨")
+  ("\\comp"           "∘")
+  ("\\ccomp"          "◎")
+  ("\\all"            "∀")
+  ("\\ex"             "∃")
+  ("\\to"             "→")
+  ("\\sep"            "∗")
   ("\\lc"             "⌜")
   ("\\rc"             "⌝")
   ("\\Lc"             "⎡")
   ("\\Rc"             "⎤")
+  ("\\empty"          "∅")
+  ("\\Lam"            "Λ")
+  ("\\Sig"            "Σ")
+  ("\\-"              "∖")
+  ("\\aa"             "●")
+  ("\\af"             "◯")
+  ("\\auth"           "●")
+  ("\\frag"           "◯")
+  ("\\iff"            "↔")
+  ("\\gname"          "γ")
+  ("\\incl"           "≼")
+  ("\\latert"         "▶")
+  ("\\update"         "⇝")
+  ("\\bind"           "≫=")
 
-;; Commonly used sub- and superscripts
-  ("^^+" ?⁺) ("__+" ?₊) ("^^-" ?⁻)
-  ("__0" ?₀) ("__1" ?₁) ("__2" ?₂) ("__3" ?₃) ("__4" ?₄)
-  ("__5" ?₅) ("__6" ?₆) ("__7" ?₇) ("__8" ?₈) ("__9" ?₉)
-
-  ("__a" ?ₐ) ("__e" ?ₑ) ("__h" ?ₕ) ("__i" ?ᵢ) ("__k" ?ₖ)
-  ("__l" ?ₗ) ("__m" ?ₘ) ("__n" ?ₙ) ("__o" ?ₒ) ("__p" ?ₚ)
-  ("__r" ?ᵣ) ("__s" ?ₛ) ("__t" ?ₜ) ("__u" ?ᵤ) ("__v" ?ᵥ) ("__x" ?ₓ)
-
-;; Commonly used acents
+;; accents (for iLöb)
   ("\\\"o" "ö")
+
+;; subscripts and superscripts
+  ("^^+" "⁺") ("__+" "₊") ("^^-" "⁻")
+  ("__0" "₀") ("__1" "₁") ("__2" "₂") ("__3" "₃") ("__4" "₄")
+  ("__5" "₅") ("__6" "₆") ("__7" "₇") ("__8" "₈") ("__9" "₉")
+
+  ("__a" "ₐ") ("__e" "ₑ") ("__h" "ₕ") ("__i" "ᵢ") ("__k" "ₖ")
+  ("__l" "ₗ") ("__m" "ₘ") ("__n" "ₙ") ("__o" "ₒ") ("__p" "ₚ")
+  ("__r" "ᵣ") ("__s" "ₛ") ("__t" "ₜ") ("__u" "ᵤ") ("__v" "ᵥ") ("__x" "ₓ")
 
 ;; Greek alphabet
   ("\\Alpha"  "Α")   ("\\alpha"  "α")
@@ -219,3 +257,93 @@ To use this input method, you should:
 2. On some systems: In CoqIDE, you have to enable the input method by performing
    a right click on the text area, and selecting "System (IBus)" under "input
    method".
+
+## CoqIDE 8.10+ Unicode input
+
+Instead of configuring the input system-wide, you can use CoqIDE's support for
+inputting Unicode symbols (introduced in Coq v8.10). To input a symbol, type a
+LaTeX-like escape sequence, for example `\alpha` and then type
+`<Shift>-<Space>`, which will expand it into `α`. Expansion will work on a
+prefix of the command as well. You can also customize the expansion keyboard
+shortcut, which is under Tools/LaTeX-to-unicode.
+
+This system is configurable by adding a Unicode bindings file with additional
+expansion sequences. On Linux this file should go in
+`~/.config/coq/coqide.bindings` while on macOS it should go in
+`~/Library/Application Support/Coq/coqide.bindings` (or under `$XDG_CONFIG_HOME`
+if you have that set).
+
+Here is a `coqide.bindings` file for a variety of symbols used in Iris:
+
+```
+# LaTeX-like sequences are natively supported (eg, \forall, \mapsto)
+# Iris-specific abbreviations
+\fun            λ
+\mult           ⋅ 1
+\ent            ⊢ 1
+\valid          ✓
+\diamond        ◇
+\box            □ 1
+\bbox           ■
+\later          ▷
+\pred           φ
+\and            ∧
+\or             ∨
+\comp           ∘ 1
+\ccomp          ◎
+\all            ∀
+\ex             ∃
+\to             →
+\sep            ∗
+\lc             ⌜ 1
+\rc             ⌝ 1
+\Lc             ⎡ 1
+\Rc             ⎤ 1
+\lam            λ
+\empty          ∅
+\Lam            Λ
+\Sig            Σ
+\-              ∖ 1
+\aa             ● 1
+\af             ◯ 1
+\auth           ●
+\frag           ◯
+\iff            ↔ 1
+\gname          γ
+\incl           ≼
+\latert         ▶
+\update         ⇝
+# accents
+\"o             ö
+\Lob            Löb
+# subscripts and superscripts
+\^+             ⁺
+\_+             ₊
+\^-             ⁻
+\_0             ₀
+\_1             ₁
+\_2             ₂
+\_3             ₃
+\_4             ₄
+\_5             ₅
+\_6             ₆
+\_7             ₇
+\_8             ₈
+\_9             ₉
+\_a             ₐ
+\_e             ₑ
+\_h             ₕ
+\_i             ᵢ
+\_k             ₖ
+\_l             ₗ
+\_m             ₘ
+\_n             ₙ
+\_o             ₒ
+\_p             ₚ
+\_r             ᵣ
+\_s             ₛ
+\_t             ₜ
+\_u             ᵤ
+\_v             ᵥ
+\_x             ₓ
+```
