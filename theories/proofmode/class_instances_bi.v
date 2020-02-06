@@ -4,6 +4,7 @@ From iris.proofmode Require Import base modality_instances classes ltac_tactics.
 Set Default Proof Using "Type".
 Import bi.
 
+(* FIXME(Coq #6294): needs new unification *)
 (** The lemma [from_assumption_exact is not an instance, but defined using
 [notypeclasses refine] through [Hint Extern] to enable the better unification
 algorithm. We use [shelve] to avoid the creation of unshelved goals for evars
@@ -14,6 +15,15 @@ Lemma from_assumption_exact {PROP : bi} p (P : PROP) : FromAssumption p P P.
 Proof. by rewrite /FromAssumption /= intuitionistically_if_elim. Qed.
 Hint Extern 0 (FromAssumption _ _ _) =>
   notypeclasses refine (from_assumption_exact _ _); shelve : typeclass_instances.
+
+(* FIXME(Coq #6294): needs new unification *)
+(** Similarly, the lemma [from_exist_exist] is defined using a [Hint Extern] to
+enable the better unification algorithm.
+See https://gitlab.mpi-sws.org/iris/iris/issues/288 *)
+Lemma from_exist_exist {PROP : bi} {A} (Φ : A → PROP) : FromExist (∃ a, Φ a) Φ.
+Proof. by rewrite /FromExist. Qed.
+Hint Extern 0 (FromExist _ _) =>
+  notypeclasses refine (from_exist_exist _) : typeclass_instances.
 
 Section bi_instances.
 Context {PROP : bi}.
@@ -871,8 +881,6 @@ Global Instance into_or_embed `{BiEmbed PROP PROP'} P Q1 Q2 :
 Proof. by rewrite /IntoOr -embed_or => <-. Qed.
 
 (** FromExist *)
-Global Instance from_exist_exist {A} (Φ : A → PROP) : FromExist (∃ a, Φ a) Φ.
-Proof. by rewrite /FromExist. Qed.
 Global Instance from_exist_texist {A} (Φ : tele_arg A → PROP) :
   FromExist (∃.. a, Φ a) Φ.
 Proof. by rewrite /FromExist bi_texist_exist. Qed.
