@@ -218,8 +218,8 @@ End inv. End inv.
 
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
-Variant 1: a strong invariant creation lemma that lets us create invariants
-in the "open" state. *)
+Variant 1: we assume a strong invariant creation lemma that lets us create
+invariants in the "open" state. *)
 Module linear1. Section linear1.
   Context {PROP: sbi}.
   Implicit Types P : PROP.
@@ -271,9 +271,23 @@ End linear1. End linear1.
 
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
-Variant 2: the invariant can depend on the chosen [γ], and we also have
-an accessor that gives back the invariant token immediately,
-not just after the invariant got closed again. *)
+Variant 2: maybe the strong invariant creation lemma (variant 1 above) is a bit
+too obvious, so here we just assume that the invariant can depend on the chosen
+[γ].  Moreover, we also have an accessor that gives back the invariant token
+immediately, not just after the invariant got closed again.
+
+The assumptions here match the proof rules in Iron, save for the side-condition
+that the invariant must be "uniform".  In particular, [cinv_alloc] delays
+handing out the [cinv_own] token until after the invariant has been created so
+that this can match Iron by picking [cinv_own γ := fcinv_own γ 1 ∗
+fcinv_cancel_own γ 1]. This means [cinv_own] is not "uniform" in Iron terms,
+which is why Iron does not suffer from this contradiction.
+
+This also loosely matches VST's locks with stored resource invariants.
+There, the stronger variant of the "unlock" rule (see Aquinas Hobor's PhD thesis
+"Oracle Semantics", §4.7, p. 88) also permits putting the token of a lock
+entirely into that lock.
+*)
 Module linear2. Section linear2.
   Context {PROP: sbi}.
   Implicit Types P : PROP.
@@ -292,9 +306,6 @@ Module linear2. Section linear2.
   [cinv_own] but we do not need that. They would also have a name matching
   the [mask] type, but we do not need that either.) *)
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
-  (** [cinv_alloc] delays handing out the [cinv_own] token until after the
-  invariant has been created so that this can match Iron by picking
-  [cinv_own γ := fcinv_own γ 1 ∗ fcinv_cancel_own γ 1]. *)
   Hypothesis cinv_alloc : ∀ E,
     fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
   Hypothesis cinv_access : ∀ P γ,
