@@ -215,3 +215,127 @@ Module inv. Section inv.
     iApply "HN". iApply saved_A. done.
   Qed.
 End inv. End inv.
+
+(** This proves that if we have linear impredicative invariants, we can still
+drop arbitrary resources (i.e., we can "defeat" linearity).
+Variant 1: we assume a strong invariant creation lemma that lets us create
+invariants in the "open" state. *)
+Module linear1. Section linear1.
+  Context {PROP: sbi}.
+  Implicit Types P : PROP.
+
+  (** Assumptions. *)
+  (** We have the mask-changing update modality (two classes: empty/full mask) *)
+  Inductive mask := M0 | M1.
+  Context (fupd : mask → mask → PROP → PROP).
+  Arguments fupd _ _ _%I.
+  Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E E P.
+  Hypothesis fupd_mono : ∀ E1 E2 P Q, (P ⊢ Q) → fupd E1 E2 P ⊢ fupd E1 E2 Q.
+  Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.
+  Hypothesis fupd_frame_l : ∀ E1 E2 P Q, P ∗ fupd E1 E2 Q ⊢ fupd E1 E2 (P ∗ Q).
+
+  (** We have cancelable invariants. (Really they would have fractions at
+  [cinv_own] but we do not need that. They would also have a name matching
+  the [mask] type, but we do not need that either.) *)
+  Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
+  Hypothesis cinv_alloc_open :  ∀ P,
+    (fupd M1 M0 (∃ γ, cinv γ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)))%I.
+
+  (** Some general lemmas and proof mode compatibility. *)
+  Instance fupd_mono' E1 E2 : Proper ((⊢) ==> (⊢)) (fupd E1 E2).
+  Proof. intros P Q ?. by apply fupd_mono. Qed.
+  Instance fupd_proper E1 E2 : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E1 E2).
+  Proof.
+    intros P Q; rewrite !bi.equiv_spec=> -[??]; split; by apply fupd_mono.
+  Qed.
+
+  Lemma fupd_frame_r E1 E2 P Q : fupd E1 E2 P ∗ Q ⊢ fupd E1 E2 (P ∗ Q).
+  Proof. by rewrite comm fupd_frame_l comm. Qed.
+
+  Global Instance elim_fupd_fupd p E1 E2 E3 P Q :
+    ElimModal True p false (fupd E1 E2 P) P (fupd E1 E3 Q) (fupd E2 E3 Q).
+  Proof.
+    by rewrite /ElimModal bi.intuitionistically_if_elim
+      fupd_frame_r bi.wand_elim_r fupd_fupd.
+  Qed.
+
+  (** Counterexample: now we can make any resource disappear. *)
+  Lemma leak P : P -∗ fupd M1 M1 emp.
+  Proof.
+    iIntros "HP".
+    set (INV := (∃ γ Q, cinv γ Q ∗ cinv_own γ ∗ P)%I).
+    iMod (cinv_alloc_open INV) as (γ) "(Hinv & Htok & Hclose)".
+    iApply "Hclose". iNext. iExists γ, _. iFrame.
+  Qed.
+End linear1. End linear1.
+
+(** This proves that if we have linear impredicative invariants, we can still
+drop arbitrary resources (i.e., we can "defeat" linearity).
+Variant 2: maybe the strong invariant creation lemma (variant 1 above) is a bit
+too obvious, so here we just assume that the invariant can depend on the chosen
+[γ].  Moreover, we also have an accessor that gives back the invariant token
+immediately, not just after the invariant got closed again.
+
+The assumptions here match the proof rules in Iron, save for the side-condition
+that the invariant must be "uniform".  In particular, [cinv_alloc] delays
+handing out the [cinv_own] token until after the invariant has been created so
+that this can match Iron by picking [cinv_own γ := fcinv_own γ 1 ∗
+fcinv_cancel_own γ 1]. This means [cinv_own] is not "uniform" in Iron terms,
+which is why Iron does not suffer from this contradiction.
+
+This also loosely matches VST's locks with stored resource invariants.
+There, the stronger variant of the "unlock" rule (see Aquinas Hobor's PhD thesis
+"Oracle Semantics", §4.7, p. 88) also permits putting the token of a lock
+entirely into that lock.
+*)
+Module linear2. Section linear2.
+  Context {PROP: sbi}.
+  Implicit Types P : PROP.
+
+  (** Assumptions. *)
+  (** We have the mask-changing update modality (two classes: empty/full mask) *)
+  Inductive mask := M0 | M1.
+  Context (fupd : mask → mask → PROP → PROP).
+  Arguments fupd _ _ _%I.
+  Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E E P.
+  Hypothesis fupd_mono : ∀ E1 E2 P Q, (P ⊢ Q) → fupd E1 E2 P ⊢ fupd E1 E2 Q.
+  Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.
+  Hypothesis fupd_frame_l : ∀ E1 E2 P Q, P ∗ fupd E1 E2 Q ⊢ fupd E1 E2 (P ∗ Q).
+
+  (** We have cancelable invariants. (Really they would have fractions at
+  [cinv_own] but we do not need that. They would also have a name matching
+  the [mask] type, but we do not need that either.) *)
+  Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
+  Hypothesis cinv_alloc : ∀ E,
+    fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
+  Hypothesis cinv_access : ∀ P γ,
+    cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
+
+  (** Some general lemmas and proof mode compatibility. *)
+  Instance fupd_mono' E1 E2 : Proper ((⊢) ==> (⊢)) (fupd E1 E2).
+  Proof. intros P Q ?. by apply fupd_mono. Qed.
+  Instance fupd_proper E1 E2 : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E1 E2).
+  Proof.
+    intros P Q; rewrite !bi.equiv_spec=> -[??]; split; by apply fupd_mono.
+  Qed.
+
+  Lemma fupd_frame_r E1 E2 P Q : fupd E1 E2 P ∗ Q ⊢ fupd E1 E2 (P ∗ Q).
+  Proof. by rewrite comm fupd_frame_l comm. Qed.
+
+  Global Instance elim_fupd_fupd p E1 E2 E3 P Q :
+    ElimModal True p false (fupd E1 E2 P) P (fupd E1 E3 Q) (fupd E2 E3 Q).
+  Proof.
+    by rewrite /ElimModal bi.intuitionistically_if_elim
+      fupd_frame_r bi.wand_elim_r fupd_fupd.
+  Qed.
+
+  (** Counterexample: now we can make any resource disappear. *)
+  Lemma leak P : P -∗ fupd M1 M1 emp.
+  Proof.
+    iIntros "HP".
+    iMod cinv_alloc as (γ) "Hmkinv".
+    iMod ("Hmkinv" $! True%I with "[//]") as "[Hinv Htok]".
+    iMod (cinv_access with "Hinv Htok") as "(Htrue & Htok & Hclose)".
+    iApply "Hclose". done.
+  Qed.
+End linear2. End linear2.

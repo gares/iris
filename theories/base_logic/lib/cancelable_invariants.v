@@ -60,22 +60,55 @@ Section proofs.
     iSplit; iIntros "[?|$]"; iLeft; by iApply "HP".
   Qed.
 
+  (*** Allocation rules. *)
+  (** The "strong" variants permit any infinite [I], and choosing [P] is delayed
+  until after [γ] was chosen.*)
   Lemma cinv_alloc_strong (I : gname → Prop) E N :
     pred_infinite I →
-    (|={E}=> ∃ γ, ⌜ I γ ⌝ ∧ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
+    (|={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
   Proof.
     iIntros (?). iMod (own_alloc_strong 1%Qp I) as (γ) "[Hfresh Hγ]"; [done|done|].
-    iExists γ; iIntros "!> {$Hγ $Hfresh}" (P) "HP".
+    iExists γ. iIntros "!> {$Hγ $Hfresh}" (P) "HP".
     iMod (inv_alloc N _ (P ∨ cinv_own γ 1) with "[HP]"); eauto.
   Qed.
 
+  (** The "open" variants create the invariant in the open state, and delay
+  having to prove [P].
+  These do not imply the other variants because of the extra assumption [↑N ⊆ E]. *)
+  Lemma cinv_alloc_strong_open (I : gname → Prop) E N :
+    pred_infinite I →
+    ↑N ⊆ E →
+    (|={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P,
+      |={E,E∖↑N}=> cinv N γ P ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
+  Proof.
+    iIntros (??). iMod (own_alloc_strong 1%Qp I) as (γ) "[Hfresh Hγ]"; [done|done|].
+    iExists γ. iIntros "!> {$Hγ $Hfresh}" (P).
+    iMod (inv_alloc_open N _ (P ∨ cinv_own γ 1)) as "[Hinv Hclose]"; first by eauto.
+    iIntros "!>". iFrame. iIntros "HP". iApply "Hclose". iLeft. done.
+  Qed.
+
   Lemma cinv_alloc_cofinite (G : gset gname) E N :
-    (|={E}=> ∃ γ, ⌜ γ ∉ G ⌝ ∧ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
+    (|={E}=> ∃ γ, ⌜ γ ∉ G ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
   Proof.
     apply cinv_alloc_strong. apply (pred_infinite_set (C:=gset gname))=> E'.
     exists (fresh (G ∪ E')). apply not_elem_of_union, is_fresh.
   Qed.
 
+  Lemma cinv_alloc E N P : ▷ P ={E}=∗ ∃ γ, cinv N γ P ∗ cinv_own γ 1.
+  Proof.
+    iIntros "HP". iMod (cinv_alloc_cofinite ∅ E N) as (γ _) "[Hγ Halloc]".
+    iExists γ. iFrame "Hγ". by iApply "Halloc".
+  Qed.
+
+  Lemma cinv_alloc_open E N P :
+    ↑N ⊆ E → (|={E,E∖↑N}=> ∃ γ, cinv N γ P ∗ cinv_own γ 1 ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
+  Proof.
+    iIntros (?). iMod (cinv_alloc_strong_open (λ _, True)) as (γ) "(_ & Htok & Hmake)"; [|done|].
+    { apply pred_infinite_True. }
+    iMod ("Hmake" $! P) as "[Hinv Hclose]". iIntros "!>". iExists γ. iFrame.
+  Qed.
+
+  (*** Accessors *)
   Lemma cinv_open_strong E N γ p P :
     ↑N ⊆ E →
     cinv N γ P -∗ (cinv_own γ p ={E,E∖↑N}=∗
@@ -93,28 +126,6 @@ Section proofs.
     - iDestruct (cinv_own_1_l with "Hown' Hown") as %[].
   Qed.
 
-  Lemma cinv_alloc E N P : ▷ P ={E}=∗ ∃ γ, cinv N γ P ∗ cinv_own γ 1.
-  Proof.
-    iIntros "HP". iMod (cinv_alloc_cofinite ∅ E N) as (γ _) "[Hγ Halloc]".
-    iExists γ. iFrame "Hγ". by iApply "Halloc".
-  Qed.
-
-  Lemma cinv_alloc_open E N P :
-    ↑N ⊆ E → (|={E,E∖↑N}=> ∃ γ, cinv N γ P ∗ cinv_own γ 1 ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
-  Proof.
-    iIntros (?). iMod (own_alloc 1%Qp) as (γ) "Hγ"; [done..|].
-    iMod (inv_alloc_open N _ (P ∨ cinv_own γ 1)) as "[Hinv Hclose]"; [done..|].
-    iExists γ; iIntros "!> {$Hγ $Hinv} HP". iApply "Hclose". by eauto.
-  Qed.
-
-  Lemma cinv_cancel E N γ P : ↑N ⊆ E → cinv N γ P -∗ cinv_own γ 1 ={E}=∗ ▷ P.
-  Proof.
-    iIntros (?) "#Hinv Hγ".
-    iMod (cinv_open_strong with "Hinv Hγ") as "($ & Hγ & H)"; first done.
-    rewrite {2}(union_difference_L (↑N) E)=> //.
-    iApply "H". by iRight.
-  Qed.
-
   Lemma cinv_open E N γ p P :
     ↑N ⊆ E →
     cinv N γ P -∗ cinv_own γ p ={E,E∖↑N}=∗ ▷ P ∗ cinv_own γ p ∗ (▷ P ={E∖↑N,E}=∗ True).
@@ -124,6 +135,15 @@ Section proofs.
     iIntros "!> HP".
     rewrite {2}(union_difference_L (↑N) E)=> //.
     iApply "H". by iLeft.
+  Qed.
+
+  (*** Other *)
+  Lemma cinv_cancel E N γ P : ↑N ⊆ E → cinv N γ P -∗ cinv_own γ 1 ={E}=∗ ▷ P.
+  Proof.
+    iIntros (?) "#Hinv Hγ".
+    iMod (cinv_open_strong with "Hinv Hγ") as "($ & Hγ & H)"; first done.
+    rewrite {2}(union_difference_L (↑N) E)=> //.
+    iApply "H". by iRight.
   Qed.
 
   Global Instance into_inv_cinv N γ P : IntoInv (cinv N γ P) N := {}.
