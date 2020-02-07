@@ -87,7 +87,7 @@ Module inv. Section inv.
   Arguments inv _ _%I.
   Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
   Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
-  Hypothesis inv_open :
+  Hypothesis inv_fupd :
     ∀ i P Q R, (P ∗ Q ⊢ fupd M0 (P ∗ R)) → (inv i P ∗ Q ⊢ fupd M1 R).
 
   (* We have tokens for a little "two-state STS": [start] -> [finish].
@@ -113,9 +113,9 @@ Module inv. Section inv.
   Hypothesis consistency : ¬ (fupd M1 False).
 
   (** Some general lemmas and proof mode compatibility. *)
-  Lemma inv_open' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
+  Lemma inv_fupd' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
   Proof.
-    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_open; last first.
+    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_fupd; last first.
     { iSplit; first done. iExact "HP". }
     iIntros "(HP & HPw)". by iApply "HPw".
   Qed.
@@ -167,7 +167,7 @@ Module inv. Section inv.
   Lemma saved_cast γ P Q : saved γ P ∗ saved γ Q ∗ □ P ⊢ fupd M1 (□ Q).
   Proof.
     iIntros "(#HsP & #HsQ & #HP)". iDestruct "HsP" as (i) "HiP".
-    iApply (inv_open' i). iSplit; first done.
+    iApply (inv_fupd' i). iSplit; first done.
     iIntros "HaP". iAssert (fupd M0 (finished γ)) with "[HaP]" as "> Hf".
     { iDestruct "HaP" as "[Hs | [Hf _]]".
       - by iApply start_finish.
@@ -176,7 +176,7 @@ Module inv. Section inv.
     iApply fupd_intro. iSplitL "Hf'"; first by eauto.
     (* Step 2: Open the Q-invariant. *)
     iClear (i) "HiP ". iDestruct "HsQ" as (i) "HiQ".
-    iApply (inv_open' i). iSplit; first done.
+    iApply (inv_fupd' i). iSplit; first done.
     iIntros "[HaQ | [_ #HQ]]".
     { iExFalso. iApply finished_not_start. by iFrame. }
     iApply fupd_intro. iSplitL "Hf".

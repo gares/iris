@@ -27,7 +27,7 @@ Section inv.
   Definition own_inv (N : namespace) (P : iProp Σ) : iProp Σ :=
     (∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧ ownI i P)%I.
 
-  Lemma own_inv_open E N P :
+  Lemma own_inv_access E N P :
     ↑N ⊆ E → own_inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     rewrite uPred_fupd_eq /uPred_fupd_def. iDestruct 1 as (i) "[Hi #HiP]".
@@ -81,7 +81,7 @@ Section inv.
   Lemma own_inv_to_inv M P: own_inv M P  -∗ inv M P.
   Proof.
     iIntros "#I". rewrite inv_eq. iIntros (E H).
-    iPoseProof (own_inv_open with "I") as "H"; eauto.
+    iPoseProof (own_inv_access with "I") as "H"; eauto.
   Qed.
 
   (** ** Public API of invariants *)
@@ -127,7 +127,7 @@ Section inv.
     iApply own_inv_to_inv. done.
   Qed.
 
-  Lemma inv_open E N P :
+  Lemma inv_access E N P :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     rewrite inv_eq /inv_def; iIntros (?) "#HI". by iApply "HI".
@@ -146,11 +146,11 @@ Section inv.
   Qed.
 
   (** ** Derived properties *)
-  Lemma inv_open_strong E N P :
+  Lemma inv_access_strong E N P :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ ▷ P ∗ ∀ E', ▷ P ={E',↑N ∪ E'}=∗ True.
   Proof.
     iIntros (?) "Hinv".
-    iPoseProof (inv_open (↑ N) N with "Hinv") as "H"; first done.
+    iPoseProof (inv_access (↑ N) N with "Hinv") as "H"; first done.
     rewrite difference_diag_L.
     iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
     rewrite left_id_L -union_difference_L //. iMod "H" as "[$ H]"; iModIntro.
@@ -159,10 +159,10 @@ Section inv.
     by rewrite left_id_L.
   Qed.
 
-  Lemma inv_open_timeless E N P `{!Timeless P} :
+  Lemma inv_access_timeless E N P `{!Timeless P} :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ P ∗ (P ={E∖↑N,E}=∗ True).
   Proof.
-    iIntros (?) "Hinv". iMod (inv_open with "Hinv") as "[>HP Hclose]"; auto.
+    iIntros (?) "Hinv". iMod (inv_access with "Hinv") as "[>HP Hclose]"; auto.
     iIntros "!> {$HP} HP". iApply "Hclose"; auto.
   Qed.
 

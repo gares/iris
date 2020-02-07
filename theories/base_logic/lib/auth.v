@@ -132,7 +132,7 @@ Section auth.
   Lemma auth_empty γ : (|==> auth_own γ ε)%I.
   Proof. by rewrite /auth_own -own_unit. Qed.
 
-  Lemma auth_acc E γ a :
+  Lemma auth_inv_acc E γ a :
     ▷ auth_inv γ f φ ∗ auth_own γ a ={E}=∗ ∃ t,
       ⌜a ≼ f t⌝ ∗ ▷ φ t ∗ ∀ u b,
       ⌜(f t, a) ~l~> (f u, b)⌝ ∗ ▷ φ u ={E}=∗ ▷ auth_inv γ f φ ∗ auth_own γ b.
@@ -147,7 +147,7 @@ Section auth.
     iModIntro. iFrame. iExists u. iFrame.
   Qed.
 
-  Lemma auth_open E N γ a :
+  Lemma auth_access E N γ a :
     ↑N ⊆ E →
     auth_ctx γ N f φ ∗ auth_own γ a ={E,E∖↑N}=∗ ∃ t,
       ⌜a ≼ f t⌝ ∗ ▷ φ t ∗ ∀ u b,
@@ -155,15 +155,15 @@ Section auth.
   Proof using Type*.
     iIntros (?) "[#? Hγf]". rewrite /auth_ctx. iInv N as "Hinv" "Hclose".
     (* The following is essentially a very trivial composition of the accessors
-       [auth_acc] and [inv_open] -- but since we don't have any good support
+       [auth_inv_acc] and [inv_access] -- but since we don't have any good support
        for that currently, this gets more tedious than it should, with us having
        to unpack and repack various proofs.
        TODO: Make this mostly automatic, by supporting "opening accessors
        around accessors". *)
-    iMod (auth_acc with "[$Hinv $Hγf]") as (t) "(?&?&HclAuth)".
+    iMod (auth_inv_acc with "[$Hinv $Hγf]") as (t) "(?&?&HclAuth)".
     iModIntro. iExists t. iFrame. iIntros (u b) "H".
     iMod ("HclAuth" $! u b with "H") as "(Hinv & ?)". by iMod ("Hclose" with "Hinv").
   Qed.
 End auth.
 
-Arguments auth_open {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.
+Arguments auth_access {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.

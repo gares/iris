@@ -112,7 +112,7 @@ Lemma wp_inv_open `{!irisG Λ Σ} N E P e Φ :
   inv N P ∗ (▷ P -∗ WP e @ E ∖ ↑N {{ v, ▷ P ∗ Φ v }}) ⊢ WP e @ E {{ Φ }}.
 Proof.
   iIntros (??) "[#Hinv Hwp]".
-  iMod (inv_open E N P with "Hinv") as "[HP Hclose]"=>//.
+  iMod (inv_access E N P with "Hinv") as "[HP Hclose]"=>//.
   iApply wp_wand_r; iSplitL "HP Hwp"; [by iApply "Hwp"|].
   iIntros (v) "[HP $]". by iApply "Hclose".
 Qed.
