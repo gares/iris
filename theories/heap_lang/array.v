@@ -139,10 +139,25 @@ Proof.
   iDestruct ("Hl2" $! v) as "Hl2". rewrite list_insert_id; last done.
   iApply "Hl2". iApply "Hl1".
 Qed.
+Lemma twp_load_offset s E l off vs v :
+  vs !! off = Some v →
+  [[{ l ↦∗ vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗ vs }]].
+Proof.
+  iIntros (Hlookup Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_load with "Hl1"). iIntros "Hl1". iApply "HΦ".
+  iDestruct ("Hl2" $! v) as "Hl2". rewrite list_insert_id; last done.
+  iApply "Hl2". iApply "Hl1".
+Qed.
+
 
 Lemma wp_load_offset_vec s E l sz (off : fin sz) (vs : vec val sz) :
   {{{ ▷ l ↦∗ vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗ vs }}}.
 Proof. apply wp_load_offset. by apply vlookup_lookup. Qed.
+Lemma twp_load_offset_vec s E l sz (off : fin sz) (vs : vec val sz) :
+  [[{ l ↦∗ vs }]] ! #(l +ₗ off) @ s; E [[{ RET vs !!! off; l ↦∗ vs }]].
+Proof. apply twp_load_offset. by apply vlookup_lookup. Qed.
+
 
 Lemma wp_store_offset s E l off vs v :
   is_Some (vs !! off) →
@@ -153,11 +168,26 @@ Proof.
   iApply (wp_store with "Hl1"). iNext. iIntros "Hl1".
   iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
+Lemma twp_store_offset s E l off vs v :
+  is_Some (vs !! off) →
+  [[{ l ↦∗ vs }]] #(l +ₗ off) <- v @ s; E [[{ RET #(); l ↦∗ <[off:=v]> vs }]].
+Proof.
+  iIntros ([w Hlookup] Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_store with "Hl1"). iIntros "Hl1".
+  iApply "HΦ". iApply "Hl2". iApply "Hl1".
+Qed.
 
 Lemma wp_store_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v :
   {{{ ▷ l ↦∗ vs }}} #(l +ₗ off) <- v @ s; E {{{ RET #(); l ↦∗ vinsert off v vs }}}.
 Proof.
   setoid_rewrite vec_to_list_insert. apply wp_store_offset.
+  eexists. by apply vlookup_lookup.
+Qed.
+Lemma twp_store_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v :
+  [[{ l ↦∗ vs }]] #(l +ₗ off) <- v @ s; E [[{ RET #(); l ↦∗ vinsert off v vs }]].
+Proof.
+  setoid_rewrite vec_to_list_insert. apply twp_store_offset.
   eexists. by apply vlookup_lookup.
 Qed.
 
@@ -174,6 +204,19 @@ Proof.
   iApply (wp_cmpxchg_suc with "Hl1"); [done..|].
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
+Lemma twp_cmpxchg_suc_offset s E l off vs v' v1 v2 :
+  vs !! off = Some v' →
+  v' = v1 →
+  vals_compare_safe v' v1 →
+  [[{ l ↦∗ vs }]]
+    CmpXchg #(l +ₗ off) v1 v2 @ s; E
+  [[{ RET (v', #true); l ↦∗ <[off:=v2]> vs }]].
+Proof.
+  iIntros (Hlookup ?? Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_cmpxchg_suc with "Hl1"); [done..|].
+  iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
+Qed.
 
 Lemma wp_cmpxchg_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off = v1 →
@@ -183,6 +226,16 @@ Lemma wp_cmpxchg_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 
   {{{ RET (vs !!! off, #true); l ↦∗ vinsert off v2 vs }}}.
 Proof.
   intros. setoid_rewrite vec_to_list_insert. eapply wp_cmpxchg_suc_offset=> //.
+  by apply vlookup_lookup.
+Qed.
+Lemma twp_cmpxchg_suc_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
+  vs !!! off = v1 →
+  vals_compare_safe (vs !!! off) v1 →
+  [[{ l ↦∗ vs }]]
+    CmpXchg #(l +ₗ off) v1 v2 @ s; E
+  [[{ RET (vs !!! off, #true); l ↦∗ vinsert off v2 vs }]].
+Proof.
+  intros. setoid_rewrite vec_to_list_insert. eapply twp_cmpxchg_suc_offset=> //.
   by apply vlookup_lookup.
 Qed.
 
@@ -201,6 +254,21 @@ Proof.
   iIntros "!> Hl1". iApply "HΦ". iDestruct ("Hl2" $! v0) as "Hl2".
   rewrite list_insert_id; last done. iApply "Hl2". iApply "Hl1".
 Qed.
+Lemma twp_cmpxchg_fail_offset s E l off vs v0 v1 v2 :
+  vs !! off = Some v0 →
+  v0 ≠ v1 →
+  vals_compare_safe v0 v1 →
+  [[{ l ↦∗ vs }]]
+    CmpXchg #(l +ₗ off) v1 v2 @ s; E
+  [[{ RET (v0, #false); l ↦∗ vs }]].
+Proof.
+  iIntros (Hlookup HNEq Hcmp Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_cmpxchg_fail with "Hl1"); first done.
+  { destruct Hcmp; by [ left | right ]. }
+  iIntros "Hl1". iApply "HΦ". iDestruct ("Hl2" $! v0) as "Hl2".
+  rewrite list_insert_id; last done. iApply "Hl2". iApply "Hl1".
+Qed.
 
 Lemma wp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off ≠ v1 →
@@ -209,6 +277,13 @@ Lemma wp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
   {{{ RET (vs !!! off, #false); l ↦∗ vs }}}.
 Proof. intros. eapply wp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
+Lemma twp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
+  vs !!! off ≠ v1 →
+  vals_compare_safe (vs !!! off) v1 →
+  [[{ l ↦∗ vs }]]
+    CmpXchg #(l +ₗ off) v1 v2 @ s; E
+  [[{ RET (vs !!! off, #false); l ↦∗ vs }]].
+Proof. intros. eapply twp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
 
 Lemma wp_faa_offset s E l off vs (i1 i2 : Z) :
   vs !! off = Some #i1 →
@@ -220,6 +295,16 @@ Proof.
   iApply (wp_faa with "Hl1").
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
+Lemma twp_faa_offset s E l off vs (i1 i2 : Z) :
+  vs !! off = Some #i1 →
+  [[{ l ↦∗ vs }]] FAA #(l +ₗ off) #i2 @ s; E
+  [[{ RET LitV (LitInt i1); l ↦∗ <[off:=#(i1 + i2)]> vs }]].
+Proof.
+  iIntros (Hlookup Φ) "Hl HΦ".
+  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iApply (twp_faa with "Hl1").
+  iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
+Qed.
 
 Lemma wp_faa_offset_vec s E l sz (off : fin sz) (vs : vec val sz) (i1 i2 : Z) :
   vs !!! off = #i1 →
@@ -227,6 +312,14 @@ Lemma wp_faa_offset_vec s E l sz (off : fin sz) (vs : vec val sz) (i1 i2 : Z) :
   {{{ RET LitV (LitInt i1); l ↦∗ vinsert off #(i1 + i2) vs }}}.
 Proof.
   intros. setoid_rewrite vec_to_list_insert. apply wp_faa_offset=> //.
+  by apply vlookup_lookup.
+Qed.
+Lemma twp_faa_offset_vec s E l sz (off : fin sz) (vs : vec val sz) (i1 i2 : Z) :
+  vs !!! off = #i1 →
+  [[{ l ↦∗ vs }]] FAA #(l +ₗ off) #i2 @ s; E
+  [[{ RET LitV (LitInt i1); l ↦∗ vinsert off #(i1 + i2) vs }]].
+Proof.
+  intros. setoid_rewrite vec_to_list_insert. apply twp_faa_offset=> //.
   by apply vlookup_lookup.
 Qed.
 
