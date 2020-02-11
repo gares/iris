@@ -77,8 +77,8 @@ Lemma twp_unfold s E e Φ : WP e @ s; E [{ Φ }] ⊣⊢ twp_pre s (twp s) E e Φ
 Proof. by rewrite twp_eq /twp_def least_fixpoint_unfold. Qed.
 Lemma twp_ind s Ψ :
   (∀ n E e, Proper (pointwise_relation _ (dist n) ==> dist n) (Ψ E e)) →
-  (□ (∀ e E Φ, twp_pre s (λ E e Φ, Ψ E e Φ ∧ WP e @ s; E [{ Φ }]) E e Φ -∗ Ψ E e Φ) →
-  ∀ e E Φ, WP e @ s; E [{ Φ }] -∗ Ψ E e Φ)%I.
+  □ (∀ e E Φ, twp_pre s (λ E e Φ, Ψ E e Φ ∧ WP e @ s; E [{ Φ }]) E e Φ -∗ Ψ E e Φ) -∗
+  ∀ e E Φ, WP e @ s; E [{ Φ }] -∗ Ψ E e Φ.
 Proof.
   iIntros (HΨ). iIntros "#IH" (e E Φ) "H". rewrite twp_eq.
   set (Ψ' := curry3 Ψ :
