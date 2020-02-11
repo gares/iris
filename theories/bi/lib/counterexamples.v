@@ -308,7 +308,7 @@ Module linear2. Section linear2.
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
   Hypothesis cinv_alloc : ∀ E,
     fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
-  Hypothesis cinv_access : ∀ P γ,
+  Hypothesis cinv_acc : ∀ P γ,
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
 
   (** Some general lemmas and proof mode compatibility. *)
@@ -335,7 +335,7 @@ Module linear2. Section linear2.
     iIntros "HP".
     iMod cinv_alloc as (γ) "Hmkinv".
     iMod ("Hmkinv" $! True%I with "[//]") as "[Hinv Htok]".
-    iMod (cinv_access with "Hinv Htok") as "(Htrue & Htok & Hclose)".
+    iMod (cinv_acc with "Hinv Htok") as "(Htrue & Htok & Hclose)".
     iApply "Hclose". done.
   Qed.
 End linear2. End linear2.

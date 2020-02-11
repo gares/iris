@@ -91,7 +91,7 @@ Section proofs.
     iNext. iLeft. by iFrame.
   Qed.
 
-  Lemma na_inv_access p E F N P :
+  Lemma na_inv_acc p E F N P :
     ↑N ⊆ E → ↑N ⊆ F →
     na_inv p N P -∗ na_own p F ={E}=∗ ▷ P ∗ na_own p (F∖↑N) ∗
                        (▷ P ∗ na_own p (F∖↑N) ={E}=∗ na_own p F).
@@ -121,6 +121,6 @@ Section proofs.
   Proof.
     rewrite /IntoAcc /accessor. iIntros ((?&?)) "#Hinv Hown".
     rewrite exist_unit -assoc /=.
-    iApply (na_inv_access with "Hinv"); done.
+    iApply (na_inv_acc with "Hinv"); done.
   Qed.
 End proofs.

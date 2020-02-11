@@ -147,7 +147,7 @@ Section auth.
     iModIntro. iFrame. iExists u. iFrame.
   Qed.
 
-  Lemma auth_access E N γ a :
+  Lemma auth_acc E N γ a :
     ↑N ⊆ E →
     auth_ctx γ N f φ ∗ auth_own γ a ={E,E∖↑N}=∗ ∃ t,
       ⌜a ≼ f t⌝ ∗ ▷ φ t ∗ ∀ u b,
@@ -155,7 +155,7 @@ Section auth.
   Proof using Type*.
     iIntros (?) "[#? Hγf]". rewrite /auth_ctx. iInv N as "Hinv" "Hclose".
     (* The following is essentially a very trivial composition of the accessors
-       [auth_inv_acc] and [inv_access] -- but since we don't have any good support
+       [auth_inv_acc] and [inv_acc] -- but since we don't have any good support
        for that currently, this gets more tedious than it should, with us having
        to unpack and repack various proofs.
        TODO: Make this mostly automatic, by supporting "opening accessors
@@ -166,4 +166,4 @@ Section auth.
   Qed.
 End auth.
 
-Arguments auth_access {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.
+Arguments auth_acc {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.

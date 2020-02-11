@@ -109,13 +109,13 @@ Section proofs.
   Qed.
 
   (*** Accessors *)
-  Lemma cinv_access_strong E N γ p P :
+  Lemma cinv_acc_strong E N γ p P :
     ↑N ⊆ E →
     cinv N γ P -∗ (cinv_own γ p ={E,E∖↑N}=∗
     ▷ P ∗ cinv_own γ p ∗ (∀ E' : coPset, ▷ P ∨ cinv_own γ 1 ={E',↑N ∪ E'}=∗ True)).
   Proof.
     iIntros (?) "Hinv Hown".
-    iPoseProof (inv_access (↑ N) N with "Hinv") as "H"; first done.
+    iPoseProof (inv_acc (↑ N) N with "Hinv") as "H"; first done.
     rewrite difference_diag_L.
     iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
     rewrite left_id_L -union_difference_L //. iMod "H" as "[[$ | >Hown'] H]".
@@ -126,12 +126,12 @@ Section proofs.
     - iDestruct (cinv_own_1_l with "Hown' Hown") as %[].
   Qed.
 
-  Lemma cinv_access E N γ p P :
+  Lemma cinv_acc E N γ p P :
     ↑N ⊆ E →
     cinv N γ P -∗ cinv_own γ p ={E,E∖↑N}=∗ ▷ P ∗ cinv_own γ p ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     iIntros (?) "#Hinv Hγ".
-    iMod (cinv_access_strong with "Hinv Hγ") as "($ & $ & H)"; first done.
+    iMod (cinv_acc_strong with "Hinv Hγ") as "($ & $ & H)"; first done.
     iIntros "!> HP".
     rewrite {2}(union_difference_L (↑N) E)=> //.
     iApply "H". by iLeft.
@@ -141,7 +141,7 @@ Section proofs.
   Lemma cinv_cancel E N γ P : ↑N ⊆ E → cinv N γ P -∗ cinv_own γ 1 ={E}=∗ ▷ P.
   Proof.
     iIntros (?) "#Hinv Hγ".
-    iMod (cinv_access_strong with "Hinv Hγ") as "($ & Hγ & H)"; first done.
+    iMod (cinv_acc_strong with "Hinv Hγ") as "($ & Hγ & H)"; first done.
     rewrite {2}(union_difference_L (↑N) E)=> //.
     iApply "H". by iRight.
   Qed.
@@ -155,7 +155,7 @@ Section proofs.
   Proof.
     rewrite /IntoAcc /accessor. iIntros (?) "#Hinv Hown".
     rewrite exist_unit -assoc.
-    iApply (cinv_access with "Hinv"); done.
+    iApply (cinv_acc with "Hinv"); done.
   Qed.
 End proofs.
 

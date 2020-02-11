@@ -27,7 +27,7 @@ Section inv.
   Definition own_inv (N : namespace) (P : iProp Σ) : iProp Σ :=
     (∃ i, ⌜i ∈ (↑N:coPset)⌝ ∧ ownI i P)%I.
 
-  Lemma own_inv_access E N P :
+  Lemma own_inv_acc E N P :
     ↑N ⊆ E → own_inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     rewrite uPred_fupd_eq /uPred_fupd_def. iDestruct 1 as (i) "[Hi #HiP]".
@@ -81,7 +81,7 @@ Section inv.
   Lemma own_inv_to_inv M P: own_inv M P  -∗ inv M P.
   Proof.
     iIntros "#I". rewrite inv_eq. iIntros (E H).
-    iPoseProof (own_inv_access with "I") as "H"; eauto.
+    iPoseProof (own_inv_acc with "I") as "H"; eauto.
   Qed.
 
   (** ** Public API of invariants *)
@@ -97,7 +97,7 @@ Section inv.
   Global Instance inv_persistent N P : Persistent (inv N P).
   Proof. rewrite inv_eq. apply _. Qed.
 
-  Lemma inv_acc N P Q:
+  Lemma inv_alter N P Q:
     inv N P -∗ ▷ □ (P -∗ Q ∗ (Q -∗ P)) -∗ inv N Q.
   Proof.
     rewrite inv_eq. iIntros "#HI #Acc !>" (E H).
@@ -108,7 +108,7 @@ Section inv.
 
   Lemma inv_iff N P Q : ▷ □ (P ↔ Q) -∗ inv N P -∗ inv N Q.
   Proof.
-    iIntros "#HPQ #HI". iApply (inv_acc with "HI").
+    iIntros "#HPQ #HI". iApply (inv_alter with "HI").
     iIntros "!> !# HP". iSplitL "HP".
     - by iApply "HPQ".
     - iIntros "HQ". by iApply "HPQ".
@@ -127,7 +127,7 @@ Section inv.
     iApply own_inv_to_inv. done.
   Qed.
 
-  Lemma inv_access E N P :
+  Lemma inv_acc E N P :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ ▷ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     rewrite inv_eq /inv_def; iIntros (?) "#HI". by iApply "HI".
@@ -146,11 +146,11 @@ Section inv.
   Qed.
 
   (** ** Derived properties *)
-  Lemma inv_access_strong E N P :
+  Lemma inv_acc_strong E N P :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ ▷ P ∗ ∀ E', ▷ P ={E',↑N ∪ E'}=∗ True.
   Proof.
     iIntros (?) "Hinv".
-    iPoseProof (inv_access (↑ N) N with "Hinv") as "H"; first done.
+    iPoseProof (inv_acc (↑ N) N with "Hinv") as "H"; first done.
     rewrite difference_diag_L.
     iPoseProof (fupd_mask_frame_r _ _ (E ∖ ↑ N) with "H") as "H"; first set_solver.
     rewrite left_id_L -union_difference_L //. iMod "H" as "[$ H]"; iModIntro.
@@ -159,16 +159,16 @@ Section inv.
     by rewrite left_id_L.
   Qed.
 
-  Lemma inv_access_timeless E N P `{!Timeless P} :
+  Lemma inv_acc_timeless E N P `{!Timeless P} :
     ↑N ⊆ E → inv N P ={E,E∖↑N}=∗ P ∗ (P ={E∖↑N,E}=∗ True).
   Proof.
-    iIntros (?) "Hinv". iMod (inv_access with "Hinv") as "[>HP Hclose]"; auto.
+    iIntros (?) "Hinv". iMod (inv_acc with "Hinv") as "[>HP Hclose]"; auto.
     iIntros "!> {$HP} HP". iApply "Hclose"; auto.
   Qed.
 
   Lemma inv_sep_l N P Q : inv N (P ∗ Q) -∗ inv N P.
   Proof.
-    iIntros "#HI". iApply inv_acc; eauto.
+    iIntros "#HI". iApply inv_alter; eauto.
     iIntros "!> !# [$ $] $".
   Qed.
 
