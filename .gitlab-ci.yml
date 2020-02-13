@@ -18,7 +18,7 @@ variables:
     paths:
     - opamroot/
   only:
-  - master@iris/iris
+  - /^master/@iris/iris
   - /^ci/@iris/iris
   except:
   - triggers
