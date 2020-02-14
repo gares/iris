@@ -63,6 +63,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   To make this work we also had to rename `inv_acc` -> `inv_alter`.
   (Most developments should be unaffected as the typical way to invoke these
   lemmas is through `iInv`, and that does not change.)
+* Added a construction `bi_rtc` to create reflexive transitive closures of
+  PROP-level binary relations.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

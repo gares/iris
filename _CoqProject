@@ -63,6 +63,7 @@ theories/bi/lib/fractional.v
 theories/bi/lib/laterable.v
 theories/bi/lib/atomic.v
 theories/bi/lib/core.v
+theories/bi/lib/relations.v
 theories/base_logic/upred.v
 theories/base_logic/bi.v
 theories/base_logic/derived.v
