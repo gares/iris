@@ -87,7 +87,7 @@ Module inv. Section inv.
   Arguments inv _ _%I.
   Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
   Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
-  Hypothesis inv_open :
+  Hypothesis inv_fupd :
     ∀ i P Q R, (P ∗ Q ⊢ fupd M0 (P ∗ R)) → (inv i P ∗ Q ⊢ fupd M1 R).
 
   (* We have tokens for a little "two-state STS": [start] -> [finish].
@@ -113,9 +113,9 @@ Module inv. Section inv.
   Hypothesis consistency : ¬ (fupd M1 False).
 
   (** Some general lemmas and proof mode compatibility. *)
-  Lemma inv_open' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
+  Lemma inv_fupd' i P R : inv i P ∗ (P -∗ fupd M0 (P ∗ fupd M1 R)) ⊢ fupd M1 R.
   Proof.
-    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_open; last first.
+    iIntros "(#HiP & HP)". iApply fupd_fupd. iApply inv_fupd; last first.
     { iSplit; first done. iExact "HP". }
     iIntros "(HP & HPw)". by iApply "HPw".
   Qed.
@@ -167,7 +167,7 @@ Module inv. Section inv.
   Lemma saved_cast γ P Q : saved γ P ∗ saved γ Q ∗ □ P ⊢ fupd M1 (□ Q).
   Proof.
     iIntros "(#HsP & #HsQ & #HP)". iDestruct "HsP" as (i) "HiP".
-    iApply (inv_open' i). iSplit; first done.
+    iApply (inv_fupd' i). iSplit; first done.
     iIntros "HaP". iAssert (fupd M0 (finished γ)) with "[HaP]" as "> Hf".
     { iDestruct "HaP" as "[Hs | [Hf _]]".
       - by iApply start_finish.
@@ -176,7 +176,7 @@ Module inv. Section inv.
     iApply fupd_intro. iSplitL "Hf'"; first by eauto.
     (* Step 2: Open the Q-invariant. *)
     iClear (i) "HiP ". iDestruct "HsQ" as (i) "HiQ".
-    iApply (inv_open' i). iSplit; first done.
+    iApply (inv_fupd' i). iSplit; first done.
     iIntros "[HaQ | [_ #HQ]]".
     { iExFalso. iApply finished_not_start. by iFrame. }
     iApply fupd_intro. iSplitL "Hf".
@@ -308,7 +308,7 @@ Module linear2. Section linear2.
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
   Hypothesis cinv_alloc : ∀ E,
     fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ))%I.
-  Hypothesis cinv_access : ∀ P γ,
+  Hypothesis cinv_acc : ∀ P γ,
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
 
   (** Some general lemmas and proof mode compatibility. *)
@@ -335,7 +335,7 @@ Module linear2. Section linear2.
     iIntros "HP".
     iMod cinv_alloc as (γ) "Hmkinv".
     iMod ("Hmkinv" $! True%I with "[//]") as "[Hinv Htok]".
-    iMod (cinv_access with "Hinv Htok") as "(Htrue & Htok & Hclose)".
+    iMod (cinv_acc with "Hinv Htok") as "(Htrue & Htok & Hclose)".
     iApply "Hclose". done.
   Qed.
 End linear2. End linear2.

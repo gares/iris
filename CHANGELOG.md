@@ -54,6 +54,15 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   backwards incompatibility. This can usually be fixed by manually clearing some
   hypotheses. A more detailed description of the changes can be found in
   https://gitlab.mpi-sws.org/iris/iris/merge_requests/341.
+* Renamed some accessor-style lemmas to consistently use the suffix `_acc`
+  instead of `_open`:
+  `inv_open` -> `inv_acc`, `inv_open_strong` -> `inv_acc_strong`,
+  `inv_open_timeless` -> `inv_acc_timeless`, `na_inv_open` -> `na_inv_acc`,
+  `cinv_open` -> `cinv_acc`, `cinv_open_strong` -> `cinv_acc_strong`,
+  `auth_open` -> `auth_acc`, `sts_open` -> `sts_acc`.
+  To make this work we also had to rename `inv_acc` -> `inv_alter`.
+  (Most developments should be unaffected as the typical way to invoke these
+  lemmas is through `iInv`, and that does not change.)
 
 ## Iris 3.2.0 (released 2019-08-29)
 

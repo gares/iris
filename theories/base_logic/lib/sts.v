@@ -126,7 +126,7 @@ Section sts.
     rewrite /sts_inv. iNext. iExists s. by iFrame.
   Qed.
 
-  Lemma sts_accS φ E γ S T :
+  Lemma sts_inv_accS φ E γ S T :
     ▷ sts_inv γ φ ∗ sts_ownS γ S T ={E}=∗ ∃ s,
       ⌜s ∈ S⌝ ∗ ▷ φ s ∗ ∀ s' T',
       ⌜sts.steps (s, T) (s', T')⌝ ∗ ▷ φ s' ={E}=∗ ▷ sts_inv γ φ ∗ sts_own γ s' T'.
@@ -144,13 +144,13 @@ Section sts.
     iModIntro. iNext. iExists s'; by iFrame.
   Qed.
 
-  Lemma sts_acc φ E γ s0 T :
+  Lemma sts_inv_acc φ E γ s0 T :
     ▷ sts_inv γ φ ∗ sts_own γ s0 T ={E}=∗ ∃ s,
       ⌜sts.frame_steps T s0 s⌝ ∗ ▷ φ s ∗ ∀ s' T',
       ⌜sts.steps (s, T) (s', T')⌝ ∗ ▷ φ s' ={E}=∗ ▷ sts_inv γ φ ∗ sts_own γ s' T'.
-  Proof. by apply sts_accS. Qed.
+  Proof. by apply sts_inv_accS. Qed.
 
-  Lemma sts_openS φ E N γ S T :
+  Lemma sts_accS φ E N γ S T :
     ↑N ⊆ E →
     sts_ctx γ N φ ∗ sts_ownS γ S T ={E,E∖↑N}=∗ ∃ s,
       ⌜s ∈ S⌝ ∗ ▷ φ s ∗ ∀ s' T',
@@ -158,22 +158,22 @@ Section sts.
   Proof.
     iIntros (?) "[#? Hγf]". rewrite /sts_ctx. iInv N as "Hinv" "Hclose".
     (* The following is essentially a very trivial composition of the accessors
-       [sts_acc] and [inv_open] -- but since we don't have any good support
+       [sts_inv_acc] and [inv_acc] -- but since we don't have any good support
        for that currently, this gets more tedious than it should, with us having
        to unpack and repack various proofs.
        TODO: Make this mostly automatic, by supporting "opening accessors
        around accessors". *)
-    iMod (sts_accS with "[Hinv Hγf]") as (s) "(?&?& HclSts)"; first by iFrame.
+    iMod (sts_inv_accS with "[Hinv Hγf]") as (s) "(?&?& HclSts)"; first by iFrame.
     iModIntro. iExists s. iFrame. iIntros (s' T') "H".
     iMod ("HclSts" $! s' T' with "H") as "(Hinv & ?)". by iMod ("Hclose" with "Hinv").
   Qed.
 
-  Lemma sts_open φ E N γ s0 T :
+  Lemma sts_acc φ E N γ s0 T :
     ↑N ⊆ E →
     sts_ctx γ N φ ∗ sts_own γ s0 T ={E,E∖↑N}=∗ ∃ s,
       ⌜sts.frame_steps T s0 s⌝ ∗ ▷ φ s ∗ ∀ s' T',
       ⌜sts.steps (s, T) (s', T')⌝ ∗ ▷ φ s' ={E∖↑N,E}=∗ sts_own γ s' T'.
-  Proof. by apply sts_openS. Qed.
+  Proof. by apply sts_accS. Qed.
 End sts.
 
 Typeclasses Opaque sts_own sts_ownS sts_inv sts_ctx.
