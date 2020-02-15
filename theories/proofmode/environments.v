@@ -263,7 +263,7 @@ Proof. by eexists. Qed.
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
   envs_entails_aux.(unseal) PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
 Definition envs_entails_eq :
-  @envs_entails = λ {PROP} (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
+  @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
 Proof. by rewrite /envs_entails envs_entails_aux.(seal_eq). Qed.
 Arguments envs_entails {PROP} Δ Q%I : rename.
 Instance: Params (@envs_entails) 1 := {}.
