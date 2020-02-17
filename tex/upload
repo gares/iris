@@ -3,5 +3,5 @@ set -e
 cd "$(dirname "$(readlink -e "$0")")"
 
 rub iris
-scp iris.pdf mpi-contact:plv.mpi-sws.org/iris/appendix-3.2.pdf
+scp iris.pdf mpi-contact:plv.mpi-sws.org/iris/appendix-3.3.pdf
 
