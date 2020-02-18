@@ -301,6 +301,14 @@ Local Tactic Notation "iIntuitionistic" constr(H) :=
      fail "iIntuitionistic:" P "not affine and the goal not absorbing"
     |pm_reduce].
 
+Local Tactic Notation "iSpatial" constr(H) :=
+  eapply tac_spatial with H _ _ _;
+    [pm_reflexivity ||
+     let H := pretty_ident H in
+     fail "iSpatial:" H "not found"
+    |pm_reduce; iSolveTC
+    |pm_reduce].
+
 Tactic Notation "iPure" constr(H) "as" simple_intropattern(pat) :=
   eapply tac_pure with H _ _ _; (* (i:=H1) *)
     [pm_reflexivity ||
@@ -1381,6 +1389,7 @@ Local Ltac iDestructHypGo Hz pat :=
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
   | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat
+  | ISpatial ?pat => iSpatial Hz; iDestructHypGo Hz pat
   | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
   | _ => fail "iDestruct:" pat "invalid"
   end.

@@ -10,6 +10,7 @@ Inductive intro_pat :=
   | IList : list (list intro_pat) → intro_pat
   | IPure : intro_pat
   | IIntuitionistic : intro_pat → intro_pat
+  | ISpatial : intro_pat → intro_pat
   | IModalElim : intro_pat → intro_pat
   | IRewrite : direction → intro_pat
   | IPureIntro : intro_pat
@@ -29,6 +30,7 @@ Inductive stack_item :=
   | StBar : stack_item
   | StAmp : stack_item
   | StIntuitionistic : stack_item
+  | StSpatial : stack_item
   | StModalElim : stack_item.
 Notation stack := (list stack_item).
 
@@ -63,6 +65,7 @@ Fixpoint close_conj_list (k : stack)
      Some (StPat (big_conj ps) :: k)
   | StPat pat :: k => guard (cur = None); close_conj_list k (Some pat) ps
   | StIntuitionistic :: k => p ← cur; close_conj_list k (Some (IIntuitionistic p)) ps
+  | StSpatial :: k => p ← cur; close_conj_list k (Some (ISpatial p)) ps
   | StModalElim :: k => p ← cur; close_conj_list k (Some (IModalElim p)) ps
   | StAmp :: k => p ← cur; close_conj_list k None (p :: ps)
   | _ => None
@@ -83,6 +86,7 @@ Fixpoint parse_go (ts : list token) (k : stack) : option stack :=
   | TParenR :: ts => close_conj_list k None [] ≫= parse_go ts
   | TPure :: ts => parse_go ts (StPat IPure :: k)
   | TIntuitionistic :: ts => parse_go ts (StIntuitionistic :: k)
+  | TMinus :: TIntuitionistic :: ts => parse_go ts (StSpatial :: k)
   | TModal :: ts => parse_go ts (StModalElim :: k)
   | TArrow d :: ts => parse_go ts (StPat (IRewrite d) :: k)
   | TPureIntro :: ts => parse_go ts (StPat IPureIntro :: k)
@@ -113,6 +117,7 @@ Fixpoint close (k : stack) (ps : list intro_pat) : option (list intro_pat) :=
   | [] => Some ps
   | StPat pat :: k => close k (pat :: ps)
   | StIntuitionistic :: k => ''(p,ps) ← maybe2 (::) ps; close k (IIntuitionistic p :: ps)
+  | StSpatial :: k => ''(p,ps) ← maybe2 (::) ps; close k (ISpatial p :: ps)
   | StModalElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IModalElim p :: ps)
   | _ => None
   end.

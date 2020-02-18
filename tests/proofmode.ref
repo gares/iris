@@ -54,6 +54,29 @@
   --------------------------------------□
   <affine> (P ∗ Q)
   
+"test_iDestruct_spatial"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  Q : PROP
+  ============================
+  "HQ" : <affine> Q
+  --------------------------------------∗
+  Q
+  
+"test_iDestruct_spatial_affine"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  Q : PROP
+  Affine0 : Affine Q
+  ============================
+  "HQ" : Q
+  --------------------------------------∗
+  Q
+  
 The command has indeed failed with message:
 Ltac call to "done" failed.
 No applicable tactic.

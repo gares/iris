@@ -90,6 +90,21 @@ Lemma test_iDestruct_intuitionistic_affine_bi `{!BiAffine PROP} P Q `{!Persisten
   Q ∗ (Q -∗ P) -∗ P ∗ Q.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.
 
+Check "test_iDestruct_spatial".
+Lemma test_iDestruct_spatial Q : □ Q -∗ Q.
+Proof. iIntros "#HQ". iDestruct "HQ" as "-#HQ". Show. done. Qed.
+
+Check "test_iDestruct_spatial_affine".
+Lemma test_iDestruct_spatial_affine Q `{!Affine Q} : □ Q -∗ Q.
+Proof.
+  iIntros "#-#HQ".
+  (* Since [Q] is affine, it should not add an <affine> modality *)
+  Show. done.
+Qed.
+
+Lemma test_iDestruct_spatial_noop Q : Q -∗ Q.
+Proof. iIntros "-#HQ". done. Qed.
+
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → (⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P)%I.
 Proof. iIntros (??) "H". auto. Qed.
 

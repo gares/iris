@@ -65,6 +65,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   lemmas is through `iInv`, and that does not change.)
 * Added a construction `bi_rtc` to create reflexive transitive closures of
   PROP-level binary relations.
+* Add new introduction pattern `-# pat` that moves a hypothesis from the
+  intuitionistic context to the spatial context.
 
 ## Iris 3.2.0 (released 2019-08-29)
 

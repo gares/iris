@@ -227,7 +227,16 @@ _introduction patterns_:
 - `[]` : false elimination.
 - `%` : move the hypothesis to the pure Coq context (anonymously).
 - `->` and `<-` : rewrite using a pure Coq equality
-- `# ipat` : move the hypothesis into the intuitionistic context.
+- `# ipat` : move the hypothesis into the intuitionistic context. The tactic
+  will fail if the hypothesis is not intuitionistic. On success, the tactic will
+  strip any number of intuitionistic and persistence modalities. If the
+  hypothesis is already in the intuitionistic context, the tactic will still
+  strip intuitionistic and persistence modalities (it is a no-op if the
+  hypothesis does not contain such modalities).
+- `-# ipat` : move the hypothesis from the intuitionistic context into the
+  spatial context. If the hypothesis is already in the spatial context, the
+  tactic is a no-op. If the hypothesis is not affine, an `<affine>` modality is
+  added to the hypothesis.
 - `> ipat` : eliminate a modality (if the goal permits).
 
 Apart from this, there are the following introduction patterns that can only
