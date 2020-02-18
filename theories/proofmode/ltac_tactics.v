@@ -1341,6 +1341,8 @@ Tactic Notation "iModIntro" uconstr(sel) :=
     |pm_prettify (* reduce redexes created by instantiation *)
      (* subgoal *) ].
 Tactic Notation "iModIntro" := iModIntro _.
+
+(** DEPRECATED *)
 Tactic Notation "iAlways" := iModIntro.
 
 (** * Later *)
