@@ -108,17 +108,13 @@ Separation logic-specific tactics
 - `iFrame (t1 .. tn) "selpat"` : cancel the Coq terms (or Coq hypotheses)
   `t1 ... tn` and Iris hypotheses given by `selpat` in the goal. The constructs
   of the selection pattern have the following meaning:
-
   + `%` : repeatedly frame hypotheses from the Coq context.
   + `#` : repeatedly frame hypotheses from the intuitionistic context.
   + `∗` : frame as much of the spatial context as possible. (N.B: this
           is the unicode symbol `∗`, not the regular asterisk `*`.)
-
   Notice that framing spatial hypotheses makes them disappear, but framing Coq
   or intuitionistic hypotheses does not make them disappear.
-
-  This tactic solves the goal if everything in the conclusion has been
-  framed.
+  This tactic solves the goal if everything in the conclusion has been framed.
 - `iCombine "H1" "H2" as "pat"` : combines `H1 : P1` and `H2 : P2` into
   `H: P1 ∗ P2`, then calls `iDestruct H as pat` on the combined hypothesis.
 - `iAccu` : solves a goal that is an evar by instantiating it with a all
@@ -175,7 +171,6 @@ Rewriting / simplification
 - `iSimpl` / `iSimpl in "selpat"` : performs `simpl` on the proof mode
   goal / hypotheses given by the selection pattern `selpat`. This is a
   shorthand for `iEval (simpl)`.
-
 
 Iris
 ----
