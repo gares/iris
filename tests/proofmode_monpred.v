@@ -1,6 +1,7 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic.lib Require Import invariants.
 Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
+Unset Printing Use Implicit Types. (* FIXME: remove once all supported Coq versions ship with <https://github.com/coq/coq/pull/11261>. *)
 
 Section tests.
   Context {I : biIndex} {PROP : sbi}.
