@@ -47,7 +47,7 @@ Section proofs.
   Proof.
     iIntros "#HPQ". rewrite /na_inv. iDestruct 1 as (i ?) "#Hinv".
     iExists i. iSplit; first done. iApply (inv_iff with "[] Hinv").
-    iNext; iAlways.
+    iIntros "!> !>".
     iSplit; iIntros "[[? Ho]|$]"; iLeft; iFrame "Ho"; by iApply "HPQ".
   Qed.
 

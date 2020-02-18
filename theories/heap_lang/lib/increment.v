@@ -149,7 +149,7 @@ Section increment_client.
     (* FIXME: I am only using persistent stuff, so I should be allowed
        to move this to the persisten context even without the additional □. *)
     iAssert (□ WP incr #l {{ _, True }})%I as "#Aupd".
-    { iAlways. awp_apply incr_spec. clear x.
+    { iIntros "!>". awp_apply incr_spec. clear x.
       iInv nroot as (x) ">H↦". iAaccIntro with "H↦"; first by eauto 10.
       iIntros "H↦ !>". iSplitL "H↦"; first by eauto 10.
       (* The continuation: From after the atomic triple to the postcondition of the WP *)

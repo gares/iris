@@ -251,11 +251,11 @@ Proof.
     iDestruct ("HQQ'" with "HQ") as "HQ'".
     iMod (slice_insert_full with "HQ' Hb") as (γ' ?) "[#Hs' Hb]"; try done.
     iExists γ', _. iIntros "{$∗ $# $%} !>". do 2 iNext. iRewrite "Heq".
-    iAlways. by iSplit; iIntros "[? $]"; iApply "HQQ'".
+    iIntros "!>". by iSplit; iIntros "[? $]"; iApply "HQQ'".
   - iMod (slice_delete_empty with "Hs Hb") as (P') "(Heq & Hb)"; try done.
     iMod (slice_insert_empty with "Hb") as (γ' ?) "[#Hs' Hb]"; try done.
     iExists γ', (Q' ∗ P')%I. iIntros "{$∗ $# $%} !>".  do 2 iNext. iRewrite "Heq".
-    iAlways. by iSplit; iIntros "[? $]"; iApply "HQQ'".
+    iIntros "!>". by iSplit; iIntros "[? $]"; iApply "HQQ'".
 Qed.
 
 Lemma slice_split E q f P Q1 Q2 γ b :
