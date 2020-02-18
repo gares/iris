@@ -15,10 +15,10 @@ Inductive token :=
   | TBraceL : token
   | TBraceR : token
   | TPure : token
-  | TAlways : token
+  | TIntuitionistic : token
   | TModal : token
   | TPureIntro : token
-  | TAlwaysIntro : token
+  | TIntuitionisticIntro : token
   | TModalIntro : token
   | TSimpl : token
   | TDone : token
@@ -54,10 +54,10 @@ Fixpoint tokenize_go (s : string) (k : list token) (kn : state) : list token :=
   | String "{" s => tokenize_go s (TBraceL :: cons_state kn k) SNone
   | String "}" s => tokenize_go s (TBraceR :: cons_state kn k) SNone
   | String "%" s => tokenize_go s (TPure :: cons_state kn k) SNone
-  | String "#" s => tokenize_go s (TAlways :: cons_state kn k) SNone
+  | String "#" s => tokenize_go s (TIntuitionistic :: cons_state kn k) SNone
   | String ">" s => tokenize_go s (TModal :: cons_state kn k) SNone
   | String "!" (String "%" s) => tokenize_go s (TPureIntro :: cons_state kn k) SNone
-  | String "!" (String "#" s) => tokenize_go s (TAlwaysIntro :: cons_state kn k) SNone
+  | String "!" (String "#" s) => tokenize_go s (TIntuitionisticIntro :: cons_state kn k) SNone
   | String "!" (String ">" s) => tokenize_go s (TModalIntro :: cons_state kn k) SNone
   | String "/" (String "/" (String "=" s)) =>
      tokenize_go s (TSimpl :: TDone :: cons_state kn k) SNone

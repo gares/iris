@@ -1375,10 +1375,10 @@ Local Ltac iDestructHypGo Hz pat :=
   | IList [[?pat1; ?pat2]] =>
      let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat1; iDestructHypGo Hy pat2
   | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat1|iDestructHypGo Hz pat2]
-  | IPureElim => iPure Hz as ?
+  | IPure => iPure Hz as ?
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
-  | IAlwaysElim ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat
+  | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat
   | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
   | _ => fail "iDestruct:" pat "invalid"
   end.
@@ -1473,13 +1473,12 @@ Ltac iIntros_go pats startproof :=
     | false => idtac
     end
   (* Optimizations to avoid generating fresh names *)
-  | IPureElim :: ?pats => iIntro (?); iIntros_go pats startproof
-  | IAlwaysElim (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
+  | IPure :: ?pats => iIntro (?); iIntros_go pats startproof
+  | IIntuitionistic (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
   | IDrop :: ?pats => iIntro _; iIntros_go pats startproof
   | IIdent ?H :: ?pats => iIntro H; iIntros_go pats startproof
   (* Introduction patterns that can only occur at the top-level *)
   | IPureIntro :: ?pats => iPureIntro; iIntros_go pats false
-  | IAlwaysIntro :: ?pats => iAlways; iIntros_go pats false
   | IModalIntro :: ?pats => iModIntro; iIntros_go pats false
   | IForall :: ?pats => repeat iIntroForall; iIntros_go pats startproof
   | IAll :: ?pats => repeat (iIntroForall || iIntro); iIntros_go pats startproof
@@ -1489,7 +1488,7 @@ Ltac iIntros_go pats startproof :=
   | IClearFrame ?H :: ?pats => iFrame H; iIntros_go pats false
   | IDone :: ?pats => try done; iIntros_go pats startproof
   (* Introduction + destruct *)
-  | IAlwaysElim ?pat :: ?pats =>
+  | IIntuitionistic ?pat :: ?pats =>
      let H := iFresh in iIntro #H; iDestructHyp H as pat; iIntros_go pats false
   | ?pat :: ?pats =>
      let H := iFresh in iIntro H; iDestructHyp H as pat; iIntros_go pats false
@@ -2092,7 +2091,7 @@ Tactic Notation "iInductionCore" tactic3(tac) "as" constr(IH) :=
        fix_ihs ltac:(fun j =>
          let IH' := eval vm_compute in
            match j with 0%N => IH | _ => IH +:+ pretty j end in
-         iIntros [IAlwaysElim (IIdent IH')];
+         iIntros [IIntuitionistic (IIdent IH')];
          let j := eval vm_compute in (1 + j)%N in
          rev_tac j)
     | _ => rev_tac 0%N

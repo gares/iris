@@ -54,7 +54,7 @@ Fixpoint parse_go (ts : list token) (k : stack) : option (list spec_pat) :=
   | TParenL :: TName s :: ts => parse_go ts (StIdent s :: k)
   | TParenR :: ts => k ← close_ident k []; parse_go ts k
   | TName s :: ts => parse_go ts (StPat (SIdent s []) :: k)
-  | TBracketL :: TAlways :: TFrame :: TBracketR :: ts =>
+  | TBracketL :: TIntuitionistic :: TFrame :: TBracketR :: ts =>
      parse_go ts (StPat (SAutoFrame GIntuitionistic) :: k)
   | TBracketL :: TFrame :: TBracketR :: ts =>
      parse_go ts (StPat (SAutoFrame GSpatial) :: k)
@@ -64,7 +64,7 @@ Fixpoint parse_go (ts : list token) (k : stack) : option (list spec_pat) :=
      parse_go ts (StPat (SPureGoal false) :: k)
   | TBracketL :: TPure :: TDone :: TBracketR :: ts =>
      parse_go ts (StPat (SPureGoal true) :: k)
-  | TBracketL :: TAlways :: ts => parse_goal ts GIntuitionistic false [] [] k
+  | TBracketL :: TIntuitionistic :: ts => parse_goal ts GIntuitionistic false [] [] k
   | TBracketL :: TModal :: ts => parse_goal ts GModal false [] [] k
   | TBracketL :: ts => parse_goal ts GSpatial false [] [] k
   | TForall :: ts => parse_go ts (StPat SForall :: k)
