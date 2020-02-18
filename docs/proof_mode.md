@@ -72,10 +72,8 @@ Introduction of logical connectives
 
 - `iPureIntro` : turn a pure goal into a Coq goal. This tactic works for goals
   of the shape `⌜φ⌝`, `a ≡ b` on discrete OFEs, and `✓ a` on discrete cameras.
-
 - `iLeft` : left introduction of disjunction.
 - `iRight` : right introduction of disjunction.
-
 - `iSplit` : introduction of a conjunction, or separating conjunction provided
   one of the operands is persistent.
 - `iSplitL "H1 ... Hn"` : introduction of a separating conjunction. The
