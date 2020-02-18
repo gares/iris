@@ -276,12 +276,10 @@ _specification patterns_ to express splitting of hypotheses:
 
 - `H` : use the hypothesis `H` (it should match the premise exactly). If `H` is
   spatial, it will be consumed.
-
 - `(H spat1 .. spatn)` : first recursively specialize the hypothesis `H` using
   the specialization patterns `spat1 .. spatn`, and finally use the result of
   the specialization of `H` (it should match the premise exactly). If `H` is
   spatial, it will be consumed.
-
 - `[H1 .. Hn]` and `[H1 .. Hn //]` : generate a goal for the premise with the
   (spatial) hypotheses `H1 ... Hn` and all intuitionistic hypotheses. The
   spatial hypotheses among `H1 ... Hn` will be consumed, and will not be
@@ -291,13 +289,11 @@ _specification patterns_ to express splitting of hypotheses:
 - `[-H1 ... Hn]` and `[-H1 ... Hn //]` : the negated forms of the above
   patterns, where the goal for the premise will have all spatial premises except
   `H1 .. Hn`.
-
 - `[> H1 ... Hn]` and `[> H1 ... Hn //]` : like the above patterns, but these
   patterns can only be used if the goal is a modality `M`, in which case
   the goal for the premise will be wrapped in the modality `M`.
 - `[> -H1 ... Hn]` and `[> -H1 ... Hn //]` : the negated forms of the above
   patterns.
-
 - `[# $H1 .. $Hn]` and `[# $H1 .. $Hn //]` : generate a goal for a persistent
   premise in which all hypotheses are available. This pattern does not consume
   any hypotheses; all hypotheses are available in the goal for the premise, as
@@ -307,7 +303,6 @@ _specification patterns_ to express splitting of hypotheses:
 - `[%]` and `[% //]` : generate a Coq goal for a pure premise. This pattern
   does not consume any hypotheses. The pattern can be terminated with a `//`,
   which causes `done` to be called to close the goal.
-
 - `[$]` : solve the premise by framing. It will first repeatedly frame the
   spatial hypotheses, and then repeatedly frame the intuitionistic hypotheses.
   Spatial hypothesis that are not framed are carried over to the subsequent
