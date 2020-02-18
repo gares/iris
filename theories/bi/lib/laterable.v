@@ -20,14 +20,14 @@ Section instances.
   Global Instance later_laterable P : Laterable (▷ P).
   Proof.
     rewrite /Laterable. iIntros "HP". iExists P. iFrame.
-    iIntros "!# HP !>". done.
+    iIntros "!> HP !>". done.
   Qed.
 
   Global Instance timeless_laterable P :
     Timeless P → Laterable P.
   Proof.
     rewrite /Laterable. iIntros (?) "HP". iExists P%I. iFrame.
-    iSplitR; first by iNext. iIntros "!# >HP !>". done.
+    iSplitR; first by iNext. iIntros "!> >HP !>". done.
   Qed.
 
   (** This lemma is not very useful: It needs a strange assumption about
@@ -40,7 +40,7 @@ Section instances.
   Proof.
     rewrite /Laterable. iIntros (???) "#HP".
     iExists emp%I. iSplitL; first by iNext.
-    iIntros "!# >_". done.
+    iIntros "!> >_". done.
   Qed.
 
   Global Instance sep_laterable P Q :
@@ -50,7 +50,7 @@ Section instances.
     iDestruct (LP with "HP") as (P') "[HP' #HP]".
     iDestruct (LQ with "HQ") as (Q') "[HQ' #HQ]".
     iExists (P' ∗ Q')%I. iSplitL; first by iFrame.
-    iIntros "!# [HP' HQ']". iSplitL "HP'".
+    iIntros "!> [HP' HQ']". iSplitL "HP'".
     - iApply "HP". done.
     - iApply "HQ". done.
   Qed.
@@ -73,14 +73,14 @@ Section instances.
     □ (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
     iIntros "#HQ HQ1". iDestruct "HQ1" as (P) "[HP #HQ1]".
-    iExists P. iFrame. iIntros "!# HP". iApply "HQ". iApply "HQ1". done.
+    iExists P. iFrame. iIntros "!> HP". iApply "HQ". iApply "HQ1". done.
   Qed.
 
   Global Instance make_laterable_laterable Q :
     Laterable (make_laterable Q).
   Proof.
     rewrite /Laterable. iIntros "HQ". iDestruct "HQ" as (P) "[HP #HQ]".
-    iExists P. iFrame. iIntros "!# HP !>". iExists P. by iFrame.
+    iExists P. iFrame. iIntros "!> HP !>". iExists P. by iFrame.
   Qed.
 
   Lemma make_laterable_elim Q :
@@ -95,7 +95,7 @@ Section instances.
   Proof.
     iIntros (?) "#HQ HP".
     iDestruct (laterable with "HP") as (P') "[HP' #HPi]". iExists P'.
-    iFrame. iIntros "!# HP'". iApply "HQ". iApply "HPi". done.
+    iFrame. iIntros "!> HP'". iApply "HQ". iApply "HPi". done.
   Qed.
 
 End instances.

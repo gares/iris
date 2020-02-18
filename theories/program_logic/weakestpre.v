@@ -107,7 +107,7 @@ Proof.
   iMod "H" as "(Hσ & H & Hefs)".
   iMod "Hclose" as "_". iModIntro. iFrame "Hσ". iSplitR "Hefs".
   - iApply ("IH" with "[//] H HΦ").
-  - iApply (big_sepL_impl with "Hefs"); iIntros "!#" (k ef _).
+  - iApply (big_sepL_impl with "Hefs"); iIntros "!>" (k ef _).
     iIntros "H". iApply ("IH" with "[] H"); auto.
 Qed.
 

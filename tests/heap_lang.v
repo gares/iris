@@ -150,7 +150,7 @@ Section tests.
       AllocN #n #0
     {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0}}}%I.
   Proof.
-    iIntros (? ?) "!# _ HΦ".
+    iIntros (? ?) "!> _ HΦ".
     wp_alloc l as "?"; first done.
     by iApply "HΦ".
   Qed.

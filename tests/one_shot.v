@@ -52,7 +52,7 @@ Proof.
   iMod (inv_alloc N _ (one_shot_inv γ l) with "[Hl Hγ]") as "#HN".
   { iNext. iLeft. by iSplitL "Hl". }
   wp_pures. iModIntro. iApply "Hf"; iSplit.
-  - iIntros (n) "!#". wp_lam. wp_pures. wp_bind (CmpXchg _ _ _).
+  - iIntros (n) "!>". wp_lam. wp_pures. wp_bind (CmpXchg _ _ _).
     iInv N as ">[[Hl Hγ]|H]"; last iDestruct "H" as (m) "[Hl Hγ]".
     + iMod (own_update with "Hγ") as "Hγ".
       { by apply cmra_update_exclusive with (y:=Shot n). }
@@ -60,7 +60,7 @@ Proof.
       iNext; iRight; iExists n; by iFrame.
     + wp_cmpxchg_fail. iModIntro. iSplitL; last (wp_pures; by eauto).
       rewrite /one_shot_inv; eauto 10.
-  - iIntros "!# /=". wp_lam. wp_bind (! _)%E.
+  - iIntros "!> /=". wp_lam. wp_bind (! _)%E.
     iInv N as ">Hγ".
     iAssert (∃ v, l ↦ v ∗ ((⌜v = NONEV⌝ ∗ own γ Pending) ∨
        ∃ n : Z, ⌜v = SOMEV #n⌝ ∗ own γ (Shot n)))%I with "[Hγ]" as "Hv".
@@ -74,7 +74,7 @@ Proof.
       + Show. iSplit. iLeft; by iSplitL "Hl". eauto.
       + iSplit. iRight; iExists m; by iSplitL "Hl". eauto. }
     iSplitL "Hinv"; first by eauto.
-    iModIntro. wp_pures. iIntros "!#". wp_lam.
+    iModIntro. wp_pures. iIntros "!>". wp_lam.
     iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']";
       subst; wp_match; [done|].
     wp_bind (! _)%E.
@@ -94,9 +94,9 @@ Lemma ht_one_shot (Φ : val → iProp Σ) :
       {{ True }} Snd ff #() {{ g, {{ True }} g #() {{ _, True }} }}
     }}.
 Proof.
-  iIntros "!# _". iApply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]"; iSplit.
-  - iIntros (n) "!# _". wp_apply "Hf1".
-  - iIntros "!# _". wp_apply (wp_wand with "Hf2"). by iIntros (v) "#? !# _".
+  iIntros "!> _". iApply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]"; iSplit.
+  - iIntros (n) "!> _". wp_apply "Hf1".
+  - iIntros "!> _". wp_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
 Qed.
 End proof.
 

@@ -416,7 +416,7 @@ Proof. iIntros (Q R) "$ _ $". Qed.
 
 Lemma test_iNext_iRewrite P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
 Proof.
-  iIntros "#HPQ HQ !#". iNext. by iRewrite "HPQ" in "HQ".
+  iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ".
 Qed.
 
 Lemma test_iIntros_modalities `(!Absorbing P) :
@@ -432,7 +432,7 @@ Lemma test_iIntros_rewrite P (x1 x2 x3 x4 : nat) :
 Proof. iIntros (?) "(-> & -> & $)"; auto. Qed.
 
 Lemma test_iNext_affine P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
-Proof. iIntros "#HPQ HQ !#". iNext. by iRewrite "HPQ" in "HQ". Qed.
+Proof. iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ". Qed.
 
 Lemma test_iAlways P Q R :
   □ P -∗ <pers> Q → R -∗ <pers> <affine> <affine> P ∗ □ Q.

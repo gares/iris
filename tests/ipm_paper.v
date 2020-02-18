@@ -77,7 +77,7 @@ Section list_reverse.
   Lemma rev_acc_ht hd acc xs ys :
     {{ is_list hd xs ∗ is_list acc ys }} rev hd acc {{ w, is_list w (reverse xs ++ ys) }}.
   Proof.
-    iIntros "!# [Hxs Hys]".
+    iIntros "!> [Hxs Hys]".
     iLöb as "IH" forall (hd acc xs ys). wp_rec; wp_let.
     destruct xs as [|x xs]; iSimplifyEq.
     - (* nil *) by wp_match.
@@ -91,7 +91,7 @@ Section list_reverse.
   Lemma rev_ht hd xs :
     {{ is_list hd xs }} rev hd NONEV {{ w, is_list w (reverse xs) }}.
   Proof.
-    iIntros "!# Hxs". rewrite -(right_id_L [] (++) (reverse xs)).
+    iIntros "!> Hxs". rewrite -(right_id_L [] (++) (reverse xs)).
     iApply (rev_acc_ht hd NONEV with "[Hxs]"); simpl; by iFrame.
   Qed.
 End list_reverse.
@@ -204,7 +204,7 @@ Section counter_proof.
   Lemma newcounter_spec :
     {{ True }} newcounter #() {{ v, ∃ l, ⌜v = #l⌝ ∧ C l 0 }}.
   Proof.
-    iIntros "!# _ /=". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
+    iIntros "!> _ /=". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (Auth 0)) as (γ) "Hγ"; first done.
     rewrite (auth_frag_op 0 0) //; iDestruct "Hγ" as "[Hγ Hγf]".
     set (N:= nroot .@ "counter").
@@ -216,7 +216,7 @@ Section counter_proof.
   Lemma incr_spec l n :
     {{ C l n }} incr #l {{ v, ⌜v = #()⌝ ∧ C l (S n) }}.
   Proof.
-    iIntros "!# Hl /=". iLöb as "IH". wp_rec.
+    iIntros "!> Hl /=". iLöb as "IH". wp_rec.
     iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
     wp_bind (! _)%E. iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c) "[Hl Hγ]".
@@ -241,7 +241,7 @@ Section counter_proof.
   Lemma read_spec l n :
     {{ C l n }} read #l {{ v, ∃ m : nat, ⌜v = #m ∧ n ≤ m⌝ ∧ C l m }}.
   Proof.
-    iIntros "!# Hl /=". iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
+    iIntros "!> Hl /=". iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
     rewrite /read /=. wp_lam. Show. iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c) "[Hl Hγ]". wp_load. Show.
     iDestruct (own_valid γ (Frag n ⋅ Auth c) with "[-]") as % ?%auth_frag_valid.

@@ -45,7 +45,7 @@ Lemma fupd_mono E1 E2 P Q : (P ⊢ Q) → (|={E1,E2}=> P) ⊢ |={E1,E2}=> Q.
 Proof.
   iIntros (HPQ); iDestruct 1 as (R) "[HR Hvs]".
   iExists R; iFrame "HR". iApply (vs_transitive with "[$Hvs]").
-  iApply vs_impl. iIntros "!# HP". by iApply HPQ.
+  iApply vs_impl. iIntros "!> HP". by iApply HPQ.
 Qed.
 
 Lemma fupd_trans E1 E2 E3 P : (|={E1,E2}=> |={E2,E3}=> P) ⊢ |={E1,E3}=> P.

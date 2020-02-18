@@ -109,7 +109,7 @@ Section inv.
   Lemma inv_iff N P Q : ▷ □ (P ↔ Q) -∗ inv N P -∗ inv N Q.
   Proof.
     iIntros "#HPQ #HI". iApply (inv_alter with "HI").
-    iIntros "!> !# HP". iSplitL "HP".
+    iIntros "!> !> HP". iSplitL "HP".
     - by iApply "HPQ".
     - iIntros "HQ". by iApply "HPQ".
   Qed.
@@ -169,7 +169,7 @@ Section inv.
   Lemma inv_sep_l N P Q : inv N (P ∗ Q) -∗ inv N P.
   Proof.
     iIntros "#HI". iApply inv_alter; eauto.
-    iIntros "!> !# [$ $] $".
+    iIntros "!> !> [$ $] $".
   Qed.
 
   Lemma inv_sep_r N P Q : inv N (P ∗ Q) -∗ inv N Q.

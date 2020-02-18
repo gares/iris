@@ -212,7 +212,7 @@ Proof.
   iCombine "Hf" "HP" as "Hf".
   rewrite -big_sepM_sep big_opM_fmap; iApply (big_sepM_fupd _ _ f).
   iApply (@big_sepM_impl with "Hf").
-  iIntros "!#" (γ b' ?) "[(Hγ' & #$ & #$) HΦ]".
+  iIntros "!>" (γ b' ?) "[(Hγ' & #$ & #$) HΦ]".
   iInv N as (b) "[>Hγ _]".
   iMod (box_own_auth_update γ with "[Hγ Hγ']") as "[Hγ $]"; first by iFrame.
   iModIntro. iSplitL; last done. iNext; iExists true. iFrame.
@@ -228,7 +228,7 @@ Proof.
     [∗ map] γ↦b ∈ f, box_own_auth γ (◯E false) ∗  box_own_prop γ (Φ γ) ∗
       inv N (slice_inv γ (Φ γ)))%I with "[> Hf]" as "[HΦ ?]".
   { rewrite -big_sepM_sep -big_sepM_fupd. iApply (@big_sepM_impl with "[$Hf]").
-    iIntros "!#" (γ b ?) "(Hγ' & #HγΦ & #Hinv)".
+    iIntros "!>" (γ b ?) "(Hγ' & #HγΦ & #Hinv)".
     assert (true = b) as <- by eauto.
     iInv N as (b) "[>Hγ HΦ]".
     iDestruct (box_own_auth_agree γ b true with "[-]") as %->; first by iFrame.

@@ -40,45 +40,45 @@ Global Instance vs_mono' E1 E2 : Proper (flip (⊢) ==> (⊢) ==> (⊢)) (vs E1 
 Proof. solve_proper. Qed.
 
 Lemma vs_false_elim E1 E2 P : False ={E1,E2}=> P.
-Proof. iIntros "!# []". Qed.
+Proof. iIntros "!> []". Qed.
 Lemma vs_timeless E P : Timeless P → ▷ P ={E}=> P.
-Proof. by iIntros (?) "!# > ?". Qed.
+Proof. by iIntros (?) "!> > ?". Qed.
 
 Lemma vs_transitive E1 E2 E3 P Q R :
   (P ={E1,E2}=> Q) ∧ (Q ={E2,E3}=> R) ⊢ P ={E1,E3}=> R.
 Proof.
-  iIntros "#[HvsP HvsQ] !# HP".
+  iIntros "#[HvsP HvsQ] !> HP".
   iMod ("HvsP" with "HP") as "HQ". by iApply "HvsQ".
 Qed.
 
 Lemma vs_reflexive E P : P ={E}=> P.
-Proof. by iIntros "!# HP". Qed.
+Proof. by iIntros "!> HP". Qed.
 
 Lemma vs_impl E P Q : □ (P → Q) ⊢ P ={E}=> Q.
-Proof. iIntros "#HPQ !# HP". by iApply "HPQ". Qed.
+Proof. iIntros "#HPQ !> HP". by iApply "HPQ". Qed.
 
 Lemma vs_frame_l E1 E2 P Q R : (P ={E1,E2}=> Q) ⊢ R ∗ P ={E1,E2}=> R ∗ Q.
-Proof. iIntros "#Hvs !# [$ HP]". by iApply "Hvs". Qed.
+Proof. iIntros "#Hvs !> [$ HP]". by iApply "Hvs". Qed.
 
 Lemma vs_frame_r E1 E2 P Q R : (P ={E1,E2}=> Q) ⊢ P ∗ R ={E1,E2}=> Q ∗ R.
-Proof. iIntros "#Hvs !# [HP $]". by iApply "Hvs". Qed.
+Proof. iIntros "#Hvs !> [HP $]". by iApply "Hvs". Qed.
 
 Lemma vs_mask_frame_r E1 E2 Ef P Q :
   E1 ## Ef → (P ={E1,E2}=> Q) ⊢ P ={E1 ∪ Ef,E2 ∪ Ef}=> Q.
 Proof.
-  iIntros (?) "#Hvs !# HP". iApply fupd_mask_frame_r; auto. by iApply "Hvs".
+  iIntros (?) "#Hvs !> HP". iApply fupd_mask_frame_r; auto. by iApply "Hvs".
 Qed.
 
 Lemma vs_inv N E P Q R :
   ↑N ⊆ E → inv N R ∗ (▷ R ∗ P ={E∖↑N}=> ▷ R ∗ Q) ⊢ P ={E}=> Q.
 Proof.
-  iIntros (?) "#[? Hvs] !# HP". iInv N as "HR" "Hclose".
+  iIntros (?) "#[? Hvs] !> HP". iInv N as "HR" "Hclose".
   iMod ("Hvs" with "[HR HP]") as "[? $]"; first by iFrame.
   by iApply "Hclose".
 Qed.
 
 Lemma vs_alloc N P : ▷ P ={↑N}=> inv N P.
-Proof. iIntros "!# HP". by iApply inv_alloc. Qed.
+Proof. iIntros "!> HP". by iApply inv_alloc. Qed.
 
 Lemma wand_fupd_alt E1 E2 P Q : (P ={E1,E2}=∗ Q) ⊣⊢ ∃ R, R ∗ (P ∗ R ={E1,E2}=> Q).
 Proof.

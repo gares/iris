@@ -43,13 +43,13 @@ Proof.
   assert (NonExpansive Ψ).
   { by intros n ?? ->%(discrete_iff _ _)%leibniz_equiv. }
   iApply (least_fixpoint_strong_ind _ Ψ with "[] H").
-  iIntros "!#" (t') "H". by iApply "IH".
+  iIntros "!>" (t') "H". by iApply "IH".
 Qed.
 
 Instance twptp_Permutation : Proper ((≡ₚ) ==> (⊢)) twptp.
 Proof.
   iIntros (t1 t1' Ht) "Ht1". iRevert (t1' Ht); iRevert (t1) "Ht1".
-  iApply twptp_ind; iIntros "!#" (t1) "IH"; iIntros (t1' Ht).
+  iApply twptp_ind; iIntros "!>" (t1) "IH"; iIntros (t1' Ht).
   rewrite twptp_unfold /twptp_pre. iIntros (t2 σ1 κ κs σ2 n Hstep) "Hσ".
   destruct (step_Permutation t1' t1 t2 κ σ1 σ2) as (t2'&?&?); try done.
   iMod ("IH" $! t2' with "[% //] Hσ") as (n2) "($ & Hσ & IH & _)".
@@ -59,9 +59,9 @@ Qed.
 Lemma twptp_app t1 t2 : twptp t1 -∗ twptp t2 -∗ twptp (t1 ++ t2).
 Proof.
   iIntros "H1". iRevert (t2). iRevert (t1) "H1".
-  iApply twptp_ind; iIntros "!#" (t1) "IH1". iIntros (t2) "H2".
+  iApply twptp_ind; iIntros "!>" (t1) "IH1". iIntros (t2) "H2".
   iRevert (t1) "IH1"; iRevert (t2) "H2".
-  iApply twptp_ind; iIntros "!#" (t2) "IH2". iIntros (t1) "IH1".
+  iApply twptp_ind; iIntros "!>" (t2) "IH2". iIntros (t1) "IH1".
   rewrite twptp_unfold /twptp_pre. iIntros (t1'' σ1 κ κs σ2 n Hstep) "Hσ1".
   destruct Hstep as [e1 σ1' e2 σ2' efs' t1' t2' [=Ht ?] ? Hstep]; simplify_eq/=.
   apply app_eq_inv in Ht as [(t&?&?)|(t&?&?)]; subst.
@@ -74,7 +74,7 @@ Proof.
     + iMod ("IH1" with "[%] Hσ1") as (n2) "($ & Hσ & IH1 & _)"; first by econstructor.
       iAssert (twptp t2) with "[IH2]" as "Ht2".
       { rewrite twptp_unfold. iApply (twptp_pre_mono with "[] IH2").
-        iIntros "!# * [_ ?] //". }
+        iIntros "!> * [_ ?] //". }
       iModIntro. iExists n2. iFrame "Hσ".
       rewrite -assoc_L (comm _ t2) !cons_middle !assoc_L. by iApply "IH1".
   - iMod ("IH2" with "[%] Hσ1") as (n2) "($ & Hσ & IH2 & _)"; first by econstructor.
@@ -85,7 +85,7 @@ Lemma twp_twptp s Φ e : WP e @ s; ⊤ [{ Φ }] -∗ twptp [e].
 Proof.
   iIntros "He". remember (⊤ : coPset) as E eqn:HE.
   iRevert (HE). iRevert (e E Φ) "He". iApply twp_ind.
-  iIntros "!#" (e E Φ); iIntros "IH" (->).
+  iIntros "!>" (e E Φ); iIntros "IH" (->).
   rewrite twptp_unfold /twptp_pre /twp_pre. iIntros (t1' σ1' κ κs σ2' n Hstep) "Hσ1".
   destruct Hstep as [e1 σ1 e2 σ2 efs [|? t1] t2 ?? Hstep];
     simplify_eq/=; try discriminate_list.
@@ -106,7 +106,7 @@ Lemma twptp_total n σ t :
   state_interp σ [] n -∗ twptp t ={⊤}=∗ ▷ ⌜sn erased_step (t, σ)⌝.
 Proof.
   iIntros "Hσ Ht". iRevert (σ n) "Hσ". iRevert (t) "Ht".
-  iApply twptp_ind; iIntros "!#" (t) "IH"; iIntros (σ n) "Hσ".
+  iApply twptp_ind; iIntros "!>" (t) "IH"; iIntros (σ n) "Hσ".
   iApply (pure_mono _ _ (Acc_intro _)). iIntros ([t' σ'] [κ Hstep]).
   rewrite /twptp_pre.
   iMod ("IH" with "[% //] Hσ") as (n' ->) "[Hσ [H _]]".

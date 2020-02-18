@@ -37,7 +37,7 @@ Proof.
   iMod ("Hwp" with "Hstep") as (?) "(Hσ & Hwp & Hfork)".
   iModIntro. iFrame "Hσ". iSplit; first done. iSplitL "Hwp".
   - by iApply "H".
-  - iApply (@big_sepL_impl with "Hfork"); iIntros "!#" (k e _) "Hwp".
+  - iApply (@big_sepL_impl with "Hfork"); iIntros "!>" (k e _) "Hwp".
     by iApply "H".
 Qed.
 
@@ -51,7 +51,7 @@ Local Instance twp_pre_mono' `{!irisG Λ Σ} s : BiMonoPred (twp_pre' s).
 Proof.
   constructor.
   - iIntros (wp1 wp2) "#H"; iIntros ([[E e1] Φ]); iRevert (E e1 Φ).
-    iApply twp_pre_mono. iIntros "!#" (E e Φ). iApply ("H" $! (E,e,Φ)).
+    iApply twp_pre_mono. iIntros "!>" (E e Φ). iApply ("H" $! (E,e,Φ)).
   - intros wp Hwp n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=.
     rewrite /uncurry3 /twp_pre. do 24 (f_equiv || done). by apply pair_ne.
@@ -87,7 +87,7 @@ Proof.
   { intros n [[E1 e1] Φ1] [[E2 e2] Φ2]
       [[?%leibniz_equiv ?%leibniz_equiv] ?]; simplify_eq/=. by apply HΨ. }
   iApply (least_fixpoint_strong_ind _ Ψ' with "[] H").
-  iIntros "!#" ([[??] ?]) "H". by iApply "IH".
+  iIntros "!>" ([[??] ?]) "H". by iApply "IH".
 Qed.
 
 Global Instance twp_ne s E e n :
@@ -112,7 +112,7 @@ Lemma twp_strong_mono s1 s2 E1 E2 e Φ Ψ :
 Proof.
   iIntros (? HE) "H HΦ". iRevert (E2 Ψ HE) "HΦ"; iRevert (e E1 Φ) "H".
   iApply twp_ind; first solve_proper.
-  iIntros "!#" (e E1 Φ) "IH"; iIntros (E2 Ψ HE) "HΦ".
+  iIntros "!>" (e E1 Φ) "IH"; iIntros (E2 Ψ HE) "HΦ".
   rewrite !twp_unfold /twp_pre. destruct (to_val e) as [v|] eqn:?.
   { iApply ("HΦ" with "[> -]"). by iApply (fupd_mask_mono E1 _). }
   iIntros (σ1 κs n) "Hσ". iMod (fupd_intro_mask' E2 E1) as "Hclose"; first done.
@@ -122,7 +122,7 @@ Proof.
   iMod "Hclose" as "_"; iModIntro.
   iFrame "Hσ". iSplit; first done. iSplitR "IHefs".
   - iDestruct "IH" as "[IH _]". iApply ("IH" with "[//] HΦ").
-  - iApply (big_sepL_impl with "IHefs"); iIntros "!#" (k ef _) "[IH _]".
+  - iApply (big_sepL_impl with "IHefs"); iIntros "!>" (k ef _) "[IH _]".
     iApply "IH"; auto.
 Qed.
 
@@ -160,7 +160,7 @@ Proof.
     (∀ v, Φ' v -∗ WP K (of_val v) @ s; E [{ Φ }]) -∗ WP K e @ s; E [{ Φ }]).
   { iIntros (help Φ) "H". iApply (help with "H"); auto. }
   iIntros (Φ') "H". iRevert (e E Φ') "H". iApply twp_ind; first solve_proper.
-  iIntros "!#" (e E1 Φ') "IH". iIntros (Φ) "HΦ".
+  iIntros "!>" (e E1 Φ') "IH". iIntros (Φ) "HΦ".
   rewrite /twp_pre. destruct (to_val e) as [v|] eqn:He.
   { apply of_to_val in He as <-. iApply fupd_twp. by iApply "HΦ". }
   rewrite twp_unfold /twp_pre fill_not_val //.
@@ -180,10 +180,10 @@ Lemma twp_bind_inv K `{!LanguageCtx K} s E e Φ :
 Proof.
   iIntros "H". remember (K e) as e' eqn:He'.
   iRevert (e He'). iRevert (e' E Φ) "H". iApply twp_ind; first solve_proper.
-  iIntros "!#" (e' E1 Φ) "IH". iIntros (e ->).
+  iIntros "!>" (e' E1 Φ) "IH". iIntros (e ->).
   rewrite !twp_unfold {2}/twp_pre. destruct (to_val e) as [v|] eqn:He.
   { iModIntro. apply of_to_val in He as <-. rewrite !twp_unfold.
-    iApply (twp_pre_mono with "[] IH"). by iIntros "!#" (E e Φ') "[_ ?]". }
+    iApply (twp_pre_mono with "[] IH"). by iIntros "!>" (E e Φ') "[_ ?]". }
   rewrite /twp_pre fill_not_val //.
   iIntros (σ1 κs n) "Hσ". iMod ("IH" with "[$]") as "[% IH]". iModIntro; iSplit.
   { destruct s; eauto using reducible_no_obs_fill. }
@@ -204,7 +204,7 @@ Proof.
   iApply step_fupd_intro; [set_solver+|]. iNext.
   iFrame "Hσ". iSplitL "H". by iApply "IH".
   iApply (@big_sepL_impl with "Hfork").
-  iIntros "!#" (k ef _) "H". by iApply "IH".
+  iIntros "!>" (k ef _) "H". by iApply "IH".
 Qed.
 
 (** * Derived rules *)

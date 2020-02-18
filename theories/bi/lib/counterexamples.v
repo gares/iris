@@ -43,7 +43,7 @@ Module savedprop. Section savedprop.
 
   Lemma saved_NA i : saved i (A i) ⊢ ¬ A i.
   Proof.
-    iIntros "#Hs !# #HA". iPoseProof "HA" as "HA'".
+    iIntros "#Hs !> #HA". iPoseProof "HA" as "HA'".
     iDestruct "HA'" as (P) "[#HNP HsP]". iApply "HNP".
     iDestruct (sprop_agree i P (A i) with "[]") as "#[_ HP]".
     { eauto. }
@@ -194,7 +194,7 @@ Module inv. Section inv.
 
   Lemma saved_NA i : saved i (A i) ⊢ ¬A i.
   Proof.
-    iIntros "#Hi !# #HA". iPoseProof "HA" as "HA'".
+    iIntros "#Hi !> #HA". iPoseProof "HA" as "HA'".
     iDestruct "HA'" as (P) "#[HNP Hi']".
     iMod (saved_cast i (A i) P with "[]") as "HP".
     { eauto. }

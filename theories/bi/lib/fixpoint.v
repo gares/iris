@@ -38,15 +38,15 @@ Section least.
   Proof.
     rewrite /bi_least_fixpoint /=. iIntros "HF" (Φ) "#Hincl".
     iApply "Hincl". iApply (bi_mono_pred _ Φ with "[#]"); last done.
-    iIntros "!#" (y) "Hy". iApply ("Hy" with "[# //]").
+    iIntros "!>" (y) "Hy". iApply ("Hy" with "[# //]").
   Qed.
 
   Lemma least_fixpoint_unfold_1 x :
     bi_least_fixpoint F x ⊢ F (bi_least_fixpoint F) x.
   Proof.
     iIntros "HF". iApply ("HF" $! (OfeMor (F (bi_least_fixpoint F))) with "[#]").
-    iIntros "!#" (y) "Hy /=". iApply (bi_mono_pred with "[#]"); last done.
-    iIntros "!#" (z) "?". by iApply least_fixpoint_unfold_2.
+    iIntros "!>" (y) "Hy /=". iApply (bi_mono_pred with "[#]"); last done.
+    iIntros "!>" (z) "?". by iApply least_fixpoint_unfold_2.
   Qed.
 
   Corollary least_fixpoint_unfold x :
@@ -67,9 +67,9 @@ Section least.
   Proof.
     trans (∀ x, bi_least_fixpoint F x -∗ Φ x ∧ bi_least_fixpoint F x)%I.
     { iIntros "#HΦ". iApply (least_fixpoint_ind with "[]"); first solve_proper.
-      iIntros "!#" (y) "H". iSplit; first by iApply "HΦ".
+      iIntros "!>" (y) "H". iSplit; first by iApply "HΦ".
       iApply least_fixpoint_unfold_2. iApply (bi_mono_pred with "[#] H").
-      by iIntros "!# * [_ ?]". }
+      by iIntros "!> * [_ ?]". }
     by setoid_rewrite and_elim_l.
   Qed.
 End least.
@@ -100,7 +100,7 @@ Section greatest.
   Proof.
     iDestruct 1 as (Φ) "[#Hincl HΦ]".
     iApply (bi_mono_pred Φ (bi_greatest_fixpoint F) with "[#]").
-    - iIntros "!#" (y) "Hy". iExists Φ. auto.
+    - iIntros "!>" (y) "Hy". iExists Φ. auto.
     - by iApply "Hincl".
   Qed.
 
@@ -108,8 +108,8 @@ Section greatest.
     F (bi_greatest_fixpoint F) x ⊢ bi_greatest_fixpoint F x.
   Proof.
     iIntros "HF". iExists (OfeMor (F (bi_greatest_fixpoint F))).
-    iSplit; last done. iIntros "!#" (y) "Hy /=". iApply (bi_mono_pred with "[#] Hy").
-    iIntros "!#" (z) "?". by iApply greatest_fixpoint_unfold_1.
+    iSplit; last done. iIntros "!>" (y) "Hy /=". iApply (bi_mono_pred with "[#] Hy").
+    iIntros "!>" (z) "?". by iApply greatest_fixpoint_unfold_1.
   Qed.
 
   Corollary greatest_fixpoint_unfold x :

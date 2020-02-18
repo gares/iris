@@ -65,16 +65,16 @@ Global Instance ht_mono' s E :
 Proof. solve_proper. Qed.
 
 Lemma ht_alt s E P Φ e : (P ⊢ WP e @ s; E {{ Φ }}) → {{ P }} e @ s; E {{ Φ }}.
-Proof. iIntros (Hwp) "!# HP". by iApply Hwp. Qed.
+Proof. iIntros (Hwp) "!> HP". by iApply Hwp. Qed.
 
 Lemma ht_val s E v : {{ True }} of_val v @ s; E {{ v', ⌜v = v'⌝ }}.
-Proof. iIntros "!# _". by iApply wp_value'. Qed.
+Proof. iIntros "!> _". by iApply wp_value'. Qed.
 
 Lemma ht_vs s E P P' Φ Φ' e :
   (P ={E}=> P') ∧ {{ P' }} e @ s; E {{ Φ' }} ∧ (∀ v, Φ' v ={E}=> Φ v)
   ⊢ {{ P }} e @ s; E {{ Φ }}.
 Proof.
-  iIntros "(#Hvs & #Hwp & #HΦ) !# HP". iMod ("Hvs" with "HP") as "HP".
+  iIntros "(#Hvs & #Hwp & #HΦ) !> HP". iMod ("Hvs" with "HP") as "HP".
   iApply wp_fupd. iApply (wp_wand with "(Hwp HP)").
   iIntros (v) "Hv". by iApply "HΦ".
 Qed.
@@ -83,7 +83,7 @@ Lemma ht_atomic s E1 E2 P P' Φ Φ' e `{!Atomic (stuckness_to_atomicity s) e} :
   (P ={E1,E2}=> P') ∧ {{ P' }} e @ s; E2 {{ Φ' }} ∧ (∀ v, Φ' v ={E2,E1}=> Φ v)
   ⊢ {{ P }} e @ s; E1 {{ Φ }}.
 Proof.
-  iIntros "(#Hvs & #Hwp & #HΦ) !# HP". iApply (wp_atomic _ _ E2); auto.
+  iIntros "(#Hvs & #Hwp & #HΦ) !> HP". iApply (wp_atomic _ _ E2); auto.
   iMod ("Hvs" with "HP") as "HP". iModIntro.
   iApply (wp_wand with "(Hwp HP)").
   iIntros (v) "Hv". by iApply "HΦ".
@@ -93,7 +93,7 @@ Lemma ht_bind `{!LanguageCtx K} s E P Φ Φ' e :
   {{ P }} e @ s; E {{ Φ }} ∧ (∀ v, {{ Φ v }} K (of_val v) @ s; E {{ Φ' }})
   ⊢ {{ P }} K e @ s; E {{ Φ' }}.
 Proof.
-  iIntros "[#Hwpe #HwpK] !# HP". iApply wp_bind.
+  iIntros "[#Hwpe #HwpK] !> HP". iApply wp_bind.
   iApply (wp_wand with "(Hwpe HP)").
   iIntros (v) "Hv". by iApply "HwpK".
 Qed.
@@ -101,30 +101,30 @@ Qed.
 Lemma ht_stuck_weaken s E P Φ e :
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ P }} e @ E ?{{ Φ }}.
 Proof.
-  by iIntros "#Hwp !# ?"; iApply wp_stuck_weaken; iApply "Hwp".
+  by iIntros "#Hwp !> ?"; iApply wp_stuck_weaken; iApply "Hwp".
 Qed.
 
 Lemma ht_mask_weaken s E1 E2 P Φ e :
   E1 ⊆ E2 → {{ P }} e @ s; E1 {{ Φ }} ⊢ {{ P }} e @ s; E2 {{ Φ }}.
 Proof.
-  iIntros (?) "#Hwp !# HP". iApply (wp_mask_mono _ E1 E2); try done.
+  iIntros (?) "#Hwp !> HP". iApply (wp_mask_mono _ E1 E2); try done.
   by iApply "Hwp".
 Qed.
 
 Lemma ht_frame_l s E P Φ R e :
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ R ∗ P }} e @ s; E {{ v, R ∗ Φ v }}.
-Proof. iIntros "#Hwp !# [$ HP]". by iApply "Hwp". Qed.
+Proof. iIntros "#Hwp !> [$ HP]". by iApply "Hwp". Qed.
 
 Lemma ht_frame_r s E P Φ R e :
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ P ∗ R }} e @ s; E {{ v, Φ v ∗ R }}.
-Proof. iIntros "#Hwp !# [HP $]". by iApply "Hwp". Qed.
+Proof. iIntros "#Hwp !> [HP $]". by iApply "Hwp". Qed.
 
 Lemma ht_frame_step_l s E1 E2 P R1 R2 e Φ :
   to_val e = None → E2 ⊆ E1 →
   (R1 ={E1,E2}=> ▷ |={E2,E1}=> R2) ∧ {{ P }} e @ s; E2 {{ Φ }}
   ⊢ {{ R1 ∗ P }} e @ s; E1 {{ λ v, R2 ∗ Φ v }}.
 Proof.
-  iIntros (??) "[#Hvs #Hwp] !# [HR HP]".
+  iIntros (??) "[#Hvs #Hwp] !> [HR HP]".
   iApply (wp_frame_step_l _ E1 E2); try done.
   iSplitL "HR"; [by iApply "Hvs"|by iApply "Hwp"].
 Qed.
@@ -134,7 +134,7 @@ Lemma ht_frame_step_r s E1 E2 P R1 R2 e Φ :
   (R1 ={E1,E2}=> ▷ |={E2,E1}=> R2) ∧ {{ P }} e @ s; E2 {{ Φ }}
   ⊢ {{ P ∗ R1 }} e @ s; E1 {{ λ v, Φ v ∗ R2 }}.
 Proof.
-  iIntros (??) "[#Hvs #Hwp] !# [HP HR]".
+  iIntros (??) "[#Hvs #Hwp] !> [HP HR]".
   iApply (wp_frame_step_r _ E1 E2); try done.
   iSplitR "HR"; [by iApply "Hwp"|by iApply "Hvs"].
 Qed.
@@ -143,7 +143,7 @@ Lemma ht_frame_step_l' s E P R e Φ :
   to_val e = None →
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ ▷ R ∗ P }} e @ s; E {{ v, R ∗ Φ v }}.
 Proof.
-  iIntros (?) "#Hwp !# [HR HP]".
+  iIntros (?) "#Hwp !> [HR HP]".
   iApply wp_frame_step_l'; try done. iFrame "HR". by iApply "Hwp".
 Qed.
 
@@ -151,12 +151,12 @@ Lemma ht_frame_step_r' s E P Φ R e :
   to_val e = None →
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ P ∗ ▷ R }} e @ s; E {{ v, Φ v ∗ R }}.
 Proof.
-  iIntros (?) "#Hwp !# [HP HR]".
+  iIntros (?) "#Hwp !> [HP HR]".
   iApply wp_frame_step_r'; try done. iFrame "HR". by iApply "Hwp".
 Qed.
 
 Lemma ht_exists (T : Type) s E (P : T → iProp Σ) Φ e :
   (∀ x, {{ P x }} e @ s; E {{ Φ }}) ⊢ {{ ∃ x, P x }} e @ s; E {{ Φ }}.
-Proof. iIntros "#HT !# HP". iDestruct "HP" as (x) "HP". by iApply "HT". Qed.
+Proof. iIntros "#HT !> HP". iDestruct "HP" as (x) "HP". by iApply "HT". Qed.
 
 End hoare.
