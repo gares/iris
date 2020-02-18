@@ -2,7 +2,7 @@ From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy proofmode notation.
 (* Import lang *again*. This used to break notation. *)
 From iris.heap_lang Require Import lang.
-Set Ltac Backtrace.
+Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
 Set Default Proof Using "Type".
 
 Section tests.

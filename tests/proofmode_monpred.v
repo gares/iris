@@ -1,6 +1,6 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic.lib Require Import invariants.
-Set Ltac Backtrace.
+Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
 
 Section tests.
   Context {I : biIndex} {PROP : sbi}.
