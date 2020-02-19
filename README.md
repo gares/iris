@@ -18,13 +18,11 @@ definitions and some derived forms is available in
 
 This version is known to compile with:
 
- - Coq 8.8.2 / 8.9.1 / 8.10.2 / 8.11.0
+ - Coq 8.9.1 / 8.10.2 / 8.11.0
  - A development version of [std++](https://gitlab.mpi-sws.org/iris/stdpp)
 
-For a version compatible with Coq 8.6, have a look at the
-[iris-3.1 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.1).
-If you need to work with Coq 8.5, please check out the
-[iris-3.0 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.0).
+If you need to work with Coq 8.7 or Coq 8.8, please check out the
+[iris-3.2 branch](https://gitlab.mpi-sws.org/iris/iris/tree/iris-3.2).
 
 ### Working *with* Iris
 
