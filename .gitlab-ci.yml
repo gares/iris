@@ -74,6 +74,7 @@ build-stdpp.dev-coq.dev:
   <<: *template
   variables:
     OPAM_PINS: "coq version dev   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
+    CI_COQCHK: "1"
   except:
   only:
   - triggers
