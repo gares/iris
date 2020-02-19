@@ -27,11 +27,11 @@ variables:
 
 ## Build jobs
 
-build-coq.dev:
+build-coq.8.11.dev:
   <<: *template
   variables:
-    OPAM_PINS: "coq version dev"
-#    CI_COQCHK: "1"
+    OPAM_PINS: "coq version 8.11.dev"
+    CI_COQCHK: "1"
 
 build-coq.8.11.0:
   <<: *template
@@ -57,3 +57,13 @@ build-coq.8.8.2:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.8.2"
+
+build-stdpp.dev:
+  <<: *template
+  variables:
+    OPAM_PINS: "coq version dev   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
+  except:
+  only:
+  - triggers
+  - schedules
+  - api
