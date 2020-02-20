@@ -5,11 +5,8 @@ These are not ``extensions'' in the sense that they change the proof power of th
 
 \subsection{Derived Rules about Base Connectives}
 We collect here some important and frequently used derived proof rules.
-\begin{mathparpagebreakable}
-  \inferhref{L{\"o}b}{Loeb}
-  {}
-  {(\later\prop\Ra\prop) \proves \prop}
 
+\begin{mathparpagebreakable}
   \infer{}
   {\prop \Ra \propB \proves \prop \wand \propB}
 
@@ -18,33 +15,175 @@ We collect here some important and frequently used derived proof rules.
 
   \infer{}
   {\prop * \All\var.\propB \proves \All\var. \prop * \propB}
+\end{mathparpagebreakable}
+Verifying that existential quantifiers commute with separating conjunction requires an intermediate step using a magic wand: From $P * \exists x, Q \vdash \Exists x. P * Q$ we can deduce $\Exists x. Q \vdash P \wand \Exists x. P * Q$ and then proceed via $\exists$-elimination.
 
+\subsection{Derived Rules about Modalities}
+
+Iris comes with 4 built-in modalities ($\always$, $\plainly$, $\upd$ and $\later$) and, as we will see, plenty of derived modalities.
+However, almost all of them fall into one of two categories (except for $\later$, as we will see): they are either \emph{always-style} modalities (``something holds in all/many (future) worlds'') or \emph{eventually-style} modalities (``something holds in a possible (future) world'').
+
+\emph{Eventually-style modalities} are characterized by being easy to ``add''/introduce, but hard to ``remove''/eliminate.
+Consider, for example, the basic update modality $\upd$:
+we have $\prop \proves \upd\prop$ (\ruleref{upd-intro}), but the inverse direction does not hold.
+Instead, from \ruleref{upd-mono} and \ruleref{upd-trans}, we can derive the following elimination principle:
+\begin{mathpar}
+  \infer[upd-E]
+  {\prop \proves \upd\propB}
+  {\upd\prop \proves \upd\propB}
+\end{mathpar}
+In other words, we can remove an $\upd$ in front of an assumption \emph{if} the goal is itself wrapped in $\upd$.
+Another way to view this rule is to think of it as a \emph{bind rule}.
+Indeed, together with \ruleref{upd-intro}, this rule shows that $\upd$ forms a monad.
+
+\emph{Always-style modalities}, on the other hand, are easy to ``remove''/eliminate, but hard to ``add''/introduce.
+The most widely used example of that in Iris is the persistence modality $\always$:
+we have $\always\prop \proves \prop$ (\ruleref{pers-elim}), but the inverse direction does not hold.
+Instead, from \ruleref{pers-mono} and $\always{\prop} \proves \always\always\prop$, we can derive the following introduction principle:
+\begin{mathpar}
+  \infer[$\always$-I]
+  {\always\prop \proves \propB}
+  {\always\prop \proves \always\propB}
+\end{mathpar}
+In other words, we can remove an $\always$ from the goal \emph{if} all our assumptions are wrapped in $\always$.
+This matches the algebraic structure of a comonad.
+
+In particular, both eventually-style and always-style modalities are \emph{idempotent}: we have $\upd\upd\prop \provesIff \upd\prop$ and $\always\always\prop \provesIff \always\prop$.
+
+Beyond this, all modalities come with plenty of rules that show how they commute around other connectives and modalities.
+And, of course, they come with a few ``defining rules'' that give the modalities their individual meaning, \ie for the update modality, that would be \ruleref{upd-update}.
+
+In the following, we briefly discuss each of the modalities.
+
+\paragraph{Update modality.}
+As already mentioned, the update modality is an eventually-style modality:
+\begin{mathpar}
+  \inferhref{upd-E}{upd-elim}
+  {\prop \proves \upd\propB}
+  {\upd\prop \proves \upd\propB}
+
+  \inferH{upd-idemp}
+  {}{\upd\upd\prop \provesIff \upd\prop}
+\end{mathpar}
+Beyond this (and the obvious variant of \ruleref{upd-frame} that exploits commutativity of separating conjunction), there are no outstandingly interesting derived rules.
+
+\paragraph{Persistence modality.}
+As already mentioned, the persistence modality is an always-style modality:
+\begin{mathpar}
+  \inferhref{$\always$-I}{pers-intro}
+  {\always\prop \proves \propB}
+  {\always\prop \proves \always\propB}
+
+  \inferhref{$\always$-idemp}{pers-idemp}
+  {}{\always\always\prop \provesIff \always\prop}
+\end{mathpar}
+Some further interesting derived rules include:
+\begin{mathparpagebreakable}  
+  \infer{}
+  {\always(\prop\land\propB) \provesIff \always\prop \land \always\propB}
+
+  \infer{}
+  {\always(\prop\lor\propB) \provesIff \always\prop \lor \always\propB}
+
+  \infer{}
+  {\always\TRUE \provesIff \TRUE}
+
+  \infer{}
+  {\always\FALSE \provesIff \FALSE}
+\\
   \infer{}
   {\always(\prop*\propB) \provesIff \always\prop * \always\propB}
 
+  \infer{}
+  {\always\prop*\propB \provesIff \always\prop \land \propB}
+
+  \infer{}
+  {\always(\prop \wand \propB) \provesIff \always(\prop \Ra \propB)}
+\\
   \infer{}
   {\always(\prop \Ra \propB) \proves \always\prop \Ra \always\propB}
 
   \infer{}
   {\always(\prop \wand \propB) \proves \always\prop \wand \always\propB}
 
-  \infer{}
-  {\always(\prop \wand \propB) \provesIff \always(\prop \Ra \propB)}
+\end{mathparpagebreakable}
+In particular, the persistence modality commutes around conjunction, disjunction, separating conjunction as well as universal and existential quantification.
+Commuting around conjunction can be derived from the primitive rule that says it commutes around universal quantification (as conjunction is equivalent to a universal quantification of a Boolean), and similar for disjunction.
+$\TRUE \provesIff \always\TRUE$ (which is basically persistence ``commuting around'' the nullary operator $\TRUE$) can be derived via $\always$ commuting with universal quantification ranging over the empty type.
+A similar rule holds for $\FALSE$.
+
+Moreover, if (at least) one conjunct is below the persistence modality, then conjunction and separating conjunction coincide.
+
+\paragraph{Plainness modality.}
+The plainness modality is very similar to the persistence modality (in fact, we have $\plainly\prop \proves \always\prop$, but the inverse does not hold).
+It is always-style:
+\begin{mathpar}
+  \infer[$\plainly$-I]
+  {\plainly\prop \proves \propB}
+  {\plainly\prop \proves \plainly\propB}
+
+  \infer{}{\plainly\plainly\prop \provesIff \plainly\prop}
+\end{mathpar}
+It also commutes around separating conjunction, conjunction, disjunction, universal and existential quantification (and $\TRUE$ and $\FALSE$).
+
+The key difference to the persistence modality $\always$ is that $\plainly$ provides a \emph{propositional extensionality} principle:
+\[ \plainly ( ( P \Ra Q) \land (Q \Ra P ) ) \proves P =_{\Prop} Q \]
+In contrast, $\always$ permits using some forms of ghost state ($\ownM\melt \proves \always{\ownM{\mcore\melt}}$).
+
+Having both of these principles for the same modality would lead to a contradiction:
+imagine we have an RA with elements $\melt$, $\meltB$ such that $\mcore\melt$ is incompatible with $\meltB$ (\ie $\neg\mvalFull(\mcore\melt \mtimes \meltB)$).
+Then we can prove:
+\[
+\ownM{\mcore\melt} \proves
+\always\ownM{\mcore\melt} \proves
+\always ( ( \FALSE \Ra \ownM\meltB ) \land ( \ownM\meltB \Ra \FALSE ) )
+\]
+The first implication is trivial, the second implication follows because $\always\ownM{\mcore\melt} \land \ownM\meltB \proves \ownM{\mcore\melt} * \ownM\meltB \proves \mval(\mcore\melt \mtimes \meltB)$.
+
+But now, if we had propositional extensionality for $\always$ the way we do for $\plainly$, we could deduce $\FALSE =_{\Prop} \ownM\meltB$, and that is clearly wrong.
+This issue arises because $\always$, as we have seen, still lets us use some resources from the context, while propositional equality has to hold completely disregarding current resources.
+
+\paragraph{Later modality.}
+The later modality is the ``odd one out'' in the sense that it is neither eventually-style nor always-style, because it is not idempotent:%
+\footnote{This means $\later$ is neither a monad nor a comonad---it does form an applicative functor, though.}
+with $\later$, the number of times the modality is applied matters, and we can get rid of \emph{exactly one} layer of $\later$ in the assumptions only by doing the same in the conclusion (\ruleref{later-mono}).
+
+Some derived rules:
+\begin{mathparpagebreakable}
+  \inferhref{L{\"o}b}{Loeb}
+  {}
+  {(\later\prop\Ra\prop) \proves \prop}
 
   \infer{}
   {\later(\prop \Ra \propB) \proves \later\prop \Ra \later\propB}
 
   \infer{}
   {\later(\prop \wand \propB) \proves \later\prop \wand \later\propB}
+\\
+  \infer{}
+  {\later(\prop\land\propB) \provesIff \later\prop \land \later\propB}
 
   \infer{}
-  {\TRUE \proves \plainly\TRUE}
-\end{mathparpagebreakable}
+  {\later(\prop\lor\propB) \provesIff \later\prop \lor \later\propB}
 
-Noteworthy here is the fact that Löb induction can be derived from $\later$-introduction and the fact that we can take fixed-points of functions where the recursive occurrences are below $\later$~\cite{Loeb}.%
+  \infer{\text{$\type$ is inhabited}}
+  {\later(\Exists x:\type. \prop) \provesIff \Exists x:\type. \later\prop}
+
+  \infer{}
+  {\later\TRUE \provesIff \TRUE}
+
+  \infer{}
+  {\later(\prop*\propB) \provesIff \later\prop * \later\propB}
+
+  \infer{}
+  {\later\always\prop \provesIff \always\later\prop}
+
+  \infer{}
+  {\later\plainly\prop \provesIff \plainly\later\prop}
+\end{mathparpagebreakable}
+Noteworthy here is the fact that Löb induction (\ruleref{Loeb}) can be derived from $\later$-introduction and the fact that we can take fixed-points of functions where the recursive occurrences are below $\later$~\cite{Loeb}.%
 \footnote{Also see \url{https://en.wikipedia.org/wiki/L\%C3\%B6b\%27s_theorem}.}
-Furthermore, $\TRUE \proves \plainly\TRUE$ can be derived via $\plainly$ commuting with universal quantification ranging over the empty type $0$.
-To derive that existential quantifiers commute with separating conjunction requires an intermediate step using a magic wand: From $P * \exists x, Q \vdash \Exists x. P * Q$ we can deduce $\Exists x. Q \vdash P \wand \Exists x. P * Q$ and then proceed via $\exists$-elimination.
+Also, $\later$ commutes over separating conjunction, conjunction, disjunction, universal quantification and \emph{non-empty} existential quantification, as well as both the persistence and the plainness modality.
 
 \subsection{Persistent Propositions}
 We call a proposition $\prop$ \emph{persistent} if $\prop \proves \always\prop$.

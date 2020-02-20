@@ -36,7 +36,7 @@
 	\label{#1}% Print text and store name↦text.
 }
 % \textlabel label text: Print and label text.
-\newcommand*{\textlabel}[2]{{#2}\savelabel{#1}{#2}}
+\newcommand*{\textlabel}[2]{{#2}\savelabel{#1}{\detokenize{#2}}} % added \detokenize to make "Löb" title work
 % \rulenamestyle visible
 \newcommand*{\rulenamestyle}[1]{{\TirNameStyle{#1}}}	% From mathpartir.sty.
 % \ruleref [discharged] lab

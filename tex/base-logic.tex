@@ -354,11 +354,12 @@ Furthermore, we have the usual $\eta$ and $\beta$ laws for projections, $\textlo
 
 \paragraph{Laws for the persistence modality.}
 \begin{mathpar}
-\infer[$\always$-mono]
+\inferhref{$\always$-mono}{pers-mono}
   {\prop \proves \propB}
   {\always{\prop} \proves \always{\propB}}
 \and
-\infer[$\always$-E]{}
+\inferhref{$\always$-E}{pers-elim}
+{}
 {\always\prop \proves \prop}
 \and
 \begin{array}[c]{rMcMl}
@@ -376,11 +377,11 @@ Furthermore, we have the usual $\eta$ and $\beta$ laws for projections, $\textlo
 
 \paragraph{Laws for the later modality.}
 \begin{mathpar}
-\infer[$\later$-mono]
+\inferhref{$\later$-mono}{later-mono}
   {\prop \proves \propB}
   {\later\prop \proves \later{\propB}}
 \and
-\infer[$\later$-I]
+\inferhref{$\later$-I}{later-intro}
   {}
   {\prop \proves \later\prop}
 \and
@@ -418,7 +419,7 @@ Furthermore, we have the usual $\eta$ and $\beta$ laws for projections, $\textlo
 \begin{array}{rMcMl}
 \ownM{\melt} &\proves& \mval(\melt) \\
 \mval(\melt \mtimes \meltB) &\proves& \mval(\melt) \\
-\mval(\melt) &\proves& \always\mval(\melt)
+\mval(\melt) &\proves& \plainly\mval(\melt)
 \end{array}
 \end{mathpar}
 
@@ -429,7 +430,7 @@ Furthermore, we have the usual $\eta$ and $\beta$ laws for projections, $\textlo
 {\prop \proves \propB}
 {\upd\prop \proves \upd\propB}
 
-\inferH{upd-intro}
+\inferhref{upd-I}{upd-intro}
 {}{\prop \proves \upd \prop}
 
 \inferH{upd-trans}
