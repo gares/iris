@@ -68,6 +68,11 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Add new introduction pattern `-# pat` that moves a hypothesis from the
   intuitionistic context to the spatial context.
 
+**Changes in heap_lang:**
+
+* Added a fraction to the heap_lang `array` assertion.
+
+
 ## Iris 3.2.0 (released 2019-08-29)
 
 The highlight of this release is the completely re-engineered interactive proof
