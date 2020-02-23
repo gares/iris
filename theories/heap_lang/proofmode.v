@@ -187,7 +187,7 @@ Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
   0 < n →
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   (∀ l, ∃ Δ'',
-    envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ' = Some Δ'' ∧
+    envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ' = Some Δ'' ∧
     envs_entails Δ'' (WP fill K (Val $ LitV $ LitLoc l) @ s; E {{ Φ }})) →
   envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E {{ Φ }}).
 Proof.
@@ -200,7 +200,7 @@ Qed.
 Lemma tac_twp_allocN Δ s E j K v n Φ :
   0 < n →
   (∀ l, ∃ Δ',
-    envs_app false (Esnoc Enil j (array l (replicate (Z.to_nat n) v))) Δ
+    envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ
     = Some Δ' ∧
     envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])) →
   envs_entails Δ (WP fill K (AllocN (Val $ LitV $ LitInt n) (Val v)) @ s; E [{ Φ }]).

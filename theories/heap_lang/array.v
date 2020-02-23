@@ -1,4 +1,5 @@
 From stdpp Require Import fin_maps.
+From iris.bi Require Import lib.fractional.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lifting.
@@ -7,16 +8,18 @@ Set Default Proof Using "Type".
 
 (** This file defines the [array] connective, a version of [mapsto] that works
 with lists of values. It also contains array versions of the basic heap
-operations of HeapLand. *)
+operations of HeapLang. *)
 
-Definition array `{!heapG Σ} (l : loc) (vs : list val) : iProp Σ :=
-  ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦ v)%I.
-Notation "l ↦∗ vs" := (array l vs)
+Definition array `{!heapG Σ} (l : loc) (q : Qp) (vs : list val) : iProp Σ :=
+  ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{q} v)%I.
+Notation "l ↦∗{ q } vs" := (array l q vs)
+  (at level 20, q at level 50, format "l  ↦∗{ q }  vs") : bi_scope.
+Notation "l ↦∗ vs" := (array l 1 vs)
   (at level 20, format "l  ↦∗  vs") : bi_scope.
 
-(** We have no [FromSep] or [IntoSep] instances to remain forwards compatible
-with a fractional array assertion, that will split the fraction, not the
-list. *)
+(** We have [FromSep] and [IntoSep] instances to split the fraction (via the
+[AsFractional] instance below), but not for splitting the list, as that would
+lead to overlapping instances. *)
 
 Section lifting.
 Context `{!heapG Σ}.
@@ -25,26 +28,32 @@ Implicit Types Φ : val → iProp Σ.
 Implicit Types σ : state.
 Implicit Types v : val.
 Implicit Types vs : list val.
+Implicit Types q : Qp.
 Implicit Types l : loc.
 Implicit Types sz off : nat.
 
-Global Instance array_timeless l vs : Timeless (array l vs) := _.
+Global Instance array_timeless l q vs : Timeless (array l q vs) := _.
 
-Lemma array_nil l : l ↦∗ [] ⊣⊢ emp.
+Global Instance array_fractional l vs : Fractional (λ q, l ↦∗{q} vs)%I := _.
+Global Instance array_as_fractional l q vs :
+  AsFractional (l ↦∗{q} vs) (λ q, l ↦∗{q} vs)%I q.
+Proof. split; done || apply _. Qed.
+
+Lemma array_nil l q : l ↦∗{q} [] ⊣⊢ emp.
 Proof. by rewrite /array. Qed.
 
-Lemma array_singleton l v : l ↦∗ [v] ⊣⊢ l ↦ v.
+Lemma array_singleton l q v : l ↦∗{q} [v] ⊣⊢ l ↦{q} v.
 Proof. by rewrite /array /= right_id loc_add_0. Qed.
 
-Lemma array_app l vs ws :
-  l ↦∗ (vs ++ ws) ⊣⊢ l ↦∗ vs ∗ (l +ₗ length vs) ↦∗ ws.
+Lemma array_app l q vs ws :
+  l ↦∗{q} (vs ++ ws) ⊣⊢ l ↦∗{q} vs ∗ (l +ₗ length vs) ↦∗{q} ws.
 Proof.
   rewrite /array big_sepL_app.
   setoid_rewrite Nat2Z.inj_add.
   by setoid_rewrite loc_add_assoc.
 Qed.
 
-Lemma array_cons l v vs : l ↦∗ (v :: vs) ⊣⊢ l ↦ v ∗ (l +ₗ 1) ↦∗ vs.
+Lemma array_cons l q v vs : l ↦∗{q} (v :: vs) ⊣⊢ l ↦{q} v ∗ (l +ₗ 1) ↦∗{q} vs.
 Proof.
   rewrite /array big_sepL_cons loc_add_0.
   setoid_rewrite loc_add_assoc.
@@ -52,12 +61,12 @@ Proof.
   by setoid_rewrite Z.add_1_l.
 Qed.
 
-Lemma update_array l vs off v :
+Lemma update_array l q vs off v :
   vs !! off = Some v →
-  (l ↦∗ vs -∗ ((l +ₗ off) ↦ v ∗ ∀ v', (l +ₗ off) ↦ v' -∗ l ↦∗ <[off:=v']>vs))%I.
+  l ↦∗{q} vs -∗ ((l +ₗ off) ↦{q} v ∗ ∀ v', (l +ₗ off) ↦{q} v' -∗ l ↦∗{q} <[off:=v']>vs).
 Proof.
   iIntros (Hlookup) "Hl".
-  rewrite -[X in (l ↦∗ X)%I](take_drop_middle _ off v); last done.
+  rewrite -[X in (l ↦∗{_} X)%I](take_drop_middle _ off v); last done.
   iDestruct (array_app with "Hl") as "[Hl1 Hl]".
   iDestruct (array_cons with "Hl") as "[Hl2 Hl3]".
   assert (off < length vs)%nat as H by (apply lookup_lt_is_Some; by eexists).
@@ -65,16 +74,16 @@ Proof.
   iIntros (w) "Hl2".
   clear Hlookup. assert (<[off:=w]> vs !! off = Some w) as Hlookup.
   { apply list_lookup_insert. lia. }
-  rewrite -[in (l ↦∗ <[off:=w]> vs)%I](take_drop_middle (<[off:=w]> vs) off w Hlookup).
+  rewrite -[in (l ↦∗{_} <[off:=w]> vs)%I](take_drop_middle (<[off:=w]> vs) off w Hlookup).
   iApply array_app. rewrite take_insert; last by lia. iFrame.
   iApply array_cons. rewrite take_length min_l; last by lia. iFrame.
   rewrite drop_insert; last by lia. done.
 Qed.
 
 (** Allocation *)
-Lemma mapsto_seq_array l v n :
-  ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦ v) -∗
-  l ↦∗ replicate n v.
+Lemma mapsto_seq_array l q v n :
+  ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{q} v) -∗
+  l ↦∗{q} replicate n v.
 Proof.
   rewrite /array. iInduction n as [|n'] "IH" forall (l); simpl.
   { done. }
@@ -129,33 +138,33 @@ Qed.
 
 (** Access to array elements *)
 
-Lemma wp_load_offset s E l off vs v :
+Lemma wp_load_offset s E l q off vs v :
   vs !! off = Some v →
-  {{{ ▷ l ↦∗ vs }}} ! #(l +ₗ off) @ s; E {{{ RET v; l ↦∗ vs }}}.
+  {{{ ▷ l ↦∗{q} vs }}} ! #(l +ₗ off) @ s; E {{{ RET v; l ↦∗{q} vs }}}.
 Proof.
   iIntros (Hlookup Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (wp_load with "Hl1"). iIntros "!> Hl1". iApply "HΦ".
   iDestruct ("Hl2" $! v) as "Hl2". rewrite list_insert_id; last done.
   iApply "Hl2". iApply "Hl1".
 Qed.
-Lemma twp_load_offset s E l off vs v :
+Lemma twp_load_offset s E l q off vs v :
   vs !! off = Some v →
-  [[{ l ↦∗ vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗ vs }]].
+  [[{ l ↦∗{q} vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗{q} vs }]].
 Proof.
   iIntros (Hlookup Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (twp_load with "Hl1"). iIntros "Hl1". iApply "HΦ".
   iDestruct ("Hl2" $! v) as "Hl2". rewrite list_insert_id; last done.
   iApply "Hl2". iApply "Hl1".
 Qed.
 
 
-Lemma wp_load_offset_vec s E l sz (off : fin sz) (vs : vec val sz) :
-  {{{ ▷ l ↦∗ vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗ vs }}}.
+Lemma wp_load_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) :
+  {{{ ▷ l ↦∗{q} vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗{q} vs }}}.
 Proof. apply wp_load_offset. by apply vlookup_lookup. Qed.
-Lemma twp_load_offset_vec s E l sz (off : fin sz) (vs : vec val sz) :
-  [[{ l ↦∗ vs }]] ! #(l +ₗ off) @ s; E [[{ RET vs !!! off; l ↦∗ vs }]].
+Lemma twp_load_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) :
+  [[{ l ↦∗{q} vs }]] ! #(l +ₗ off) @ s; E [[{ RET vs !!! off; l ↦∗{q} vs }]].
 Proof. apply twp_load_offset. by apply vlookup_lookup. Qed.
 
 
@@ -164,7 +173,7 @@ Lemma wp_store_offset s E l off vs v :
   {{{ ▷ l ↦∗ vs }}} #(l +ₗ off) <- v @ s; E {{{ RET #(); l ↦∗ <[off:=v]> vs }}}.
 Proof.
   iIntros ([w Hlookup] Φ) ">Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (wp_store with "Hl1"). iNext. iIntros "Hl1".
   iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
@@ -173,7 +182,7 @@ Lemma twp_store_offset s E l off vs v :
   [[{ l ↦∗ vs }]] #(l +ₗ off) <- v @ s; E [[{ RET #(); l ↦∗ <[off:=v]> vs }]].
 Proof.
   iIntros ([w Hlookup] Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (twp_store with "Hl1"). iIntros "Hl1".
   iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
@@ -200,7 +209,7 @@ Lemma wp_cmpxchg_suc_offset s E l off vs v' v1 v2 :
   {{{ RET (v', #true); l ↦∗ <[off:=v2]> vs }}}.
 Proof.
   iIntros (Hlookup ?? Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (wp_cmpxchg_suc with "Hl1"); [done..|].
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
@@ -213,7 +222,7 @@ Lemma twp_cmpxchg_suc_offset s E l off vs v' v1 v2 :
   [[{ RET (v', #true); l ↦∗ <[off:=v2]> vs }]].
 Proof.
   iIntros (Hlookup ?? Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (twp_cmpxchg_suc with "Hl1"); [done..|].
   iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
@@ -239,50 +248,50 @@ Proof.
   by apply vlookup_lookup.
 Qed.
 
-Lemma wp_cmpxchg_fail_offset s E l off vs v0 v1 v2 :
+Lemma wp_cmpxchg_fail_offset s E l q off vs v0 v1 v2 :
   vs !! off = Some v0 →
   v0 ≠ v1 →
   vals_compare_safe v0 v1 →
-  {{{ ▷ l ↦∗ vs }}}
+  {{{ ▷ l ↦∗{q} vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (v0, #false); l ↦∗ vs }}}.
+  {{{ RET (v0, #false); l ↦∗{q} vs }}}.
 Proof.
   iIntros (Hlookup HNEq Hcmp Φ) ">Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (wp_cmpxchg_fail with "Hl1"); first done.
   { destruct Hcmp; by [ left | right ]. }
   iIntros "!> Hl1". iApply "HΦ". iDestruct ("Hl2" $! v0) as "Hl2".
   rewrite list_insert_id; last done. iApply "Hl2". iApply "Hl1".
 Qed.
-Lemma twp_cmpxchg_fail_offset s E l off vs v0 v1 v2 :
+Lemma twp_cmpxchg_fail_offset s E l q off vs v0 v1 v2 :
   vs !! off = Some v0 →
   v0 ≠ v1 →
   vals_compare_safe v0 v1 →
-  [[{ l ↦∗ vs }]]
+  [[{ l ↦∗{q} vs }]]
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  [[{ RET (v0, #false); l ↦∗ vs }]].
+  [[{ RET (v0, #false); l ↦∗{q} vs }]].
 Proof.
   iIntros (Hlookup HNEq Hcmp Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (twp_cmpxchg_fail with "Hl1"); first done.
   { destruct Hcmp; by [ left | right ]. }
   iIntros "Hl1". iApply "HΦ". iDestruct ("Hl2" $! v0) as "Hl2".
   rewrite list_insert_id; last done. iApply "Hl2". iApply "Hl1".
 Qed.
 
-Lemma wp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
+Lemma wp_cmpxchg_fail_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off ≠ v1 →
   vals_compare_safe (vs !!! off) v1 →
-  {{{ ▷ l ↦∗ vs }}}
+  {{{ ▷ l ↦∗{q} vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (vs !!! off, #false); l ↦∗ vs }}}.
+  {{{ RET (vs !!! off, #false); l ↦∗{q} vs }}}.
 Proof. intros. eapply wp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
-Lemma twp_cmpxchg_fail_offset_vec s E l sz (off : fin sz) (vs : vec val sz) v1 v2 :
+Lemma twp_cmpxchg_fail_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off ≠ v1 →
   vals_compare_safe (vs !!! off) v1 →
-  [[{ l ↦∗ vs }]]
+  [[{ l ↦∗{q} vs }]]
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  [[{ RET (vs !!! off, #false); l ↦∗ vs }]].
+  [[{ RET (vs !!! off, #false); l ↦∗{q} vs }]].
 Proof. intros. eapply twp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
 
 Lemma wp_faa_offset s E l off vs (i1 i2 : Z) :
@@ -291,7 +300,7 @@ Lemma wp_faa_offset s E l off vs (i1 i2 : Z) :
   {{{ RET LitV (LitInt i1); l ↦∗ <[off:=#(i1 + i2)]> vs }}}.
 Proof.
   iIntros (Hlookup Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (wp_faa with "Hl1").
   iNext. iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.
@@ -301,7 +310,7 @@ Lemma twp_faa_offset s E l off vs (i1 i2 : Z) :
   [[{ RET LitV (LitInt i1); l ↦∗ <[off:=#(i1 + i2)]> vs }]].
 Proof.
   iIntros (Hlookup Φ) "Hl HΦ".
-  iDestruct (update_array l _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
+  iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
   iApply (twp_faa with "Hl1").
   iIntros "Hl1". iApply "HΦ". iApply "Hl2". iApply "Hl1".
 Qed.

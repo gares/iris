@@ -159,17 +159,36 @@ Section tests.
     {{{ l ↦∗ [ #0;#1;#2 ] }}} !(#l +ₗ #1) {{{ RET #1; True }}}.
   Proof.
     iIntros (Φ) "Hl HΦ". wp_op.
-    wp_apply (wp_load_offset _ _ _ 1 with "Hl"); first done.
+    wp_apply (wp_load_offset _ _ _ _ 1 with "Hl"); first done.
     iIntros "Hl". by iApply "HΦ".
+  Qed.
+
+  Check "test_array_fraction_destruct".
+  Lemma test_array_fraction_destruct l vs :
+    l ↦∗ vs -∗ l ↦∗{1/2} vs ∗ l ↦∗{1/2} vs.
+  Proof.
+    iIntros "[Hl1 Hl2]". Show.
+    by iFrame.
+  Qed.
+
+  Lemma test_array_fraction_combine l vs :
+    l ↦∗{1/2} vs -∗ l↦∗{1/2} vs -∗ l ↦∗ vs.
+  Proof.
+    iIntros "Hl1 Hl2".
+    iSplitL "Hl1"; by iFrame.
   Qed.
 
   Lemma test_array_app l vs1 vs2 :
     l ↦∗ (vs1 ++ vs2) -∗ l ↦∗ (vs1 ++ vs2).
   Proof.
-    Fail iIntros "[H1 H2]". (* this should, one day, split at the fraction. *)
     iIntros "H". iDestruct (array_app with "H") as "[H1 H2]".
-    Fail iSplitL "H1".
     iApply array_app. iSplitL "H1"; done.
+  Qed.
+
+  Lemma test_array_app_split l vs1 vs2 :
+    l ↦∗ (vs1 ++ vs2) -∗ l ↦∗{1/2} (vs1 ++ vs2).
+  Proof.
+    iIntros "[$ _]". (* splits the fraction, not the app *)
   Qed.
 
 End tests.
