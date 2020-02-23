@@ -148,10 +148,20 @@ Section tests.
   Lemma wp_alloc_array n : 0 < n →
     {{{ True }}}
       AllocN #n #0
-    {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0}}}%I.
+    {{{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}}}%I.
   Proof.
-    iIntros (? ?) "!> _ HΦ".
+    iIntros (? Φ) "!> _ HΦ".
     wp_alloc l as "?"; first done.
+    by iApply "HΦ".
+  Qed.
+
+  Lemma twp_alloc_array n : 0 < n →
+    [[{ True }]]
+      AllocN #n #0
+    [[{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}]]%I.
+  Proof.
+    iIntros (? Φ) "!> _ HΦ".
+    wp_alloc l as "?"; first done. Show.
     by iApply "HΦ".
   Qed.
 

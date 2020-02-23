@@ -484,7 +484,8 @@ Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
         first
           [reshape_expr e ltac:(fun K e' => eapply (tac_twp_allocN _ _ _ Htmp K))
           |fail 1 "wp_alloc: cannot find 'Alloc' in" e];
-        finish ()
+        [idtac
+        |finish ()]
     in (process_single ()) || (process_array ())
   | _ => fail "wp_alloc: not a 'wp'"
   end.
