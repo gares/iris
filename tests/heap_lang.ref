@@ -86,6 +86,20 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   --------------------------------------∗
   WP "x" {{ _, True }}
   
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  n : Z
+  H : 0 < n
+  Φ : val → iPropI Σ
+  l : loc
+  ============================
+  "HΦ" : ∀ l0 : loc, l0 ↦∗ replicate (Z.to_nat n) #0 -∗ Φ #l0
+  _ : l ↦∗ replicate (Z.to_nat n) #0
+  --------------------------------------∗
+  Φ #l
+  
 "test_array_fraction_destruct"
      : string
 1 subgoal
