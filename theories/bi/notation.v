@@ -3,10 +3,13 @@
 (** Turnstiles *)
 Reserved Notation "P ⊢ Q" (at level 99, Q at level 200, right associativity).
 Reserved Notation "P '⊢@{' PROP } Q" (at level 99, Q at level 200, right associativity).
-Reserved Notation "('⊢@{' PROP } )" (at level 99).
+Reserved Notation "(⊢)".
+Reserved Notation "('⊢@{' PROP } )".
+
 Reserved Notation "P ⊣⊢ Q" (at level 95, no associativity).
 Reserved Notation "P '⊣⊢@{' PROP } Q" (at level 95, no associativity).
-Reserved Notation "('⊣⊢@{' PROP } )" (at level 95).
+Reserved Notation "(⊣⊢)".
+Reserved Notation "('⊣⊢@{' PROP } )".
 
 (** BI connectives *)
 Reserved Notation "'emp'".
