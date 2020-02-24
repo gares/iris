@@ -79,7 +79,7 @@ Proof.
   rewrite drop_insert; last by lia. done.
 Qed.
 
-(** Allocation *)
+(** * Rules for allocation *)
 Lemma mapsto_seq_array l q v n :
   ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{q} v) -∗
   l ↦∗{q} replicate n v.
@@ -133,7 +133,7 @@ Proof.
   iApply twp_allocN_vec; [auto..|]; iIntros (l) "H HΦ". by iApply "HΦ".
 Qed.
 
-(** Access to array elements *)
+(** * Rules for accessing array elements *)
 Lemma twp_load_offset s E l q off vs v :
   vs !! off = Some v →
   [[{ l ↦∗{q} vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗{q} vs }]].
