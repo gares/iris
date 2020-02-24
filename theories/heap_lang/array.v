@@ -1,7 +1,6 @@
 From stdpp Require Import fin_maps.
 From iris.bi Require Import lib.fractional.
 From iris.proofmode Require Import tactics.
-From iris.program_logic Require Export total_weakestpre weakestpre.
 From iris.heap_lang Require Export lifting.
 From iris.heap_lang Require Import tactics notation.
 Set Default Proof Using "Type".
