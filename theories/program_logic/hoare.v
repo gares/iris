@@ -120,7 +120,7 @@ Lemma ht_frame_r s E P Φ R e :
 Proof. iIntros "#Hwp !> [HP $]". by iApply "Hwp". Qed.
 
 Lemma ht_frame_step_l s E1 E2 P R1 R2 e Φ :
-  to_val e = None → E2 ⊆ E1 →
+  TCEq (to_val e) None → E2 ⊆ E1 →
   (R1 ={E1,E2}=> ▷ |={E2,E1}=> R2) ∧ {{ P }} e @ s; E2 {{ Φ }}
   ⊢ {{ R1 ∗ P }} e @ s; E1 {{ λ v, R2 ∗ Φ v }}.
 Proof.
@@ -130,7 +130,7 @@ Proof.
 Qed.
 
 Lemma ht_frame_step_r s E1 E2 P R1 R2 e Φ :
-  to_val e = None → E2 ⊆ E1 →
+  TCEq (to_val e) None → E2 ⊆ E1 →
   (R1 ={E1,E2}=> ▷ |={E2,E1}=> R2) ∧ {{ P }} e @ s; E2 {{ Φ }}
   ⊢ {{ P ∗ R1 }} e @ s; E1 {{ λ v, Φ v ∗ R2 }}.
 Proof.
@@ -140,7 +140,7 @@ Proof.
 Qed.
 
 Lemma ht_frame_step_l' s E P R e Φ :
-  to_val e = None →
+  TCEq (to_val e) None →
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ ▷ R ∗ P }} e @ s; E {{ v, R ∗ Φ v }}.
 Proof.
   iIntros (?) "#Hwp !> [HR HP]".
@@ -148,7 +148,7 @@ Proof.
 Qed.
 
 Lemma ht_frame_step_r' s E P Φ R e :
-  to_val e = None →
+  TCEq (to_val e) None →
   {{ P }} e @ s; E {{ Φ }} ⊢ {{ P ∗ ▷ R }} e @ s; E {{ v, Φ v ∗ R }}.
 Proof.
   iIntros (?) "#Hwp !> [HP HR]".
