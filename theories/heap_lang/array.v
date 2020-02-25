@@ -60,6 +60,11 @@ Proof.
   by setoid_rewrite Z.add_1_l.
 Qed.
 
+Global Instance array_cons_frame l q v vs R Q :
+  Frame false R (l ↦{q} v ∗ (l +ₗ 1) ↦∗{q} vs) Q →
+  Frame false R (l ↦∗{q} (v :: vs)) Q.
+Proof. by rewrite /Frame array_cons. Qed.
+
 Lemma update_array l q vs off v :
   vs !! off = Some v →
   l ↦∗{q} vs -∗ ((l +ₗ off) ↦{q} v ∗ ∀ v', (l +ₗ off) ↦{q} v' -∗ l ↦∗{q} <[off:=v']>vs).
