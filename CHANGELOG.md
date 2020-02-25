@@ -71,7 +71,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 **Changes in heap_lang:**
 
 * Added a fraction to the heap_lang `array` assertion.
-
+* Added array_copy library for copying and cloning arrays.
 
 ## Iris 3.2.0 (released 2019-08-29)
 
