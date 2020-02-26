@@ -32,6 +32,21 @@ Typeclasses Opaque join_handle.
 This makes sure that the proof mode does not "look into" your definition when it
 is used by clients.
 
+## Notations
+
+Notations starting with `(` or `{` should be left at their default level (`0`),
+and inner subexpressions that are bracketed by delimiters should be left at
+their default level (`200`).
+
+Moreover, correct parsing of notations sometimes relies on Coq's automatic
+left-factoring, which can require coordinating levels of certain "conflicting"
+notations and their subexpressions. For instance, to disambiguate `(⊢@{ PROP })`
+and `(⊢@{ PROP } P)`, Coq must factor out a nonterminal for `⊢@{ PROP }`, but it
+can only do so if all occurrences of `⊢@{ PROP }` agree on the precedences for
+all subexpressions.
+
+For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extensions/syntax-extensions.html#simple-factorization-rules).
+
 ## Naming conventions for variables/arguments/hypotheses
 
 ### small letters
