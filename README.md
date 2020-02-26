@@ -114,8 +114,8 @@ that should be compatible with this version:
 
 Getting along with Iris in Coq:
 
-* Iris proof patterns are documented in the [proof guide](docs/proof_guide.md).
-* Syntactic conventions are described in the [style guide](docs/style_guide.md).
+* Iris proof patterns and conventions are documented in the
+  [proof guide](docs/proof_guide.md).
 * The Iris tactics are described in the
   [the Iris Proof Mode (IPM) / MoSeL documentation](docs/proof_mode.md) as well as the
   [HeapLang documentation](docs/heap_lang.md).
