@@ -295,10 +295,13 @@ their default level (`200`).
 
 Moreover, correct parsing of notations sometimes relies on Coq's automatic
 left-factoring, which can require coordinating levels of certain "conflicting"
-notations and their subexpressions. For instance, to disambiguate `(⊢@{ PROP })`
-and `(⊢@{ PROP } P)`, Coq must factor out a nonterminal for `⊢@{ PROP }`, but it
-can only do so if all occurrences of `⊢@{ PROP }` agree on the precedences for
-all subexpressions.
+notations and their subexpressions.  For instance, to disambiguate `(⊢@{ PROP
+})` and `(⊢@{ PROP } P)`, Coq must factor out a nonterminal for `⊢@{ PROP }`,
+but it can only do so if all occurrences of `⊢@{ PROP }` agree on the
+precedences for all subexpressions. This also requires using the same
+tokenization in all cases, i.e., the notation has to consistently be declared as
+`(⊢@{` or `('⊢@{'`, but not a mixture of the two. The latter form of using
+explicit tokenization with `'` is preferred to avoid relying on Coq's default.
 
 For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extensions/syntax-extensions.html#simple-factorization-rules).
 
