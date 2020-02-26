@@ -3,7 +3,7 @@
 This document lays down syntactic conventions about how we usually write our
 Iris proofs in Coq.  It is a work-in-progress.  This complements the tactic
 documentation for the [proof mode](./proof_mode.md) and [HeapLang](./heap_lang.md) as
-well as the [proof guide](.doco/proof_guide.md).
+well as the [proof guide](./proof_guide.md).
 
 ## Implicit generalization
 
