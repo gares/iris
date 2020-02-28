@@ -1,5 +1,4 @@
 From iris.proofmode Require Import tactics intro_patterns.
-Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
 Set Default Proof Using "Type".
 
 Section tests.

@@ -1,7 +1,6 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants.
-Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
 
 Section base_logic_tests.
   Context {M : ucmraT}.

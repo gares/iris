@@ -78,50 +78,21 @@
   Q
   
 The command has indeed failed with message:
-Ltac call to "done" failed.
 No applicable tactic.
 The command has indeed failed with message:
-In nested Ltac calls to "iClear (constr)", "iElaborateSelPat" and
-"<iris.proofmode.ltac_tactics.iElaborateSelPat_go>", last call failed.
 Tactic failure: iElaborateSelPat: "HQ" not found.
 The command has indeed failed with message:
-In nested Ltac calls to "iClear (constr)", "iElaborateSelPat" and
-"<iris.proofmode.ltac_tactics.iElaborateSelPat_go>", last call failed.
 Tactic failure: iElaborateSelPat: "HQ" not found.
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr) as #",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)" and
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-last call failed.
 Tactic failure: iSpecialize: Q not persistent.
 "test_iAssert_intuitionistic"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "<ssreflect_plugin::ssrtclseq@0> iAssert (|==> P)%I with "[#]" as "#HPupd2" ; first  done",
-"<ssreflect_plugin::ssrtclseq@0> iAssert (|==> P)%I with "[#]" as "#HPupd2" ; first  done",
-"iAssert (open_constr) with (constr) as (constr)",
-"iAssertCore (open_constr) with (constr) as (constr) (tactic3)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: (|==> P)%I not persistent.
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: cannot instantiate (∀ _ : φ, P -∗ False)%I with
 P.
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I with P.
 "test_iNext_plus_3"
      : string
@@ -185,9 +156,6 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
 "test_iSimpl_in4"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iSimpl in (constr)",
-"iEval (tactic3) in (constr)" and "<iris.proofmode.ltac_tactics.iEval_go>",
-last call failed.
 Tactic failure: iEval: %: unsupported selection pattern.
 "test_iFrame_later_1"
      : string
@@ -210,9 +178,6 @@ Tactic failure: iEval: %: unsupported selection pattern.
   ▷ emp
   
 The command has indeed failed with message:
-In nested Ltac calls to "iFrame (constr)",
-"<iris.proofmode.ltac_tactics.iFrame_go>" and
-"<iris.proofmode.ltac_tactics.iFrameHyp>", last call failed.
 Tactic failure: iFrame: cannot frame Q.
 "test_and_sep_affine_bi"
      : string
@@ -496,115 +461,71 @@ Tactic failure: iFrame: cannot frame Q.
 "iStopProof_not_proofmode"
      : string
 The command has indeed failed with message:
-Ltac call to "iStopProof" failed.
 Tactic failure: iStopProof: proofmode not started.
 "iAlways_spatial_non_empty"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iAlways", "iModIntro" and 
-"iModIntro (uconstr)", last call failed.
 Tactic failure: iModIntro: spatial context is non-empty.
 "iDestruct_bad_name"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iDestruct (open_constr) as (constr)",
-"iDestructCore (open_constr) as (constr) (tactic3)" and
-"iDestructCore (open_constr) as (constr) (tactic3)", last call failed.
 Tactic failure: iDestruct: "HQ" not found.
 "iIntros_dup_name"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iIntros (constr)", "iIntros_go" and
-"iIntro (constr)", last call failed.
 Tactic failure: iIntro: "HP" not fresh.
 The command has indeed failed with message:
-In nested Ltac calls to "iIntros ( (intropattern) )",
-"iIntro ( (intropattern) )" and "intros x", last call failed.
 x is already used.
 "iSplitL_one_of_many"
      : string
 The command has indeed failed with message:
-Ltac call to "iSplitL (constr)" failed.
 Tactic failure: iSplitL: hypotheses ["HPx"] not found.
 The command has indeed failed with message:
-Ltac call to "iSplitL (constr)" failed.
 Tactic failure: iSplitL: hypotheses ["HPx"] not found.
 "iSplitR_one_of_many"
      : string
 The command has indeed failed with message:
-Ltac call to "iSplitR (constr)" failed.
 Tactic failure: iSplitR: hypotheses ["HPx"] not found.
 The command has indeed failed with message:
-Ltac call to "iSplitR (constr)" failed.
 Tactic failure: iSplitR: hypotheses ["HPx"] not found.
 "iSplitL_non_splittable"
      : string
 The command has indeed failed with message:
-Ltac call to "iSplitL (constr)" failed.
 Tactic failure: iSplitL: P not a separating conjunction.
 "iSplitR_non_splittable"
      : string
 The command has indeed failed with message:
-Ltac call to "iSplitR (constr)" failed.
 Tactic failure: iSplitR: P not a separating conjunction.
 "iCombine_fail"
      : string
 The command has indeed failed with message:
-Ltac call to "iCombine (constr) as (constr)" failed.
 Tactic failure: iCombine: hypotheses ["HP3"] not found.
 "iSpecialize_bad_name1_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: "H" not found.
 "iSpecialize_bad_name2_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: "H" not found.
 "iExact_fail"
      : string
 The command has indeed failed with message:
-Ltac call to "iExact (constr)" failed.
 Tactic failure: iExact: "HQ" not found.
 The command has indeed failed with message:
-Ltac call to "iExact (constr)" failed.
 Tactic failure: iExact: "HQ" : Q does not match goal.
 The command has indeed failed with message:
-Ltac call to "iExact (constr)" failed.
 Tactic failure: iExact: "HP"
 not absorbing and the remaining hypotheses not affine.
 "iClear_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iClear (constr)", "iElaborateSelPat" and
-"<iris.proofmode.ltac_tactics.iElaborateSelPat_go>", last call failed.
 Tactic failure: iElaborateSelPat: "HP" not found.
 The command has indeed failed with message:
-In nested Ltac calls to "iClear (constr)",
-"<iris.proofmode.ltac_tactics.iClear_go>" and
-"<iris.proofmode.ltac_tactics.iClearHyp>", last call failed.
 Tactic failure: iClear: "HP" : P not affine and the goal not absorbing.
 "iSpecializeArgs_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iSpecialize (open_constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializeArgs (constr) (open_constr)",
-"<iris.proofmode.ltac_tactics.iSpecializeArgs_go>" and
-"notypeclasses refine (uconstr)", last call failed.
 In environment
 PROP : sbi
 P : PROP
@@ -612,173 +533,80 @@ The term "true" has type "bool" while it is expected to have type "nat".
 "iStartProof_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iStartProof" and "iStartProof", last call failed.
 Tactic failure: iStartProof: not a BI assertion.
 "iPoseProof_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (open_constr) as (tactic3)" and 
-"iIntoEmpValid", last call failed.
 Tactic failure: iPoseProof: (0 = 0) not a BI assertion.
 The command has indeed failed with message:
-In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (open_constr) as (tactic3)", "tac" (bound to
-fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
-fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
-fun H => iDestructHyp H as pat), "iDestructHyp (constr) as (constr)",
-"<iris.proofmode.ltac_tactics.iDestructHypFindPat>",
-"<iris.proofmode.ltac_tactics.iDestructHypGo>" and
-"iRename (constr) into (constr)", last call failed.
 Tactic failure: iRename: "H" not fresh.
 "iPoseProof_not_found_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)" and
-"iPoseProofCoreHyp (constr) as (constr)", last call failed.
 Tactic failure: iPoseProof: "Hx" not found.
 "iPoseProof_not_found_fail2"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iPoseProof (open_constr) as (constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)",
-"iPoseProofCoreLem (open_constr) as (tactic3)", "tac" (bound to
-fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "tac" (bound to
-fun Htmp => spec_tac Htmp; [ .. | tac Htmp ]), "spec_tac" (bound to
-fun Htmp =>
-  lazymatch lem with
-  | {| itrm := _; itrm_vars := ?xs; itrm_hyps := ?pat |} => iSpecializeCore
-  {| itrm := Htmp; itrm_vars := xs; itrm_hyps := pat |} as p
-  | _ => idtac
-  end), "iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) as (constr)",
-"iSpecializeCore (open_constr) with (open_constr) (open_constr) as (constr)",
-"iSpecializePat (open_constr) (constr)" and "iSpecializePat_go", last call
-failed.
 Tactic failure: iSpecialize: hypotheses ["HQ"] not found.
 "iPoseProofCoreHyp_not_found_fail"
      : string
 The command has indeed failed with message:
-Ltac call to "iPoseProofCoreHyp (constr) as (constr)" failed.
 Tactic failure: iPoseProof: "Hx" not found.
 "iPoseProofCoreHyp_not_fresh_fail"
      : string
 The command has indeed failed with message:
-Ltac call to "iPoseProofCoreHyp (constr) as (constr)" failed.
 Tactic failure: iPoseProof: "H1" not fresh.
 "iRevert_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iRevert (constr)", "iElaborateSelPat" and
-"<iris.proofmode.ltac_tactics.iElaborateSelPat_go>", last call failed.
 Tactic failure: iElaborateSelPat: "H" not found.
 "iDestruct_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iDestruct (open_constr) as (constr)",
-"iDestructCore (open_constr) as (constr) (tactic3)",
-"iDestructCore (open_constr) as (constr) (tactic3)",
-"iDestructCore (open_constr) as (constr) (tactic3)", 
-"tac" (bound to fun H => iDestructHyp H as pat),
-"iDestructHyp (constr) as (constr)",
-"<iris.proofmode.ltac_tactics.iDestructHypFindPat>" and
-"<iris.proofmode.ltac_tactics.iDestructHypFindPat>", last call failed.
 Tactic failure: iDestruct: "{HP}"
 should contain exactly one proper introduction pattern.
 The command has indeed failed with message:
-In nested Ltac calls to "iDestruct (open_constr) as (constr)",
-"iDestructCore (open_constr) as (constr) (tactic3)",
-"iDestructCore (open_constr) as (constr) (tactic3)",
-"iDestructCore (open_constr) as (constr) (tactic3)", 
-"tac" (bound to fun H => iDestructHyp H as pat),
-"iDestructHyp (constr) as (constr)",
-"<iris.proofmode.ltac_tactics.iDestructHypFindPat>" and
-"<iris.proofmode.ltac_tactics.iDestructHypGo>", last call failed.
 Tactic failure: iDestruct: (IList [[IClear (sel_patterns.SelIdent "HP")]])
 invalid.
 "iOrDestruct_fail"
      : string
 The command has indeed failed with message:
-Ltac call to "iOrDestruct (constr) as (constr) (constr)" failed.
 Tactic failure: iOrDestruct: "H'" or "H2" not fresh.
 The command has indeed failed with message:
-Ltac call to "iOrDestruct (constr) as (constr) (constr)" failed.
 Tactic failure: iOrDestruct: "H1" or "H'" not fresh.
 "iApply_fail"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)", 
-"tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
-failed.
 Tactic failure: iApply: cannot apply P.
 "iApply_fail_not_affine_1"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)", 
-"tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
-failed.
 Tactic failure: iApply: Q
 not absorbing and the remaining hypotheses not affine.
 "iApply_fail_not_affine_2"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iApply (open_constr)",
-"iPoseProofCore (open_constr) as (constr) (tactic3)", 
-"tac" (bound to fun H => iApplyHyp H) and "iApplyHyp (constr)", last call
-failed.
 Tactic failure: iApply: Q
 not absorbing and the remaining hypotheses not affine.
 "iRevert_wrong_var"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iRevert ( (ident) )" and 
-"iForallRevert (ident)", last call failed.
 Tactic failure: iRevert: k1 not in scope.
 The command has indeed failed with message:
-In nested Ltac calls to "iLöb as (constr) forall ( (ident) )",
-"iLöbRevert (constr) with (tactic3)",
-"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
-"tac" (bound to iRevertIntros "∗" with tac), "tac" (bound to iRevertIntros
-"∗" with tac), "iRevertIntros (constr) with (tactic3)", 
-"iRevertIntros_go", "tac" (bound to iRevertIntros ( x1 ) "" with iLöbCore as
-IH), "tac" (bound to iRevertIntros ( x1 ) "" with iLöbCore as IH),
-"iRevertIntros ( (ident) ) (constr) with (tactic3)",
-"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
-"tac" (bound to iRevert ( x1 ); tac; iIntros ( x1 )), 
-"tac" (bound to iRevert ( x1 ); tac; iIntros ( x1 )),
-"iRevert ( (ident) )" and "iForallRevert (ident)", last call failed.
 Tactic failure: iRevert: k1 not in scope.
 "iRevert_dup_var"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iRevert ( (ident) (ident) )",
-"iRevert ( (ident) )" and "iForallRevert (ident)", last call failed.
 Tactic failure: iRevert: k not in scope.
 "iRevert_dep_var_coq"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iRevert ( (ident) )", "iForallRevert (ident)" and
-"revert (ne_var_list)", last call failed.
 k is used in hypothesis Hk.
 "iRevert_dep_var"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iRevert ( (ident) )" and 
-"iForallRevert (ident)", last call failed.
 Tactic failure: iRevert: k is used in hypothesis "Hk".
 "iLöb_no_sbi"
      : string
 The command has indeed failed with message:
-In nested Ltac calls to "iLöb as (constr)",
-"iLöbRevert (constr) with (tactic3)",
-"iRevertIntros (constr) with (tactic3)", "iRevertIntros_go", 
-"tac" (bound to iRevertIntros "∗" with tac), "tac" (bound to iRevertIntros
-"∗" with tac), "iRevertIntros (constr) with (tactic3)", 
-"iRevertIntros_go", "tac" (bound to iLöbCore as IH), 
-"tac" (bound to iLöbCore as IH) and "iLöbCore as (constr)", last call failed.
 Tactic failure: iLöb: not a step-indexed BI entailment.
