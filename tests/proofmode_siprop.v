@@ -1,6 +1,5 @@
 From iris.proofmode Require Import tactics .
 From iris.si_logic Require Import bi.
-Set Ltac Backtrace. (* FIXME: remove once we drop Coq 8.9 *)
 
 Section si_logic_tests.
   Implicit Types P Q R : siProp.
