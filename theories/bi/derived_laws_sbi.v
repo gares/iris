@@ -167,6 +167,12 @@ Qed.
 
 Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
 Proof. apply (anti_symm _); auto using later_eq_1, later_eq_2. Qed.
+Lemma later_equivI_prop (P Q : PROP) : ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
+Proof.
+  move: (@later_contractive PROP)=> /contractive_alt [g [? Hlt]].
+  rewrite (Hlt P) (Hlt Q) -later_equivI.
+  eapply (internal_eq_rewrite' (Next P) (Next Q) (λ Qx, g (Next P) ≡ g Qx)%I); auto.
+Qed.
 
 (* Later derived *)
 Hint Resolve later_mono : core.
