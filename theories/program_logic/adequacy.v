@@ -82,7 +82,7 @@ Lemma wptp_strong_adequacy Φ κs' s n e1 t1 κs t2 σ1 σ2 :
   WP e1 @ s; ⊤ {{ Φ }} -∗
   wptp s t1 ={⊤,∅}▷=∗^(S n) ∃ e2 t2',
     ⌜ t2 = e2 :: t2' ⌝ ∗
-    ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝ ∗
+    ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → not_stuck e2 σ2 ⌝ ∗
     state_interp σ2 κs' (length t2') ∗
     from_option Φ True (to_val e2) ∗
     ([∗ list] v ∈ omap to_val t2', fork_post v).
@@ -92,7 +92,7 @@ Proof.
   iApply (step_fupdN_wand with "Hwp").
   iDestruct 1 as (e2' t2' ?) "(Hσ & Hwp & Ht)"; simplify_eq/=.
   iMod (fupd_plain_keep_l ⊤
-    ⌜ ∀ e2, s = NotStuck → e2 ∈ (e2' :: t2') → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝%I
+    ⌜ ∀ e2, s = NotStuck → e2 ∈ (e2' :: t2') → not_stuck e2 σ2 ⌝%I
     (state_interp σ2 κs' (length t2') ∗ WP e2' @ s; ⊤ {{ v, Φ v }} ∗ wptp s t2')%I
     with "[$Hσ $Hwp $Ht]") as "(Hsafe&Hσ&Hwp&Hvs)".
   { iIntros "(Hσ & Hwp & Ht)" (e' -> He').
@@ -126,8 +126,8 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e1 σ1 n κs t2 σ2 φ :
          (* e2 is the final state of the main thread, t2' the rest *)
          ⌜ t2 = e2 :: t2' ⌝ -∗
          (* If this is a stuck-free triple (i.e. [s = NotStuck]), then all
-         threads in [t2] are either done (a value) or reducible *)
-         ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → (is_Some (to_val e2) ∨ reducible e2 σ2) ⌝ -∗
+         threads in [t2] are not stuck *)
+         ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → not_stuck e2 σ2 ⌝ -∗
          (* The state interpretation holds for [σ2] *)
          stateI σ2 [] (length t2') -∗
          (* If the main thread is done, its post-condition [Φ] holds *)
