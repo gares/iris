@@ -385,6 +385,8 @@ Proof.
 Qed.
 Lemma except_0_later P : ◇ ▷ P ⊢ ▷ P.
 Proof. by rewrite /sbi_except_0 -later_or False_or. Qed.
+Lemma except_0_into_later P : ◇ P ⊢ ▷ P.
+Proof. by rewrite -except_0_later -later_intro. Qed.
 Lemma except_0_persistently P : ◇ <pers> P ⊣⊢ <pers> ◇ P.
 Proof.
   by rewrite /sbi_except_0 persistently_or -later_persistently persistently_pure.
