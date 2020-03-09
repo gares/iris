@@ -153,12 +153,18 @@ Section language.
   Proof. unfold Atomic. destruct a; eauto using val_irreducible. Qed.
 
   Lemma reducible_fill `{!@LanguageCtx Λ K} e σ :
+    reducible e σ → reducible (K e) σ.
+  Proof. unfold reducible in *. naive_solver eauto using fill_step. Qed.
+  Lemma reducible_fill_inv `{!@LanguageCtx Λ K} e σ :
     to_val e = None → reducible (K e) σ → reducible e σ.
   Proof.
     intros ? (e'&σ'&k&efs&Hstep); unfold reducible.
     apply fill_step_inv in Hstep as (e2' & _ & Hstep); eauto.
   Qed.
   Lemma reducible_no_obs_fill `{!@LanguageCtx Λ K} e σ :
+    reducible_no_obs e σ → reducible_no_obs (K e) σ.
+  Proof. unfold reducible_no_obs in *. naive_solver eauto using fill_step. Qed.
+  Lemma reducible_no_obs_fill_inv `{!@LanguageCtx Λ K} e σ :
     to_val e = None → reducible_no_obs (K e) σ → reducible_no_obs e σ.
   Proof.
     intros ? (e'&σ'&efs&Hstep); unfold reducible_no_obs.
@@ -166,19 +172,22 @@ Section language.
   Qed.
   Lemma irreducible_fill `{!@LanguageCtx Λ K} e σ :
     to_val e = None → irreducible e σ → irreducible (K e) σ.
+  Proof. rewrite -!not_reducible. naive_solver eauto using reducible_fill_inv. Qed.
+  Lemma irreducible_fill_inv `{!@LanguageCtx Λ K} e σ :
+    irreducible (K e) σ → irreducible e σ.
   Proof. rewrite -!not_reducible. naive_solver eauto using reducible_fill. Qed.
 
-  Lemma not_stuck_fill K `{!@LanguageCtx Λ K} e σ :
+  Lemma not_stuck_fill_inv K `{!@LanguageCtx Λ K} e σ :
     not_stuck (K e) σ → not_stuck e σ.
   Proof.
     rewrite /not_stuck -!not_eq_None_Some. intros [?|?].
     - auto using fill_not_val.
-    - destruct (decide (to_val e = None)); auto using reducible_fill.
+    - destruct (decide (to_val e = None)); auto using reducible_fill_inv.
   Qed.
 
   Lemma stuck_fill `{!@LanguageCtx Λ K} e σ :
     stuck e σ → stuck (K e) σ.
-  Proof. rewrite -!not_not_stuck. eauto using not_stuck_fill. Qed.
+  Proof. rewrite -!not_not_stuck. eauto using not_stuck_fill_inv. Qed.
 
   Lemma step_Permutation (t1 t1' t2 : list (expr Λ)) κ σ1 σ2 :
     t1 ≡ₚ t1' → step (t1,σ1) κ (t2,σ2) → ∃ t2', t2 ≡ₚ t2' ∧ step (t1',σ1) κ (t2',σ2).
