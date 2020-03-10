@@ -172,7 +172,7 @@ Qed.
 
 Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
 Proof. apply (anti_symm _); auto using later_eq_1, later_eq_2. Qed.
-Lemma later_equivI_prop (P Q : PROP) : ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
+Lemma later_equivI_prop_2 (P Q : PROP) : ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
 Proof. apply (f_equiv_contractive _). Qed.
 
 (* Later derived *)
