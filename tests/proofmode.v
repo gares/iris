@@ -227,6 +227,9 @@ Proof.
   done.
 Qed.
 
+Lemma test_iSpecialize_evar P : (∀ R, R -∗ R) -∗ P -∗ P.
+Proof. iIntros "H HP". iApply ("H" with "[HP]"). done. Qed.
+
 Lemma test_iPure_intro_emp R `{!Affine R} :
   R -∗ emp.
 Proof. iIntros "HR". by iPureIntro. Qed.
