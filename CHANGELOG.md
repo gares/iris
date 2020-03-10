@@ -67,6 +67,13 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   PROP-level binary relations.
 * Add new introduction pattern `-# pat` that moves a hypothesis from the
   intuitionistic context to the spatial context.
+* Made lemma names for `fill` more consistent
+  - Use the `_inv` suffix for the the backwards directions:
+   `reducible_fill` → `reducible_fill_inv`,
+   `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
+   `not_stuck_fill` → `not_stuck_fill_inv`.
+  - Use the non-`_inv` names (that freed up) for the forwards directions:
+   `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
 
 **Changes in heap_lang:**
 
