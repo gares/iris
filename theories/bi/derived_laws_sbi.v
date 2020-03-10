@@ -44,6 +44,12 @@ Proof. apply (internal_eq_rewrite' P Q (λ Q, P ↔ Q))%I; auto using iff_refl. 
 Lemma f_equiv {A B : ofeT} (f : A → B) `{!NonExpansive f} x y :
   x ≡ y ⊢ f x ≡ f y.
 Proof. apply (internal_eq_rewrite' x y (λ y, f x ≡ f y)%I); auto. Qed.
+Lemma f_equiv_contractive {A B : ofeT} (f : A → B) `{Hf : !Contractive f} x y :
+  ▷ (x ≡ y) ⊢ f x ≡ f y.
+Proof.
+  rewrite later_eq_2. move: Hf=>/contractive_alt [g [? Hfg]]. rewrite !Hfg.
+  by apply f_equiv.
+Qed.
 
 Lemma prod_equivI {A B : ofeT} (x y : A * B) : x ≡ y ⊣⊢ x.1 ≡ y.1 ∧ x.2 ≡ y.2.
 Proof.
@@ -155,8 +161,7 @@ Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
 Lemma internal_eq_rewrite_contractive {A : ofeT} a b (Ψ : A → PROP)
   {HΨ : Contractive Ψ} : ▷ (a ≡ b) ⊢ Ψ a → Ψ b.
 Proof.
-  rewrite later_eq_2. move: HΨ=>/contractive_alt [g [? HΨ]]. rewrite !HΨ.
-  by apply internal_eq_rewrite.
+  rewrite f_equiv_contractive. apply (internal_eq_rewrite (Ψ a) (Ψ b) id _).
 Qed.
 Lemma internal_eq_rewrite_contractive' {A : ofeT} a b (Ψ : A → PROP) P
   {HΨ : Contractive Ψ} : (P ⊢ ▷ (a ≡ b)) → (P ⊢ Ψ a) → P ⊢ Ψ b.
@@ -168,11 +173,7 @@ Qed.
 Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
 Proof. apply (anti_symm _); auto using later_eq_1, later_eq_2. Qed.
 Lemma later_equivI_prop (P Q : PROP) : ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
-Proof.
-  move: (@later_contractive PROP)=> /contractive_alt [g [? Hlt]].
-  rewrite (Hlt P) (Hlt Q) -later_equivI.
-  eapply (internal_eq_rewrite' (Next P) (Next Q) (λ Qx, g (Next P) ≡ g Qx)%I); auto.
-Qed.
+Proof. apply (f_equiv_contractive _). Qed.
 
 (* Later derived *)
 Hint Resolve later_mono : core.
