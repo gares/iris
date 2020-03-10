@@ -11,7 +11,8 @@ Implicit Types Φ : val Λ → iProp Σ.
 Implicit Types v : val Λ.
 Implicit Types e : expr Λ.
 Hint Resolve head_prim_reducible head_reducible_prim_step : core.
-Hint Resolve (reducible_not_val _ inhabitant) : core.
+Local Definition reducible_not_val_inhabitant e := reducible_not_val e inhabitant.
+Hint Resolve reducible_not_val_inhabitant : core.
 Hint Resolve head_stuck_stuck : core.
 
 Lemma wp_lift_head_step_fupd {s E Φ} e1 :
