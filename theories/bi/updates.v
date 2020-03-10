@@ -430,6 +430,12 @@ Section fupd_derived.
 
     Lemma fupd_plain_later E P `{!Plain P} : (▷ |={E}=> P) ⊢ |={E}=> ▷ ◇ P.
     Proof. by rewrite {1}(plain P) fupd_plainly_later. Qed.
+    Lemma fupd_plain_laterN E n P `{!Plain P} : (▷^n |={E}=> P) ⊢ |={E}=> ▷^n ◇ P.
+    Proof.
+      induction n as [|n IH]; simpl; [by rewrite -except_0_intro|].
+      by rewrite IH fupd_plain_later except_0_laterN except_0_idemp.
+    Qed.
+
     Lemma fupd_plain_forall_2 E {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
       (∀ x, |={E}=> Φ x) ⊢ |={E}=> ∀ x, Φ x.
     Proof.
