@@ -160,8 +160,7 @@ Proof.
   { apply of_to_val in He as <-. by iApply fupd_wp. }
   rewrite wp_unfold /wp_pre fill_not_val //.
   iIntros (σ1 κ κs n) "Hσ". iMod ("H" with "[$]") as "[% H]". iModIntro; iSplit.
-  { iPureIntro. destruct s; last done.
-    unfold reducible in *. naive_solver eauto using fill_step. }
+  { destruct s; eauto using reducible_fill. }
   iIntros (e2 σ2 efs Hstep).
   destruct (fill_step_inv e σ1 κ e2 σ2 efs) as (e2'&->&?); auto.
   iMod ("H" $! e2' σ2 efs with "[//]") as "H". iIntros "!>!>".
@@ -177,7 +176,7 @@ Proof.
   { apply of_to_val in He as <-. by rewrite !wp_unfold /wp_pre. }
   rewrite fill_not_val //.
   iIntros (σ1 κ κs n) "Hσ". iMod ("H" with "[$]") as "[% H]". iModIntro; iSplit.
-  { destruct s; eauto using reducible_fill. }
+  { destruct s; eauto using reducible_fill_inv. }
   iIntros (e2 σ2 efs Hstep).
   iMod ("H" $! (K e2) σ2 efs with "[]") as "H"; [by eauto using fill_step|].
   iIntros "!>!>". iMod "H" as "(Hσ & H & Hefs)".

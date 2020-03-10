@@ -186,7 +186,7 @@ Proof.
     iApply (twp_pre_mono with "[] IH"). by iIntros "!>" (E e Φ') "[_ ?]". }
   rewrite /twp_pre fill_not_val //.
   iIntros (σ1 κs n) "Hσ". iMod ("IH" with "[$]") as "[% IH]". iModIntro; iSplit.
-  { destruct s; eauto using reducible_no_obs_fill. }
+  { destruct s; eauto using reducible_no_obs_fill_inv. }
   iIntros (κ e2 σ2 efs Hstep).
   iMod ("IH" $! κ (K e2) σ2 efs with "[]") as (?) "(Hσ & IH & IHefs)"; eauto using fill_step.
   iModIntro. iFrame "Hσ". iSplit; first done. iSplitR "IHefs".
@@ -199,7 +199,7 @@ Proof.
   iIntros "H". iLöb as "IH" forall (E e Φ).
   rewrite wp_unfold twp_unfold /wp_pre /twp_pre. destruct (to_val e) as [v|]=>//.
   iIntros (σ1 κ κs n) "Hσ". iMod ("H" with "Hσ") as "[% H]". iIntros "!>". iSplitR.
-  { destruct s; last done. eauto using reducible_no_obs_reducible. }
+  { destruct s; eauto using reducible_no_obs_reducible. }
   iIntros (e2 σ2 efs) "Hstep". iMod ("H" with "Hstep") as (->) "(Hσ & H & Hfork)".
   iApply step_fupd_intro; [set_solver+|]. iNext.
   iFrame "Hσ". iSplitL "H". by iApply "IH".
