@@ -1,5 +1,13 @@
 From iris.base_logic.lib Require Import invariants.
 
+(** Make sure that the same [Equivalence] instance is picked for Leibniz OFEs
+with carriers that are definitionally equal. See also
+https://gitlab.mpi-sws.org/iris/iris/issues/299 *)
+Definition tag := nat.
+Canonical Structure tagO := leibnizO tag.
+Goal tagO = natO.
+Proof. reflexivity. Qed.
+
 Instance test_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
 Section tests.
