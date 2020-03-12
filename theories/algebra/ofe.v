@@ -885,7 +885,10 @@ Section discrete_ofe.
 End discrete_ofe.
 
 Notation discreteO A := (OfeT A (discrete_ofe_mixin _)).
-Notation leibnizO A := (OfeT A (@discrete_ofe_mixin _ equivL _)).
+(** Force the [Equivalence] proof to be [eq_equivalence] so that it does not
+find another one, like [ofe_equivalence], in the case of aliases. See also
+https://gitlab.mpi-sws.org/iris/iris/issues/229 *)
+Notation leibnizO A := (OfeT A (@discrete_ofe_mixin _ equivL eq_equivalence)).
 
 (** In order to define a discrete CMRA with carrier [A] (in the file [cmra.v])
 we need to determine the [Equivalence A] proof that was used to construct the
