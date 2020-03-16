@@ -21,6 +21,10 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 **Changes in Coq:**
 
 * Added support for Coq 8.10 and Coq 8.11; dropped support for Coq 8.7 and Coq 8.8.
+* Removed coercion from `iProp` (and other MoSeL propositions) to `Prop`.
+  Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
+  type cannot be inferred. This also means that `%I` should not be necessary any
+  more when stating lemmas, as `P` above is automatically parsed in scope `%I`.
 * A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
   Coq goal `big star of context ⊢ proof mode goal`.
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
