@@ -24,7 +24,7 @@ Section tests.
   Definition heap_e : expr :=
     let: "x" := ref #1 in "x" <- !"x" + #1 ;; !"x".
 
-  Lemma heap_e_spec E : WP heap_e @ E {{ v, ⌜v = #2⌝ }}%I.
+  Lemma heap_e_spec E : ⊢ WP heap_e @ E {{ v, ⌜v = #2⌝ }}.
   Proof.
     iIntros "". rewrite /heap_e. Show.
     wp_alloc l as "?". wp_load. Show.
@@ -36,7 +36,7 @@ Section tests.
     let: "y" := ref #1 in
     "x" <- !"x" + #1 ;; !"x".
 
-  Lemma heap_e2_spec E : WP heap_e2 @ E [{ v, ⌜v = #2⌝ }]%I.
+  Lemma heap_e2_spec E : ⊢ WP heap_e2 @ E [{ v, ⌜v = #2⌝ }].
   Proof.
     iIntros "". rewrite /heap_e2.
     wp_alloc l as "Hl". Show. wp_alloc l'.
@@ -48,7 +48,7 @@ Section tests.
     let: "f" := λ: "z", "z" + #1 in
     if: "x" then "f" #0 else "f" #1.
 
-  Lemma heap_e3_spec E : WP heap_e3 @ E [{ v, ⌜v = #1⌝ }]%I.
+  Lemma heap_e3_spec E : ⊢ WP heap_e3 @ E [{ v, ⌜v = #1⌝ }].
   Proof.
     iIntros "". rewrite /heap_e3.
     by repeat (wp_pure _).
@@ -58,7 +58,7 @@ Section tests.
     let: "x" := (let: "y" := ref (ref #1) in ref "y") in
     ! ! !"x".
 
-  Lemma heap_e4_spec : WP heap_e4 [{ v, ⌜ v = #1 ⌝ }]%I.
+  Lemma heap_e4_spec : ⊢ WP heap_e4 [{ v, ⌜ v = #1 ⌝ }].
   Proof.
     rewrite /heap_e4. wp_alloc l. wp_alloc l'.
     wp_alloc l''. by repeat wp_load.
@@ -67,7 +67,7 @@ Section tests.
   Definition heap_e5 : expr :=
     let: "x" := ref (ref #1) in ! ! "x" + FAA (!"x") (#10 + #1).
 
-  Lemma heap_e5_spec E : WP heap_e5 @ E [{ v, ⌜v = #13⌝ }]%I.
+  Lemma heap_e5_spec E : ⊢ WP heap_e5 @ E [{ v, ⌜v = #13⌝ }].
   Proof.
     rewrite /heap_e5. wp_alloc l. wp_alloc l'.
     wp_load. wp_faa. do 2 wp_load. by wp_pures.
@@ -76,7 +76,7 @@ Section tests.
   Definition heap_e6 : val := λ: "v", "v" = "v".
 
   Lemma heap_e6_spec (v : val) :
-    val_is_unboxed v → (WP heap_e6 v {{ w, ⌜ w = #true ⌝ }})%I.
+    val_is_unboxed v → ⊢ WP heap_e6 v {{ w, ⌜ w = #true ⌝ }}.
   Proof. intros ?. wp_lam. wp_op. by case_bool_decide. Qed.
 
   Definition heap_e7 : val := λ: "v", CmpXchg "v" #0 #1.
@@ -117,7 +117,7 @@ Section tests.
   Qed.
 
   Lemma Pred_user E :
-    WP let: "x" := Pred #42 in Pred "x" @ E [{ v, ⌜v = #40⌝ }]%I.
+    ⊢ WP let: "x" := Pred #42 in Pred "x" @ E [{ v, ⌜v = #40⌝ }].
   Proof. iIntros "". wp_apply Pred_spec. by wp_apply Pred_spec. Qed.
 
   Lemma wp_apply_evar e P :
@@ -132,22 +132,22 @@ Section tests.
   Qed.
 
   Lemma wp_alloc_split :
-    WP Alloc #0 {{ _, True }}%I.
+    ⊢ WP Alloc #0 {{ _, True }}.
   Proof. wp_alloc l as "[Hl1 Hl2]". Show. done. Qed.
 
   Lemma wp_alloc_drop :
-    WP Alloc #0 {{ _, True }}%I.
+    ⊢ WP Alloc #0 {{ _, True }}.
   Proof. wp_alloc l as "_". Show. done. Qed.
 
   Check "wp_nonclosed_value".
   Lemma wp_nonclosed_value :
-    WP let: "x" := #() in (λ: "y", "x")%V #() {{ _, True }}%I.
+    ⊢ WP let: "x" := #() in (λ: "y", "x")%V #() {{ _, True }}.
   Proof. wp_let. wp_lam. Fail wp_pure _. Show. Abort.
 
   Lemma wp_alloc_array n : 0 < n →
-    {{{ True }}}
-      AllocN #n #0
-    {{{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}}}%I.
+    ⊢ {{{ True }}}
+        AllocN #n #0
+      {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0}}}.
   Proof.
     iIntros (? Φ) "!> _ HΦ".
     wp_alloc l as "?"; first done.
@@ -155,9 +155,9 @@ Section tests.
   Qed.
 
   Lemma twp_alloc_array n : 0 < n →
-    [[{ True }]]
-      AllocN #n #0
-    [[{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}]]%I.
+    ⊢ [[{ True }]]
+        AllocN #n #0
+      [[{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}]].
   Proof.
     iIntros (? Φ) "!> _ HΦ".
     wp_alloc l as "?"; first done. Show.
@@ -258,7 +258,7 @@ Section error_tests.
 
   Check "not_cmpxchg".
   Lemma not_cmpxchg :
-    (WP #() #() {{ _, True }})%I.
+    ⊢ WP #() #() {{ _, True }}.
   Proof.
     Fail wp_cmpxchg_suc.
   Abort.

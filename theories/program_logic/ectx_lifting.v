@@ -59,7 +59,7 @@ Lemma wp_lift_pure_head_stuck E Φ e :
   to_val e = None →
   sub_redexes_are_values e →
   (∀ σ, head_stuck e σ) →
-  WP e @ E ?{{ Φ }}%I.
+  ⊢ WP e @ E ?{{ Φ }}.
 Proof using Hinh.
   iIntros (?? Hstuck). iApply wp_lift_head_stuck; [done|done|].
   iIntros (σ κs n) "_". iMod (fupd_intro_mask' E ∅) as "_"; first set_solver.

@@ -115,7 +115,7 @@ End adequacy.
 (** Iris's generic adequacy result *)
 Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e1 σ1 n κs t2 σ2 φ :
   (∀ `{Hinv : !invG Σ},
-     (|={⊤}=> ∃
+    ⊢ |={⊤}=> ∃
          (s: stuckness)
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (Φ fork_post : val Λ → iProp Σ),
@@ -138,7 +138,7 @@ Theorem wp_strong_adequacy Σ Λ `{!invPreG Σ} e1 σ1 n κs t2 σ2 φ :
          can conclude [φ] in the logic. After opening all required invariants,
          one can use [fupd_intro_mask'] or [fupd_mask_weaken] to introduce the
          fancy update. *)
-         |={⊤,∅}=> ⌜ φ ⌝))%I) →
+         |={⊤,∅}=> ⌜ φ ⌝)) →
   nsteps n ([e1], σ1) κs (t2, σ2) →
   (* Then we can conclude [φ] at the meta-level. *)
   φ.
@@ -192,11 +192,11 @@ Qed.
 
 Corollary wp_adequacy Σ Λ `{!invPreG Σ} s e σ φ :
   (∀ `{Hinv : !invG Σ} κs,
-     (|={⊤}=> ∃
+     ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → iProp Σ)
          (fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv (λ σ κs _, stateI σ κs) fork_post in
-       stateI σ κs ∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }})%I) →
+       stateI σ κs ∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
   intros Hwp. apply adequate_alt; intros t2 σ2 [n [κs ?]]%erased_steps_nsteps.
@@ -210,12 +210,12 @@ Qed.
 
 Corollary wp_invariance Σ Λ `{!invPreG Σ} s e1 σ1 t2 σ2 φ :
   (∀ `{Hinv : !invG Σ} κs,
-     (|={⊤}=> ∃
+     ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post in
        stateI σ1 κs 0 ∗ WP e1 @ s; ⊤ {{ _, True }} ∗
-       (stateI σ2 [] (pred (length t2)) -∗ ∃ E, |={⊤,E}=> ⌜φ⌝))%I) →
+       (stateI σ2 [] (pred (length t2)) -∗ ∃ E, |={⊤,E}=> ⌜φ⌝)) →
   rtc erased_step ([e1], σ1) (t2, σ2) →
   φ.
 Proof.

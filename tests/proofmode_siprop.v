@@ -10,12 +10,12 @@ Section si_logic_tests.
   Lemma test_everything_affine P : P -∗ True.
   Proof. by iIntros "_". Qed.
 
-  Lemma test_iIntro_impl P Q R : (P → Q ∧ R → P ∧ R)%I.
+  Lemma test_iIntro_impl P Q R : ⊢ P → Q ∧ R → P ∧ R.
   Proof. iIntros "#HP #[HQ HR]". auto. Qed.
 
-  Lemma test_iApply_impl_1 P Q R : (P → (P → Q) → Q)%I.
+  Lemma test_iApply_impl_1 P Q R : ⊢ P → (P → Q) → Q.
   Proof. iIntros "HP HPQ". by iApply "HPQ". Qed.
 
-  Lemma test_iApply_impl_2 P Q R : (P → (P → Q) → Q)%I.
+  Lemma test_iApply_impl_2 P Q R : ⊢ P → (P → Q) → Q.
   Proof. iIntros "#HP #HPQ". by iApply "HPQ". Qed.
 End si_logic_tests.

@@ -84,7 +84,7 @@ Section embed_laws.
   Proof. eapply bi_embed_mixin_ne, bi_embed_mixin. Qed.
   Global Instance embed_mono : Proper ((⊢) ==> (⊢)) embed.
   Proof. eapply bi_embed_mixin_mono, bi_embed_mixin. Qed.
-  Lemma embed_emp_valid_inj P : (⎡P⎤ : PROP2)%I → P.
+  Lemma embed_emp_valid_inj P : (⊢@{PROP2} ⎡P⎤) → ⊢ P.
   Proof. eapply bi_embed_mixin_emp_valid_inj, bi_embed_mixin. Qed.
   Lemma embed_emp_2 : emp ⊢ ⎡emp⎤.
   Proof. eapply bi_embed_mixin_emp_2, bi_embed_mixin. Qed.
@@ -123,7 +123,7 @@ Section embed.
     intros P Q EQ. apply bi.equiv_spec, conj; apply (inj embed); rewrite EQ //.
   Qed.
 
-  Lemma embed_emp_valid (P : PROP1) : ⎡P⎤%I ↔ P.
+  Lemma embed_emp_valid (P : PROP1) : (⊢ ⎡P⎤) ↔ (⊢ P).
   Proof.
     rewrite /bi_emp_valid. split=> HP.
     - by apply embed_emp_valid_inj.

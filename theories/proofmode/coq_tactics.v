@@ -497,7 +497,7 @@ Proof. intros HP. apply HP. Defined.
 checker, per https://gitlab.mpi-sws.org/iris/iris/issues/274; hence, it must
 be done _outside_ [tac_pose_proof], so the latter can remain opaque. *)
 Lemma tac_pose_proof Δ j P Q :
-  P →
+  (⊢ P) →
   match envs_app true (Esnoc Enil j P) Δ with
   | None => False
   | Some Δ' => envs_entails Δ' Q

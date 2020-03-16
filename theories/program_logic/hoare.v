@@ -64,10 +64,10 @@ Global Instance ht_mono' s E :
   Proper (flip (⊢) ==> eq ==> pointwise_relation _ (⊢) ==> (⊢)) (ht s E).
 Proof. solve_proper. Qed.
 
-Lemma ht_alt s E P Φ e : (P ⊢ WP e @ s; E {{ Φ }}) → {{ P }} e @ s; E {{ Φ }}.
+Lemma ht_alt s E P Φ e : (P ⊢ WP e @ s; E {{ Φ }}) → ⊢ {{ P }} e @ s; E {{ Φ }}.
 Proof. iIntros (Hwp) "!> HP". by iApply Hwp. Qed.
 
-Lemma ht_val s E v : {{ True }} of_val v @ s; E {{ v', ⌜v = v'⌝ }}.
+Lemma ht_val s E v : ⊢ {{ True }} of_val v @ s; E {{ v', ⌜v = v'⌝ }}.
 Proof. iIntros "!> _". by iApply wp_value'. Qed.
 
 Lemma ht_vs s E P P' Φ Φ' e :

@@ -75,7 +75,7 @@ Section list_reverse.
       end.
 
   Lemma rev_acc_ht hd acc xs ys :
-    {{ is_list hd xs ∗ is_list acc ys }} rev hd acc {{ w, is_list w (reverse xs ++ ys) }}.
+    ⊢ {{ is_list hd xs ∗ is_list acc ys }} rev hd acc {{ w, is_list w (reverse xs ++ ys) }}.
   Proof.
     iIntros "!> [Hxs Hys]".
     iLöb as "IH" forall (hd acc xs ys). wp_rec; wp_let.
@@ -89,7 +89,7 @@ Section list_reverse.
   Qed.
 
   Lemma rev_ht hd xs :
-    {{ is_list hd xs }} rev hd NONEV {{ w, is_list w (reverse xs) }}.
+    ⊢ {{ is_list hd xs }} rev hd NONEV {{ w, is_list w (reverse xs) }}.
   Proof.
     iIntros "!> Hxs". rewrite -(right_id_L [] (++) (reverse xs)).
     iApply (rev_acc_ht hd NONEV with "[Hxs]"); simpl; by iFrame.
@@ -202,7 +202,7 @@ Section counter_proof.
   Proof. apply _. Qed.
 
   Lemma newcounter_spec :
-    {{ True }} newcounter #() {{ v, ∃ l, ⌜v = #l⌝ ∧ C l 0 }}.
+    ⊢ {{ True }} newcounter #() {{ v, ∃ l, ⌜v = #l⌝ ∧ C l 0 }}.
   Proof.
     iIntros "!> _ /=". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (Auth 0)) as (γ) "Hγ"; first done.
@@ -214,7 +214,7 @@ Section counter_proof.
   Qed.
 
   Lemma incr_spec l n :
-    {{ C l n }} incr #l {{ v, ⌜v = #()⌝ ∧ C l (S n) }}.
+    ⊢ {{ C l n }} incr #l {{ v, ⌜v = #()⌝ ∧ C l (S n) }}.
   Proof.
     iIntros "!> Hl /=". iLöb as "IH". wp_rec.
     iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
@@ -239,7 +239,7 @@ Section counter_proof.
 
   Check "read_spec".
   Lemma read_spec l n :
-    {{ C l n }} read #l {{ v, ∃ m : nat, ⌜v = #m ∧ n ≤ m⌝ ∧ C l m }}.
+    ⊢ {{ C l n }} read #l {{ v, ∃ m : nat, ⌜v = #m ∧ n ≤ m⌝ ∧ C l m }}.
   Proof.
     iIntros "!> Hl /=". iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
     rewrite /read /=. wp_lam. Show. iApply wp_inv_open; last iFrame "Hinv"; auto.

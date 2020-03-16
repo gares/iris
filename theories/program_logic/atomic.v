@@ -41,7 +41,7 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ Eo '<<<' ∃ y1 .. yn , β , 'RET' v
   )
   (at level 20, Eo, α, β, v at level 200, x1 binder, xn binder, y1 binder, yn binder,
    format "'[hv' '<<<'  ∀  x1  ..  xn ,  α  '>>>'  '/  ' e  @  Eo  '/' '[    ' '<<<'  ∃  y1  ..  yn ,  β ,  '/' 'RET'  v  '>>>' ']' ']'")
-  : stdpp_scope.
+  : bi_scope.
 
 Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ Eo '<<<' β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleS (λ x1, .. (TeleS (λ xn, TeleO)) .. ))
@@ -61,7 +61,7 @@ Notation "'<<<' ∀ x1 .. xn , α '>>>' e @ Eo '<<<' β , 'RET' v '>>>'" :=
   )
   (at level 20, Eo, α, β, v at level 200, x1 binder, xn binder,
    format "'[hv' '<<<'  ∀  x1  ..  xn ,  α  '>>>'  '/  ' e  @  Eo  '/' '[    ' '<<<'  β ,  '/' 'RET'  v  '>>>' ']' ']'")
-  : stdpp_scope.
+  : bi_scope.
 
 Notation "'<<<' α '>>>' e @ Eo '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleO)
@@ -78,7 +78,7 @@ Notation "'<<<' α '>>>' e @ Eo '<<<' ∃ y1 .. yn , β , 'RET' v '>>>'" :=
   )
   (at level 20, Eo, α, β, v at level 200, y1 binder, yn binder,
    format "'[hv' '<<<'  α  '>>>'  '/  ' e  @  Eo  '/' '[    ' '<<<'  ∃  y1  ..  yn ,  β ,  '/' 'RET'  v  '>>>' ']' ']'")
-  : stdpp_scope.
+  : bi_scope.
 
 Notation "'<<<' α '>>>' e @ Eo '<<<' β , 'RET' v '>>>'" :=
   (atomic_wp (TA:=TeleO)
@@ -91,7 +91,7 @@ Notation "'<<<' α '>>>' e @ Eo '<<<' β , 'RET' v '>>>'" :=
   )
   (at level 20, Eo, α, β, v at level 200,
    format "'[hv' '<<<'  α  '>>>'  '/  ' e  @  Eo  '/' '[    ' '<<<'  β ,  '/' 'RET'  v  '>>>' ']' ']'")
-  : stdpp_scope.
+  : bi_scope.
 
 (** Theory *)
 Section lemmas.

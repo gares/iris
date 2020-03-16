@@ -67,7 +67,7 @@ Section bi_rtc.
     by iApply (least_fixpoint_ind (bi_rtc_pre R x2) with "IH").
   Qed.
 
-  Lemma bi_rtc_refl x : bi_rtc R x x.
+  Lemma bi_rtc_refl x : ⊢ bi_rtc R x x.
   Proof. rewrite bi_rtc_unfold. by iLeft. Qed.
 
   Lemma bi_rtc_l x1 x2 x3 : R x1 x2 -∗ bi_rtc R x2 x3 -∗ bi_rtc R x1 x3.

@@ -24,10 +24,10 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   alloc_spec (v : val) :
     {{{ True }}} alloc v {{{ l, RET #l; mapsto l 1 v }}};
   load_spec (l : loc) :
-    <<< ∀ (v : val) q, mapsto l q v >>> load #l @ ⊤ <<< mapsto l q v, RET v >>>;
+    ⊢ <<< ∀ (v : val) q, mapsto l q v >>> load #l @ ⊤ <<< mapsto l q v, RET v >>>;
   store_spec (l : loc) (w : val) :
-    <<< ∀ v, mapsto l 1 v >>> store #l w @ ⊤
-    <<< mapsto l 1 w, RET #() >>>;
+    ⊢ <<< ∀ v, mapsto l 1 v >>> store #l w @ ⊤
+      <<< mapsto l 1 w, RET #() >>>;
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
@@ -36,8 +36,8 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   [destruct (decide (a = b))] and it will simplify in both places. *)
   cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    <<< ∀ v, mapsto l 1 v >>> cmpxchg #l w1 w2 @ ⊤
-    <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
+    ⊢ <<< ∀ v, mapsto l 1 v >>> cmpxchg #l w1 w2 @ ⊤
+      <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
 Arguments atomic_heap _ {_}.
@@ -67,7 +67,7 @@ Section derived.
 
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    <<< ∀ v, mapsto l 1 v >>> CAS #l w1 w2 @ ⊤
+    ⊢ <<< ∀ v, mapsto l 1 v >>> CAS #l w1 w2 @ ⊤
     <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
         RET #if decide (v = w1) then true else false >>>.
   Proof.
@@ -98,7 +98,7 @@ Section proof.
   Qed.
 
   Lemma primitive_load_spec (l : loc) :
-    <<< ∀ (v : val) q, l ↦{q} v >>> primitive_load #l @ ⊤
+    ⊢ <<< ∀ (v : val) q, l ↦{q} v >>> primitive_load #l @ ⊤
     <<< l ↦{q} v, RET v >>>.
   Proof.
     iIntros (Φ) "AU". wp_lam.
@@ -107,7 +107,7 @@ Section proof.
   Qed.
 
   Lemma primitive_store_spec (l : loc) (w : val) :
-    <<< ∀ v, l ↦ v >>> primitive_store #l w @ ⊤
+    ⊢ <<< ∀ v, l ↦ v >>> primitive_store #l w @ ⊤
     <<< l ↦ w, RET #() >>>.
   Proof.
     iIntros (Φ) "AU". wp_lam. wp_let.
@@ -117,7 +117,7 @@ Section proof.
 
   Lemma primitive_cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    <<< ∀ (v : val), l ↦ v >>>
+    ⊢ <<< ∀ (v : val), l ↦ v >>>
       primitive_cmpxchg #l w1 w2 @ ⊤
     <<< if decide (v = w1) then l ↦ w2 else l ↦ v,
         RET (v, #if decide (v = w1) then true else false) >>>.

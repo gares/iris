@@ -27,8 +27,8 @@ Definition twp_pre `{!irisG Λ Σ} (s : stuckness)
 monotone. The actual least fixpoint [twp_def] can be found below. *)
 Lemma twp_pre_mono `{!irisG Λ Σ} s
     (wp1 wp2 : coPset → expr Λ → (val Λ → iProp Σ) → iProp Σ) :
-  ((□ ∀ E e Φ, wp1 E e Φ -∗ wp2 E e Φ) →
-  ∀ E e Φ, twp_pre s wp1 E e Φ -∗ twp_pre s wp2 E e Φ)%I.
+  ⊢ (□ ∀ E e Φ, wp1 E e Φ -∗ wp2 E e Φ) →
+    ∀ E e Φ, twp_pre s wp1 E e Φ -∗ twp_pre s wp2 E e Φ.
 Proof.
   iIntros "#H"; iIntros (E e1 Φ) "Hwp". rewrite /twp_pre.
   destruct (to_val e1) as [v|]; first done.

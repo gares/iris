@@ -108,7 +108,7 @@ Section to_proph_map.
 End to_proph_map.
 
 Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
-  (|==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps)%I.
+  ⊢ |==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps.
 Proof.
   iMod (own_alloc (● to_proph_map ∅)) as (γ) "Hh".
   { rewrite auth_auth_valid. exact: to_proph_map_valid. }

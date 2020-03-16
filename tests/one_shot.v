@@ -88,7 +88,7 @@ Proof.
 Qed.
 
 Lemma ht_one_shot (Φ : val → iProp Σ) :
-  {{ True }} one_shot_example #()
+  ⊢ {{ True }} one_shot_example #()
     {{ ff,
       (∀ n : Z, {{ True }} Fst ff #n {{ w, ⌜w = #true⌝ ∨ ⌜w = #false⌝ }}) ∗
       {{ True }} Snd ff #() {{ g, {{ True }} g #() {{ _, True }} }}
@@ -108,7 +108,7 @@ Definition client : expr :=
 Section client.
   Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
 
-  Lemma client_safe : WP client {{ _, True }}%I.
+  Lemma client_safe : ⊢ WP client {{ _, True }}.
   Proof using Type*.
     rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]".
     wp_let. wp_apply wp_par.

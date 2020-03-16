@@ -39,9 +39,9 @@ Proof. by intros HP HQ; rewrite /vs -HP HQ. Qed.
 Global Instance vs_mono' E1 E2 : Proper (flip (⊢) ==> (⊢) ==> (⊢)) (vs E1 E2).
 Proof. solve_proper. Qed.
 
-Lemma vs_false_elim E1 E2 P : False ={E1,E2}=> P.
+Lemma vs_false_elim E1 E2 P : ⊢ False ={E1,E2}=> P.
 Proof. iIntros "!> []". Qed.
-Lemma vs_timeless E P : Timeless P → ▷ P ={E}=> P.
+Lemma vs_timeless E P : Timeless P → ⊢ ▷ P ={E}=> P.
 Proof. by iIntros (?) "!> > ?". Qed.
 
 Lemma vs_transitive E1 E2 E3 P Q R :
@@ -51,7 +51,7 @@ Proof.
   iMod ("HvsP" with "HP") as "HQ". by iApply "HvsQ".
 Qed.
 
-Lemma vs_reflexive E P : P ={E}=> P.
+Lemma vs_reflexive E P : ⊢ P ={E}=> P.
 Proof. by iIntros "!> HP". Qed.
 
 Lemma vs_impl E P Q : □ (P → Q) ⊢ P ={E}=> Q.
@@ -77,7 +77,7 @@ Proof.
   by iApply "Hclose".
 Qed.
 
-Lemma vs_alloc N P : ▷ P ={↑N}=> inv N P.
+Lemma vs_alloc N P : ⊢ ▷ P ={↑N}=> inv N P.
 Proof. iIntros "!> HP". by iApply inv_alloc. Qed.
 
 Lemma wand_fupd_alt E1 E2 P Q : (P ={E1,E2}=∗ Q) ⊣⊢ ∃ R, R ∗ (P ∗ R ={E1,E2}=> Q).

@@ -98,8 +98,6 @@ Canonical Structure uPredSI (M : ucmraT) : sbi :=
   {| sbi_ofe_mixin := ofe_mixin_of (uPred M);
      sbi_bi_mixin := uPred_bi_mixin M; sbi_sbi_mixin := uPred_sbi_mixin M |}.
 
-Coercion uPred_valid {M} : uPred M → Prop := bi_emp_valid.
-
 Lemma uPred_plainly_mixin M : BiPlainlyMixin (uPredSI M) uPred_plainly.
 Proof.
   split.
