@@ -18,14 +18,6 @@ Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
 Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
 (** Propers *)
-Global Instance uPred_valid_proper : Proper ((⊣⊢) ==> iff) (@uPred_valid M).
-Proof. solve_proper. Qed.
-Global Instance uPred_valid_mono : Proper ((⊢) ==> impl) (@uPred_valid M).
-Proof. solve_proper. Qed.
-Global Instance uPred_valid_flip_mono :
-  Proper (flip (⊢) ==> flip impl) (@uPred_valid M).
-Proof. solve_proper. Qed.
-
 Global Instance ownM_proper: Proper ((≡) ==> (⊣⊢)) (@uPred_ownM M) := ne_proper _.
 Global Instance cmra_valid_proper {A : cmraT} :
   Proper ((≡) ==> (⊣⊢)) (@uPred_cmra_valid M A) := ne_proper _.
@@ -98,17 +90,17 @@ Proof.
   apply: plain.
 Qed.
 
-Corollary soundness φ n : (▷^n ⌜ φ ⌝ : uPred M)%I → φ.
+Corollary soundness φ n : (⊢@{uPredI M} ▷^n ⌜ φ ⌝) → φ.
 Proof.
   induction n as [|n IH]=> /=.
   - apply pure_soundness.
   - intros H. by apply IH, later_soundness.
 Qed.
 
-Corollary consistency_modal n : ¬ (▷^n False : uPred M)%I.
+Corollary consistency_modal n : ¬ ⊢@{uPredI M} ▷^n False.
 Proof. exact (soundness False n). Qed.
 
-Corollary consistency : ¬(False : uPred M)%I.
+Corollary consistency : ¬ ⊢@{uPredI M} False.
 Proof. exact (consistency_modal 0). Qed.
 End derived.
 

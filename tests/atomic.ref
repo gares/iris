@@ -26,7 +26,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   P : val → iProp Σ
   ============================
-  <<< ∀ x : val, P x >>> code @ ⊤ <<< ∃ y : val, P y, RET #() >>>
+  ⊢ <<< ∀ x : val, P x >>> code @ ⊤ <<< ∃ y : val, P y, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -58,7 +58,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< ∀ x : val, l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>
+  ⊢ <<< ∀ x : val, l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -89,7 +89,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< l ↦ #() >>> code @ ⊤ <<< ∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< l ↦ #() >>> code @ ⊤ <<< ∃ y : val, l ↦ y, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -121,7 +121,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< l ↦ #() >>> code @ ⊤ <<< l ↦ #(), RET #() >>>
+  ⊢ <<< l ↦ #() >>> code @ ⊤ <<< l ↦ #(), RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -154,7 +154,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< ∀ x : val, l ↦ x ∗ l ↦ x >>> code @ ⊤ <<< ∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x >>>
+      code @ ⊤
+    <<< ∃ y : val, l ↦ y, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -173,9 +175,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
-    code @ ⊤
-  <<< ∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+      code @ ⊤
+    <<< ∃ y : val, l ↦ y, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -194,10 +196,10 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< ∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
-    code @ ⊤
-  <<< ∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
-      RET #() >>>
+  ⊢ <<< ∀ xx : val, l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
+      code @ ⊤
+    <<< ∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
+        RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -218,9 +220,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   heapG0 : heapG Σ
   l : loc
   ============================
-  <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
-    code @ ⊤
-  <<< l ↦ x, RET #() >>>
+  ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+      code @ ⊤
+    <<< l ↦ x, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -240,9 +242,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   l : loc
   x : val
   ============================
-  <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
-    code @ ⊤
-  <<< ∃ y : val, l ↦ y, RET #() >>>
+  ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+      code @ ⊤
+    <<< ∃ y : val, l ↦ y, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -263,9 +265,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   l : loc
   x : val
   ============================
-  <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
-    code @ ⊤
-  <<< l ↦ #(), RET #() >>>
+  ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
+      code @ ⊤
+    <<< l ↦ #(), RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -286,9 +288,9 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   l : loc
   xx, yyyy : val
   ============================
-  <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
-    code @ ⊤
-  <<< l ↦ yyyy, RET #() >>>
+  ⊢ <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
+      code @ ⊤
+    <<< l ↦ yyyy, RET #() >>>
 1 subgoal
   
   Σ : gFunctors
@@ -309,10 +311,10 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   l : loc
   xx, yyyy : val
   ============================
-  <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
-    code @ ⊤
-  <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
-      RET #() >>>
+  ⊢ <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
+      code @ ⊤
+    <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
+        RET #() >>>
 1 subgoal
   
   Σ : gFunctors

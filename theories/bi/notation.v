@@ -11,6 +11,9 @@ Reserved Notation "P '⊣⊢@{' PROP } Q" (at level 95, no associativity).
 Reserved Notation "(⊣⊢)".
 Reserved Notation "('⊣⊢@{' PROP } )".
 
+Reserved Notation "⊢ Q" (at level 20, Q at level 200).
+Reserved Notation "'⊢@{' PROP } Q" (at level 20, Q at level 200).
+
 (** BI connectives *)
 Reserved Notation "'emp'".
 Reserved Notation "'⌜' φ '⌝'" (at level 1, φ at level 200, format "⌜ φ ⌝").

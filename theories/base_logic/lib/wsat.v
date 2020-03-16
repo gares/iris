@@ -69,9 +69,9 @@ Proof. solve_contractive. Qed.
 Global Instance ownI_persistent i P : Persistent (ownI i P).
 Proof. rewrite /ownI. apply _. Qed.
 
-Lemma ownE_empty : (|==> ownE ∅)%I.
+Lemma ownE_empty : ⊢ |==> ownE ∅.
 Proof.
-  rewrite /uPred_valid /bi_emp_valid.
+  rewrite /bi_emp_valid.
   by rewrite (own_unit (coPset_disjUR) enabled_name).
 Qed.
 Lemma ownE_op E1 E2 : E1 ## E2 → ownE (E1 ∪ E2) ⊣⊢ ownE E1 ∗ ownE E2.
@@ -87,9 +87,9 @@ Qed.
 Lemma ownE_singleton_twice i : ownE {[i]} ∗ ownE {[i]} ⊢ False.
 Proof. rewrite ownE_disjoint. iIntros (?); set_solver. Qed.
 
-Lemma ownD_empty : (|==> ownD ∅)%I.
+Lemma ownD_empty : ⊢ |==> ownD ∅.
 Proof.
-  rewrite /uPred_valid /bi_emp_valid.
+  rewrite /bi_emp_valid.
   by rewrite (own_unit (gset_disjUR positive) disabled_name).
 Qed.
 Lemma ownD_op E1 E2 : E1 ## E2 → ownD (E1 ∪ E2) ⊣⊢ ownD E1 ∗ ownD E2.
@@ -194,7 +194,7 @@ Qed.
 End wsat.
 
 (* Allocation of an initial world *)
-Lemma wsat_alloc `{!invPreG Σ} : (|==> ∃ _ : invG Σ, wsat ∗ ownE ⊤)%I.
+Lemma wsat_alloc `{!invPreG Σ} : ⊢ |==> ∃ _ : invG Σ, wsat ∗ ownE ⊤.
 Proof.
   iIntros.
   iMod (own_alloc (● (∅ : gmap positive _))) as (γI) "HI";

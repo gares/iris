@@ -306,9 +306,9 @@ Section lemmas.
   Qed.
 
   Lemma aacc_intro Eo Ei α P β Φ :
-    Ei ⊆ Eo → (∀.. x, α x -∗
+    Ei ⊆ Eo → ⊢ (∀.. x, α x -∗
     ((α x ={Eo}=∗ P) ∧ (∀.. y, β x y ={Eo}=∗ Φ x y)) -∗
-    atomic_acc Eo Ei α P β Φ)%I.
+    atomic_acc Eo Ei α P β Φ).
   Proof.
     iIntros (? x) "Hα Hclose".
     iMod fupd_intro_mask' as "Hclose'"; last iModIntro; first set_solver.

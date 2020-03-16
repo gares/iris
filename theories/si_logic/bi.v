@@ -125,8 +125,6 @@ Canonical Structure siPropSI : sbi :=
   {| sbi_ofe_mixin := ofe_mixin_of siProp;
      sbi_bi_mixin := siProp_bi_mixin; sbi_sbi_mixin := siProp_sbi_mixin |}.
 
-Coercion siProp_valid (P : siProp) : Prop := bi_emp_valid P.
-
 Lemma siProp_plainly_mixin : BiPlainlyMixin siPropSI siProp_plainly.
 Proof.
   split; try done.

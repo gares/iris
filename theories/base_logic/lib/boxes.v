@@ -98,7 +98,7 @@ Proof.
   iRewrite "HQ". by rewrite iProp_fold_unfold.
 Qed.
 
-Lemma box_alloc : box N ∅ True%I.
+Lemma box_alloc : ⊢ box N ∅ True.
 Proof.
   iIntros. iExists (λ _, True)%I. by rewrite !big_opM_empty.
 Qed.

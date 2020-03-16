@@ -21,7 +21,7 @@ Section increment_physical.
          else "incr" "l".
 
   Lemma incr_phy_spec (l: loc) :
-    <<< ∀ (v : Z), l ↦ #v >>> incr_phy #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr_phy #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     wp_bind (!_)%E. iMod "AU" as (v) "[Hl [Hclose _]]".
@@ -53,7 +53,7 @@ Section increment.
       of atomic accessors.  Useful for introducing them as a concept,
       but see below for a shorter proof. *)
   Lemma incr_spec_direct (l: loc) :
-    <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     awp_apply load_spec.
@@ -78,7 +78,7 @@ Section increment.
   (** A proof of the incr specification that uses lemmas to avoid reasining
       with the definition of atomic accessors. *)
   Lemma incr_spec (l: loc) :
-    <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
+    ⊢ <<< ∀ (v : Z), l ↦ #v >>> incr #l @ ⊤ <<< l ↦ #(v + 1), RET #v >>>.
   Proof.
     iIntros (Φ) "AU". iLöb as "IH". wp_lam.
     awp_apply load_spec.
@@ -142,7 +142,7 @@ Section increment_client.
        incr "l" ||| incr "l".
 
   Lemma incr_client_safe (x: Z):
-    WP incr_client #x {{ _, True }}%I.
+    ⊢ WP incr_client #x {{ _, True }}.
   Proof using Type*.
     wp_lam. wp_alloc l as "Hl".
     iMod (inv_alloc nroot _ (∃x':Z, l ↦ #x')%I with "[Hl]") as "#Hinv"; first eauto.

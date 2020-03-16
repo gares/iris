@@ -70,7 +70,7 @@ Proof.
 Qed.
 
 Lemma step_fupdN_soundness `{!invPreG Σ} φ n :
-  (∀ `{Hinv: !invG Σ}, (|={⊤,∅}▷=>^n |={⊤,∅}=> ⌜ φ ⌝ : iProp Σ)%I) →
+  (∀ `{Hinv: !invG Σ}, ⊢@{iPropI Σ} |={⊤,∅}▷=>^n |={⊤,∅}=> ⌜ φ ⌝) →
   φ.
 Proof.
   intros Hiter.
@@ -88,7 +88,7 @@ Proof.
 Qed.
 
 Lemma step_fupdN_soundness' `{!invPreG Σ} φ n :
-  (∀ `{Hinv: !invG Σ}, (|={⊤,∅}▷=>^n ⌜ φ ⌝ : iProp Σ)%I)  →
+  (∀ `{Hinv: !invG Σ}, ⊢@{iPropI Σ} |={⊤,∅}▷=>^n ⌜ φ ⌝)  →
   φ.
 Proof.
   iIntros (Hiter). eapply (step_fupdN_soundness _ n).

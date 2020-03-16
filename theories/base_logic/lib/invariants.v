@@ -58,7 +58,7 @@ Section inv.
 
   (* This does not imply [own_inv_alloc] due to the extra assumption [↑N ⊆ E]. *)
   Lemma own_inv_alloc_open N E P :
-    ↑N ⊆ E → (|={E, E∖↑N}=> own_inv N P ∗ (▷P ={E∖↑N, E}=∗ True))%I.
+    ↑N ⊆ E → ⊢ |={E, E∖↑N}=> own_inv N P ∗ (▷P ={E∖↑N, E}=∗ True).
   Proof.
     rewrite uPred_fupd_eq. iIntros (Sub) "[Hw HE]".
     iMod (ownI_alloc_open (.∈ (↑N : coPset)) P with "Hw")
@@ -121,7 +121,7 @@ Section inv.
   Qed.
 
   Lemma inv_alloc_open N E P :
-    ↑N ⊆ E → (|={E, E∖↑N}=> inv N P ∗ (▷P ={E∖↑N, E}=∗ True))%I.
+    ↑N ⊆ E → ⊢ |={E, E∖↑N}=> inv N P ∗ (▷P ={E∖↑N, E}=∗ True).
   Proof.
     iIntros (?). iMod own_inv_alloc_open as "[HI $]"; first done.
     iApply own_inv_to_inv. done.

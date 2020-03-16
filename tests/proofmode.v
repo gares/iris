@@ -8,10 +8,10 @@ Implicit Types P Q R : PROP.
 Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
 Proof. eauto 6. Qed.
 
-Lemma test_eauto_isplit_biwand P : (P ∗-∗ P)%I.
+Lemma test_eauto_isplit_biwand P : ⊢ P ∗-∗ P.
 Proof. eauto. Qed.
 
-Fixpoint test_fixpoint (n : nat) {struct n} : True → emp ⊢@{PROP} ⌜ (n + 0)%nat = n ⌝%I.
+Fixpoint test_fixpoint (n : nat) {struct n} : True → emp ⊢@{PROP} ⌜ (n + 0)%nat = n ⌝.
 Proof.
   case: n => [|n] /=; first (iIntros (_) "_ !%"; reflexivity).
   iIntros (_) "_".
@@ -53,7 +53,7 @@ Proof. iIntros "($ & $ & $)". iNext. by iExists 0. Qed.
 Definition foo (P : PROP) := (P -∗ P)%I.
 Definition bar : PROP := (∀ P, foo P)%I.
 
-Lemma test_unfold_constants : bar.
+Lemma test_unfold_constants : ⊢ bar.
 Proof. iIntros (P) "HP //". Qed.
 
 Check "test_iStopProof".
@@ -74,7 +74,7 @@ Lemma test_iDestruct_and_emp P Q `{!Persistent P, !Persistent Q} :
   P ∧ emp -∗ emp ∧ Q -∗ <affine> (P ∗ Q).
 Proof. iIntros "[#? _] [_ #?]". Show. auto. Qed.
 
-Lemma test_iIntros_persistent P Q `{!Persistent Q} : (P → Q → P ∧ Q)%I.
+Lemma test_iIntros_persistent P Q `{!Persistent Q} : ⊢ (P → Q → P ∧ Q).
 Proof. iIntros "H1 #H2". by iFrame "∗#". Qed.
 
 Lemma test_iDestruct_intuitionistic_1 P Q `{!Persistent P}:
@@ -104,15 +104,15 @@ Qed.
 Lemma test_iDestruct_spatial_noop Q : Q -∗ Q.
 Proof. iIntros "-#HQ". done. Qed.
 
-Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → (⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P)%I.
+Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
-Lemma test_iIntros_pure_not : (⌜ ¬False ⌝ : PROP)%I.
+Lemma test_iIntros_pure_not : ⊢@{PROP} ⌜ ¬False ⌝.
 Proof. by iIntros (?). Qed.
 
 Lemma test_fast_iIntros P Q :
-  (∀ x y z : nat,
-    ⌜x = plus 0 x⌝ → ⌜y = 0⌝ → ⌜z = 0⌝ → P → □ Q → foo (x ≡ x))%I.
+  ⊢ ∀ x y z : nat,
+    ⌜x = plus 0 x⌝ → ⌜y = 0⌝ → ⌜z = 0⌝ → P → □ Q → foo (x ≡ x).
 Proof.
   iIntros (a) "*".
   iIntros "#Hfoo **".
@@ -120,11 +120,11 @@ Proof.
 Qed.
 
 Lemma test_very_fast_iIntros P :
-  ∀ x y : nat, (⌜ x = y ⌝ → P -∗ P)%I.
+  ∀ x y : nat, ⊢ ⌜ x = y ⌝ → P -∗ P.
 Proof. by iIntros. Qed.
 
 Definition tc_opaque_test : PROP := tc_opaque (∀ x : nat, ⌜ x = x ⌝)%I.
-Lemma test_iIntros_tc_opaque : tc_opaque_test.
+Lemma test_iIntros_tc_opaque : ⊢ tc_opaque_test.
 Proof. by iIntros (x). Qed.
 
 (** Prior to 0b84351c this used to loop, now `iAssumption` instantiates `R` with
@@ -163,12 +163,12 @@ Lemma test_iSpecialize_auto_frame P Q R :
   (P -∗ True -∗ True -∗ Q -∗ R) -∗ P -∗ Q -∗ R.
 Proof. iIntros "H ? HQ". by iApply ("H" with "[$]"). Qed.
 
-Lemma test_iSpecialize_pure (φ : Prop) Q R:
-  φ → (⌜φ⌝ -∗ Q) → Q.
+Lemma test_iSpecialize_pure (φ : Prop) Q R :
+  φ → (⌜φ⌝ -∗ Q) → ⊢ Q.
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
 
 Lemma test_iSpecialize_Coq_entailment P Q R :
-  P → (P -∗ Q) → Q.
+  (⊢ P) → (P -∗ Q) → (⊢ Q).
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
 
 Lemma test_iSpecialize_intuitionistic P Q R :
@@ -271,7 +271,7 @@ Qed.
 Lemma test_iExist_coercion (P : Z → PROP) : (∀ x, P x) -∗ ∃ x, P x.
 Proof. iIntros "HP". iExists (0:nat). iApply ("HP" $! (0:nat)). Qed.
 
-Lemma test_iExist_tc `{Set_ A C} P : (∃ x1 x2 : gset positive, P -∗ P)%I.
+Lemma test_iExist_tc `{Set_ A C} P : ⊢ ∃ x1 x2 : gset positive, P -∗ P.
 Proof. iExists {[ 1%positive ]}, ∅. auto. Qed.
 
 Lemma test_iSpecialize_tc P : (∀ x y z : gset positive, P) -∗ P.
@@ -384,7 +384,7 @@ Proof.
   iIntros "#H HP". iDestruct ("H" with "HP") as (x) "#H2". eauto with iFrame.
 Qed.
 
-Lemma test_iLöb P : (∃ n, ▷^n P)%I.
+Lemma test_iLöb P : ⊢ ∃ n, ▷^n P.
 Proof.
   iLöb as "IH". iDestruct "IH" as (n) "IH".
   by iExists (S n).
@@ -408,7 +408,7 @@ Proof.
 Qed.
 
 Lemma test_iIntros_start_proof :
-  (True : PROP)%I.
+  ⊢@{PROP} True.
 Proof.
   (* Make sure iIntros actually makes progress and enters the proofmode. *)
   progress iIntros. done.
@@ -437,7 +437,7 @@ Proof.
 Qed.
 
 Lemma test_iIntros_modalities `(!Absorbing P) :
-  (<pers> (▷ ∀  x : nat, ⌜ x = 0 ⌝ → ⌜ x = 0 ⌝ -∗ False -∗ P -∗ P))%I.
+  ⊢ <pers> (▷ ∀  x : nat, ⌜ x = 0 ⌝ → ⌜ x = 0 ⌝ -∗ False -∗ P -∗ P).
 Proof.
   iIntros (x ??).
   iIntros "* **". (* Test that fast intros do not work under modalities *)
@@ -613,11 +613,11 @@ Check "test_iSimpl_in4".
 Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
 Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
 
-Lemma test_iIntros_pure_neg : (⌜ ¬False ⌝ : PROP)%I.
+Lemma test_iIntros_pure_neg : ⊢@{PROP} ⌜ ¬False ⌝.
 Proof. by iIntros (?). Qed.
 
 Lemma test_iPureIntro_absorbing (φ : Prop) :
-  φ → sbi_emp_valid (PROP:=PROP) (<absorb> ⌜φ⌝)%I.
+  φ → ⊢@{PROP} <absorb> ⌜φ⌝.
 Proof. intros ?. iPureIntro. done. Qed.
 
 Check "test_iFrame_later_1".
@@ -829,25 +829,25 @@ Abort.
 
 Check "long_impl".
 Lemma long_impl (PPPPPPPPPPPPPPPPP QQQQQQQQQQQQQQQQQQ : PROP) :
-  (PPPPPPPPPPPPPPPPP → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ))%I.
+  ⊢ PPPPPPPPPPPPPPPPP → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ).
 Proof.
   iStartProof. Show.
 Abort.
 Check "long_impl_nested".
 Lemma long_impl_nested (PPPPPPPPPPPPPPPPP QQQQQQQQQQQQQQQQQQ : PROP) :
-  (PPPPPPPPPPPPPPPPP → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ) → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ))%I.
+  ⊢ PPPPPPPPPPPPPPPPP → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ) → (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ).
 Proof.
   iStartProof. Show.
 Abort.
 Check "long_wand".
 Lemma long_wand (PPPPPPPPPPPPPPPPP QQQQQQQQQQQQQQQQQQ : PROP) :
-  (PPPPPPPPPPPPPPPPP -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ))%I.
+  ⊢ PPPPPPPPPPPPPPPPP -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ).
 Proof.
   iStartProof. Show.
 Abort.
 Check "long_wand_nested".
 Lemma long_wand_nested (PPPPPPPPPPPPPPPPP QQQQQQQQQQQQQQQQQQ : PROP) :
-  (PPPPPPPPPPPPPPPPP -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ) -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ))%I.
+  ⊢ PPPPPPPPPPPPPPPPP -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ) -∗ (QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ ∗ QQQQQQQQQQQQQQQQQQ).
 Proof.
   iStartProof. Show.
 Abort.
@@ -911,14 +911,14 @@ Abort.
 
 Check "iSplitL_non_splittable".
 Lemma iSplitL_non_splittable P :
-  P.
+  ⊢ P.
 Proof.
   Fail iSplitL "".
 Abort.
 
 Check "iSplitR_non_splittable".
 Lemma iSplitR_non_splittable P :
-  P.
+  ⊢ P.
 Proof.
   Fail iSplitR "".
 Abort.
@@ -1022,18 +1022,18 @@ Lemma iApply_fail_not_affine_1 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
 Proof. iIntros "HP HR HQ". Fail iApply ("HQ" with "HR"). Abort.
 
 Check "iRevert_wrong_var".
-Lemma iRevert_wrong_var (k : nat) (Φ : nat → PROP) : Φ (S k).
+Lemma iRevert_wrong_var (k : nat) (Φ : nat → PROP) : ⊢ Φ (S k).
 Proof.
   Fail iRevert (k1).
   Fail iLöb as "IH" forall (k1).
 Abort.
 
 Check "iRevert_dup_var".
-Lemma iRevert_dup_var (k : nat) (Φ : nat → PROP) : Φ (S k).
+Lemma iRevert_dup_var (k : nat) (Φ : nat → PROP) : ⊢ Φ (S k).
 Proof. Fail iRevert (k k). Abort.
 
 Check "iRevert_dep_var_coq".
-Lemma iRevert_dep_var_coq (k : nat) (Φ : nat → PROP) : k = 0 → Φ (S k).
+Lemma iRevert_dep_var_coq (k : nat) (Φ : nat → PROP) : k = 0 → ⊢ Φ (S k).
 Proof. intros Hk. Fail iRevert (k). Abort.
 
 Check "iRevert_dep_var".
@@ -1046,6 +1046,6 @@ Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 Check "iLöb_no_sbi".
-Lemma iLöb_no_sbi P : P.
+Lemma iLöb_no_sbi P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
 End error_tests_bi.

@@ -15,8 +15,8 @@ Definition twptp_pre (twptp : list (expr Λ) → iProp Σ)
     state_interp σ1 κs n ={⊤}=∗ ∃ n', ⌜κ = []⌝ ∗ state_interp σ2 κs n' ∗ twptp t2)%I.
 
 Lemma twptp_pre_mono (twptp1 twptp2 : list (expr Λ) → iProp Σ) :
-  (<pers> (∀ t, twptp1 t -∗ twptp2 t) →
-  ∀ t, twptp_pre twptp1 t -∗ twptp_pre twptp2 t)%I.
+  ⊢ <pers> (∀ t, twptp1 t -∗ twptp2 t) →
+    ∀ t, twptp_pre twptp1 t -∗ twptp_pre twptp2 t.
 Proof.
   iIntros "#H"; iIntros (t) "Hwp". rewrite /twptp_pre.
   iIntros (t2 σ1 κ κs σ2 n1) "Hstep Hσ".
@@ -37,7 +37,7 @@ Lemma twptp_unfold t : twptp t ⊣⊢ twptp_pre twptp t.
 Proof. by rewrite /twptp least_fixpoint_unfold. Qed.
 
 Lemma twptp_ind Ψ :
-  ((□ ∀ t, twptp_pre (λ t, Ψ t ∧ twptp t) t -∗ Ψ t) → ∀ t, twptp t -∗ Ψ t)%I.
+  ⊢ (□ ∀ t, twptp_pre (λ t, Ψ t ∧ twptp t) t -∗ Ψ t) → ∀ t, twptp t -∗ Ψ t.
 Proof.
   iIntros "#IH" (t) "H".
   assert (NonExpansive Ψ).
@@ -116,11 +116,11 @@ End adequacy.
 
 Theorem twp_total Σ Λ `{!invPreG Σ} s e σ Φ :
   (∀ `{Hinv : !invG Σ},
-     (|={⊤}=> ∃
+     ⊢ |={⊤}=> ∃
          (stateI : state Λ → list (observation Λ) → nat → iProp Σ)
          (fork_post : val Λ → iProp Σ),
        let _ : irisG Λ Σ := IrisG _ _ Hinv stateI fork_post in
-       stateI σ [] 0 ∗ WP e @ s; ⊤ [{ Φ }])%I) →
+       stateI σ [] 0 ∗ WP e @ s; ⊤ [{ Φ }]) →
   sn erased_step ([e], σ). (* i.e. ([e], σ) is strongly normalizing *)
 Proof.
   intros Hwp. apply (soundness (M:=iResUR Σ) _  1); simpl.

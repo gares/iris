@@ -41,14 +41,14 @@ Section saved_anything.
 
   Lemma saved_anything_alloc_strong x (I : gname → Prop) :
     pred_infinite I →
-    (|==> ∃ γ, ⌜I γ⌝ ∧ saved_anything_own γ x)%I.
+    ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_anything_own γ x.
   Proof. intros ?. by apply own_alloc_strong. Qed.
 
   Lemma saved_anything_alloc_cofinite x (G : gset gname) :
-    (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_anything_own γ x)%I.
+    ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_anything_own γ x.
   Proof. by apply own_alloc_cofinite. Qed.
 
-  Lemma saved_anything_alloc x : (|==> ∃ γ, saved_anything_own γ x)%I.
+  Lemma saved_anything_alloc x : ⊢ |==> ∃ γ, saved_anything_own γ x.
   Proof. by apply own_alloc. Qed.
 
   Lemma saved_anything_agree γ x y :
@@ -81,15 +81,15 @@ Proof. solve_contractive. Qed.
 
 Lemma saved_prop_alloc_strong `{!savedPropG Σ} (I : gname → Prop) (P: iProp Σ) :
   pred_infinite I →
-  (|==> ∃ γ, ⌜I γ⌝ ∧ saved_prop_own γ P)%I.
+  ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_prop_own γ P.
 Proof. iIntros (?). by iApply saved_anything_alloc_strong. Qed.
 
 Lemma saved_prop_alloc_cofinite `{!savedPropG Σ} (G : gset gname) (P: iProp Σ) :
-  (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_prop_own γ P)%I.
+  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_prop_own γ P.
 Proof. iApply saved_anything_alloc_cofinite. Qed.
 
 Lemma saved_prop_alloc `{!savedPropG Σ} (P: iProp Σ) :
-  (|==> ∃ γ, saved_prop_own γ P)%I.
+  ⊢ |==> ∃ γ, saved_prop_own γ P.
 Proof. iApply saved_anything_alloc. Qed.
 
 Lemma saved_prop_agree `{!savedPropG Σ} γ P Q :
@@ -114,15 +114,15 @@ Qed.
 
 Lemma saved_pred_alloc_strong `{!savedPredG Σ A} (I : gname → Prop) (Φ : A → iProp Σ) :
   pred_infinite I →
-  (|==> ∃ γ, ⌜I γ⌝ ∧ saved_pred_own γ Φ)%I.
+  ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_pred_own γ Φ.
 Proof. iIntros (?). by iApply saved_anything_alloc_strong. Qed.
 
 Lemma saved_pred_alloc_cofinite `{!savedPredG Σ A} (G : gset gname) (Φ : A → iProp Σ) :
-  (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_pred_own γ Φ)%I.
+  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_pred_own γ Φ.
 Proof. iApply saved_anything_alloc_cofinite. Qed.
 
 Lemma saved_pred_alloc `{!savedPredG Σ A} (Φ : A → iProp Σ) :
-  (|==> ∃ γ, saved_pred_own γ Φ)%I.
+  ⊢ |==> ∃ γ, saved_pred_own γ Φ.
 Proof. iApply saved_anything_alloc. Qed.
 
 (* We put the `x` on the outside to make this lemma easier to apply. *)

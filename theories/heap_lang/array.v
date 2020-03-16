@@ -67,7 +67,7 @@ Proof. by rewrite /Frame array_cons. Qed.
 
 Lemma update_array l q vs off v :
   vs !! off = Some v →
-  l ↦∗{q} vs -∗ ((l +ₗ off) ↦{q} v ∗ ∀ v', (l +ₗ off) ↦{q} v' -∗ l ↦∗{q} <[off:=v']>vs).
+  ⊢ l ↦∗{q} vs -∗ ((l +ₗ off) ↦{q} v ∗ ∀ v', (l +ₗ off) ↦{q} v' -∗ l ↦∗{q} <[off:=v']>vs).
 Proof.
   iIntros (Hlookup) "Hl".
   rewrite -[X in (l ↦∗{_} X)%I](take_drop_middle _ off v); last done.

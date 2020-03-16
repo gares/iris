@@ -149,11 +149,11 @@ Qed.
 Lemma own_alloc_strong_dep (f : gname → A) (P : gname → Prop) :
   pred_infinite P →
   (∀ γ, P γ → ✓ (f γ)) →
-  (|==> ∃ γ, ⌜P γ⌝ ∧ own γ (f γ))%I.
+  ⊢ |==> ∃ γ, ⌜P γ⌝ ∧ own γ (f γ).
 Proof.
   intros HP Ha.
   rewrite -(bupd_mono (∃ m, ⌜∃ γ, P γ ∧ m = iRes_singleton γ (f γ)⌝ ∧ uPred_ownM m)%I).
-  - rewrite /uPred_valid /bi_emp_valid (ownM_unit emp).
+  - rewrite /bi_emp_valid (ownM_unit emp).
     eapply bupd_ownM_updateP, (discrete_fun_singleton_updateP_empty (inG_id Hin)).
     + eapply alloc_updateP_strong_dep'; first done.
       intros i _ ?. eapply cmra_transport_valid, Ha. done.
@@ -162,7 +162,7 @@ Proof.
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
 Qed.
 Lemma own_alloc_cofinite_dep (f : gname → A) (G : gset gname) :
-  (∀ γ, γ ∉ G → ✓ (f γ)) → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ))%I.
+  (∀ γ, γ ∉ G → ✓ (f γ)) → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ).
 Proof.
   intros Ha.
   apply (own_alloc_strong_dep f (λ γ, γ ∉ G))=> //.
@@ -171,20 +171,20 @@ Proof.
   exists i. apply not_elem_of_union, is_fresh.
 Qed.
 Lemma own_alloc_dep (f : gname → A) :
-  (∀ γ, ✓ (f γ)) → (|==> ∃ γ, own γ (f γ))%I.
+  (∀ γ, ✓ (f γ)) → ⊢ |==> ∃ γ, own γ (f γ).
 Proof.
-  intros Ha. rewrite /uPred_valid /bi_emp_valid (own_alloc_cofinite_dep f ∅) //; [].
+  intros Ha. rewrite /bi_emp_valid (own_alloc_cofinite_dep f ∅) //; [].
   apply bupd_mono, exist_mono=>?. eauto using and_elim_r.
 Qed.
 
 Lemma own_alloc_strong a (P : gname → Prop) :
   pred_infinite P →
-  ✓ a → (|==> ∃ γ, ⌜P γ⌝ ∧ own γ a)%I.
+  ✓ a → ⊢ |==> ∃ γ, ⌜P γ⌝ ∧ own γ a.
 Proof. intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto. Qed.
 Lemma own_alloc_cofinite a (G : gset gname) :
-  ✓ a → (|==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a)%I.
+  ✓ a → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a.
 Proof. intros Ha. eapply own_alloc_cofinite_dep with (f := λ _, a); eauto. Qed.
-Lemma own_alloc a : ✓ a → (|==> ∃ γ, own γ a)%I.
+Lemma own_alloc a : ✓ a → ⊢ |==> ∃ γ, own γ a.
 Proof. intros Ha. eapply own_alloc_dep with (f := λ _, a); eauto. Qed.
 
 (** ** Frame preserving updates *)
@@ -222,9 +222,9 @@ Arguments own_update {_ _} [_] _ _ _ _.
 Arguments own_update_2 {_ _} [_] _ _ _ _ _.
 Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
 
-Lemma own_unit A `{!inG Σ (A:ucmraT)} γ : (|==> own γ (ε:A))%I.
+Lemma own_unit A `{!inG Σ (A:ucmraT)} γ : ⊢ |==> own γ (ε:A).
 Proof.
-  rewrite /uPred_valid /bi_emp_valid (ownM_unit emp) !own_eq /own_def.
+  rewrite /bi_emp_valid (ownM_unit emp) !own_eq /own_def.
   apply bupd_ownM_update, discrete_fun_singleton_update_empty.
   apply (alloc_unit_singleton_update (cmra_transport inG_prf ε)); last done.
   - apply cmra_transport_valid, ucmra_unit_valid.

@@ -65,7 +65,7 @@ Section proofs.
   until after [γ] was chosen.*)
   Lemma cinv_alloc_strong (I : gname → Prop) E N :
     pred_infinite I →
-    (|={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
+    ⊢ |={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P.
   Proof.
     iIntros (?). iMod (own_alloc_strong 1%Qp I) as (γ) "[Hfresh Hγ]"; [done|done|].
     iExists γ. iIntros "!> {$Hγ $Hfresh}" (P) "HP".
@@ -78,8 +78,8 @@ Section proofs.
   Lemma cinv_alloc_strong_open (I : gname → Prop) E N :
     pred_infinite I →
     ↑N ⊆ E →
-    (|={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P,
-      |={E,E∖↑N}=> cinv N γ P ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
+    ⊢ |={E}=> ∃ γ, ⌜ I γ ⌝ ∗ cinv_own γ 1 ∗ ∀ P,
+      |={E,E∖↑N}=> cinv N γ P ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     iIntros (??). iMod (own_alloc_strong 1%Qp I) as (γ) "[Hfresh Hγ]"; [done|done|].
     iExists γ. iIntros "!> {$Hγ $Hfresh}" (P).
@@ -88,7 +88,7 @@ Section proofs.
   Qed.
 
   Lemma cinv_alloc_cofinite (G : gset gname) E N :
-    (|={E}=> ∃ γ, ⌜ γ ∉ G ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P)%I.
+    ⊢ |={E}=> ∃ γ, ⌜ γ ∉ G ⌝ ∗ cinv_own γ 1 ∗ ∀ P, ▷ P ={E}=∗ cinv N γ P.
   Proof.
     apply cinv_alloc_strong. apply (pred_infinite_set (C:=gset gname))=> E'.
     exists (fresh (G ∪ E')). apply not_elem_of_union, is_fresh.
@@ -101,7 +101,7 @@ Section proofs.
   Qed.
 
   Lemma cinv_alloc_open E N P :
-    ↑N ⊆ E → (|={E,E∖↑N}=> ∃ γ, cinv N γ P ∗ cinv_own γ 1 ∗ (▷ P ={E∖↑N,E}=∗ True))%I.
+    ↑N ⊆ E → ⊢ |={E,E∖↑N}=> ∃ γ, cinv N γ P ∗ cinv_own γ 1 ∗ (▷ P ={E∖↑N,E}=∗ True).
   Proof.
     iIntros (?). iMod (cinv_alloc_strong_open (λ _, True)) as (γ) "(_ & Htok & Hmake)"; [|done|].
     { apply pred_infinite_True. }

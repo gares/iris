@@ -5,7 +5,7 @@ From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".
 
 Definition heap_total Σ `{!heapPreG Σ} s e σ φ :
-  (∀ `{!heapG Σ}, WP e @ s; ⊤ [{ v, ⌜φ v⌝ }]%I) →
+  (∀ `{!heapG Σ}, ⊢ WP e @ s; ⊤ [{ v, ⌜φ v⌝ }]) →
   sn erased_step ([e], σ).
 Proof.
   intros Hwp; eapply (twp_total _ _); iIntros (?) "".

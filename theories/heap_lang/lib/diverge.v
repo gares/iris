@@ -21,7 +21,7 @@ Definition diverge : val :=
   rec: "diverge" "v" := "diverge" "v".
 
 Lemma wp_diverge `{!heapG Σ} s E (Φ : val → iProp Σ) (v : val) :
-  WP diverge v @ s;E {{ Φ }}%I.
+  ⊢ WP diverge v @ s;E {{ Φ }}.
 Proof.
   iLöb as "IH". wp_lam. iApply "IH".
 Qed.
