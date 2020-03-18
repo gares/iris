@@ -1170,7 +1170,9 @@ Section prod.
     CmraDiscrete A → CmraDiscrete B → CmraDiscrete prodR.
   Proof. split. apply _. by intros ? []; split; apply cmra_discrete_valid. Qed.
 
-  Global Instance pair_core_id x y :
+  (* FIXME(Coq #6294): This is not an instance because we need it to use the new
+  unification. *)
+  Lemma pair_core_id x y :
     CoreId x → CoreId y → CoreId (x,y).
   Proof. by rewrite /CoreId prod_pcore_Some'. Qed.
 
@@ -1188,6 +1190,9 @@ Section prod.
   Global Instance pair_id_free_r x y : IdFree y → IdFree (x,y).
   Proof. move=>? [??] [_ ?] [_ /=?]. eauto. Qed.
 End prod.
+
+(* Registering as [Hint Extern] with new unification. *)
+Hint Extern 4 (CoreId _) => notypeclasses refine (pair_core_id _ _ _ _) : typeclass_instances.
 
 Arguments prodR : clear implicits.
 
