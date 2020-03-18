@@ -22,13 +22,13 @@ GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
 PROJECTS = [
     { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'lambda-rust', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'lambda-rust', 'branch': 'ci/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
+    { 'name': 'lambda-rust', 'branch': 'masters/weak_mem', 'vars': ['STDPP_REV', 'IRIS_REV', 'ORC11_REV', 'GPFSL_REV'] }, # covers GPFSL and ORC11
     { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'ora', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'c', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'tutorial-popl18', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] }, # these do not work, for some reason
+    { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'time-credits', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'actris', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
 ]
