@@ -15,7 +15,7 @@ Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
 (** * Starting and stopping the proof mode *)
-Lemma tac_start P : envs_entails (Envs Enil Enil 1) P → bi_emp_valid P.
+Lemma tac_start P : envs_entails (Envs Enil Enil 1) P → ⊢ P.
 Proof.
   rewrite envs_entails_eq !of_envs_eq /=.
   rewrite intuitionistically_True_emp left_id=><-.
@@ -477,7 +477,7 @@ Proof.
   by rewrite -(entails_wand P) // intuitionistically_emp emp_wand.
 Qed.
 
-Definition IntoEmpValid (φ : Type) (P : PROP) := φ → bi_emp_valid P.
+Definition IntoEmpValid (φ : Type) (P : PROP) := φ → ⊢ P.
 (** These lemmas are [Defined] because the guardedness checker must see
 through them. See https://gitlab.mpi-sws.org/iris/iris/issues/274. For the
 same reason, their bodies use as little automation as possible. *)
@@ -489,7 +489,7 @@ Proof. rewrite /IntoEmpValid => Hφ Hi1 Hi2. apply Hi1, Hi2, Hφ. Defined.
 Lemma into_emp_valid_forall {A} (φ : A → Type) P x :
   IntoEmpValid (φ x) P → IntoEmpValid (∀ x : A, φ x) P.
 Proof. rewrite /IntoEmpValid => Hi1 Hi2. apply Hi1, Hi2. Defined.
-Lemma into_emp_valid_proj φ P : IntoEmpValid φ P → φ → bi_emp_valid P.
+Lemma into_emp_valid_proj φ P : IntoEmpValid φ P → φ → ⊢ P.
 Proof. intros HP. apply HP. Defined.
 
 (** When called by the proof mode, the proof of [P] is produced by calling

@@ -84,7 +84,7 @@ Global Instance uPred_ownM_sep_homomorphism :
 Proof. split; [split; try apply _|]. apply ownM_op. apply ownM_unit'. Qed.
 
 (** Consistency/soundness statement *)
-Lemma bupd_plain_soundness P `{!Plain P} : bi_emp_valid (|==> P) → bi_emp_valid P.
+Lemma bupd_plain_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.
 Proof.
   eapply bi_emp_valid_mono. etrans; last exact: bupd_plainly. apply bupd_mono'.
   apply: plain.

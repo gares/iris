@@ -204,13 +204,13 @@ Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g �
 Proof. exact: uPred_primitive.discrete_fun_validI. Qed.
 
 (** Consistency/soundness statement *)
-Lemma pure_soundness φ : bi_emp_valid (PROP:=uPredI M) ⌜ φ ⌝ → φ.
+Lemma pure_soundness φ : (⊢@{uPredI M} ⌜ φ ⌝) → φ.
 Proof. apply pure_soundness. Qed.
 
-Lemma internal_eq_soundness {A : ofeT} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+Lemma internal_eq_soundness {A : ofeT} (x y : A) : (⊢@{uPredI M} x ≡ y) → x ≡ y.
 Proof. apply internal_eq_soundness. Qed.
 
-Lemma later_soundness P : bi_emp_valid (▷ P) → bi_emp_valid P.
+Lemma later_soundness P : (⊢ ▷ P) → ⊢ P.
 Proof. apply later_soundness. Qed.
 (** See [derived.v] for a similar soundness result for basic updates. *)
 End restate.

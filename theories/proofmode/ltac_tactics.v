@@ -747,7 +747,7 @@ Tactic Notation "iPoseProofCoreHyp" constr(H) "as" constr(Hnew) :=
     end.
 
 (* The tactic [iIntoEmpValid] tactic "imports a Coq lemma into the proofmode",
-i.e. it solves a goal [IntoEmpValid ψ ?Q]. The argument [ψ] must be of the
+i.e., it solves a goal [IntoEmpValid ψ ?Q]. The argument [ψ] must be of the
 following shape:
 
 [∀ (x_1 : A_1) .. (x_n : A_n), φ]
@@ -756,14 +756,14 @@ for which we have an instance [AsEmpValid φ ?Q].
 
 Examples of such [φ]s are
 
-- [bi_emp_valid P], in which case [?Q] is unified with [P].
+- [⊢ P], in which case [?Q] is unified with [P].
 - [P1 ⊢ P2], in which case [?Q] is unified with [P1 -∗ P2].
 - [P1 ⊣⊢ P2], in which case [?Q] is unified with [P1 ↔ P2].
 
 The tactic instantiates each dependent argument [x_i : A_i] with an evar, and
 generates a goal [A_i] for each non-dependent argument [x_i : A_i].
 
-For example, if goal is [bi_emp_valid (∀ x, P x → R1 x ⊢ R2 x) ?Q], then the
+For example, if goal is [IntoEmpValid (∀ x, P x → R1 x ⊢ R2 x) ?Q], then the
 [iIntoEmpValid] tactic generates an evar [?x], a subgoal [P ?x], and unifies
 [?Q] with [R1 ?x -∗ R2 ?x]. *)
 Ltac iIntoEmpValid_go := first
@@ -772,7 +772,7 @@ Ltac iIntoEmpValid_go := first
      [(*goal for [φ] *)|iIntoEmpValid_go]
   |(* Case [∀ x : A, φ] *)
    notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
-  |(* Case [P ⊢ Q], [P ⊣⊢ Q], [bi_emp_valid P] *)
+  |(* Case [P ⊢ Q], [P ⊣⊢ Q], [⊢ P] *)
    notypeclasses refine (into_emp_valid_here _ _ _)].
 
 Ltac iIntoEmpValid :=
@@ -3191,7 +3191,7 @@ Tactic Notation "iAccu" :=
 
 (** Automation *)
 Hint Extern 0 (_ ⊢ _) => iStartProof : core.
-Hint Extern 0 (bi_emp_valid _) => iStartProof : core.
+Hint Extern 0 (⊢ _) => iStartProof : core.
 
 (* Make sure that by and done solve trivial things in proof mode *)
 Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.

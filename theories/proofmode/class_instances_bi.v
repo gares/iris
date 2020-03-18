@@ -31,7 +31,7 @@ Implicit Types P Q R : PROP.
 Implicit Types mP : option PROP.
 
 (** AsEmpValid *)
-Global Instance as_emp_valid_emp_valid P : AsEmpValid0 (bi_emp_valid P) P | 0.
+Global Instance as_emp_valid_emp_valid P : AsEmpValid0 (⊢ P) P | 0.
 Proof. by rewrite /AsEmpValid. Qed.
 Global Instance as_emp_valid_entails P Q : AsEmpValid0 (P ⊢ Q) (P -∗ Q).
 Proof. split. apply bi.entails_wand. apply bi.wand_entails. Qed.
@@ -986,10 +986,10 @@ Qed.
 (* These instances must be used only after [into_forall_wand_pure] and
 [into_forall_wand_pure] above. *)
 Global Instance into_forall_wand P Q :
-  IntoForall (P -∗ Q) (λ _ : bi_emp_valid P, Q) | 10.
+  IntoForall (P -∗ Q) (λ _ : ⊢ P, Q) | 10.
 Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite emp_wand //. Qed.
 Global Instance into_forall_impl `{!BiAffine PROP} P Q :
-  IntoForall (P → Q) (λ _ : bi_emp_valid P, Q) | 10.
+  IntoForall (P → Q) (λ _ : ⊢ P, Q) | 10.
 Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite -True_emp True_impl //. Qed.
 
 (** FromForall *)

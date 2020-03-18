@@ -59,8 +59,8 @@ Proof.
     by iFrame.
 Qed.
 
-Lemma fupd_plain_soundness `{!invPreG Σ} E1 E2 (P: iProp Σ) `{!Plain P}:
-  (∀ `{Hinv: !invG Σ}, bi_emp_valid (|={E1,E2}=> P)) → bi_emp_valid P.
+Lemma fupd_plain_soundness `{!invPreG Σ} E1 E2 (P: iProp Σ) `{!Plain P} :
+  (∀ `{Hinv: !invG Σ}, ⊢ |={E1,E2}=> P) → ⊢ P.
 Proof.
   iIntros (Hfupd). apply later_soundness. iMod wsat_alloc as (Hinv) "[Hw HE]".
   iAssert (|={⊤,E2}=> P)%I as "H".

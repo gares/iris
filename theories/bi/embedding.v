@@ -15,7 +15,7 @@ Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
   bi_embed_mixin_ne : NonExpansive (embed (A:=PROP1) (B:=PROP2));
   bi_embed_mixin_mono : Proper ((⊢) ==> (⊢)) (embed (A:=PROP1) (B:=PROP2));
   bi_embed_mixin_emp_valid_inj (P : PROP1) :
-    bi_emp_valid (PROP:=PROP2) ⎡P⎤ → bi_emp_valid P;
+    (⊢@{PROP2} ⎡P⎤) → ⊢ P;
   bi_embed_mixin_emp_2 : emp ⊢@{PROP2} ⎡emp⎤;
   bi_embed_mixin_impl_2 (P Q : PROP1) :
     (⎡P⎤ → ⎡Q⎤) ⊢@{PROP2} ⎡P → Q⎤;
