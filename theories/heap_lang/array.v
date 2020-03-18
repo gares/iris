@@ -91,7 +91,7 @@ Lemma mapsto_seq_array l q v n :
 Proof.
   rewrite /array. iInduction n as [|n'] "IH" forall (l); simpl.
   { done. }
-  iIntros "[$ Hl]". rewrite -fmap_seq big_sepL_fmap.
+  iIntros "[$ Hl]". rewrite -fmap_S_seq big_sepL_fmap.
   setoid_rewrite Nat2Z.inj_succ. setoid_rewrite <-Z.add_1_l.
   setoid_rewrite <-loc_add_assoc. iApply "IH". done.
 Qed.
