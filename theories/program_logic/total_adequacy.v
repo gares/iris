@@ -51,7 +51,7 @@ Proof.
   iIntros (t1 t1' Ht) "Ht1". iRevert (t1' Ht); iRevert (t1) "Ht1".
   iApply twptp_ind; iIntros "!>" (t1) "IH"; iIntros (t1' Ht).
   rewrite twptp_unfold /twptp_pre. iIntros (t2 σ1 κ κs σ2 n Hstep) "Hσ".
-  destruct (step_Permutation t1' t1 t2 κ σ1 σ2) as (t2'&?&?); try done.
+  destruct (step_Permutation t1' t1 t2 κ σ1 σ2) as (t2'&?&?); [done..|].
   iMod ("IH" $! t2' with "[% //] Hσ") as (n2) "($ & Hσ & IH & _)".
   iModIntro. iExists n2. iFrame "Hσ". by iApply "IH".
 Qed.
