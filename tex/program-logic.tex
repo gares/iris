@@ -49,7 +49,7 @@ Next, we define \emph{fancy updates}, which are essentially the same as the basi
 Here, $\mask_1$ and $\mask_2$ are the \emph{masks} of the view update, defining which invariants have to be (at least!) available before and after the update.
 Masks are sets of natural numbers, \ie they are subsets of $\mathbb{N}$.%
 \footnote{Actually, in the Coq development masks are restricted to a class of sets of natural numbers that contains all finite sets and is closed under union, intersection, difference and complement.
-The restriction is necessary for engineering reasons to still obtain representation independence: two masks should be \emph{definitionally} equal iff they contain the same invariant names.}
+The restriction is necessary for engineering reasons to still obtain representation independence: two masks should be \emph{propositionally} equal iff they contain the same invariant names.}
 We use $\top$ as symbol for the largest possible mask, $\nat$, and $\bot$ for the smallest possible mask $\emptyset$.
 We will write $\pvs[\mask] \prop$ for $\pvs[\mask][\mask]\prop$.
 %
