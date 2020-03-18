@@ -1,3 +1,4 @@
+From iris.algebra Require Import auth excl.
 From iris.base_logic.lib Require Import invariants.
 
 (** Make sure that the same [Equivalence] instance is picked for Leibniz OFEs
@@ -34,3 +35,16 @@ Proof.
   - apply _.
   - reflexivity.
 Qed.
+
+(** Regression test for <https://gitlab.mpi-sws.org/iris/iris/issues/255>. *)
+Definition testR := authR (prodUR
+        (prodUR
+          (optionUR (exclR unitO))
+          (optionUR (exclR unitO)))
+        (optionUR (agreeR (boolO)))).
+Section test_prod.
+  Context `{!inG Σ testR}.
+  Lemma test_prod_persistent γ :
+    Persistent (PROP:=iPropI Σ) (own γ (◯((None, None), Some (to_agree true)))).
+  Proof. apply _. Qed.
+End test_prod.
