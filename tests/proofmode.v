@@ -127,8 +127,8 @@ Definition tc_opaque_test : PROP := tc_opaque (∀ x : nat, ⌜ x = x ⌝)%I.
 Lemma test_iIntros_tc_opaque : ⊢ tc_opaque_test.
 Proof. by iIntros (x). Qed.
 
-(** Prior to 0b84351c this used to loop, now `iAssumption` instantiates `R` with
-`False` and performs false elimination. *)
+(** Prior to 0b84351c this used to loop, now [iAssumption] instantiates [R] with
+[False] and performs false elimination. *)
 Lemma test_iAssumption_evar_ex_false : ∃ R, R ⊢ ∀ P, P.
 Proof. eexists. iIntros "?" (P). iAssumption. Qed.
 
