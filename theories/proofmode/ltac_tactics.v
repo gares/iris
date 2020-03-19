@@ -243,7 +243,7 @@ Tactic Notation "iExact" constr(H) :=
      fail "iExact:" H ":" P "does not match goal"
     |pm_reduce; iSolveTC ||
      let H := pretty_ident H in
-     fail "iExact:" H "not absorbing and the remaining hypotheses not affine"].
+     fail "iExact: remaining hypotheses not affine and the goal not absorbing"].
 
 Tactic Notation "iAssumptionCore" :=
   let rec find Γ i P :=
@@ -269,9 +269,9 @@ Tactic Notation "iAssumption" :=
        [pose proof (_ : FromAssumption p P Q) as Hass;
         eapply (tac_assumption _ j p P);
           [pm_reflexivity
-          |apply Hass
+          |exact Hass
           |pm_reduce; iSolveTC ||
-           fail 1 "iAssumption:" j "not absorbing and the remaining hypotheses not affine"]
+           fail 2 "iAssumption: remaining hypotheses not affine and the goal not absorbing"]
        |assert (P = False%I) as Hass by reflexivity;
         apply (tac_false_destruct _ j p P);
           [pm_reflexivity
@@ -1142,7 +1142,7 @@ Local Ltac iApplyHypExact H :=
        |pm_reduce; iSolveTC]
     |lazymatch iTypeOf H with
      | Some (_,?Q) =>
-        fail 2 "iApply:" Q "not absorbing and the remaining hypotheses not affine"
+        fail 2 "iApply: remaining hypotheses not affine and the goal not absorbing"
      end].
 Local Ltac iApplyHypLoop H :=
   first
