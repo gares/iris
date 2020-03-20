@@ -455,6 +455,13 @@ Proof. iIntros "HP HQ". iFrame "HP HQ". Qed.
 Lemma test_iFrame_later `{!BiAffine PROP} P Q : P -∗ Q -∗ ▷ P ∗ Q.
 Proof. iIntros "H1 H2". by iFrame "H1". Qed.
 
+Lemma test_iFrame_affinely_1 P Q `{!Affine P} :
+  P -∗ <affine> Q -∗ <affine> (P ∗ Q).
+Proof. iIntros "HP HQ". iFrame "HQ". iExact "HP". Qed.
+Lemma test_iFrame_affinely_2 P Q `{!Affine P, !Affine Q} :
+  P -∗ Q -∗ <affine> (P ∗ Q).
+Proof. iIntros "HP HQ". iFrame "HQ". iExact "HP". Qed.
+
 Lemma test_iAssert_modality P : ◇ False -∗ ▷ P.
 Proof.
   iIntros "HF".
