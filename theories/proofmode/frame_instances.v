@@ -138,8 +138,8 @@ Global Instance frame_and p progress1 progress2 R P1 P2 Q1 Q2 Q' :
   MakeAnd Q1 Q2 Q' →
   Frame p R (P1 ∧ P2) Q' | 9.
 Proof.
-  rewrite /MaybeFrame /Frame /MakeAnd => <- <- _ <-. apply and_intro;
-  [rewrite and_elim_l|rewrite and_elim_r]; done.
+  rewrite /MaybeFrame /Frame /MakeAnd => <- <- _ <-.
+  apply and_intro; [rewrite and_elim_l|rewrite and_elim_r]; done.
 Qed.
 
 Global Instance make_or_true_l P : KnownLMakeOr True P True.
