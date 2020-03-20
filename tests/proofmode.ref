@@ -515,8 +515,7 @@ Tactic failure: iExact: "HQ" not found.
 The command has indeed failed with message:
 Tactic failure: iExact: "HQ" : Q does not match goal.
 The command has indeed failed with message:
-Tactic failure: iExact: "HP"
-not absorbing and the remaining hypotheses not affine.
+Tactic failure: iExact: remaining hypotheses not affine and the goal not absorbing.
 "iClear_fail"
      : string
 The command has indeed failed with message:
@@ -581,13 +580,19 @@ Tactic failure: iApply: cannot apply P.
 "iApply_fail_not_affine_1"
      : string
 The command has indeed failed with message:
-Tactic failure: iApply: Q
-not absorbing and the remaining hypotheses not affine.
+Tactic failure: iApply: remaining hypotheses not affine and the goal not absorbing.
 "iApply_fail_not_affine_2"
      : string
 The command has indeed failed with message:
-Tactic failure: iApply: Q
-not absorbing and the remaining hypotheses not affine.
+Tactic failure: iApply: remaining hypotheses not affine and the goal not absorbing.
+"iAssumption_fail_not_affine_1"
+     : string
+The command has indeed failed with message:
+Tactic failure: iAssumption: remaining hypotheses not affine and the goal not absorbing.
+"iAssumption_fail_not_affine_2"
+     : string
+The command has indeed failed with message:
+Tactic failure: iAssumption: remaining hypotheses not affine and the goal not absorbing.
 "iRevert_wrong_var"
      : string
 The command has indeed failed with message:

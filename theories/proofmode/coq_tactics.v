@@ -91,6 +91,21 @@ Proof.
   - rewrite from_assumption. destruct H; by rewrite sep_elim_l.
 Qed.
 
+Lemma tac_assumption_coq Δ P Q :
+  (⊢ P) →
+  FromAssumption true P Q →
+  (if env_spatial_is_nil Δ then TCTrue
+   else TCOr (Absorbing Q) (AffineEnv (env_spatial Δ))) →
+  envs_entails Δ Q.
+Proof.
+  rewrite /FromAssumption /bi_emp_valid /= => HP HPQ H.
+  rewrite envs_entails_eq -(left_id emp%I bi_sep (of_envs Δ)).
+  rewrite -bi.intuitionistically_emp HP HPQ.
+  destruct (env_spatial_is_nil _) eqn:?.
+  - by rewrite (env_spatial_is_nil_intuitionistically _) // sep_elim_l.
+  - destruct H; by rewrite sep_elim_l.
+Qed.
+
 Lemma tac_rename Δ i j p P Q :
   envs_lookup i Δ = Some (p,P) →
   match envs_simple_replace i p (Esnoc Enil j P) Δ with

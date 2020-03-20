@@ -243,7 +243,7 @@ Tactic Notation "iExact" constr(H) :=
      fail "iExact:" H ":" P "does not match goal"
     |pm_reduce; iSolveTC ||
      let H := pretty_ident H in
-     fail "iExact:" H "not absorbing and the remaining hypotheses not affine"].
+     fail "iExact: remaining hypotheses not affine and the goal not absorbing"].
 
 Tactic Notation "iAssumptionCore" :=
   let rec find Γ i P :=
@@ -261,6 +261,17 @@ Tactic Notation "iAssumptionCore" :=
      is_evar i; first [find Γp i P | find Γs i P]; pm_reflexivity
   end.
 
+Tactic Notation "iAssumptionCoq" :=
+  let Hass := fresh in
+  match goal with
+  | H : ⊢ ?P |- envs_entails _ ?Q =>
+     pose proof (_ : FromAssumption true P Q) as Hass;
+     notypeclasses refine (tac_assumption_coq _ P _ H _ _);
+       [exact Hass
+       |pm_reduce; iSolveTC ||
+        fail 2 "iAssumption: remaining hypotheses not affine and the goal not absorbing"]
+  end.
+
 Tactic Notation "iAssumption" :=
   let Hass := fresh in
   let rec find p Γ Q :=
@@ -269,9 +280,9 @@ Tactic Notation "iAssumption" :=
        [pose proof (_ : FromAssumption p P Q) as Hass;
         eapply (tac_assumption _ j p P);
           [pm_reflexivity
-          |apply Hass
+          |exact Hass
           |pm_reduce; iSolveTC ||
-           fail 1 "iAssumption:" j "not absorbing and the remaining hypotheses not affine"]
+           fail 2 "iAssumption: remaining hypotheses not affine and the goal not absorbing"]
        |assert (P = False%I) as Hass by reflexivity;
         apply (tac_false_destruct _ j p P);
           [pm_reflexivity
@@ -280,7 +291,9 @@ Tactic Notation "iAssumption" :=
     end in
   lazymatch goal with
   | |- envs_entails (Envs ?Γp ?Γs _) ?Q =>
-     first [find true Γp Q | find false Γs Q
+     first [find true Γp Q
+           |find false Γs Q
+           |iAssumptionCoq
            |fail "iAssumption:" Q "not found"]
   end.
 
@@ -1142,7 +1155,7 @@ Local Ltac iApplyHypExact H :=
        |pm_reduce; iSolveTC]
     |lazymatch iTypeOf H with
      | Some (_,?Q) =>
-        fail 2 "iApply:" Q "not absorbing and the remaining hypotheses not affine"
+        fail 2 "iApply: remaining hypotheses not affine and the goal not absorbing"
      end].
 Local Ltac iApplyHypLoop H :=
   first

@@ -316,6 +316,12 @@ Proof. iIntros "H". iMod "H". done. Qed.
 Lemma test_iAssumption_False P : False -∗ P.
 Proof. iIntros "H". done. Qed.
 
+Lemma test_iAssumption_coq_1 P Q : (⊢ Q) → <affine> P -∗ Q.
+Proof. iIntros (HQ) "_". iAssumption. Qed.
+
+Lemma test_iAssumption_coq_2 P Q : (⊢ □ Q) → <affine> P -∗ ▷ Q.
+Proof. iIntros (HQ) "_". iAssumption. Qed.
+
 (* Check instantiation and dependent types *)
 Lemma test_iSpecialize_dependent_type (P : ∀ n, vec nat n → PROP) :
   (∀ n v, P n v) -∗ ∃ n v, P n v.
@@ -1018,8 +1024,16 @@ Lemma iApply_fail_not_affine_1 P Q : P -∗ Q -∗ Q.
 Proof. iIntros "HP HQ". Fail iApply "HQ". Abort.
 
 Check "iApply_fail_not_affine_2".
-Lemma iApply_fail_not_affine_1 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
+Lemma iApply_fail_not_affine_2 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
 Proof. iIntros "HP HR HQ". Fail iApply ("HQ" with "HR"). Abort.
+
+Check "iAssumption_fail_not_affine_1".
+Lemma iAssumption_fail_not_affine_1 P Q : P -∗ Q -∗ Q.
+Proof. iIntros "HP HQ". Fail iAssumption. Abort.
+
+Check "iAssumption_fail_not_affine_2".
+Lemma iAssumption_fail_not_affine_2 P Q : (⊢ Q) → P -∗ Q.
+Proof. iIntros (HQ) "HP". Fail iAssumption. Abort.
 
 Check "iRevert_wrong_var".
 Lemma iRevert_wrong_var (k : nat) (Φ : nat → PROP) : ⊢ Φ (S k).
