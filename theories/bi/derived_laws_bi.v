@@ -1398,6 +1398,8 @@ Global Instance affinely_if_affine p P : Affine P → Affine (<affine>?p P).
 Proof. destruct p; simpl; apply _. Qed.
 Global Instance intuitionistically_affine P : Affine (□ P).
 Proof. rewrite /bi_intuitionistically. apply _. Qed.
+Global Instance intuitionistically_if_affine p P : Affine P → Affine (□?p P).
+Proof. destruct p; simpl; apply _. Qed.
 
 (* Absorbing instances *)
 Global Instance pure_absorbing φ : Absorbing (PROP:=PROP) ⌜φ⌝.
