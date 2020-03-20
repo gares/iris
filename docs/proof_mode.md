@@ -24,7 +24,10 @@ Applying hypotheses and lemmas
 ------------------------------
 
 - `iExact "H"`  : finish the goal if the conclusion matches the hypothesis `H`
-- `iAssumption` : finish the goal if the conclusion matches any hypothesis
+- `iAssumption` : finish the goal if the conclusion matches any hypothesis in
+  either the proofmode or the Coq context. Only hypotheses in the Coq context
+  that are _syntactically_ of the shape `⊢ P` are recognized by this tactic
+  (this means that assumptions of the shape `P ⊢ Q` are not recognized).
 - `iApply pm_trm` : match the conclusion of the current goal against the
   conclusion of `pm_trm` and generates goals for the premises of `pm_trm`. See
   proof mode terms below.
