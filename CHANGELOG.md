@@ -78,6 +78,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
    `not_stuck_fill` → `not_stuck_fill_inv`.
   - Use the non-`_inv` names (that freed up) for the forwards directions:
    `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
+* The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
 
 **Changes in heap_lang:**
 
