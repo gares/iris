@@ -60,9 +60,9 @@ Fixpoint parse_go (ts : list token) (k : stack) : option (list spec_pat) :=
      parse_go ts (StPat (SAutoFrame GSpatial) :: k)
   | TBracketL :: TModal :: TFrame :: TBracketR :: ts =>
      parse_go ts (StPat (SAutoFrame GModal) :: k)
-  | TBracketL :: TPure :: TBracketR :: ts =>
+  | TBracketL :: TPure None :: TBracketR :: ts =>
      parse_go ts (StPat (SPureGoal false) :: k)
-  | TBracketL :: TPure :: TDone :: TBracketR :: ts =>
+  | TBracketL :: TPure None :: TDone :: TBracketR :: ts =>
      parse_go ts (StPat (SPureGoal true) :: k)
   | TBracketL :: TIntuitionistic :: ts => parse_goal ts GIntuitionistic false [] [] k
   | TBracketL :: TModal :: ts => parse_goal ts GModal false [] [] k

@@ -1383,6 +1383,30 @@ Tactic Notation "iModCore" constr(H) :=
     |iSolveSideCondition
     |pm_reduce; pm_prettify(* subgoal *)].
 
+(* This tactic should take a string [s] and solve the goal with [exact (λ
+(s:unit), tt)], where the name of the binder is the string as an identifier.
+We use this API (rather than simply returning the identifier) since it works
+correctly when replaced with [fail].
+
+One way to implement such a function is to use Ltac2 on Coq 8.11+. Another
+option is https://github.com/ppedrot/coq-string-ident for Coq 8.10. *)
+Ltac string_to_ident_hook := fun s => fail 100 "string_to_ident is unavailable in this version of Coq".
+
+(* Turn a string_to_ident that produces an ident value into one that solves the
+goal with a [unit → unit] function instead, as expected for
+[string_to_ident_hook]. *)
+Ltac make_string_to_ident_hook string_to_ident :=
+  fun s => let x := string_to_ident s in
+        exact (fun (x:unit) => tt).
+
+(* [string_to_ident] uses [string_to_ident_hook] to turn [s] into an identifier
+and return it. *)
+Local Ltac string_to_ident s :=
+  let ident_fun := constr:(ltac:(string_to_ident_hook s)) in
+  lazymatch ident_fun with
+  | λ (x:_), _ => x
+  end.
+
 (** * Basic destruct tactic *)
 Local Ltac iDestructHypGo Hz pat :=
   lazymatch pat with
@@ -1400,7 +1424,9 @@ Local Ltac iDestructHypGo Hz pat :=
   | IList [[?pat1; ?pat2]] =>
      let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat1; iDestructHypGo Hy pat2
   | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat1|iDestructHypGo Hz pat2]
-  | IPure => iPure Hz as ?
+  | IPure IGallinaAnon => iPure Hz as ?
+  | IPure (IGallinaNamed ?s) => let x := string_to_ident s in
+                                iPure Hz as x
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
   | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat

@@ -54,6 +54,14 @@ Lemma demo_3 P1 P2 P3 :
   P1 ∗ P2 ∗ P3 -∗ P1 ∗ ▷ (P2 ∗ ∃ x, (P3 ∧ ⌜x = 0⌝) ∨ P3).
 Proof. iIntros "($ & $ & $)". iNext. by iExists 0. Qed.
 
+Lemma test_pure_space_separated P1 :
+  <affine> ⌜True⌝ ∗ P1 -∗ P1.
+Proof.
+  (* [% H] should be parsed as two separate patterns and not the pure name
+  [H] *)
+  iIntros "[% H] //".
+Qed.
+
 Definition foo (P : PROP) := (P -∗ P)%I.
 Definition bar : PROP := (∀ P, foo P)%I.
 
@@ -1071,3 +1079,34 @@ Check "iLöb_no_sbi".
 Lemma iLöb_no_sbi P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
 End error_tests_bi.
+
+Section pure_name_tests.
+Context {PROP : sbi}.
+Implicit Types P Q R : PROP.
+(* mock string_to_ident for just these tests *)
+Ltac ltac_tactics.string_to_ident_hook ::=
+  make_string_to_ident_hook ltac:(fun s => lazymatch s with
+                                        | "HP2" => ident:(HP2)
+                                        | "H" => ident:(H)
+                                        | _ => fail 100 s
+                                        end).
+
+Check "test_pure_name".
+Lemma test_pure_name P1 (P2 P3: Prop) (Himpl: P2 -> P3) :
+  P1 ∗ ⌜P2⌝ -∗ P1 ∗ ⌜P3⌝.
+Proof.
+  iIntros "[HP %HP2]".
+  Show.
+  iFrame.
+  iPureIntro.
+  exact (Himpl HP2).
+Qed.
+
+Check "test_not_fresh".
+Lemma test_not_fresh P1 (P2: Prop) (H:P2) :
+  P1 ∗ ⌜P2⌝ -∗ P1 ∗ ⌜P2⌝.
+Proof.
+  Fail iIntros "[H %H]".
+Abort.
+
+End pure_name_tests.
