@@ -60,7 +60,7 @@ Implicit Types e : expr Λ.
 
 (* Weakest pre *)
 Lemma wp_unfold s E e Φ :
-  WP e @ s; E {{ Φ }} ⊣⊢ wp_pre s (wp (PROP:=iProp Σ)  s) E e Φ.
+  WP e @ s; E {{ Φ }} ⊣⊢ wp_pre s (wp (PROP:=iProp Σ) s) E e Φ.
 Proof. rewrite wp_eq. apply (fixpoint_unfold (wp_pre s)). Qed.
 
 Global Instance wp_ne s E e n :
