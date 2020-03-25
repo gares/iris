@@ -55,6 +55,14 @@ Section instances.
     - iApply "HQ". done.
   Qed.
 
+  Global Instance exist_laterable {A} (Φ : A → PROP) :
+    (∀ x, Laterable (Φ x)) → Laterable (∃ x, Φ x).
+  Proof.
+    rewrite /Laterable. iIntros (LΦ). iDestruct 1 as (x) "H".
+    iDestruct (LΦ with "H") as (Q) "[HQ #HΦ]".
+    iExists Q. iIntros "{$HQ} !# HQ". iExists x. by iApply "HΦ".
+  Qed.
+
   Global Instance big_sepL_laterable Ps :
     Timeless (PROP:=PROP) emp →
     TCForall Laterable Ps →
