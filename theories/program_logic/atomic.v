@@ -118,6 +118,20 @@ Section lemmas.
     rewrite ->!tele_app_bind. iIntros "HΦ". iApply "HΦ". done.
   Qed.
 
+  (** This version matches the Texan triple, i.e., with a later in front of the
+  [(∀.. y, β x y -∗ Φ (f x y))]. *)
+  Lemma atomic_wp_seq_step e Eo α β f {HL : ∀.. x, Laterable (α x)} :
+    TCEq (to_val e) None →
+    atomic_wp e Eo α β f -∗
+    ∀ Φ, ∀.. x, α x -∗ ▷ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e {{ Φ }}.
+  Proof.
+    iIntros (?) "H"; iIntros (Φ x) "Hα HΦ".
+    iApply (wp_step_fupd _ _ ⊤ _ (∀.. y : TB, β x y -∗ Φ (f x y))
+      with "[$HΦ //]"); first done.
+    iApply (atomic_wp_seq with "H Hα"); first done.
+    iIntros (y) "Hβ HΦ". by iApply "HΦ".
+  Qed.
+
   (* Sequential triples with the empty mask for a physically atomic [e] are atomic. *)
   Lemma atomic_seq_wp_atomic e Eo α β f `{!Atomic WeaklyAtomic e} :
     (∀ Φ, ∀.. x, α x -∗ (∀.. y, β x y -∗ Φ (f x y)) -∗ WP e @ ∅ {{ Φ }}) -∗
