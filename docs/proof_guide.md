@@ -33,7 +33,7 @@ iProp ≅ uPred (F (iProp))
 ```
 
 Here, `F` is a user-chosen locally contractive bifunctor from COFEs to unital
-Camaras (a step-indexed generalization of unital resource algebras). To make it
+Cameras (a step-indexed generalization of unital resource algebras). To make it
 convenient to construct such functors out of smaller pieces, we provide a number
 of abstractions:
 
@@ -144,8 +144,8 @@ invariants and WP).  For this purpose, `heapG` contains not only assumptions
 about `Σ`, it also contains some ghost names to refer to particular ghost state
 (see "global ghost state instances" below).
 
-The backtic (`` ` ``) is used to make anonymous assumptions and to automatically
-generalize the `Σ`.  When adding assumptions with backtic, you should most of
+The backtick (`` ` ``) is used to make anonymous assumptions and to automatically
+generalize the `Σ`.  When adding assumptions with backtick, you should most of
 the time also add a `!` in front of every assumption.  If you do not then Coq
 will also automatically generalize all indices of type-classes that you are
 assuming.  This can easily lead to making more assumptions than you are aware
@@ -262,7 +262,7 @@ this still need to be written up properly, but here is some background material:
 
 ## Implicit generalization
 
-We often use the implicit generalization feature of Coq, triggered by a backtic:
+We often use the implicit generalization feature of Coq, triggered by a backtick:
 `` `{!term A B}`` means that an implicit argument of type `term A B` is added,
 and if any of the identifiers that are used here is not yet bound, it gets added
 as well.  Usually, `term` will be some existing type class or similar, and we
