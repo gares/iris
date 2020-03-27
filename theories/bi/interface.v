@@ -290,6 +290,12 @@ Notation "∃ x .. y , P" :=
 Notation "'<pers>' P" := (bi_persistently P) : bi_scope.
 
 Infix "≡" := sbi_internal_eq : bi_scope.
+Infix "≡@{ A }" := (sbi_internal_eq (A := A)) (only parsing) : bi_scope.
+
+Notation "( X ≡.)" := (sbi_internal_eq X) (only parsing) : bi_scope.
+Notation "(.≡ X )" := (λ Y, Y ≡ X)%I (only parsing) : bi_scope.
+Notation "(≡@{ A } )" := (sbi_internal_eq (A := A)) (only parsing) : bi_scope.
+
 Notation "▷ P" := (sbi_later P) : bi_scope.
 
 Definition bi_emp_valid {PROP : bi} (P : PROP) : Prop := emp ⊢ P.
