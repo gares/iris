@@ -1,7 +1,6 @@
 From iris.algebra Require Import auth excl gmap.
-From iris.base_logic.lib Require Export own invariants.
+From iris.base_logic.lib Require Import own invariants gen_heap.
 From iris.proofmode Require Import tactics.
-From iris.heap_lang Require Export lang locations lifting.
 Set Default Proof Using "Type".
 Import uPred.
 
@@ -22,71 +21,71 @@ sense that they do not expose this fact.  By making "GC" locations a separate
 assertion, we can keep all the other proofs that do not need it conservative.
 *)
 
-Local Notation loc_inv := (val → Prop).
-
 Definition gcN: namespace := nroot .@ "gc".
+Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
 
-Definition gc_mapUR : ucmraT := gmapUR loc $ prodR
-  (optionR $ exclR $ valO)
-  (agreeR $ leibnizO loc_inv).
+Definition gc_mapUR (L V : Type) `{Countable L} : ucmraT := gmapUR L $ prodR
+  (optionR $ exclR $ leibnizO V)
+  (agreeR $ leibnizO (V → Prop)).
 
-Definition to_gc_map (gcm: gmap loc (val * loc_inv)) : gc_mapUR :=
-  (λ p: val * loc_inv, (Excl' p.1, to_agree p.2)) <$> gcm.
+Definition to_gc_map {L V : Type} `{Countable L} (gcm: gmap L (V * (V → Prop))) : gc_mapUR L V :=
+  (λ p: V * (V → Prop), (Excl' p.1, to_agree p.2)) <$> gcm.
 
-Class gcG  (Σ : gFunctors) := GcG {
-  gc_inG :> inG Σ (authR (gc_mapUR));
+Class gcG (L V : Type) (Σ : gFunctors) `{Countable L} := GcG {
+  gc_inG :> inG Σ (authR (gc_mapUR L V));
   gc_name : gname
 }.
+Arguments GcG _ _ {_ _ _ _}.
+Arguments gc_name {_ _ _ _ _} _ : assert.
 
-Arguments gc_name {_} _ : assert.
-
-Class gcPreG (Σ : gFunctors) := {
-  gc_preG_inG :> inG Σ (authR (gc_mapUR))
+Class gcPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  gc_preG_inG :> inG Σ (authR (gc_mapUR L V))
 }.
 
-Definition gcΣ : gFunctors :=
-  #[ GFunctor (authR (gc_mapUR)) ].
+Definition gcΣ (L V : Type) `{Countable L} : gFunctors :=
+  #[ GFunctor (authR (gc_mapUR L V)) ].
 
-Instance subG_gcPreG {Σ} : subG gcΣ Σ → gcPreG Σ.
+Instance subG_gcPreG (L V : Type) `{Countable L} {Σ} :
+  subG (gcΣ L V) Σ → gcPreG L V Σ.
 Proof. solve_inG. Qed.
 
 Section defs.
-
-  Context `{!invG Σ, !heapG Σ, gG: gcG Σ}.
+  Context {L V : Type} `{Countable L}.
+  Context `{!invG Σ, !gen_heapG L V Σ, gG: !gcG L V Σ}.
+  Implicit Types (gcm : gmap L (V * (V → Prop))) (l : L) (v : V) (I : V → Prop).
 
   Definition gc_inv_P : iProp Σ :=
-    (∃ gcm : gmap loc (val * loc_inv),
-        own (gc_name gG) (● to_gc_map gcm) ∗ ([∗ map] l ↦ p ∈ gcm, ⌜p.2 p.1⌝ ∗ (l ↦ p.1)) )%I.
+    (∃ gcm,
+        own (gc_name gG) (● to_gc_map gcm) ∗ ([∗ map] l ↦ p ∈ gcm, ⌜p.2 p.1⌝ ∗ (l ↦ p.1) ) )%I.
 
   Definition gc_inv : iProp Σ := inv gcN gc_inv_P.
 
-  Definition gc_mapsto (l : loc) (v : val) (I : loc_inv) : iProp Σ :=
+  Definition gc_mapsto l v I : iProp Σ :=
     own (gc_name gG) (◯ {[l := (Excl' v, to_agree I)]}).
 
-  Definition is_gc_loc (l : loc) (I : loc_inv) : iProp Σ :=
+  Definition is_gc_loc l I : iProp Σ :=
     own (gc_name gG) (◯ {[l := (None, to_agree I)]}).
 
 End defs.
 
+(* [gc_inv] has no parameters to infer the types from, so we need to
+   make them explicit. *)
+Arguments gc_inv _ _ {_ _ _ _ _ _}.
+
 Section to_gc_map.
+  Context {L V : Type} `{Countable L}.
+  Implicit Types (gcm : gmap L (V * (V → Prop))).
 
   Lemma to_gc_map_valid gcm : ✓ to_gc_map gcm.
   Proof. intros l. rewrite lookup_fmap. by case (gcm !! l). Qed.
 
-  Lemma to_gc_map_empty : to_gc_map ∅ = ∅.
-  Proof. by rewrite /to_gc_map fmap_empty. Qed.
-
   Lemma to_gc_map_singleton l v I :
-    to_gc_map {[l := (v, I)]} = {[l :=  (Excl' v, to_agree I)]}.
+    to_gc_map {[l := (v, I)]} =@{gc_mapUR L V} {[l := (Excl' v, to_agree I)]}.
   Proof. by rewrite /to_gc_map fmap_insert fmap_empty. Qed.
 
   Lemma to_gc_map_insert l v I gcm :
     to_gc_map (<[l := (v, I)]> gcm) = <[l := (Excl' v, to_agree I)]> (to_gc_map gcm).
   Proof. by rewrite /to_gc_map fmap_insert. Qed.
-
-  Lemma to_gc_map_delete l gcm :
-    to_gc_map (delete l gcm) = delete l (to_gc_map gcm).
-  Proof. by rewrite /to_gc_map fmap_delete. Qed.
 
   Lemma lookup_to_gc_map_None gcm l :
     gcm !! l = None → to_gc_map gcm !! l = None.
@@ -104,14 +103,14 @@ Section to_gc_map.
   Qed.
 End to_gc_map.
 
-Lemma gc_init `{!invG Σ, !heapG Σ, !gcPreG Σ} E:
-  ⊢ |==> ∃ _ : gcG Σ, |={E}=> gc_inv.
+Lemma gc_init {L V : Type} `{Countable L, !invG Σ, !gen_heapG L V Σ, !gcPreG L V Σ} E:
+  ⊢ |==> ∃ _ : gcG L V Σ, |={E}=> gc_inv L V.
 Proof.
   iMod (own_alloc (● (to_gc_map ∅))) as (γ) "H●".
   { rewrite auth_auth_valid. exact: to_gc_map_valid. }
   iModIntro.
-  iExists (GcG Σ _ γ).
-  iAssert (gc_inv_P (gG := GcG Σ _ γ)) with "[H●]" as "P".
+  iExists (GcG L V γ).
+  iAssert (gc_inv_P (gG := GcG L V γ)) with "[H●]" as "P".
   {
     iExists _. iFrame.
     by iApply big_sepM_empty.
@@ -121,8 +120,9 @@ Proof.
 Qed.
 
 Section gc.
-  Context `{!invG Σ, !heapG Σ, !gcG Σ}.
-  Implicit Types (l : loc) (I : loc_inv).
+  Context {L V : Type} `{Countable L}.
+  Context `{!invG Σ, !gen_heapG L V Σ, gG: !gcG L V Σ}.
+  Implicit Types (l : L) (v : V) (I : V → Prop).
 
   Global Instance is_gc_loc_persistent l I : Persistent (is_gc_loc l I).
   Proof. rewrite /is_gc_loc. apply _. Qed.
@@ -136,7 +136,7 @@ Section gc.
   Lemma make_gc l v I E :
     ↑gcN ⊆ E →
     I v →
-    gc_inv -∗ l ↦ v ={E}=∗ gc_mapsto l v I.
+    gc_inv L V -∗ l ↦ v ={E}=∗ gc_mapsto l v I.
   Proof.
     iIntros (HN HI) "#Hinv Hl".
     iMod (inv_acc_timeless _ gcN _ with "Hinv") as "[P Hclose]"=>//.
@@ -164,7 +164,7 @@ Section gc.
   Proof.
     iIntros "Hgc_l". rewrite /gc_mapsto.
     (* We need to help Coq type inference... *)
-    change loc_inv with (ofe_car $ leibnizO loc_inv) in I.
+    change (V → Prop) with (ofe_car $ leibnizO (V → Prop)) in I.
     (* FIXME: is there any good way to avoid repeating the goal here? *)
     assert (◯ {[l := (Excl' v, to_agree I)]} ≡ ◯ {[l := (Excl' v, to_agree I)]} ⋅ ◯ {[l := (None, to_agree I)]}) as ->.
     { rewrite -auth_frag_op op_singleton -pair_op agree_idemp //. }
@@ -173,7 +173,7 @@ Section gc.
   Qed.
 
   Lemma is_gc_lookup_Some l gcm I :
-    is_gc_loc l I -∗ own (gc_name _) (● to_gc_map gcm) -∗ ⌜∃ v, gcm !! l = Some (v, I)⌝.
+    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜∃ v, gcm !! l = Some (v, I)⌝.
   Proof.
     iIntros "Hgc_l H◯".
     iCombine "H◯ Hgc_l" as "Hcomb".
@@ -182,7 +182,7 @@ Section gc.
     apply auth_both_valid in Hvalid as [Hincluded Hvalid].
     setoid_rewrite singleton_included in Hincluded.
     destruct Hincluded as ([v' I'] & Hsome & Hincl).
-    edestruct lookup_to_gc_map_Some_2 as [v'' [I'' (_ & HI & Hgcm)]]; first done.
+    edestruct (@lookup_to_gc_map_Some_2 L V) as [v'' [I'' (_ & HI & Hgcm)]]; first done.
     rewrite ->HI in Hincl. exists v''. rewrite Hgcm. f_equal.
     rewrite ->Some_included_total in Hincl.
     apply pair_included in Hincl. simpl in Hincl.
@@ -191,7 +191,7 @@ Section gc.
   Qed.
 
   Lemma gc_mapsto_lookup_Some l v gcm I :
-    gc_mapsto l v I -∗ own (gc_name _) (● to_gc_map gcm) -∗ ⌜ gcm !! l = Some (v, I) ⌝.
+    gc_mapsto l v I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜ gcm !! l = Some (v, I) ⌝.
   Proof.
     iIntros "Hgc_l H●".
     iCombine "H● Hgc_l" as "Hcomb".
@@ -200,14 +200,13 @@ Section gc.
     apply auth_both_valid in Hvalid as [Hincluded Hvalid].
     setoid_rewrite singleton_included in Hincluded.
     destruct Hincluded as ([v' I'] & Hsome & Hincl).
-    edestruct lookup_to_gc_map_Some_2 as [v'' [I'' (Hv & HI & ->)]]; first done.
+    edestruct (@lookup_to_gc_map_Some_2 L V) as [v'' [I'' (Hv & HI & ->)]]; first done.
     rewrite ->HI in Hincl. f_equal.
     rewrite ->Some_included_total in Hincl.
     apply pair_included in Hincl. simpl in Hincl.
     destruct Hincl as [Hinclv HinclI%to_agree_included].
-    rewrite ->Hv in Hinclv.
-    apply Excl_included in Hinclv.
-    fold_leibniz. subst. done.
+    move:Hinclv. rewrite ->Hv. move=>/Excl_included ?.
+    fold_leibniz. simplify_eq. done.
   Qed.
 
   (** An accessor to make use of [gc_mapsto].
@@ -215,7 +214,7 @@ Section gc.
     this before opening an atomic update that provides [gc_mapsto]!. *)
   Lemma gc_access E :
     ↑gcN ⊆ E →
-    gc_inv ={E, E ∖ ↑gcN}=∗ ∀ l v I, gc_mapsto l v I -∗
+    gc_inv L V ={E, E ∖ ↑gcN}=∗ ∀ l v I, gc_mapsto l v I -∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗ gc_mapsto l w I ∗ |={E ∖ ↑gcN, E}=> True)).
   Proof.
     iIntros (HN) "#Hinv".
@@ -230,7 +229,7 @@ Section gc.
       apply: singleton_local_update.
       { by apply lookup_to_gc_map_Some in Hsome. }
       apply prod_local_update; simpl.
-      - by apply option_local_update, exclusive_local_update.
+      - apply: option_local_update. apply: exclusive_local_update. done.
       - done.
     }
     iDestruct (big_sepM_insert _ _ _ (w, I) with "[Hl HsepM]") as "HsepM"; [ | by iFrame | ].
@@ -242,7 +241,7 @@ Section gc.
 
   Lemma is_gc_access l I E :
     ↑gcN ⊆ E →
-    gc_inv -∗ is_gc_loc l I ={E, E ∖ ↑gcN}=∗
+    gc_inv L V -∗ is_gc_loc l I ={E, E ∖ ↑gcN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑gcN, E}=∗ ⌜True⌝).
   Proof.
     iIntros (HN) "#Hinv Hgc_l".

@@ -84,6 +84,7 @@ theories/base_logic/lib/cancelable_invariants.v
 theories/base_logic/lib/gen_heap.v
 theories/base_logic/lib/fancy_updates_from_vs.v
 theories/base_logic/lib/proph_map.v
+theories/base_logic/lib/gc.v
 theories/program_logic/adequacy.v
 theories/program_logic/lifting.v
 theories/program_logic/weakestpre.v
@@ -124,7 +125,6 @@ theories/heap_lang/lib/increment.v
 theories/heap_lang/lib/diverge.v
 theories/heap_lang/lib/arith.v
 theories/heap_lang/lib/array_copy.v
-theories/heap_lang/lib/gc.v
 theories/proofmode/base.v
 theories/proofmode/tokens.v
 theories/proofmode/coq_tactics.v
