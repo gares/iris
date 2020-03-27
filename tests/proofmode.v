@@ -5,6 +5,10 @@ Section tests.
 Context {PROP : sbi}.
 Implicit Types P Q R : PROP.
 
+Lemma type_sbi_internal_eq_annot P :
+  P ≡@{PROP} P ∧ (≡@{PROP}) P P ∧ (P ≡.) P ∧ (.≡ P) P.
+Proof. done. Qed.
+
 Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
 Proof. eauto 6. Qed.
 
