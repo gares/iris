@@ -292,6 +292,9 @@ Lemma core_singleton' (i : K) (x : A) cx :
 Proof.
   intros (cx'&?&->)%equiv_Some_inv_r'. by rewrite (core_singleton _ _ cx').
 Qed.
+Lemma singleton_core_total `{!CmraTotal A} (i : K) (x : A) :
+  core ({[ i := x ]} : gmap K A) = {[ i := core x ]}.
+Proof. apply core_singleton. rewrite cmra_pcore_core //. Qed.
 Lemma op_singleton (i : K) (x y : A) :
   {[ i := x ]} ⋅ {[ i := y ]} = ({[ i := x ⋅ y ]} : gmap K A).
 Proof. by apply (merge_singleton _ _ _ x y). Qed.
