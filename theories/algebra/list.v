@@ -399,12 +399,12 @@ Section properties.
     rewrite /singletonM /list_singletonM app_length replicate_length /=; lia.
   Qed.
 
-  Lemma list_core_singletonM i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
+  Lemma list_singletonM_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
   Proof.
     rewrite /singletonM /list_singletonM.
     by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core ∅).
   Qed.
-  Lemma list_op_singletonM i (x y : A) :
+  Lemma list_singleton_op i (x y : A) :
     {[ i := x ]} ⋅ {[ i := y ]} ≡@{list A} {[ i := x ⋅ y ]}.
   Proof.
     rewrite /singletonM /list_singletonM /=.
@@ -417,7 +417,7 @@ Section properties.
   Qed.
   Global Instance list_singleton_core_id i (x : A) :
     CoreId x → CoreId {[ i := x ]}.
-  Proof. by rewrite !core_id_total list_core_singletonM=> ->. Qed.
+  Proof. by rewrite !core_id_total list_singletonM_core=> ->. Qed.
   Lemma list_singleton_snoc l x:
     {[length l := x]} ⋅ l ≡ l ++ [x].
   Proof. elim: l => //= ?? <-. by rewrite left_id. Qed.

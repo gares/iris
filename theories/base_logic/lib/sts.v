@@ -96,7 +96,7 @@ Section sts.
   Lemma sts_ownS_op γ S1 S2 T1 T2 :
     T1 ## T2 → sts.closed S1 T1 → sts.closed S2 T2 →
     sts_ownS γ (S1 ∩ S2) (T1 ∪ T2) ⊣⊢ (sts_ownS γ S1 T1 ∗ sts_ownS γ S2 T2).
-  Proof. intros. by rewrite /sts_ownS -own_op sts_op_frag. Qed.
+  Proof. intros. by rewrite /sts_ownS -own_op sts_frag_op. Qed.
 
   Lemma sts_own_op γ s T1 T2 :
     T1 ## T2 → sts_own γ s (T1 ∪ T2) ==∗ sts_own γ s T1 ∗ sts_own γ s T2.
@@ -104,7 +104,7 @@ Section sts.
   Proof.
     intros. rewrite /sts_own -own_op. iIntros "Hown".
     iDestruct (own_valid with "Hown") as %Hval%sts_frag_up_valid.
-    rewrite -sts_op_frag.
+    rewrite -sts_frag_op.
     - iApply (sts_own_weaken with "Hown"); first done.
       + split; apply sts.elem_of_up.
       + eapply sts.closed_op; apply sts.closed_up; set_solver.
@@ -121,7 +121,7 @@ Section sts.
     iIntros "Hφ". rewrite /sts_ctx /sts_own.
     iMod (own_alloc (sts_auth s (⊤ ∖ sts.tok s))) as (γ) "Hγ".
     { apply sts_auth_valid; set_solver. }
-    iExists γ; iRevert "Hγ"; rewrite -sts_op_auth_frag_up; iIntros "[Hγ $]".
+    iExists γ; iRevert "Hγ"; rewrite -sts_auth_frag_up_op; iIntros "[Hγ $]".
     iMod (inv_alloc N _ (sts_inv γ φ) with "[Hφ Hγ]") as "#?"; auto.
     rewrite /sts_inv. iNext. iExists s. by iFrame.
   Qed.
@@ -139,8 +139,8 @@ Section sts.
     iModIntro; iExists s; iSplit; [done|]; iFrame "Hφ".
     iIntros (s' T') "[% Hφ]".
     iMod (own_update_2 with "Hγ Hγf") as "Hγ".
-    { rewrite sts_op_auth_frag; [|done..]. by apply sts_update_auth. }
-    iRevert "Hγ"; rewrite -sts_op_auth_frag_up; iIntros "[Hγ $]".
+    { rewrite sts_auth_frag_op; [|done..]. by apply sts_update_auth. }
+    iRevert "Hγ"; rewrite -sts_auth_frag_up_op; iIntros "[Hγ $]".
     iModIntro. iNext. iExists s'; by iFrame.
   Qed.
 

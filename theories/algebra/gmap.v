@@ -284,23 +284,23 @@ Proof.
   - by rewrite lookup_op lookup_insert_ne // lookup_singleton_ne // left_id_L.
 Qed.
 
-Lemma core_singleton (i : K) (x : A) cx :
+Lemma singleton_core (i : K) (x : A) cx :
   pcore x = Some cx → core {[ i := x ]} =@{gmap K A} {[ i := cx ]}.
 Proof. apply omap_singleton. Qed.
-Lemma core_singleton' (i : K) (x : A) cx :
+Lemma singleton_core' (i : K) (x : A) cx :
   pcore x ≡ Some cx → core {[ i := x ]} ≡@{gmap K A} {[ i := cx ]}.
 Proof.
-  intros (cx'&?&->)%equiv_Some_inv_r'. by rewrite (core_singleton _ _ cx').
+  intros (cx'&?&->)%equiv_Some_inv_r'. by rewrite (singleton_core _ _ cx').
 Qed.
 Lemma singleton_core_total `{!CmraTotal A} (i : K) (x : A) :
   core {[ i := x ]} =@{gmap K A} {[ i := core x ]}.
-Proof. apply core_singleton. rewrite cmra_pcore_core //. Qed.
-Lemma op_singleton (i : K) (x y : A) :
+Proof. apply singleton_core. rewrite cmra_pcore_core //. Qed.
+Lemma singleton_op (i : K) (x y : A) :
   {[ i := x ]} ⋅ {[ i := y ]} =@{gmap K A} {[ i := x ⋅ y ]}.
 Proof. by apply (merge_singleton _ _ _ x y). Qed.
 Global Instance is_op_singleton i a a1 a2 :
   IsOp a a1 a2 → IsOp' ({[ i := a ]} : gmap K A) {[ i := a1 ]} {[ i := a2 ]}.
-Proof. rewrite /IsOp' /IsOp=> ->. by rewrite -op_singleton. Qed.
+Proof. rewrite /IsOp' /IsOp=> ->. by rewrite -singleton_op. Qed.
 
 Global Instance gmap_core_id m : (∀ x : A, CoreId x) → CoreId m.
 Proof.
@@ -309,7 +309,7 @@ Proof.
 Qed.
 Global Instance gmap_singleton_core_id i (x : A) :
   CoreId x → CoreId {[ i := x ]}.
-Proof. intros. by apply core_id_total, core_singleton'. Qed.
+Proof. intros. by apply core_id_total, singleton_core'. Qed.
 
 Lemma singleton_includedN_l n m i x :
   {[ i := x ]} ≼{n} m ↔ ∃ y, m !! i ≡{n}≡ Some y ∧ Some x ≼{n} Some y.

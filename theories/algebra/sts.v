@@ -327,14 +327,14 @@ Lemma sts_auth_frag_valid_inv s S T1 T2 :
 Proof. by intros (?&?&Hdisj); inversion Hdisj. Qed.
 
 (** Op *)
-Lemma sts_op_auth_frag s S T :
+Lemma sts_auth_frag_op s S T :
   s ∈ S → closed S T → sts_auth s ∅ ⋅ sts_frag S T ≡ sts_auth s T.
 Proof.
   intros; split; [split|constructor; set_solver]; simpl.
   - intros (?&?&?); by apply closed_disjoint with S.
   - intros; split_and?; last constructor; set_solver.
 Qed.
-Lemma sts_op_auth_frag_up s T :
+Lemma sts_auth_frag_up_op s T :
   sts_auth s ∅ ⋅ sts_frag_up s T ≡ sts_auth s T.
 Proof.
   intros; split; [split|constructor; set_solver]; simpl.
@@ -346,7 +346,7 @@ Proof.
     + constructor; last set_solver. apply elem_of_up.
 Qed.
 
-Lemma sts_op_frag S1 S2 T1 T2 :
+Lemma sts_frag_op S1 S2 T1 T2 :
   T1 ## T2 → sts.closed S1 T1 → sts.closed S2 T2 →
   sts_frag (S1 ∩ S2) (T1 ∪ T2) ≡ sts_frag S1 T1 ⋅ sts_frag S2 T2.
 Proof.
@@ -357,7 +357,7 @@ Qed.
 (* Notice that the following does *not* hold -- the composition of the
    two closures is weaker than the closure with the itnersected token
    set.  Also see up_op.
-Lemma sts_op_frag_up s T1 T2 :
+Lemma sts_frag_up_op s T1 T2 :
   T1 ## T2 → sts_frag_up s (T1 ∪ T2) ≡ sts_frag_up s T1 ⋅ sts_frag_up s T2.
 *)
 

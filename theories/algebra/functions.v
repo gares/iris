@@ -84,7 +84,7 @@ Section cmra.
     by apply ucmra_unit_validN.
   Qed.
 
-  Lemma discrete_fun_core_singleton x (y : B x) :
+  Lemma discrete_fun_singleton_core x (y : B x) :
     core (discrete_fun_singleton x y) ≡ discrete_fun_singleton x (core y).
   Proof.
     move=>x'; destruct (decide (x = x')) as [->|];
@@ -94,9 +94,9 @@ Section cmra.
 
   Global Instance discrete_fun_singleton_core_id x (y : B x) :
     CoreId y → CoreId (discrete_fun_singleton x y).
-  Proof. by rewrite !core_id_total discrete_fun_core_singleton=> ->. Qed.
+  Proof. by rewrite !core_id_total discrete_fun_singleton_core=> ->. Qed.
 
-  Lemma discrete_fun_op_singleton (x : A) (y1 y2 : B x) :
+  Lemma discrete_fun_singleton_op (x : A) (y1 y2 : B x) :
     discrete_fun_singleton x y1 ⋅ discrete_fun_singleton x y2 ≡ discrete_fun_singleton x (y1 ⋅ y2).
   Proof.
     intros x'; destruct (decide (x' = x)) as [->|].

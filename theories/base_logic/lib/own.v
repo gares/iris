@@ -75,7 +75,7 @@ Proof. by intros n a a' Ha; apply discrete_fun_singleton_ne; rewrite Ha. Qed.
 Lemma iRes_singleton_op γ a1 a2 :
   iRes_singleton γ (a1 ⋅ a2) ≡ iRes_singleton γ a1 ⋅ iRes_singleton γ a2.
 Proof.
-  by rewrite /iRes_singleton discrete_fun_op_singleton op_singleton cmra_transport_op.
+  rewrite /iRes_singleton discrete_fun_singleton_op singleton_op -cmra_transport_op //.
 Qed.
 
 (** ** Properties of [own] *)

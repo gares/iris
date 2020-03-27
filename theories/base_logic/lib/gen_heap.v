@@ -190,7 +190,7 @@ Section gen_heap.
   Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{q} v)%I.
   Proof.
     intros p q. by rewrite mapsto_eq /mapsto_def -own_op -auth_frag_op
-      op_singleton -pair_op agree_idemp.
+      singleton_op -pair_op agree_idemp.
   Qed.
   Global Instance mapsto_as_fractional l q v :
     AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
@@ -200,7 +200,7 @@ Section gen_heap.
   Proof.
     apply wand_intro_r.
     rewrite mapsto_eq /mapsto_def -own_op -auth_frag_op own_valid discrete_valid.
-    f_equiv. rewrite auth_frag_valid op_singleton singleton_valid -pair_op.
+    f_equiv. rewrite auth_frag_valid singleton_op singleton_valid -pair_op.
     by intros [_ ?%agree_op_invL'].
   Qed.
 
@@ -255,7 +255,7 @@ Section gen_heap.
     iDestruct 1 as (γm1) "[#Hγm1 Hm1]". iDestruct 1 as (γm2) "[#Hγm2 Hm2]".
     iAssert ⌜ γm1 = γm2 ⌝%I as %->.
     { iDestruct (own_valid_2 with "Hγm1 Hγm2") as %Hγ; iPureIntro.
-      move: Hγ. rewrite -auth_frag_op op_singleton=> /auth_frag_valid /=.
+      move: Hγ. rewrite -auth_frag_op singleton_op=> /auth_frag_valid /=.
       rewrite singleton_valid. apply: agree_op_invL'. }
     iDestruct (own_valid_2 with "Hm1 Hm2") as %?%namespace_map_token_valid_op.
     iExists γm2. iFrame "Hγm2". rewrite namespace_map_token_union //. by iSplitL "Hm1".
@@ -281,7 +281,7 @@ Section gen_heap.
     iDestruct 1 as (γm1) "[Hγm1 Hm1]"; iDestruct 1 as (γm2) "[Hγm2 Hm2]".
     iAssert ⌜ γm1 = γm2 ⌝%I as %->.
     { iDestruct (own_valid_2 with "Hγm1 Hγm2") as %Hγ; iPureIntro.
-      move: Hγ. rewrite -auth_frag_op op_singleton=> /auth_frag_valid /=.
+      move: Hγ. rewrite -auth_frag_op singleton_op=> /auth_frag_valid /=.
       rewrite singleton_valid. apply: agree_op_invL'. }
     iDestruct (own_valid_2 with "Hm1 Hm2") as %Hγ; iPureIntro.
     move: Hγ. rewrite -namespace_map_data_op namespace_map_data_valid.
