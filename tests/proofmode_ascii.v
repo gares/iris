@@ -258,3 +258,41 @@ Section monpred_tests.
   Qed.
 
 End monpred_tests.
+
+(** Test specifically if certain things parse correctly. *)
+Section parsing_tests.
+Context {PROP : sbi}.
+Implicit Types P : PROP.
+
+Lemma test_bi_emp_valid : |--@{PROP} True.
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens : (|--@{PROP} True) /\ ((|--@{PROP} True)).
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens_space_open : ( |--@{PROP} True).
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens_space_close : (|--@{PROP} True ).
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections P :
+  (P |--@{PROP} P) /\ (|--@{PROP}) P P /\
+  (P -|-@{PROP} P) /\ (-|-@{PROP}) P P.
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_parens P :
+  ((P |--@{PROP} P)) /\ ((|--@{PROP})) P P /\
+  ((P -|-@{PROP} P)) /\ ((-|-@{PROP})) P P.
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_space_open P :
+  ( P |--@{PROP} P) /\
+  ( P -|-@{PROP} P).
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_space_close P :
+  (P |--@{PROP} P ) /\ (|--@{PROP} ) P P /\
+  (P -|-@{PROP} P ) /\ (-|-@{PROP} ) P P.
+Proof. naive_solver. Qed.
+End parsing_tests.

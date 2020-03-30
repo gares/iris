@@ -4,15 +4,31 @@
 Reserved Notation "P ⊢ Q" (at level 99, Q at level 200, right associativity).
 Reserved Notation "P '⊢@{' PROP } Q" (at level 99, Q at level 200, right associativity).
 Reserved Notation "(⊢)".
-Reserved Notation "('⊢@{' PROP } )".
+Reserved Notation "'(⊢@{' PROP } )".
+Reserved Notation "( P ⊣⊢.)".
+Reserved Notation "(.⊣⊢ Q )".
 
 Reserved Notation "P ⊣⊢ Q" (at level 95, no associativity).
 Reserved Notation "P '⊣⊢@{' PROP } Q" (at level 95, no associativity).
 Reserved Notation "(⊣⊢)".
-Reserved Notation "('⊣⊢@{' PROP } )".
+Reserved Notation "'(⊣⊢@{' PROP } )".
+Reserved Notation "(.⊢ Q )".
+Reserved Notation "( P ⊢.)".
 
 Reserved Notation "⊢ Q" (at level 20, Q at level 200).
 Reserved Notation "'⊢@{' PROP } Q" (at level 20, Q at level 200).
+(** The definition must coincide with "'⊢@{' PROP } Q". *)
+Reserved Notation "'(⊢@{' PROP } Q )".
+(**
+Rationale:
+Notation [( '⊢@{' PROP } )] prevents parsing [(⊢@{PROP} Q)] using the
+[⊢@{PROP} Q] notation; since the latter parse arises from composing two
+notations, it is missed by the automatic left-factorization.
+
+To fix that, we force left-factorization by explicitly composing parentheses with
+['⊢@{' PROP } Q] into the new notation [( '⊢@{' PROP } Q )],
+which successfully undergoes automatic left-factoring. *)
+
 
 (** * BI connectives *)
 Reserved Notation "'emp'".

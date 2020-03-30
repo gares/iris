@@ -262,12 +262,14 @@ Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 Notation "P ⊢ Q" := (bi_entails P%I Q%I) : stdpp_scope.
 Notation "P '⊢@{' PROP } Q" := (bi_entails (PROP:=PROP) P%I Q%I) (only parsing) : stdpp_scope.
 Notation "(⊢)" := bi_entails (only parsing) : stdpp_scope.
-Notation "('⊢@{' PROP } )" := (bi_entails (PROP:=PROP)) (only parsing) : stdpp_scope.
+Notation "'(⊢@{' PROP } )" := (bi_entails (PROP:=PROP)) (only parsing) : stdpp_scope.
 
 Notation "P ⊣⊢ Q" := (equiv (A:=bi_car _) P%I Q%I) : stdpp_scope.
 Notation "P '⊣⊢@{' PROP } Q" := (equiv (A:=bi_car PROP) P%I Q%I) (only parsing) : stdpp_scope.
 Notation "(⊣⊢)" := (equiv (A:=bi_car _)) (only parsing) : stdpp_scope.
-Notation "('⊣⊢@{' PROP } )" := (equiv (A:=bi_car PROP)) (only parsing) : stdpp_scope.
+Notation "'(⊣⊢@{' PROP } )" := (equiv (A:=bi_car PROP)) (only parsing) : stdpp_scope.
+Notation "( P ⊣⊢.)" := (equiv (A:=bi_car _) P) (only parsing) : stdpp_scope.
+Notation "(.⊣⊢ Q )" := (λ P, P ≡@{bi_car _} Q) (only parsing) : stdpp_scope.
 
 Notation "P -∗ Q" := (P ⊢ Q) : stdpp_scope.
 
@@ -305,6 +307,10 @@ Typeclasses Opaque bi_emp_valid.
 
 Notation "⊢ Q" := (bi_emp_valid Q%I) : stdpp_scope.
 Notation "'⊢@{' PROP } Q" := (bi_emp_valid (PROP:=PROP) Q%I) (only parsing) : stdpp_scope.
+(** Work around parsing issues: see [notation.v] for details. *)
+Notation "'(⊢@{' PROP } Q )" := (bi_emp_valid (PROP:=PROP) Q%I) (only parsing) : stdpp_scope.
+Notation "(.⊢ Q )" := (λ P, P ⊢ Q) (only parsing) : stdpp_scope.
+Notation "( P ⊢.)" := (bi_entails P) (only parsing) : stdpp_scope.
 
 Module bi.
 Section bi_laws.

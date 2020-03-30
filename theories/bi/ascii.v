@@ -8,17 +8,17 @@ Notation "P |-- Q" := (P ⊢ Q)
   (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 Notation "P '|--@{' PROP } Q" := (P ⊢@{PROP} Q) (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 Notation "(|--)" := (⊢) (only parsing) : stdpp_scope.
-(* FIXME: fix notation *)
-Notation "('|--@{' PROP } )" := (bi_entails (PROP:=PROP)) (only parsing) : stdpp_scope.
+Notation "'(|--@{' PROP } )" := (⊢@{PROP}) (only parsing) : stdpp_scope.
 
 Notation "|-- Q" := (⊢ Q%I) (at level 20, Q at level 200, only parsing) : stdpp_scope.
 Notation "'|--@{' PROP } Q" := (⊢@{PROP} Q) (at level 20, Q at level 200, only parsing) : stdpp_scope.
+(** Work around parsing issues: see [notation.v] for details. *)
+Notation "'(|--@{' PROP } Q )" := (⊢@{PROP} Q) (only parsing) : stdpp_scope.
 
 Notation "P -|- Q" := (P ⊣⊢ Q) (at level 95, no associativity, only parsing) : stdpp_scope.
 Notation "P '-|-@{' PROP } Q" := (P ⊣⊢@{PROP} Q) (at level 95, no associativity, only parsing) : stdpp_scope.
 Notation "(-|-)" := (⊣⊢) (only parsing) : stdpp_scope.
-(* FIXME: fix notation *)
-Notation "('-|-@{' PROP } )" := (equiv (A:=bi_car PROP)) (only parsing) : stdpp_scope.
+Notation "'(-|-@{' PROP } )" := (⊣⊢@{PROP}) (only parsing) : stdpp_scope.
 
 Notation "P -* Q" := (P ⊢ Q)%stdpp (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 

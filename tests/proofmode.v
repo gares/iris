@@ -5,10 +5,6 @@ Section tests.
 Context {PROP : sbi}.
 Implicit Types P Q R : PROP.
 
-Lemma test_sbi_internal_eq_annot_sections P :
-  ⊢@{PROP} P ≡@{PROP} P ∧ (≡@{PROP}) P P ∧ (P ≡.) P ∧ (.≡ P) P.
-Proof. by iSplit. Qed.
-
 Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
 Proof. eauto 6. Qed.
 
@@ -825,7 +821,54 @@ Proof.
 Qed.
 End tests.
 
-(** Test specifically if certain things print correctly. *)
+Section parsing_tests.
+Context {PROP : sbi}.
+Implicit Types P : PROP.
+
+(** Test notations for (bi)entailment and internal equality. These tests are
+especially extensive because of past problems such as
+https://gitlab.mpi-sws.org/iris/iris/-/issues/302. *)
+Lemma test_bi_emp_valid : ⊢@{PROP} True.
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens : (⊢@{PROP} True) ∧ ((⊢@{PROP} True)).
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens_space_open : ( ⊢@{PROP} True).
+Proof. naive_solver. Qed.
+
+Lemma test_bi_emp_valid_parens_space_close : (⊢@{PROP} True ).
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections P :
+  (P ⊢@{PROP} P) ∧ (⊢@{PROP}) P P ∧ (P ⊢.) P ∧ (.⊢ P) P ∧
+  (P ⊣⊢@{PROP} P) ∧ (⊣⊢@{PROP}) P P ∧ (P ⊣⊢.) P ∧ (.⊣⊢ P) P.
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_parens P :
+  ((P ⊢@{PROP} P)) ∧ ((⊢@{PROP})) P P ∧ ((P ⊢.)) P ∧ ((.⊢ P)) P ∧
+  ((P ⊣⊢@{PROP} P)) ∧ ((⊣⊢@{PROP})) P P ∧ ((P ⊣⊢.)) P ∧ ((.⊣⊢ P)) P.
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_space_open P :
+  ( P ⊢@{PROP} P) ∧ ( P ⊢.) P ∧
+  ( P ⊣⊢@{PROP} P) ∧ ( P ⊣⊢.) P.
+Proof. naive_solver. Qed.
+
+Lemma test_entails_annot_sections_space_close P :
+  (P ⊢@{PROP} P ) ∧ (⊢@{PROP} ) P P ∧ (.⊢ P ) P ∧
+  (P ⊣⊢@{PROP} P ) ∧ (⊣⊢@{PROP} ) P P ∧ (.⊣⊢ P ) P.
+Proof. naive_solver. Qed.
+
+Lemma test_sbi_internal_eq_annot_sections P :
+  ⊢@{PROP}
+    P ≡@{PROP} P ∧ (≡@{PROP}) P P ∧ (P ≡.) P ∧ (.≡ P) P ∧
+    ((P ≡@{PROP} P)) ∧ ((≡@{PROP})) P P ∧ ((P ≡.)) P ∧ ((.≡ P)) P ∧
+    ( P ≡@{PROP} P) ∧ ( P ≡.) P ∧
+    (P ≡@{PROP} P ) ∧ (≡@{PROP} ) P P ∧ (.≡ P ) P.
+Proof. naive_solver. Qed.
+End parsing_tests.
+
 Section printing_tests.
 Context {PROP : sbi} `{!BiFUpd PROP}.
 Implicit Types P Q R : PROP.
