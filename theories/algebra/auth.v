@@ -156,7 +156,7 @@ Lemma auth_auth_frac_validN n q a :
   ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
 Proof.
   rewrite auth_validN_eq /=. apply and_iff_compat_l. split.
-  - by intros [?[->%to_agree_injN []]].
+  - by intros [?[->%(inj _) []]].
   - naive_solver eauto using ucmra_unit_leastN.
 Qed.
 Lemma auth_auth_validN n a : ✓{n} a ↔ ✓{n} (● a).
@@ -168,7 +168,7 @@ Lemma auth_both_frac_validN n q a b :
 Proof.
   rewrite auth_validN_eq /=. apply and_iff_compat_l.
   setoid_rewrite (left_id _ _ b). split.
-  - by intros [?[->%to_agree_injN]].
+  - by intros [?[->%(inj _)]].
   - naive_solver.
 Qed.
 Lemma auth_both_validN n a b : ✓{n} (● a ⋅ ◯ b) ↔ b ≼{n} a ∧ ✓{n} a.
@@ -182,7 +182,7 @@ Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
 Proof.
   rewrite auth_valid_eq /=. apply and_iff_compat_l. split.
   - intros H'. apply cmra_valid_validN. intros n.
-    by destruct (H' n) as [? [->%to_agree_injN [??]]].
+    by destruct (H' n) as [? [->%(inj _) [??]]].
   - intros. exists a. split; [done|].
     split; by [apply ucmra_unit_leastN|apply cmra_valid_validN].
 Qed.
@@ -216,7 +216,7 @@ Lemma auth_both_frac_valid `{!CmraDiscrete A} q a b :
 Proof.
   rewrite auth_valid_discrete /=. apply and_iff_compat_l.
   setoid_rewrite (left_id _ _ b). split.
-  - by intros [?[->%to_agree_inj]].
+  - by intros [?[->%(inj _)]].
   - naive_solver.
 Qed.
 Lemma auth_both_valid `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
@@ -304,7 +304,7 @@ Qed.
 Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
 Proof.
   rewrite /op /auth_op /= left_id -Some_op -pair_op auth_validN_eq /=.
-  intros (?&?& Eq &?&?). apply to_agree_injN, agree_op_invN. by rewrite Eq.
+  intros (?&?& Eq &?&?). apply (inj _), agree_op_invN. by rewrite Eq.
 Qed.
 Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
 Proof.
@@ -356,7 +356,7 @@ Proof.
   move=> n [[[??]|] bf1] [/= VL [a0 [Eq [[bf2 Ha] VL2]]]]; do 2 red; simpl in *.
   + exfalso. move : VL => /frac_valid'.
     rewrite frac_op'. by apply Qp_not_plus_q_ge_1.
-  + split; [done|]. apply to_agree_injN in Eq.
+  + split; [done|]. apply (inj _) in Eq.
     move: Ha; rewrite !left_id -assoc => Ha.
     destruct (Hup n (Some (bf1 ⋅ bf2))); [by rewrite Eq..|]. simpl in *.
     exists a'. split; [done|]. split; [|done]. exists bf2.
@@ -388,8 +388,8 @@ Lemma auth_local_update (a b0 b1 a' b0' b1': A) :
 Proof.
   rewrite !local_update_unital=> Hup ? ? n /=.
     move=> [[[qc ac]|] bc] /auth_both_validN [Le Val] [] /=.
-  - move => Ha. exfalso. move : Ha. rewrite right_id -Some_op -pair_op.
-    move => /Some_dist_inj [/=]. rewrite frac_op' => Eq _.
+  - move => Ha. exfalso. move : Ha. rewrite right_id -Some_op -pair_op frac_op'.
+    move => /(inj _ _ _) [/= Eq _].
     apply (Qp_not_plus_q_ge_1 qc). by rewrite -Eq.
   - move => _. rewrite !left_id=> ?.
     destruct (Hup n bc) as [Hval' Heq]; eauto using cmra_validN_includedN.
