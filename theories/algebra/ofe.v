@@ -713,6 +713,41 @@ ambiguous coercion paths, see https://gitlab.mpi-sws.org/iris/iris/issues/240. *
 Definition oFunctor_apply (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
   oFunctor_car F A A.
 
+Program Definition oFunctor_oFunctor_compose (F1 F2 : oFunctor)
+  `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : oFunctor := {|
+  oFunctor_car A _ B _ := oFunctor_car F1 (oFunctor_car F2 B A) (oFunctor_car F2 A B);
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ 'fg :=
+    oFunctor_map F1 (oFunctor_map F2 (fg.2,fg.1),oFunctor_map F2 fg)
+|}.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] [??]; simpl in *.
+  apply oFunctor_map_ne; split; apply oFunctor_map_ne; by split.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A ? B ? x; simpl in *. rewrite -{2}(oFunctor_map_id F1 x).
+  apply equiv_dist=> n. apply oFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl in *.
+  rewrite -oFunctor_map_compose. apply equiv_dist=> n. apply oFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_compose.
+Qed.
+Instance oFunctor_oFunctor_compose_contractive_1 (F1 F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  oFunctorContractive F1 → oFunctorContractive (oFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_contractive; destruct Hfg; split; simpl in *; apply oFunctor_map_ne; by split.
+Qed.
+Instance oFunctor_oFunctor_compose_contractive_2 (F1 F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  oFunctorContractive F2 → oFunctorContractive (oFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_equiv; split; simpl in *; f_contractive; destruct Hfg; by split.
+Qed.
+
 Program Definition constOF (B : ofeT) : oFunctor :=
   {| oFunctor_car A1 A2 _ _ := B; oFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
@@ -1588,14 +1623,14 @@ Program Definition iso_ofe_cong (F : oFunctor) `{!Cofe A, !Cofe B}
   OfeIso (oFunctor_map F (ofe_iso_2 I, ofe_iso_1 I))
     (oFunctor_map F (ofe_iso_1 I, ofe_iso_2 I)) _ _.
 Next Obligation.
-  intros F A ? B ? I x. rewrite -oFunctor_compose -{2}(oFunctor_id F x).
+  intros F A ? B ? I x. rewrite -oFunctor_map_compose -{2}(oFunctor_map_id F x).
   apply equiv_dist=> n.
-  apply oFunctor_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
+  apply oFunctor_map_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
 Qed.
 Next Obligation.
-  intros F A ? B ? I y. rewrite -oFunctor_compose -{2}(oFunctor_id F y).
+  intros F A ? B ? I y. rewrite -oFunctor_map_compose -{2}(oFunctor_map_id F y).
   apply equiv_dist=> n.
-  apply oFunctor_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
+  apply oFunctor_map_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
 Qed.
 Instance iso_ofe_cong_ne (F : oFunctor) `{!Cofe A, !Cofe B} :
   NonExpansive (iso_ofe_cong F (A:=A) (B:=B)).

@@ -803,6 +803,41 @@ Class rFunctorContractive (F : rFunctor) :=
 Definition rFunctor_apply (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
   rFunctor_car F A A.
 
+Program Definition rFunctor_oFunctor_compose (F1 : rFunctor) (F2 : oFunctor)
+  `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : rFunctor := {|
+  rFunctor_car A _ B _ := rFunctor_car F1 (oFunctor_car F2 B A) (oFunctor_car F2 A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ 'fg :=
+    rFunctor_map F1 (oFunctor_map F2 (fg.2,fg.1),oFunctor_map F2 fg)
+|}.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] [??]; simpl in *.
+  apply rFunctor_map_ne; split; apply oFunctor_map_ne; by split.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A ? B ? x; simpl in *. rewrite -{2}(rFunctor_map_id F1 x).
+  apply equiv_dist=> n. apply rFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl in *.
+  rewrite -rFunctor_map_compose. apply equiv_dist=> n. apply rFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_compose.
+Qed.
+Instance rFunctor_oFunctor_compose_contractive_1 (F1 : rFunctor) (F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  rFunctorContractive F1 → rFunctorContractive (rFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_contractive; destruct Hfg; split; simpl in *; apply oFunctor_map_ne; by split.
+Qed.
+Instance rFunctor_oFunctor_compose_contractive_2 (F1 : rFunctor) (F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  oFunctorContractive F2 → rFunctorContractive (rFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_equiv; split; simpl in *; f_contractive; destruct Hfg; by split.
+Qed.
+
 Program Definition constRF (B : cmraT) : rFunctor :=
   {| rFunctor_car A1 _ A2 _ := B; rFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
@@ -839,6 +874,41 @@ Class urFunctorContractive (F : urFunctor) :=
 
 Definition urFunctor_apply (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
   urFunctor_car F A A.
+
+Program Definition urFunctor_oFunctor_compose (F1 : urFunctor) (F2 : oFunctor)
+  `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : urFunctor := {|
+  urFunctor_car A _ B _ := urFunctor_car F1 (oFunctor_car F2 B A) (oFunctor_car F2 A B);
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ 'fg :=
+    urFunctor_map F1 (oFunctor_map F2 (fg.2,fg.1),oFunctor_map F2 fg)
+|}.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] [??]; simpl in *.
+  apply urFunctor_map_ne; split; apply oFunctor_map_ne; by split.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A ? B ? x; simpl in *. rewrite -{2}(urFunctor_map_id F1 x).
+  apply equiv_dist=> n. apply urFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F1 F2 ? A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl in *.
+  rewrite -urFunctor_map_compose. apply equiv_dist=> n. apply urFunctor_map_ne.
+  split=> y /=; by rewrite !oFunctor_map_compose.
+Qed.
+Instance urFunctor_oFunctor_compose_contractive_1 (F1 : urFunctor) (F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  urFunctorContractive F1 → urFunctorContractive (urFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_contractive; destruct Hfg; split; simpl in *; apply oFunctor_map_ne; by split.
+Qed.
+Instance urFunctor_oFunctor_compose_contractive_2 (F1 : urFunctor) (F2 : oFunctor)
+    `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
+  oFunctorContractive F2 → urFunctorContractive (urFunctor_oFunctor_compose F1 F2).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
+  f_equiv; split; simpl in *; f_contractive; destruct Hfg; by split.
+Qed.
 
 Program Definition constURF (B : ucmraT) : urFunctor :=
   {| urFunctor_car A1 _ A2 _ := B; urFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
