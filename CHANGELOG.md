@@ -88,6 +88,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q` and (similar for `na_inv_iff` and
   `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
 * Add lemma `is_lock_iff` and show that `is_lock` is contractive.
+* Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
+  `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
+* Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
 
 **Changes in heap_lang:**
 
