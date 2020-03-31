@@ -147,12 +147,13 @@ Module Export iProp_solution : iProp_solution_sig.
   Notation iPropO Σ := (uPredO (iResUR Σ)).
 
   Definition iProp_unfold {Σ} : iPropO Σ -n> iPrePropO Σ :=
-    solution_fold (iProp_result Σ).
-  Definition iProp_fold {Σ} : iPrePropO Σ -n> iPropO Σ := solution_unfold _.
+    ofe_iso_1 (iProp_result Σ).
+  Definition iProp_fold {Σ} : iPrePropO Σ -n> iPropO Σ :=
+    ofe_iso_2 (iProp_result Σ).
   Lemma iProp_fold_unfold {Σ} (P : iProp Σ) : iProp_fold (iProp_unfold P) ≡ P.
-  Proof. apply solution_unfold_fold. Qed.
+  Proof. apply ofe_iso_21. Qed.
   Lemma iProp_unfold_fold {Σ} (P : iPrePropO Σ) : iProp_unfold (iProp_fold P) ≡ P.
-  Proof. apply solution_fold_unfold. Qed.
+  Proof. apply ofe_iso_12. Qed.
 End iProp_solution.
 
 

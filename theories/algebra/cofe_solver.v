@@ -4,13 +4,8 @@ Set Default Proof Using "Type".
 Record solution (F : oFunctor) := Solution {
   solution_car :> ofeT;
   solution_cofe : Cofe solution_car;
-  solution_unfold : solution_car -n> F solution_car _;
-  solution_fold : F solution_car _ -n> solution_car;
-  solution_fold_unfold X : solution_fold (solution_unfold X) ≡ X;
-  solution_unfold_fold X : solution_unfold (solution_fold X) ≡ X
+  solution_iso :> ofe_iso (F solution_car _) solution_car;
 }.
-Arguments solution_unfold {_} _.
-Arguments solution_fold {_} _.
 Existing Instance solution_cofe.
 
 Module solver. Section solver.
@@ -210,7 +205,7 @@ Proof. by intros n X Y HXY k; rewrite /fold /= HXY. Qed.
 
 Theorem result : solution F.
 Proof using Type*.
-  apply (Solution F T _ (OfeMor unfold) (OfeMor fold)).
+  refine (Solution F T _ (OfeIso (OfeMor fold) (OfeMor unfold) _ _)).
   - move=> X /=. rewrite equiv_dist=> n k; rewrite /unfold /fold /=.
     rewrite -g_tower -(gg_tower _ n); apply (_ : Proper (_ ==> _) (g _)).
     trans (map (ff n, gg n) (X (S (n + k)))).
