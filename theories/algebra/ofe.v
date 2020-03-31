@@ -1519,3 +1519,84 @@ Arguments sigTOF {_} _%OF.
 
 Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
 Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.
+
+Record ofe_iso (A B : ofeT) := OfeIso {
+  ofe_iso_1 : A -n> B;
+  ofe_iso_2 : B -n> A;
+  ofe_iso_12 y : ofe_iso_1 (ofe_iso_2 y) ≡ y;
+  ofe_iso_21 x : ofe_iso_2 (ofe_iso_1 x) ≡ x;
+}.
+Arguments OfeIso {_ _} _ _ _ _.
+Arguments ofe_iso_1 {_ _} _.
+Arguments ofe_iso_2 {_ _} _.
+Arguments ofe_iso_12 {_ _} _ _.
+Arguments ofe_iso_21 {_ _} _ _.
+
+Section ofe_iso.
+  Context {A B : ofeT}.
+
+  Instance ofe_iso_equiv : Equiv (ofe_iso A B) := λ I1 I2,
+    ofe_iso_1 I1 ≡ ofe_iso_1 I2 ∧ ofe_iso_2 I1 ≡ ofe_iso_2 I2.
+
+  Instance ofe_iso_dist : Dist (ofe_iso A B) := λ n I1 I2,
+    ofe_iso_1 I1 ≡{n}≡ ofe_iso_1 I2 ∧ ofe_iso_2 I1 ≡{n}≡ ofe_iso_2 I2.
+
+  Global Instance ofe_iso_1_ne : NonExpansive (ofe_iso_1 (A:=A) (B:=B)).
+  Proof. by destruct 1. Qed.
+  Global Instance ofe_iso_2_ne : NonExpansive (ofe_iso_2 (A:=A) (B:=B)).
+  Proof. by destruct 1. Qed.
+
+  Lemma iso_ofe_ofe_mixin : OfeMixin (ofe_iso A B).
+  Proof. by apply (iso_ofe_mixin (λ I, (ofe_iso_1 I, ofe_iso_2 I))). Qed.
+  Canonical Structure ofe_isoO : ofeT := OfeT (ofe_iso A B) iso_ofe_ofe_mixin.
+
+  Global Instance iso_ofe_cofe `{!Cofe A, !Cofe B} : Cofe ofe_isoO.
+  Proof.
+    apply (iso_cofe_subtype'
+      (λ I : prodO (A -n> B) (B -n> A),
+        (∀ y, I.1 (I.2 y) ≡ y) ∧ (∀ x, I.2 (I.1 x) ≡ x))
+      (λ I HI, OfeIso (I.1) (I.2) (proj1 HI) (proj2 HI))
+      (λ I, (ofe_iso_1 I, ofe_iso_2 I))); [by intros []|done|done|].
+    apply limit_preserving_and; apply limit_preserving_forall=> ?;
+      apply limit_preserving_equiv; first [intros ???; done|solve_proper].
+  Qed.
+End ofe_iso.
+
+Arguments ofe_isoO : clear implicits.
+
+Program Definition iso_ofe_refl {A} : ofe_iso A A := OfeIso cid cid _ _.
+Solve Obligations with done.
+
+Definition iso_ofe_sym {A B : ofeT} (I : ofe_iso A B) : ofe_iso B A :=
+  OfeIso (ofe_iso_2 I) (ofe_iso_1 I) (ofe_iso_21 I) (ofe_iso_12 I).
+Instance iso_ofe_sym_ne {A B} : NonExpansive (iso_ofe_sym (A:=A) (B:=B)).
+Proof. intros n I1 I2 []; split; simpl; by f_equiv. Qed.
+
+Program Definition iso_ofe_trans {A B C}
+    (I : ofe_iso A B) (J : ofe_iso B C) : ofe_iso A C :=
+  OfeIso (ofe_iso_1 J ◎ ofe_iso_1 I) (ofe_iso_2 I ◎ ofe_iso_2 J) _ _.
+Next Obligation. intros A B C I J z; simpl. by rewrite !ofe_iso_12. Qed.
+Next Obligation. intros A B C I J z; simpl. by rewrite !ofe_iso_21. Qed.
+Instance iso_ofe_trans_ne {A B C} : NonExpansive2 (iso_ofe_trans (A:=A) (B:=B) (C:=C)).
+Proof. intros n I1 I2 [] J1 J2 []; split; simpl; by f_equiv. Qed.
+
+Program Definition iso_ofe_cong (F : oFunctor) `{!Cofe A, !Cofe B}
+    (I : ofe_iso A B) : ofe_iso (F A _) (F B _) :=
+  OfeIso (oFunctor_map F (ofe_iso_2 I, ofe_iso_1 I))
+    (oFunctor_map F (ofe_iso_1 I, ofe_iso_2 I)) _ _.
+Next Obligation.
+  intros F A ? B ? I x. rewrite -oFunctor_compose -{2}(oFunctor_id F x).
+  apply equiv_dist=> n.
+  apply oFunctor_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
+Qed.
+Next Obligation.
+  intros F A ? B ? I y. rewrite -oFunctor_compose -{2}(oFunctor_id F y).
+  apply equiv_dist=> n.
+  apply oFunctor_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
+Qed.
+Instance iso_ofe_cong_ne (F : oFunctor) `{!Cofe A, !Cofe B} :
+  NonExpansive (iso_ofe_cong F (A:=A) (B:=B)).
+Proof. intros n I1 I2 []; split; simpl; by f_equiv. Qed.
+Instance iso_ofe_cong_contractive (F : oFunctor) `{!Cofe A, !Cofe B} :
+  oFunctorContractive F → Contractive (iso_ofe_cong F (A:=A) (B:=B)).
+Proof. intros ? n I1 I2 HI; split; simpl; f_contractive; by destruct HI. Qed.
