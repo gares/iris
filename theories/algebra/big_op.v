@@ -37,7 +37,7 @@ Notation "'[^' o 'list]' x ∈ l , P" := (big_opL o (λ _ x, P) l)
 
 Definition big_opM_def `{Monoid M o} `{Countable K} {A} (f : K → A → M)
   (m : gmap K A) : M := big_opL o (λ _, curry f) (map_to_list m).
-Definition big_opM_aux : seal (@big_opM_def). by eexists. Qed.
+Definition big_opM_aux : seal (@big_opM_def). Proof. by eexists. Qed.
 Definition big_opM := big_opM_aux.(unseal).
 Arguments big_opM {M} o {_ K _ _ A} _ _.
 Definition big_opM_eq : @big_opM = @big_opM_def := big_opM_aux.(seal_eq).
@@ -51,7 +51,7 @@ Notation "'[^' o 'map]' x ∈ m , P" := (big_opM o (λ _ x, P) m)
 
 Definition big_opS_def `{Monoid M o} `{Countable A} (f : A → M)
   (X : gset A) : M := big_opL o (λ _, f) (elements X).
-Definition big_opS_aux : seal (@big_opS_def). by eexists. Qed.
+Definition big_opS_aux : seal (@big_opS_def). Proof. by eexists. Qed.
 Definition big_opS := big_opS_aux.(unseal).
 Arguments big_opS {M} o {_ A _ _} _ _.
 Definition big_opS_eq : @big_opS = @big_opS_def := big_opS_aux.(seal_eq).
@@ -62,7 +62,7 @@ Notation "'[^' o 'set]' x ∈ X , P" := (big_opS o (λ x, P) X)
 
 Definition big_opMS_def `{Monoid M o} `{Countable A} (f : A → M)
   (X : gmultiset A) : M := big_opL o (λ _, f) (elements X).
-Definition big_opMS_aux : seal (@big_opMS_def). by eexists. Qed.
+Definition big_opMS_aux : seal (@big_opMS_def). Proof. by eexists. Qed.
 Definition big_opMS := big_opMS_aux.(unseal).
 Arguments big_opMS {M} o {_ A _ _} _ _.
 Definition big_opMS_eq : @big_opMS = @big_opMS_def := big_opMS_aux.(seal_eq).

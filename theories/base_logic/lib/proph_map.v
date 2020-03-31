@@ -55,7 +55,7 @@ Section definitions.
   Definition proph_def (p : P) (vs : list V) : iProp Σ :=
     own (proph_map_name pG) (◯ {[p := Excl vs]}).
 
-  Definition proph_aux : seal (@proph_def). by eexists. Qed.
+  Definition proph_aux : seal (@proph_def). Proof. by eexists. Qed.
   Definition proph := proph_aux.(unseal).
   Definition proph_eq : @proph = @proph_def := proph_aux.(seal_eq).
 End definitions.

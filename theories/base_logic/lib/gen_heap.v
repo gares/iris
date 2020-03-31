@@ -106,21 +106,21 @@ Section definitions.
 
   Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
     own (gen_heap_name hG) (◯ {[ l := (q, to_agree (v : leibnizO V)) ]}).
-  Definition mapsto_aux : seal (@mapsto_def). by eexists. Qed.
+  Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
   Definition mapsto := mapsto_aux.(unseal).
   Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
 
   Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
     (∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
            own γm (namespace_map_token E))%I.
-  Definition meta_token_aux : seal (@meta_token_def). by eexists. Qed.
+  Definition meta_token_aux : seal (@meta_token_def). Proof. by eexists. Qed.
   Definition meta_token := meta_token_aux.(unseal).
   Definition meta_token_eq : @meta_token = @meta_token_def := meta_token_aux.(seal_eq).
 
   Definition meta_def `{Countable A} (l : L) (N : namespace) (x : A) : iProp Σ :=
     (∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
            own γm (namespace_map_data N (to_agree (encode x))))%I.
-  Definition meta_aux : seal (@meta_def). by eexists. Qed.
+  Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
   Definition meta {A dA cA} := meta_aux.(unseal) A dA cA.
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.

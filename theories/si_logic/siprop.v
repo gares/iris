@@ -56,7 +56,7 @@ Hint Resolve siProp_closed : siProp_def.
 Program Definition siProp_pure_def (φ : Prop) : siProp :=
   {| siProp_holds n := φ |}.
 Solve Obligations with done.
-Definition siProp_pure_aux : seal (@siProp_pure_def). by eexists. Qed.
+Definition siProp_pure_aux : seal (@siProp_pure_def). Proof. by eexists. Qed.
 Definition siProp_pure := unseal siProp_pure_aux.
 Definition siProp_pure_eq :
   @siProp_pure = @siProp_pure_def := seal_eq siProp_pure_aux.
@@ -64,21 +64,21 @@ Definition siProp_pure_eq :
 Program Definition siProp_and_def (P Q : siProp) : siProp :=
   {| siProp_holds n := P n ∧ Q n |}.
 Solve Obligations with naive_solver eauto 2 with siProp_def.
-Definition siProp_and_aux : seal (@siProp_and_def). by eexists. Qed.
+Definition siProp_and_aux : seal (@siProp_and_def). Proof. by eexists. Qed.
 Definition siProp_and := unseal siProp_and_aux.
 Definition siProp_and_eq: @siProp_and = @siProp_and_def := seal_eq siProp_and_aux.
 
 Program Definition siProp_or_def (P Q : siProp) : siProp :=
   {| siProp_holds n := P n ∨ Q n |}.
 Solve Obligations with naive_solver eauto 2 with siProp_def.
-Definition siProp_or_aux : seal (@siProp_or_def). by eexists. Qed.
+Definition siProp_or_aux : seal (@siProp_or_def). Proof. by eexists. Qed.
 Definition siProp_or := unseal siProp_or_aux.
 Definition siProp_or_eq: @siProp_or = @siProp_or_def := seal_eq siProp_or_aux.
 
 Program Definition siProp_impl_def (P Q : siProp) : siProp :=
   {| siProp_holds n := ∀ n', n' ≤ n → P n' → Q n' |}.
 Next Obligation. intros P Q [|n1] [|n2]; auto with lia. Qed.
-Definition siProp_impl_aux : seal (@siProp_impl_def). by eexists. Qed.
+Definition siProp_impl_aux : seal (@siProp_impl_def). Proof. by eexists. Qed.
 Definition siProp_impl := unseal siProp_impl_aux.
 Definition siProp_impl_eq :
   @siProp_impl = @siProp_impl_def := seal_eq siProp_impl_aux.
@@ -86,7 +86,7 @@ Definition siProp_impl_eq :
 Program Definition siProp_forall_def {A} (Ψ : A → siProp) : siProp :=
   {| siProp_holds n := ∀ a, Ψ a n |}.
 Solve Obligations with naive_solver eauto 2 with siProp_def.
-Definition siProp_forall_aux : seal (@siProp_forall_def). by eexists. Qed.
+Definition siProp_forall_aux : seal (@siProp_forall_def). Proof. by eexists. Qed.
 Definition siProp_forall {A} := unseal siProp_forall_aux A.
 Definition siProp_forall_eq :
   @siProp_forall = @siProp_forall_def := seal_eq siProp_forall_aux.
@@ -94,14 +94,14 @@ Definition siProp_forall_eq :
 Program Definition siProp_exist_def {A} (Ψ : A → siProp) : siProp :=
   {| siProp_holds n := ∃ a, Ψ a n |}.
 Solve Obligations with naive_solver eauto 2 with siProp_def.
-Definition siProp_exist_aux : seal (@siProp_exist_def). by eexists. Qed.
+Definition siProp_exist_aux : seal (@siProp_exist_def). Proof. by eexists. Qed.
 Definition siProp_exist {A} := unseal siProp_exist_aux A.
 Definition siProp_exist_eq: @siProp_exist = @siProp_exist_def := seal_eq siProp_exist_aux.
 
 Program Definition siProp_internal_eq_def {A : ofeT} (a1 a2 : A) : siProp :=
   {| siProp_holds n := a1 ≡{n}≡ a2 |}.
 Solve Obligations with naive_solver eauto 2 using (dist_le (A:=A)).
-Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). by eexists. Qed.
+Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). Proof. by eexists. Qed.
 Definition siProp_internal_eq {A} := unseal siProp_internal_eq_aux A.
 Definition siProp_internal_eq_eq:
   @siProp_internal_eq = @siProp_internal_eq_def := seal_eq siProp_internal_eq_aux.
@@ -109,7 +109,7 @@ Definition siProp_internal_eq_eq:
 Program Definition siProp_later_def (P : siProp) : siProp :=
   {| siProp_holds n := match n return _ with 0 => True | S n' => P n' end |}.
 Next Obligation. intros P [|n1] [|n2]; eauto using siProp_closed with lia. Qed.
-Definition siProp_later_aux : seal (@siProp_later_def). by eexists. Qed.
+Definition siProp_later_aux : seal (@siProp_later_def). Proof. by eexists. Qed.
 Definition siProp_later := unseal siProp_later_aux.
 Definition siProp_later_eq :
   @siProp_later = @siProp_later_def := seal_eq siProp_later_aux.

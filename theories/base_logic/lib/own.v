@@ -56,7 +56,7 @@ Instance: Params (@iRes_singleton) 4 := {}.
 
 Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
-Definition own_aux : seal (@own_def). by eexists. Qed.
+Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
 Definition own {Σ A i} := own_aux.(unseal) Σ A i.
 Definition own_eq : @own = @own_def := own_aux.(seal_eq).
 Instance: Params (@own) 4 := {}.
