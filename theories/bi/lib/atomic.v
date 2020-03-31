@@ -87,7 +87,7 @@ Section definition.
 End definition.
 
 (** Seal it *)
-Definition atomic_update_aux : seal (@atomic_update_def). by eexists. Qed.
+Definition atomic_update_aux : seal (@atomic_update_def). Proof. by eexists. Qed.
 Definition atomic_update `{BiFUpd PROP} {TA TB : tele} := atomic_update_aux.(unseal) PROP _ TA TB.
 Definition atomic_update_eq :
   @atomic_update = @atomic_update_def := atomic_update_aux.(seal_eq).

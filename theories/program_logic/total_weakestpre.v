@@ -60,7 +60,7 @@ Qed.
 Definition twp_def `{!irisG Λ Σ} (s : stuckness) (E : coPset)
     (e : expr Λ) (Φ : val Λ → iProp Σ) :
   iProp Σ := bi_least_fixpoint (twp_pre' s) (E,e,Φ).
-Definition twp_aux `{!irisG Λ Σ} : seal (@twp_def Λ Σ _). by eexists. Qed.
+Definition twp_aux `{!irisG Λ Σ} : seal (@twp_def Λ Σ _). Proof. by eexists. Qed.
 Instance twp' `{!irisG Λ Σ} : Twp Λ (iProp Σ) stuckness := twp_aux.(unseal).
 Definition twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _ := twp_aux.(seal_eq).
 

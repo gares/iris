@@ -9,7 +9,7 @@ Import uPred.
 (** Semantic Invariants *)
 Definition inv_def `{!invG Σ} (N : namespace) (P : iProp Σ) : iProp Σ :=
   (□ ∀ E, ⌜↑N ⊆ E⌝ → |={E,E ∖ ↑N}=> ▷ P ∗ (▷ P ={E ∖ ↑N,E}=∗ True))%I.
-Definition inv_aux : seal (@inv_def). by eexists. Qed.
+Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
 Definition inv {Σ i} := inv_aux.(unseal) Σ i.
 Definition inv_eq : @inv = @inv_def := inv_aux.(seal_eq).
 Instance: Params (@inv) 3 := {}.

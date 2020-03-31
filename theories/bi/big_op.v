@@ -54,7 +54,7 @@ Definition big_sepM2_def {PROP : bi} `{Countable K} {A B}
     (Φ : K → A → B → PROP) (m1 : gmap K A) (m2 : gmap K B) : PROP :=
   (⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
    [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2)%I.
-Definition big_sepM2_aux : seal (@big_sepM2_def). by eexists. Qed.
+Definition big_sepM2_aux : seal (@big_sepM2_def). Proof. by eexists. Qed.
 Definition big_sepM2 := big_sepM2_aux.(unseal).
 Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
 Definition big_sepM2_eq : @big_sepM2 = @big_sepM2_def := big_sepM2_aux.(seal_eq).
