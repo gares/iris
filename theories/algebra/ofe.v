@@ -289,6 +289,13 @@ Section limit_preserving.
     (∀ y, LimitPreserving (P y)) →
     LimitPreserving (λ x, ∀ y, P y x).
   Proof. intros Hlim c Hc y. by apply Hlim. Qed.
+
+  Lemma limit_preserving_equiv `{!Cofe B} (f g : A → B) :
+    NonExpansive f → NonExpansive g → LimitPreserving (λ x, f x ≡ g x).
+  Proof.
+    intros Hf Hg c Hc. apply equiv_dist=> n.
+    by rewrite -!compl_chain_map !conv_compl /= Hc.
+  Qed.
 End limit_preserving.
 
 (** Fixpoint *)
