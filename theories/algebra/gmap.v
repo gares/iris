@@ -628,20 +628,20 @@ Program Definition gmapOF K `{Countable K} (F : oFunctor) : oFunctor := {|
   oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_map_ne.
 Qed.
 Next Obligation.
   intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
-  apply map_fmap_equiv_ext=>y ??; apply oFunctor_id.
+  apply map_fmap_equiv_ext=>y ??; apply oFunctor_map_id.
 Qed.
 Next Obligation.
   intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
-  apply map_fmap_equiv_ext=>y ??; apply oFunctor_compose.
+  apply map_fmap_equiv_ext=>y ??; apply oFunctor_map_compose.
 Qed.
 Instance gmapOF_contractive K `{Countable K} F :
   oFunctorContractive F → oFunctorContractive (gmapOF K F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, oFunctor_map_contractive.
 Qed.
 
 Program Definition gmapURF K `{Countable K} (F : rFunctor) : urFunctor := {|
@@ -649,18 +649,18 @@ Program Definition gmapURF K `{Countable K} (F : rFunctor) : urFunctor := {|
   urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapO_map (rFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_ne.
+  by intros K ?? F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_map_ne.
 Qed.
 Next Obligation.
   intros K ?? F A ? B ? x. rewrite /= -{2}(map_fmap_id x).
-  apply map_fmap_equiv_ext=>y ??; apply rFunctor_id.
+  apply map_fmap_equiv_ext=>y ??; apply rFunctor_map_id.
 Qed.
 Next Obligation.
   intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
-  apply map_fmap_equiv_ext=>y ??; apply rFunctor_compose.
+  apply map_fmap_equiv_ext=>y ??; apply rFunctor_map_compose.
 Qed.
 Instance gmapRF_contractive K `{Countable K} F :
   rFunctorContractive F → urFunctorContractive (gmapURF K F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_contractive.
+  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_map_contractive.
 Qed.

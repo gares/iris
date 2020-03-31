@@ -26,10 +26,10 @@ the agreement CMRA. *)
 category of CMRAs with a proof that it is locally contractive. *)
 Structure gFunctor := GFunctor {
   gFunctor_F :> rFunctor;
-  gFunctor_contractive : rFunctorContractive gFunctor_F;
+  gFunctor_map_contractive : rFunctorContractive gFunctor_F;
 }.
 Arguments GFunctor _ {_}.
-Existing Instance gFunctor_contractive.
+Existing Instance gFunctor_map_contractive.
 Add Printing Constructor gFunctor.
 
 (** The type [gFunctors] describes the parameters [Σ] of the Iris logic: lists

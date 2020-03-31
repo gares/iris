@@ -154,19 +154,19 @@ Program Definition exclRF (F : oFunctor) : rFunctor := {|
   rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := exclO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  intros F A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclO_map_ne, oFunctor_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclO_map_ne, oFunctor_map_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x; simpl. rewrite -{2}(excl_map_id x).
-  apply excl_map_ext=>y. by rewrite oFunctor_id.
+  apply excl_map_ext=>y. by rewrite oFunctor_map_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl. rewrite -excl_map_compose.
-  apply excl_map_ext=>y; apply oFunctor_compose.
+  apply excl_map_ext=>y; apply oFunctor_map_compose.
 Qed.
 
 Instance exclRF_contractive F :
   oFunctorContractive F → rFunctorContractive (exclRF F).
 Proof.
-  intros A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclO_map_ne, oFunctor_contractive.
+  intros A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclO_map_ne, oFunctor_map_contractive.
 Qed.

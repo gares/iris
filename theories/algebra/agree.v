@@ -310,20 +310,20 @@ Program Definition agreeRF (F : oFunctor) : rFunctor := {|
   rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := agreeO_map (oFunctor_map F fg)
 |}.
 Next Obligation.
-  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl. by apply agreeO_map_ne, oFunctor_ne.
+  intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl. by apply agreeO_map_ne, oFunctor_map_ne.
 Qed.
 Next Obligation.
   intros F A ? B ? x; simpl. rewrite -{2}(agree_map_id x).
-  apply (agree_map_ext _)=>y. by rewrite oFunctor_id.
+  apply (agree_map_ext _)=>y. by rewrite oFunctor_map_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl. rewrite -agree_map_compose.
-  apply (agree_map_ext _)=>y; apply oFunctor_compose.
+  apply (agree_map_ext _)=>y; apply oFunctor_map_compose.
 Qed.
 
 Instance agreeRF_contractive F :
   oFunctorContractive F → rFunctorContractive (agreeRF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n ???; simpl.
-  by apply agreeO_map_ne, oFunctor_contractive.
+  by apply agreeO_map_ne, oFunctor_map_contractive.
 Qed.
