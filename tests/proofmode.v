@@ -377,6 +377,10 @@ Lemma test_iNext_quantifier {A} (Φ : A → A → PROP) :
   (∀ y, ∃ x, ▷ Φ x y) -∗ ▷ (∀ y, ∃ x, Φ x y).
 Proof. iIntros "H". iNext. done. Qed.
 
+Lemma text_iNext_Next {A B : ofeT} (f : A -n> A) x y :
+  Next x ≡ Next y -∗ (Next (f x) ≡ Next (f y) : PROP).
+Proof. iIntros "H". iNext. by iRewrite "H". Qed.
+
 Lemma test_iFrame_persistent (P Q : PROP) :
   □ P -∗ Q -∗ <pers> (P ∗ P) ∗ (P ∗ Q ∨ Q).
 Proof. iIntros "#HP". iFrame "HP". iIntros "$". Qed.

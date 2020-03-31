@@ -373,6 +373,11 @@ Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_laterN n P :
   FromModal (modality_laterN n) (▷^n P) (▷^n P) P.
 Proof. by rewrite /FromModal. Qed.
+Global Instance from_modal_Next {A : ofeT} (x y : A) :
+  FromModal (PROP1:=PROP) (PROP2:=PROP) (modality_laterN 1)
+    (▷^1 (x ≡ y) : PROP)%I (Next x ≡ Next y) (x ≡ y).
+Proof. by rewrite /FromModal /= later_equivI. Qed.
+
 Global Instance from_modal_except_0 P : FromModal modality_id (◇ P) (◇ P) P.
 Proof. by rewrite /FromModal /= -except_0_intro. Qed.
 
