@@ -78,7 +78,7 @@ Section inv.
     rewrite assoc_L -!union_difference_L //; set_solver.
   Qed.
 
-  Lemma own_inv_to_inv M P: own_inv M P  -∗ inv M P.
+  Lemma own_inv_to_inv M P: own_inv M P -∗ inv M P.
   Proof.
     iIntros "#I". rewrite inv_eq. iIntros (E H).
     iPoseProof (own_inv_acc with "I") as "H"; eauto.
