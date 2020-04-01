@@ -708,6 +708,8 @@ Class oFunctorContractive (F : oFunctor) :=
     Contractive (@oFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Hint Mode oFunctorContractive ! : typeclass_instances.
 
+(** Not a coercion due to the [Cofe] type class argument, and to avoid
+ambiguous coercion paths, see https://gitlab.mpi-sws.org/iris/iris/issues/240. *)
 Definition oFunctor_apply (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
   oFunctor_car F A A.
 
