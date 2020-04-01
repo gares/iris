@@ -684,7 +684,7 @@ Instance prodO_map_ne {A A' B B'} :
   NonExpansive2 (@prodO_map A A' B B').
 Proof. intros n f f' Hf g g' Hg [??]; split; [apply Hf|apply Hg]. Qed.
 
-(** OFE → OFE Functors *)
+(** COFE → OFE Functors *)
 Record oFunctor := OFunctor {
   oFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ofeT;
   oFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
