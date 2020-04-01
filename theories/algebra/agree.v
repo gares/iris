@@ -184,7 +184,7 @@ Proof.
   move=> a b [_] /=. setoid_rewrite elem_of_list_singleton. naive_solver.
 Qed.
 Global Instance to_agree_inj : Inj (≡) (≡) (to_agree).
-Proof. intros a b ?. apply equiv_dist=>n. by apply (inj _), equiv_dist. Qed.
+Proof. intros a b ?. apply equiv_dist=>n. by apply (inj to_agree), equiv_dist. Qed.
 
 Lemma to_agree_uninjN n x : ✓{n} x → ∃ a, to_agree a ≡{n}≡ x.
 Proof.
@@ -232,7 +232,7 @@ Proof.
   intros ?. apply equiv_dist=>n. by apply agree_op_invN, cmra_valid_validN.
 Qed.
 Lemma agree_op_inv' a b : ✓ (to_agree a ⋅ to_agree b) → a ≡ b.
-Proof. by intros ?%agree_op_inv%(inj _). Qed.
+Proof. by intros ?%agree_op_inv%(inj to_agree). Qed.
 Lemma agree_op_invL' `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) → a = b.
 Proof. by intros ?%agree_op_inv'%leibniz_equiv. Qed.
 
@@ -240,7 +240,7 @@ Proof. by intros ?%agree_op_inv'%leibniz_equiv. Qed.
 Lemma agree_equivI {M} a b : to_agree a ≡ to_agree b ⊣⊢@{uPredI M} (a ≡ b).
 Proof.
   uPred.unseal. do 2 split.
-  - intros Hx. exact: inj.
+  - intros Hx. exact: (inj to_agree).
   - intros Hx. exact: to_agree_ne.
 Qed.
 Lemma agree_validI {M} x y : ✓ (x ⋅ y) ⊢@{uPredI M} x ≡ y.

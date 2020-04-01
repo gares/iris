@@ -574,7 +574,7 @@ Proof.
   - intros (j & ? & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
     { rewrite loc_add_0; eauto. }
     right. split.
-    { rewrite -{1}(loc_add_0 l). intros ?%(inj _); lia. }
+    { rewrite -{1}(loc_add_0 l). intros ?%(inj (loc_add _)); lia. }
     assert (Z.to_nat j = S (Z.to_nat (j - 1))) as Hj.
     { rewrite -Z2Nat.inj_succ; last lia. f_equal; lia. }
     rewrite Hj /= in Hil.
