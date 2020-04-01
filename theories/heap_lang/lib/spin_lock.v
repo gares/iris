@@ -45,6 +45,16 @@ Section proof.
   Global Instance locked_timeless γ : Timeless (locked γ).
   Proof. apply _. Qed.
 
+  Lemma is_lock_iff γ lk R1 R2 :
+    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
+  Proof.
+    iDestruct 1 as (l ->) "#Hinv"; iIntros "#HR".
+    iExists l; iSplit; [done|]. iApply (inv_iff with "Hinv").
+    iIntros "!> !#"; iSplit; iDestruct 1 as (b) "[Hl H]";
+      iExists b; iFrame "Hl"; destruct b;
+      first [done|iDestruct "H" as "[$ ?]"; by iApply "HR"].
+  Qed.
+
   Lemma newlock_spec (R : iProp Σ):
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}}.
   Proof.
@@ -92,5 +102,6 @@ End proof.
 Typeclasses Opaque is_lock locked.
 
 Canonical Structure spin_lock `{!heapG Σ, !lockG Σ} : lock Σ :=
-  {| lock.locked_exclusive := locked_exclusive; lock.newlock_spec := newlock_spec;
+  {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
+     lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

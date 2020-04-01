@@ -15,6 +15,8 @@ Structure lock Σ `{!heapG Σ} := Lock {
   (* -- general properties -- *)
   is_lock_ne N γ lk : Contractive (is_lock N γ lk);
   is_lock_persistent N γ lk R : Persistent (is_lock N γ lk R);
+  is_lock_iff N γ lk R1 R2 :
+    is_lock N γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock N γ lk R2;
   locked_timeless γ : Timeless (locked γ);
   locked_exclusive γ : locked γ -∗ locked γ -∗ False;
   (* -- operation specs -- *)
