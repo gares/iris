@@ -10,14 +10,14 @@ needed because Coq is otherwise unable to solve type class constraints due to
 higher-order unification problems. *)
 Class inG (Σ : gFunctors) (A : cmraT) :=
   InG { inG_id : gid Σ; inG_prf :
-    A = rFunctor_diag (gFunctors_lookup Σ inG_id) (iPrePropO Σ)}.
+    A = rFunctor_apply (gFunctors_lookup Σ inG_id) (iPrePropO Σ)}.
 Arguments inG_id {_ _} _.
 (** We use the mode [-] for [Σ] since there is always a unique [Σ]. We use the
 mode [!] for [A] since we can have multiple [inG]s for different [A]s, so we do
 not want Coq to pick one arbitrarily. *)
 Hint Mode inG - ! : typeclass_instances.
 
-Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (rFunctor_diag F (iPrePropO Σ)).
+Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (rFunctor_apply F (iPrePropO Σ)).
 Proof. move=> /(_ 0%fin) /= [j ->]. by exists j. Qed.
 
 (** This tactic solves the usual obligations "subG ? Σ → {in,?}G ? Σ" *)

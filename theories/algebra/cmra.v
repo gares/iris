@@ -800,7 +800,7 @@ Class rFunctorContractive (F : rFunctor) :=
   rFunctor_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@rFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition rFunctor_diag (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
+Definition rFunctor_apply (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
   rFunctor_car F A A.
 
 Program Definition constRF (B : cmraT) : rFunctor :=
@@ -837,7 +837,7 @@ Class urFunctorContractive (F : urFunctor) :=
   urFunctor_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@urFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition urFunctor_diag (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
+Definition urFunctor_apply (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
   urFunctor_car F A A.
 
 Program Definition constURF (B : ucmraT) : urFunctor :=

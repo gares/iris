@@ -121,7 +121,7 @@ Module Type iProp_solution_sig.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
     discrete_funUR (λ i,
-      gmapUR gname (rFunctor_diag (gFunctors_lookup Σ i) (iPrePropO Σ))).
+      gmapUR gname (rFunctor_apply (gFunctors_lookup Σ i) (iPrePropO Σ))).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
@@ -144,7 +144,7 @@ Module Export iProp_solution : iProp_solution_sig.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
     discrete_funUR (λ i,
-      gmapUR gname (rFunctor_diag (gFunctors_lookup Σ i) (iPrePropO Σ))).
+      gmapUR gname (rFunctor_apply (gFunctors_lookup Σ i) (iPrePropO Σ))).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
 

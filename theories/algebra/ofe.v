@@ -708,7 +708,7 @@ Class oFunctorContractive (F : oFunctor) :=
     Contractive (@oFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Hint Mode oFunctorContractive ! : typeclass_instances.
 
-Definition oFunctor_diag (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
+Definition oFunctor_apply (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
   oFunctor_car F A A.
 
 Program Definition constOF (B : ofeT) : oFunctor :=
@@ -1580,7 +1580,7 @@ Instance iso_ofe_trans_ne {A B C} : NonExpansive2 (iso_ofe_trans (A:=A) (B:=B) (
 Proof. intros n I1 I2 [] J1 J2 []; split; simpl; by f_equiv. Qed.
 
 Program Definition iso_ofe_cong (F : oFunctor) `{!Cofe A, !Cofe B}
-    (I : ofe_iso A B) : ofe_iso (oFunctor_diag F A) (oFunctor_diag F B) :=
+    (I : ofe_iso A B) : ofe_iso (oFunctor_apply F A) (oFunctor_apply F B) :=
   OfeIso (oFunctor_map F (ofe_iso_2 I, ofe_iso_1 I))
     (oFunctor_map F (ofe_iso_1 I, ofe_iso_2 I)) _ _.
 Next Obligation.
