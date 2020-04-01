@@ -774,7 +774,7 @@ Section cmra_morphism.
   Proof. rewrite !cmra_valid_validN; eauto using cmra_morphism_validN. Qed.
 End cmra_morphism.
 
-(** Functors *)
+(** OFE → CMRA Functors *)
 Record rFunctor := RFunctor {
   rFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, cmraT;
   rFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
@@ -812,6 +812,7 @@ Coercion constRF : cmraT >-> rFunctor.
 Instance constRF_contractive B : rFunctorContractive (constRF B).
 Proof. rewrite /rFunctorContractive; apply _. Qed.
 
+(** OFE → UCMRA Functors *)
 Record urFunctor := URFunctor {
   urFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ucmraT;
   urFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
