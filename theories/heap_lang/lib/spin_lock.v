@@ -36,8 +36,8 @@ Section proof.
 
   Global Instance lock_inv_ne γ l : NonExpansive (lock_inv γ l).
   Proof. solve_proper. Qed.
-  Global Instance is_lock_ne γ l : NonExpansive (is_lock γ l).
-  Proof. solve_proper. Qed.
+  Global Instance is_lock_contractive γ l : Contractive (is_lock γ l).
+  Proof. solve_contractive. Qed.
 
   (** The main proofs. *)
   Global Instance is_lock_persistent γ l R : Persistent (is_lock γ l R).
