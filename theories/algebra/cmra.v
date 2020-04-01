@@ -802,7 +802,6 @@ Class rFunctorContractive (F : rFunctor) :=
 
 Definition rFunctor_diag (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
   rFunctor_car F A A.
-Coercion rFunctor_diag : rFunctor >-> Funclass.
 
 Program Definition constRF (B : cmraT) : rFunctor :=
   {| rFunctor_car A1 _ A2 _ := B; rFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
@@ -840,7 +839,6 @@ Class urFunctorContractive (F : urFunctor) :=
 
 Definition urFunctor_diag (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
   urFunctor_car F A A.
-Coercion urFunctor_diag : urFunctor >-> Funclass.
 
 Program Definition constURF (B : ucmraT) : urFunctor :=
   {| urFunctor_car A1 _ A2 _ := B; urFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.

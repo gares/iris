@@ -120,7 +120,8 @@ Module Type iProp_solution_sig.
   Global Declare Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ).
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (gFunctors_lookup Σ i (iPrePropO Σ) _)).
+    discrete_funUR (λ i,
+      gmapUR gname (rFunctor_diag (gFunctors_lookup Σ i) (iPrePropO Σ))).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
@@ -142,7 +143,8 @@ Module Export iProp_solution : iProp_solution_sig.
   Global Instance iPreProp_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
   Definition iResUR (Σ : gFunctors) : ucmraT :=
-    discrete_funUR (λ i, gmapUR gname (gFunctors_lookup Σ i (iPrePropO Σ) _)).
+    discrete_funUR (λ i,
+      gmapUR gname (rFunctor_diag (gFunctors_lookup Σ i) (iPrePropO Σ))).
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
 
