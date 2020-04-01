@@ -79,6 +79,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   - Use the non-`_inv` names (that freed up) for the forwards directions:
    `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
 * The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
+* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are isomorphic.
+* Make use of `ofe_iso` in the COFE solver.
 
 **Changes in heap_lang:**
 
