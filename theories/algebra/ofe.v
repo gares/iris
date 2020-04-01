@@ -609,7 +609,7 @@ Proof.
   by repeat apply ccompose_ne.
 Qed.
 
-(** unit *)
+(** * Unit type *)
 Section unit.
   Instance unit_dist : Dist unit := λ _ _ _, True.
   Definition unit_ofe_mixin : OfeMixin unit.
@@ -623,7 +623,7 @@ Section unit.
   Proof. done. Qed.
 End unit.
 
-(** empty *)
+(** * Empty type *)
 Section empty.
   Instance Empty_set_dist : Dist Empty_set := λ _ _ _, True.
   Definition Empty_set_ofe_mixin : OfeMixin Empty_set.
@@ -637,7 +637,7 @@ Section empty.
   Proof. done. Qed.
 End empty.
 
-(** Product *)
+(** * Product type *)
 Section product.
   Context {A B : ofeT}.
 
@@ -684,7 +684,7 @@ Instance prodO_map_ne {A A' B B'} :
   NonExpansive2 (@prodO_map A A' B B').
 Proof. intros n f f' Hf g g' Hg [??]; split; [apply Hf|apply Hg]. Qed.
 
-(** COFE → OFE Functors *)
+(** * COFE → OFE Functors *)
 Record oFunctor := OFunctor {
   oFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ofeT;
   oFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
@@ -778,7 +778,7 @@ Proof.
   apply ofe_morO_map_ne; apply oFunctor_contractive; destruct n, Hfg; by split.
 Qed.
 
-(** Sum *)
+(** * Sum type *)
 Section sum.
   Context {A B : ofeT}.
 
@@ -867,7 +867,7 @@ Proof.
     by apply sumO_map_ne; apply oFunctor_contractive.
 Qed.
 
-(** Discrete OFE *)
+(** * Discrete OFEs *)
 Section discrete_ofe.
   Context `{Equiv A} (Heq : @Equivalence A (≡)).
 
@@ -919,7 +919,7 @@ Canonical Structure positiveO := leibnizO positive.
 Canonical Structure NO := leibnizO N.
 Canonical Structure ZO := leibnizO Z.
 
-(* Option *)
+(** * Option type *)
 Section option.
   Context {A : ofeT}.
 
@@ -1024,7 +1024,7 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, oFunctor_contractive.
 Qed.
 
-(** Later *)
+(** * Later type *)
 (** Note that the projection [later_car] is not non-expansive (see also the
 lemma [later_car_anti_contractive] below), so it cannot be used in the logic.
 If you need to get a witness out, you should use the lemma [Next_uninj]
@@ -1073,7 +1073,8 @@ Section later.
     Proper (dist n ==> dist_later n) later_car.
   Proof. move=> [x] [y] /= Hxy. done. Qed.
 
-  (* f is contractive iff it can factor into `Next` and a non-expansive function. *)
+  (** [f] is contractive iff it can factor into [Next] and a non-expansive
+  function. *)
   Lemma contractive_alt {B : ofeT} (f : A → B) :
     Contractive f ↔ ∃ g : later A → B, NonExpansive g ∧ ∀ x, f x ≡ g (Next x).
   Proof.
@@ -1132,7 +1133,7 @@ Proof.
   destruct n as [|n]; simpl in *; first done. apply oFunctor_ne, Hfg.
 Qed.
 
-(** Dependently-typed functions over a discrete domain *)
+(** * Dependently-typed functions over a discrete domain *)
 (** This separate notion is useful whenever we need dependent functions, and
 whenever we want to avoid the hassle of the bundled non-expansive function type.
 
@@ -1244,7 +1245,7 @@ Proof.
   by apply discrete_funO_map_ne=>c; apply oFunctor_contractive.
 Qed.
 
-(** Constructing isomorphic OFEs *)
+(** * Constructing isomorphic OFEs *)
 Lemma iso_ofe_mixin {A : ofeT} `{Equiv B, Dist B} (g : B → A)
   (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2)
   (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2) : OfeMixin B.
@@ -1287,7 +1288,7 @@ Definition iso_cofe {A B : ofeT} `{Cofe A} (f : A → B) (g : B → A)
   (gf : ∀ x, g (f x) ≡ x) : Cofe B.
 Proof. by apply (iso_cofe_subtype (λ _, True) (λ x _, f x) g). Qed.
 
-(** Sigma *)
+(** * Sigma type *)
 Section sigma.
   Context {A : ofeT} {P : A → Prop}.
   Implicit Types x : sig P.
@@ -1321,8 +1322,9 @@ End sigma.
 
 Arguments sigO {_} _.
 
-(** Ofe for [sigT]. The first component must be discrete
-    and use Leibniz equality, while the second component might be any OFE. *)
+(** * SigmaT type *)
+(** Ofe for [sigT]. The first component must be discrete and use Leibniz
+equality, while the second component might be any OFE. *)
 Section sigT.
   Import EqNotations.
 
@@ -1520,6 +1522,7 @@ Arguments sigTOF {_} _%OF.
 Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
 Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.
 
+(** * Isomorphisms between OFEs *)
 Record ofe_iso (A B : ofeT) := OfeIso {
   ofe_iso_1 : A -n> B;
   ofe_iso_2 : B -n> A;
