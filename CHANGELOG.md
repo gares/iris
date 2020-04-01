@@ -83,6 +83,11 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Make use of `ofe_iso` in the COFE solver.
 * The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
   `{o,r,ur}Functor_apply` to better match their intent.
+* Change `inv_iff`, `cinv_iff` and `na_inv_iff` to make order of arguments
+  consistent and more convenient for `iApply`. They are now of the form
+  `inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q` and (similar for `na_inv_iff` and
+  `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
+* Add lemma `is_lock_iff` and show that `is_lock` is contractive.
 
 **Changes in heap_lang:**
 
