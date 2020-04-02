@@ -94,6 +94,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Affine, absorbing, persistent and timeless instances for telescopes.
 * Better support for telescopes in the proof mode, i.e., all tactics should
   recognize and distribute telescopes now.
+* Remove namespace `N` from `is_lock`.
 
 **Changes in heap_lang:**
 
