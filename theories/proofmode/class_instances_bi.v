@@ -698,7 +698,8 @@ Qed.
 
 Global Instance into_and_sep `{BiPositive PROP} P Q : IntoAnd true (P ∗ Q) P Q.
 Proof.
-  rewrite /IntoAnd /= intuitionistically_sep -and_sep_intuitionistically intuitionistically_and //.
+  rewrite /IntoAnd /= intuitionistically_sep
+    -and_sep_intuitionistically intuitionistically_and //.
 Qed.
 Global Instance into_and_sep_affine P Q :
   TCOr (Affine P) (Absorbing Q) → TCOr (Absorbing P) (Affine Q) →
@@ -990,29 +991,31 @@ Global Instance into_forall_wand P Q :
 Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite emp_wand //. Qed.
 Global Instance into_forall_impl `{!BiAffine PROP} P Q :
   IntoForall (P → Q) (λ _ : ⊢ P, Q) | 10.
-Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite -True_emp True_impl //. Qed.
+Proof.
+  rewrite /IntoForall. apply forall_intro=><-. rewrite -True_emp True_impl //.
+Qed.
 
 (** FromForall *)
 Global Instance from_forall_forall {A} (Φ : A → PROP) :
-  FromForall (∀ x, Φ x)%I Φ.
+  FromForall (∀ x, Φ x) Φ.
 Proof. by rewrite /FromForall. Qed.
 Global Instance from_forall_tforall {A} (Φ : tele_arg A → PROP) :
   FromForall (∀.. x, Φ x)%I Φ.
 Proof. by rewrite /FromForall bi_tforall_forall. Qed.
 Global Instance from_forall_pure {A} (φ : A → Prop) :
-  @FromForall PROP A (⌜∀ a : A, φ a⌝)%I (λ a, ⌜ φ a ⌝)%I.
+  @FromForall PROP A ⌜∀ a : A, φ a⌝ (λ a, ⌜ φ a ⌝)%I.
 Proof. by rewrite /FromForall pure_forall. Qed.
 Global Instance from_forall_pure_not (φ : Prop) :
-  @FromForall PROP φ (⌜¬ φ⌝)%I (λ a : φ, False)%I.
+  @FromForall PROP φ ⌜¬ φ⌝ (λ a : φ, False)%I.
 Proof. by rewrite /FromForall pure_forall. Qed.
 Global Instance from_forall_impl_pure P Q φ :
-  IntoPureT P φ → FromForall (P → Q)%I (λ _ : φ, Q)%I.
+  IntoPureT P φ → FromForall (P → Q) (λ _ : φ, Q).
 Proof.
   intros (φ'&->&?). by rewrite /FromForall -pure_impl_forall (into_pure P).
 Qed.
 Global Instance from_forall_wand_pure P Q φ :
   IntoPureT P φ → TCOr (Affine P) (Absorbing Q) →
-  FromForall (P -∗ Q)%I (λ _ : φ, Q)%I.
+  FromForall (P -∗ Q) (λ _ : φ, Q)%I.
 Proof.
   intros (φ'&->&?) [|]; rewrite /FromForall; apply wand_intro_r.
   - rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_r.
@@ -1027,10 +1030,10 @@ Proof.
   by rewrite persistently_forall.
 Qed.
 Global Instance from_forall_persistently {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (<pers> P)%I (λ a, <pers> (Φ a))%I.
+  FromForall P Φ → FromForall (<pers> P) (λ a, <pers> (Φ a))%I.
 Proof. rewrite /FromForall=> <-. by rewrite persistently_forall. Qed.
 Global Instance from_forall_embed `{BiEmbed PROP PROP'} {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall ⎡P⎤%I (λ a, ⎡Φ a⎤%I).
+  FromForall P Φ → FromForall ⎡P⎤ (λ a, ⎡Φ a⎤%I).
 Proof. by rewrite /FromForall -embed_forall => <-. Qed.
 
 (** IntoInv *)
