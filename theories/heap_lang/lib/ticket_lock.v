@@ -37,7 +37,8 @@ Instance subG_tlockΣ {Σ} : subG tlockΣ Σ → tlockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapG Σ, !tlockG Σ} (N : namespace).
+  Context `{!heapG Σ, !tlockG Σ}.
+  Let N := nroot .@ "ticket_lock".
 
   Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
     (∃ o n : nat,

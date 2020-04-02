@@ -21,7 +21,8 @@ Instance subG_lockΣ {Σ} : subG lockΣ Σ → lockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.
-  Context `{!heapG Σ, !lockG Σ} (N : namespace).
+  Context `{!heapG Σ, !lockG Σ}.
+  Let N := nroot .@ "spin_lock".
 
   Definition lock_inv (γ : gname) (l : loc) (R : iProp Σ) : iProp Σ :=
     (∃ b : bool, l ↦ #b ∗ if b then True else own γ (Excl ()) ∗ R)%I.
