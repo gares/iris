@@ -2,21 +2,23 @@ From iris.bi Require Import interface derived_connectives updates.
 From iris.algebra Require Export ofe.
 
 (** note: we use [|--] instead of [|-] because the latter is used by
-    Ltac's [match goal] construct
+    Ltac's [match goal] construct.
  *)
 Notation "P |-- Q" := (P ⊢ Q)
   (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 Notation "P '|--@{' PROP } Q" := (P ⊢@{PROP} Q) (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 Notation "(|--)" := (⊢) (only parsing) : stdpp_scope.
+(* FIXME: fix notation *)
 Notation "('|--@{' PROP } )" := (bi_entails (PROP:=PROP)) (only parsing) : stdpp_scope.
+
+Notation "|-- Q" := (⊢ Q%I) (at level 20, Q at level 200, only parsing) : stdpp_scope.
+Notation "'|--@{' PROP } Q" := (⊢@{PROP} Q) (at level 20, Q at level 200, only parsing) : stdpp_scope.
 
 Notation "P -|- Q" := (P ⊣⊢ Q) (at level 95, no associativity, only parsing) : stdpp_scope.
 Notation "P '-|-@{' PROP } Q" := (P ⊣⊢@{PROP} Q) (at level 95, no associativity, only parsing) : stdpp_scope.
 Notation "(-|-)" := (⊣⊢) (only parsing) : stdpp_scope.
+(* FIXME: fix notation *)
 Notation "('-|-@{' PROP } )" := (equiv (A:=bi_car PROP)) (only parsing) : stdpp_scope.
-
-Notation "|-- Q" := (⊢ Q%I) (at level 20, Q at level 200, only parsing) : stdpp_scope.
-Notation "'|--@{' PROP } Q" := (⊢@{PROP} Q) (at level 20, Q at level 200, only parsing) : stdpp_scope.
 
 Notation "P -* Q" := (P ⊢ Q)%stdpp (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.
 

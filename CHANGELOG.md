@@ -150,10 +150,10 @@ s/\blist_singletonM_included\b/list_singleton_included/g
 
 * New ASCII versions of Iris notations. These are marked printing only and
   can be made available using `Require Import iris.bi.ascii`. The new
-  notation is († disambiguated using notation scopes):
+  notations are (notations marked [†] are disambiguated using notation scopes):
   - entailment: `|--` for `⊢` and `-|-` for `⊣⊢`
-  - logic†: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
-  - quantifiers†: `forall` for `∀` and `exists` for `∃`
+  - logic[†]: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
+  - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
   - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`
   - step indexing: `|>` for `▷`
   - modalities: `<intuit>` for `□` and `<except_0>` for `◇`
@@ -165,8 +165,8 @@ s/\blist_singletonM_included\b/list_singleton_included/g
     - `P ={E1,E2}=* Q` for `P ={E1,E2}=∗ Q`
     - `|={E1,E2,E3}|>=> Q` for `|={E1,E2,E3}▷=> Q`
     - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
-    The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v), where the ASCII notations
-    are defined in terms of the unicode notations.
+    The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
+    where the ASCII notations are defined in terms of the unicode notations.
 
 **Changes in heap_lang:**
 
