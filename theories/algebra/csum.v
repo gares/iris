@@ -375,15 +375,15 @@ Program Definition csumRF (Fa Fb : rFunctor) : rFunctor := {|
   rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := csumO_map (rFunctor_map Fa fg) (rFunctor_map Fb fg)
 |}.
 Next Obligation.
-  by intros Fa Fb A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply csumO_map_ne; try apply rFunctor_ne.
+  by intros Fa Fb A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply csumO_map_ne; try apply rFunctor_map_ne.
 Qed.
 Next Obligation.
   intros Fa Fb A ? B ? x. rewrite /= -{2}(csum_map_id x).
-  apply csum_map_ext=>y; apply rFunctor_id.
+  apply csum_map_ext=>y; apply rFunctor_map_id.
 Qed.
 Next Obligation.
   intros Fa Fb A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -csum_map_compose.
-  apply csum_map_ext=>y; apply rFunctor_compose.
+  apply csum_map_ext=>y; apply rFunctor_map_compose.
 Qed.
 
 Instance csumRF_contractive Fa Fb :
@@ -391,5 +391,5 @@ Instance csumRF_contractive Fa Fb :
   rFunctorContractive (csumRF Fa Fb).
 Proof.
   intros ?? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
-  by apply csumO_map_ne; try apply rFunctor_contractive.
+  by apply csumO_map_ne; try apply rFunctor_map_contractive.
 Qed.

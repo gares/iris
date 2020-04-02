@@ -92,7 +92,7 @@ Program Definition vecOF (F : oFunctor) m : oFunctor := {|
   oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := vecO_map m (oFunctor_map F fg)
 |}.
 Next Obligation.
-  intros F A1 ? A2 ? B1 ? B2 ? n m f g Hfg. by apply vecO_map_ne, oFunctor_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n m f g Hfg. by apply vecO_map_ne, oFunctor_map_ne.
 Qed.
 Next Obligation.
   intros F m A ? B ? l.
@@ -103,11 +103,11 @@ Next Obligation.
   intros F m A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' l.
   change (vec_to_list (vec_map m (oFunctor_map F (f ◎ g, g' ◎ f')) l)
     ≡ vec_map m (oFunctor_map F (g, g')) (vec_map m (oFunctor_map F (f, f')) l)).
-  rewrite !vec_to_list_map. by apply: (oFunctor_compose (listOF F) f g f' g').
+  rewrite !vec_to_list_map. by apply: (oFunctor_map_compose (listOF F) f g f' g').
 Qed.
 
 Instance vecOF_contractive F m :
   oFunctorContractive F → oFunctorContractive (vecOF F m).
 Proof.
-  by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecO_map_ne; first apply oFunctor_contractive.
+  by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecO_map_ne; first apply oFunctor_map_contractive.
 Qed.

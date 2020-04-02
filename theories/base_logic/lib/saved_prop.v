@@ -60,7 +60,7 @@ Section saved_anything.
     set (G1 := oFunctor_map F (iProp_fold, iProp_unfold)).
     set (G2 := oFunctor_map F (@iProp_unfold Σ, @iProp_fold Σ)).
     assert (∀ z, G2 (G1 z) ≡ z) as help.
-    { intros z. rewrite /G1 /G2 -oFunctor_compose -{2}[z]oFunctor_id.
+    { intros z. rewrite /G1 /G2 -oFunctor_map_compose -{2}[z]oFunctor_map_id.
       apply (ne_proper (oFunctor_map F)); split=>?; apply iProp_fold_unfold. }
     rewrite -{2}[x]help -{2}[y]help. by iApply f_equiv.
   Qed.

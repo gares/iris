@@ -165,22 +165,22 @@ Program Definition uPredOF (F : urFunctor) : oFunctor := {|
 |}.
 Next Obligation.
   intros F A1 ? A2 ? B1 ? B2 ? n P Q HPQ.
-  apply uPredO_map_ne, urFunctor_ne; split; by apply HPQ.
+  apply uPredO_map_ne, urFunctor_map_ne; split; by apply HPQ.
 Qed.
 Next Obligation.
   intros F A ? B ? P; simpl. rewrite -{2}(uPred_map_id P).
-  apply uPred_map_ext=>y. by rewrite urFunctor_id.
+  apply uPred_map_ext=>y. by rewrite urFunctor_map_id.
 Qed.
 Next Obligation.
   intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' P; simpl. rewrite -uPred_map_compose.
-  apply uPred_map_ext=>y; apply urFunctor_compose.
+  apply uPred_map_ext=>y; apply urFunctor_map_compose.
 Qed.
 
 Instance uPredOF_contractive F :
   urFunctorContractive F → oFunctorContractive (uPredOF F).
 Proof.
-  intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ. apply uPredO_map_ne, urFunctor_contractive.
-  destruct n; split; by apply HPQ.
+  intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ.
+  apply uPredO_map_ne, urFunctor_map_contractive. destruct n; split; by apply HPQ.
 Qed.
 
 (** logical entailement *)
