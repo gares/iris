@@ -434,8 +434,7 @@ Qed.
 Global Instance into_wand_forall {A} p q (Φ : A → PROP) P Q x :
   IntoWand p q (Φ x) P Q → IntoWand p q (∀ x, Φ x) P Q.
 Proof. rewrite /IntoWand=> <-. by rewrite (forall_elim x). Qed.
-
-Global Instance into_wand_tforall {A} p q (Φ : tele_arg A → PROP) P Q x :
+Global Instance into_wand_tforall {TT : tele} p q (Φ : TT → PROP) P Q x :
   IntoWand p q (Φ x) P Q → IntoWand p q (∀.. x, Φ x) P Q.
 Proof. rewrite /IntoWand=> <-. by rewrite bi_tforall_forall (forall_elim x). Qed.
 
@@ -882,7 +881,7 @@ Global Instance into_or_embed `{BiEmbed PROP PROP'} P Q1 Q2 :
 Proof. by rewrite /IntoOr -embed_or => <-. Qed.
 
 (** FromExist *)
-Global Instance from_exist_texist {A} (Φ : tele_arg A → PROP) :
+Global Instance from_exist_texist {TT : tele} (Φ : TT → PROP) :
   FromExist (∃.. a, Φ a) Φ.
 Proof. by rewrite /FromExist bi_texist_exist. Qed.
 Global Instance from_exist_pure {A} (φ : A → Prop) :
@@ -913,7 +912,7 @@ Qed.
 (** IntoExist *)
 Global Instance into_exist_exist {A} (Φ : A → PROP) : IntoExist (∃ a, Φ a) Φ.
 Proof. by rewrite /IntoExist. Qed.
-Global Instance into_exist_texist {A} (Φ : tele_arg A → PROP) :
+Global Instance into_exist_texist {TT : tele} (Φ : TT → PROP) :
   IntoExist (∃.. a, Φ a) Φ | 10.
 Proof. by rewrite /IntoExist bi_texist_exist. Qed.
 Global Instance into_exist_pure {A} (φ : A → Prop) :
@@ -951,7 +950,7 @@ Proof. by rewrite /IntoExist -embed_exist => <-. Qed.
 (** IntoForall *)
 Global Instance into_forall_forall {A} (Φ : A → PROP) : IntoForall (∀ a, Φ a) Φ.
 Proof. by rewrite /IntoForall. Qed.
-Global Instance into_forall_tforall {A} (Φ : tele_arg A → PROP) :
+Global Instance into_forall_tforall {TT : tele} (Φ : TT → PROP) :
   IntoForall (∀.. a, Φ a) Φ | 10.
 Proof. by rewrite /IntoForall bi_tforall_forall. Qed.
 Global Instance into_forall_affinely {A} P (Φ : A → PROP) :
@@ -999,8 +998,8 @@ Qed.
 Global Instance from_forall_forall {A} (Φ : A → PROP) :
   FromForall (∀ x, Φ x) Φ.
 Proof. by rewrite /FromForall. Qed.
-Global Instance from_forall_tforall {A} (Φ : tele_arg A → PROP) :
-  FromForall (∀.. x, Φ x)%I Φ.
+Global Instance from_forall_tforall {TT : tele} (Φ : TT → PROP) :
+  FromForall (∀.. x, Φ x) Φ.
 Proof. by rewrite /FromForall bi_tforall_forall. Qed.
 Global Instance from_forall_pure {A} (φ : A → Prop) :
   @FromForall PROP A ⌜∀ a : A, φ a⌝ (λ a, ⌜ φ a ⌝)%I.
