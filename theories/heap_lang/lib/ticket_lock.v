@@ -54,11 +54,10 @@ Section proof.
 
   Definition locked (γ : gname) : iProp Σ := (∃ o, own γ (◯ (Excl' o, GSet ∅)))%I.
 
-  Global Instance lock_inv_ne γ lo ln :
-    NonExpansive (lock_inv γ lo ln).
+  Global Instance lock_inv_ne γ lo ln : NonExpansive (lock_inv γ lo ln).
   Proof. solve_proper. Qed.
-  Global Instance is_lock_ne γ lk : NonExpansive (is_lock γ lk).
-  Proof. solve_proper. Qed.
+  Global Instance is_lock_contractive γ lk : Contractive (is_lock γ lk).
+  Proof. solve_contractive. Qed.
   Global Instance is_lock_persistent γ lk R : Persistent (is_lock γ lk R).
   Proof. apply _. Qed.
   Global Instance locked_timeless γ : Timeless (locked γ).
@@ -68,6 +67,16 @@ Section proof.
   Proof.
     iDestruct 1 as (o1) "H1". iDestruct 1 as (o2) "H2".
     iDestruct (own_valid_2 with "H1 H2") as %[[] _].
+  Qed.
+
+  Lemma is_lock_iff γ lk R1 R2 :
+    is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2.
+  Proof.
+    iDestruct 1 as (lo ln ->) "#Hinv"; iIntros "#HR".
+    iExists lo, ln; iSplit; [done|]. iApply (inv_iff with "Hinv").
+    iIntros "!> !#"; iSplit; iDestruct 1 as (o n) "(Ho & Hn & H● & H)";
+      iExists o, n; iFrame "Ho Hn H●";
+      (iDestruct "H" as "[[H◯ H]|H◯]"; [iLeft; iFrame "H◯"; by iApply "HR"|by iRight]).
   Qed.
 
   Lemma newlock_spec (R : iProp Σ) :
@@ -163,5 +172,6 @@ End proof.
 Typeclasses Opaque is_lock issued locked.
 
 Canonical Structure ticket_lock `{!heapG Σ, !tlockG Σ} : lock Σ :=
-  {| lock.locked_exclusive := locked_exclusive; lock.newlock_spec := newlock_spec;
+  {| lock.locked_exclusive := locked_exclusive; lock.is_lock_iff := is_lock_iff;
+     lock.newlock_spec := newlock_spec;
      lock.acquire_spec := acquire_spec; lock.release_spec := release_spec |}.

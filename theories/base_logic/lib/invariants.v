@@ -97,18 +97,17 @@ Section inv.
   Global Instance inv_persistent N P : Persistent (inv N P).
   Proof. rewrite inv_eq. apply _. Qed.
 
-  Lemma inv_alter N P Q:
-    inv N P -∗ ▷ □ (P -∗ Q ∗ (Q -∗ P)) -∗ inv N Q.
+  Lemma inv_alter N P Q : inv N P -∗ ▷ □ (P -∗ Q ∗ (Q -∗ P)) -∗ inv N Q.
   Proof.
-    rewrite inv_eq. iIntros "#HI #Acc !>" (E H).
+    rewrite inv_eq. iIntros "#HI #HPQ !>" (E H).
     iMod ("HI" $! E H) as "[HP Hclose]".
-    iDestruct ("Acc" with "HP") as "[$ HQP]".
+    iDestruct ("HPQ" with "HP") as "[$ HQP]".
     iIntros "!> HQ". iApply "Hclose". iApply "HQP". done.
   Qed.
 
-  Lemma inv_iff N P Q : ▷ □ (P ↔ Q) -∗ inv N P -∗ inv N Q.
+  Lemma inv_iff N P Q : inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q.
   Proof.
-    iIntros "#HPQ #HI". iApply (inv_alter with "HI").
+    iIntros "#HI #HPQ". iApply (inv_alter with "HI").
     iIntros "!> !> HP". iSplitL "HP".
     - by iApply "HPQ".
     - iIntros "HQ". by iApply "HPQ".

@@ -53,11 +53,10 @@ Section proofs.
     iDestruct (cinv_own_valid with "H1 H2") as %[]%(exclusive_l 1%Qp).
   Qed.
 
-  Lemma cinv_iff N γ P P' :
-    ▷ □ (P ↔ P') -∗ cinv N γ P -∗ cinv N γ P'.
+  Lemma cinv_iff N γ P Q : cinv N γ P -∗ ▷ □ (P ↔ Q) -∗ cinv N γ Q.
   Proof.
-    iIntros "#HP". iApply inv_iff. iIntros "!> !>".
-    iSplit; iIntros "[?|$]"; iLeft; by iApply "HP".
+    iIntros "HI #HPQ". iApply (inv_iff with "HI"). iIntros "!> !>".
+    iSplit; iIntros "[?|$]"; iLeft; by iApply "HPQ".
   Qed.
 
   (*** Allocation rules. *)
