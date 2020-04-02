@@ -285,8 +285,8 @@ Chajed. Thanks a lot to everyone involved!
   consistent with other such big op lemmas. Also add such lemmas for `bupd`.
 * Rename `C` suffixes into `O` since we no longer use COFEs but OFEs. Also
   rename `ofe_fun` into `discrete_fun` and the corresponding notation `-c>` into
-  `-d>`. The renaming can be automatically done using the following script (on
-  macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
+  `-d>`. The renaming can be automatically done using the following script
+  (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
 ```
 sed -i '
 s/\bCofeMor/OfeMor/g;
