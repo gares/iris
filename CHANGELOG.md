@@ -81,6 +81,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
 * Add notion `ofe_iso A B` that states that OFEs `A` and `B` are isomorphic.
 * Make use of `ofe_iso` in the COFE solver.
+* The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
+  `{o,r,ur}Functor_apply` to better match their intent.
 
 **Changes in heap_lang:**
 

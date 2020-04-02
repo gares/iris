@@ -4,20 +4,20 @@ Set Default Proof Using "Type".
 Record solution (F : oFunctor) := Solution {
   solution_car :> ofeT;
   solution_cofe : Cofe solution_car;
-  solution_iso :> ofe_iso (F solution_car _) solution_car;
+  solution_iso :> ofe_iso (oFunctor_apply F solution_car) solution_car;
 }.
 Existing Instance solution_cofe.
 
 Module solver. Section solver.
 Context (F : oFunctor) `{Fcontr : oFunctorContractive F}.
-Context `{Fcofe : ∀ (T : ofeT) `{!Cofe T}, Cofe (F T _)}.
-Context `{Finh : Inhabited (F unitO _)}.
+Context `{Fcofe : ∀ (T : ofeT) `{!Cofe T}, Cofe (oFunctor_apply F T)}.
+Context `{Finh : Inhabited (oFunctor_apply F unitO)}.
 Notation map := (oFunctor_map F).
 
 Fixpoint A' (k : nat) : { C : ofeT & Cofe C } :=
   match k with
   | 0 => existT (P:=Cofe) unitO _
-  | S k => existT (P:=Cofe) (F (projT1 (A' k)) (projT2 (A' k))) _
+  | S k => existT (P:=Cofe) (@oFunctor_apply F (projT1 (A' k)) (projT2 (A' k))) _
   end.
 Notation A k := (projT1 (A' k)).
 Local Instance A_cofe k : Cofe (A k) := projT2 (A' k).
@@ -176,7 +176,7 @@ Proof.
   - rewrite (ff_tower k (i - S k) X). by destruct (Nat.sub_add _ _ _).
 Qed.
 
-Program Definition unfold_chain (X : T) : chain (F T _) :=
+Program Definition unfold_chain (X : T) : chain (oFunctor_apply F T) :=
   {| chain_car n := map (project n,embed' n) (X (S n)) |}.
 Next Obligation.
   intros X n i Hi.
@@ -186,14 +186,14 @@ Next Obligation.
   rewrite f_S -oFunctor_compose.
   by apply (contractive_ne map); split=> Y /=; rewrite ?g_tower ?embed_f.
 Qed.
-Definition unfold (X : T) : F T _ := compl (unfold_chain X).
+Definition unfold (X : T) : oFunctor_apply F T := compl (unfold_chain X).
 Instance unfold_ne : NonExpansive unfold.
 Proof.
   intros n X Y HXY. by rewrite /unfold (conv_compl n (unfold_chain X))
     (conv_compl n (unfold_chain Y)) /= (HXY (S n)).
 Qed.
 
-Program Definition fold (X : F T _) : T :=
+Program Definition fold (X : oFunctor_apply F T) : T :=
   {| tower_car n := g n (map (embed' n,project n) X) |}.
 Next Obligation.
   intros X k. apply (_ : Proper ((≡) ==> (≡)) (g k)).

@@ -708,12 +708,10 @@ Class oFunctorContractive (F : oFunctor) :=
     Contractive (@oFunctor_map F A1 _ A2 _ B1 _ B2 _).
 Hint Mode oFunctorContractive ! : typeclass_instances.
 
-Definition oFunctor_diag (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
+(** Not a coercion due to the [Cofe] type class argument, and to avoid
+ambiguous coercion paths, see https://gitlab.mpi-sws.org/iris/iris/issues/240. *)
+Definition oFunctor_apply (F: oFunctor) (A: ofeT) `{!Cofe A} : ofeT :=
   oFunctor_car F A A.
-(** Note that the implicit argument [Cofe A] is not taken into account when
-[oFunctor_diag] is used as a coercion. So, given [F : oFunctor] and [A : ofeT]
-one has to write [F A _]. *)
-Coercion oFunctor_diag : oFunctor >-> Funclass.
 
 Program Definition constOF (B : ofeT) : oFunctor :=
   {| oFunctor_car A1 A2 _ _ := B; oFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
@@ -1498,7 +1496,7 @@ Section sigTOF.
   Qed.
 
   Program Definition sigTOF (F : A → oFunctor) : oFunctor := {|
-    oFunctor_car A CA B CB := sigTO (λ a, oFunctor_car (F a) A _ B CB);
+    oFunctor_car A CA B CB := sigTO (λ a, oFunctor_car (F a) A B);
     oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := sigT_map (λ a, oFunctor_map (F a) fg)
   |}.
   Next Obligation.
@@ -1584,7 +1582,7 @@ Instance iso_ofe_trans_ne {A B C} : NonExpansive2 (iso_ofe_trans (A:=A) (B:=B) (
 Proof. intros n I1 I2 [] J1 J2 []; split; simpl; by f_equiv. Qed.
 
 Program Definition iso_ofe_cong (F : oFunctor) `{!Cofe A, !Cofe B}
-    (I : ofe_iso A B) : ofe_iso (F A _) (F B _) :=
+    (I : ofe_iso A B) : ofe_iso (oFunctor_apply F A) (oFunctor_apply F B) :=
   OfeIso (oFunctor_map F (ofe_iso_2 I, ofe_iso_1 I))
     (oFunctor_map F (ofe_iso_1 I, ofe_iso_2 I)) _ _.
 Next Obligation.
