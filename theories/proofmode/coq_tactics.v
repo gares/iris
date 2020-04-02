@@ -1,4 +1,4 @@
-From iris.bi Require Export bi.
+From iris.bi Require Export bi telescopes.
 From iris.bi Require Import tactics.
 From iris.proofmode Require Export base environments classes modality_instances.
 Set Default Proof Using "Type".
@@ -504,6 +504,9 @@ Proof. rewrite /IntoEmpValid => Hφ Hi1 Hi2. apply Hi1, Hi2, Hφ. Defined.
 Lemma into_emp_valid_forall {A} (φ : A → Type) P x :
   IntoEmpValid (φ x) P → IntoEmpValid (∀ x : A, φ x) P.
 Proof. rewrite /IntoEmpValid => Hi1 Hi2. apply Hi1, Hi2. Defined.
+Lemma into_emp_valid_tforall {TT : tele} (φ : TT → Prop) P x :
+  IntoEmpValid (φ x) P → IntoEmpValid (∀.. x : TT, φ x) P.
+Proof. rewrite /IntoEmpValid tforall_forall=> Hi1 Hi2. apply Hi1, Hi2. Defined.
 Lemma into_emp_valid_proj φ P : IntoEmpValid φ P → φ → ⊢ P.
 Proof. intros HP. apply HP. Defined.
 
