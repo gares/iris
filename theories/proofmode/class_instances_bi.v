@@ -698,7 +698,8 @@ Qed.
 
 Global Instance into_and_sep `{BiPositive PROP} P Q : IntoAnd true (P ∗ Q) P Q.
 Proof.
-  rewrite /IntoAnd /= intuitionistically_sep -and_sep_intuitionistically intuitionistically_and //.
+  rewrite /IntoAnd /= intuitionistically_sep
+    -and_sep_intuitionistically intuitionistically_and //.
 Qed.
 Global Instance into_and_sep_affine P Q :
   TCOr (Affine P) (Absorbing Q) → TCOr (Absorbing P) (Affine Q) →
@@ -990,7 +991,9 @@ Global Instance into_forall_wand P Q :
 Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite emp_wand //. Qed.
 Global Instance into_forall_impl `{!BiAffine PROP} P Q :
   IntoForall (P → Q) (λ _ : ⊢ P, Q) | 10.
-Proof. rewrite /IntoForall. apply forall_intro=><-. rewrite -True_emp True_impl //. Qed.
+Proof.
+  rewrite /IntoForall. apply forall_intro=><-. rewrite -True_emp True_impl //.
+Qed.
 
 (** FromForall *)
 Global Instance from_forall_forall {A} (Φ : A → PROP) :
