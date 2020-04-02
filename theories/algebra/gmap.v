@@ -45,7 +45,10 @@ Global Instance gmapO_leibniz: LeibnizEquiv A → LeibnizEquiv gmapO.
 Proof. intros; change (LeibnizEquiv (gmap K A)); apply _. Qed.
 
 Global Instance lookup_ne k : NonExpansive (lookup k : gmap K A → option A).
-Proof. by intros m1 m2. Qed.
+Proof. by intros n m1 m2. Qed.
+Global Instance lookup_total_ne `{!Inhabited A} k :
+  NonExpansive (lookup_total k : gmap K A → A).
+Proof. intros n m1 m2. rewrite !lookup_total_alt. by intros ->. Qed.
 Global Instance partial_alter_ne n :
   Proper ((dist n ==> dist n) ==> (=) ==> dist n ==> dist n)
          (partial_alter (M:=gmap K A)).

@@ -23,6 +23,9 @@ Global Instance head_ne : NonExpansive (head (A:=A)).
 Proof. destruct 1; by constructor. Qed.
 Global Instance list_lookup_ne i : NonExpansive (lookup (M:=list A) i).
 Proof. intros ????. by apply dist_option_Forall2, Forall2_lookup. Qed.
+Global Instance list_lookup_total_ne `{!Inhabited A} i :
+  NonExpansive (lookup_total (M:=list A) i).
+Proof. intros ???. rewrite !list_lookup_total_alt. by intros ->. Qed.
 Global Instance list_alter_ne n f i :
   Proper (dist n ==> dist n) f →
   Proper (dist n ==> dist n) (alter (M:=list A) f i) := _.
