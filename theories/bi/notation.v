@@ -1,6 +1,6 @@
 (** Just reserve the notation. *)
 
-(** Turnstiles *)
+(** * Turnstiles *)
 Reserved Notation "P ⊢ Q" (at level 99, Q at level 200, right associativity).
 Reserved Notation "P '⊢@{' PROP } Q" (at level 99, Q at level 200, right associativity).
 Reserved Notation "(⊢)".
@@ -14,7 +14,7 @@ Reserved Notation "('⊣⊢@{' PROP } )".
 Reserved Notation "⊢ Q" (at level 20, Q at level 200).
 Reserved Notation "'⊢@{' PROP } Q" (at level 20, Q at level 200).
 
-(** BI connectives *)
+(** * BI connectives *)
 Reserved Notation "'emp'".
 Reserved Notation "'⌜' φ '⌝'" (at level 1, φ at level 200, format "⌜ φ ⌝").
 Reserved Notation "P ∗ Q" (at level 80, right associativity).
@@ -58,7 +58,7 @@ Reserved Notation "■? p P" (at level 20, p at level 9, P at level 20,
 Reserved Notation "'<obj>' P" (at level 20, right associativity).
 Reserved Notation "'<subj>' P" (at level 20, right associativity).
 
-(** Update modalities *)
+(** * Update modalities *)
 Reserved Notation "|==> Q" (at level 99, Q at level 200, format "|==>  Q").
 Reserved Notation "P ==∗ Q"
   (at level 99, Q at level 200, format "'[' P  '/' ==∗  Q ']'").
@@ -102,7 +102,7 @@ Reserved Notation "P ={ E1 , E2 }▷=∗^ n Q"
   (at level 99, E1, E2 at level 50, n at level 9, Q at level 200,
    format "P  ={ E1 , E2 }▷=∗^ n  Q").
 
-(** Big Ops *)
+(** * Big Ops *)
 Reserved Notation "'[∗' 'list]' k ↦ x ∈ l , P"
   (at level 200, l at level 10, k, x at level 1, right associativity,
    format "[∗  list]  k ↦ x  ∈  l ,  P").
