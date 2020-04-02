@@ -2,6 +2,57 @@ From stdpp Require Import coPset namespaces.
 From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
+Section basic_tests.
+  Context {PROP : sbi}.
+  Implicit Types P Q R : PROP.
+
+  Lemma test_iIntros_tforall {TT : tele} (Φ : TT → PROP) :
+    ⊢ ∀.. x, Φ x -∗ Φ x.
+  Proof. iIntros (x) "H". done. Qed.
+  Lemma test_iPoseProof_tforall {TT : tele} P (Φ : TT → PROP) :
+    (∀.. x, P ⊢ Φ x) → P -∗ ∀.. x, Φ x.
+  Proof.
+    iIntros (H1) "H2"; iIntros (x).
+    iPoseProof (H1) as "H1". by iApply "H1".
+  Qed.
+  Lemma test_iApply_tforall {TT : tele} P (Φ : TT → PROP) :
+    (∀.. x, P -∗ Φ x) -∗ P -∗ ∀.. x, Φ x.
+  Proof. iIntros "H1 H2" (x). by iApply "H1". Qed.
+  Lemma test_iAssumption_tforall {TT : tele} (Φ : TT → PROP) :
+    (∀.. x, Φ x) -∗ ∀.. x, Φ x.
+  Proof. iIntros "H" (x). iAssumption. Qed.
+  Lemma test_pure_texist {TT : tele} (φ : TT → Prop) :
+    (∃.. x, ⌜ φ x ⌝) -∗ ∃.. x, ⌜ φ x ⌝ : PROP.
+  Proof. iIntros (H) "!%". done. Qed.
+  Lemma test_pure_tforall {TT : tele} (φ : TT → Prop) :
+    (∀.. x, ⌜ φ x ⌝) -∗ ∀.. x, ⌜ φ x ⌝ : PROP.
+  Proof. iIntros (H) "!%". done. Qed.
+  Lemma test_pure_tforall_persistent {TT : tele} (Φ : TT → PROP) :
+    (∀.. x, <pers> (Φ x)) -∗ <pers> ∀.. x, Φ x.
+  Proof. iIntros "#H !#" (x). done. Qed.
+  Lemma test_pure_texists_intuitionistic {TT : tele} (Φ : TT → PROP) :
+    (∃.. x, □ (Φ x)) -∗ □ ∃.. x, Φ x.
+  Proof. iDestruct 1 as (x) "#H". iExists (x). done. Qed.
+  Lemma test_iMod_tforall {TT : tele} P (Φ : TT → PROP) :
+    ◇ P -∗ (∀.. x, Φ x) -∗ ∀.. x, ◇ (P ∗ Φ x).
+  Proof. iIntros ">H1 H2" (x) "!> {$H1}". done. Qed.
+  Lemma test_timeless_tforall {TT : tele} (φ : TT → Prop) :
+    ▷ (∀.. x, ⌜ φ x ⌝) -∗ ◇ ∀.. x, ⌜ φ x ⌝ : PROP.
+  Proof. iIntros ">H1 !>". done. Qed.
+  Lemma test_timeless_texist {TT : tele} (φ : TT → Prop) :
+    ▷ (∃.. x, ⌜ φ x ⌝) -∗ ◇ ∃.. x, ⌜ φ x ⌝ : PROP.
+  Proof. iIntros ">H1 !>". done. Qed.
+  Lemma test_add_model_texist `{!BiBUpd PROP} {TT : tele} P Q (Φ : TT → PROP) :
+    (|==> P) -∗ (P -∗ Q) -∗ ∀.. x, |==> Q ∗ (Φ x -∗ Φ x).
+  Proof. iIntros "H1 H2". iDestruct ("H2" with "[> $H1]") as "$". auto. Qed.
+  Lemma test_iFrame_tforall {TT : tele} P (Φ : TT → PROP) :
+    P -∗ ∀.. x, P ∗ (Φ x -∗ Φ x).
+  Proof. iIntros "$". auto. Qed.
+  Lemma test_iFrame_texist {TT : tele} P (Φ : TT → PROP) :
+    P -∗ (∃.. x, Φ x) -∗ ∃.. x, P ∗ Φ x.
+  Proof. iIntros "$". auto. Qed.
+End basic_tests.
+
 Section accessor.
 (* Just playing around a bit with a telescope version
    of accessors with just one binder list. *)
