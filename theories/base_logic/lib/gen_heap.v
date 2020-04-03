@@ -233,6 +233,13 @@ Section gen_heap.
     iApply (mapsto_valid l _ v2). by iFrame.
   Qed.
 
+  Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
+    ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+  Proof.
+    iIntros (?) "Hl1 Hl2"; iIntros (->).
+    by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %?.
+  Qed.
+
   (** General properties of [meta] and [meta_token] *)
   Global Instance meta_token_timeless l N : Timeless (meta_token l N).
   Proof. rewrite meta_token_eq /meta_token_def. apply _. Qed.
