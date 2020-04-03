@@ -371,7 +371,7 @@ Proof. eapply bi_mixin_impl_elim_l', bi_bi_mixin. Qed.
 Lemma forall_intro {A} P (Ψ : A → PROP) : (∀ a, P ⊢ Ψ a) → P ⊢ ∀ a, Ψ a.
 Proof. eapply bi_mixin_forall_intro, bi_bi_mixin. Qed.
 Lemma forall_elim {A} {Ψ : A → PROP} a : (∀ a, Ψ a) ⊢ Ψ a.
-Proof. eapply (bi_mixin_forall_elim  bi_entails), bi_bi_mixin. Qed.
+Proof. eapply (bi_mixin_forall_elim bi_entails), bi_bi_mixin. Qed.
 
 Lemma exist_intro {A} {Ψ : A → PROP} a : Ψ a ⊢ ∃ a, Ψ a.
 Proof. eapply bi_mixin_exist_intro, bi_bi_mixin. Qed.
