@@ -145,7 +145,7 @@ Section gc.
         apply (auth_update_alloc _ (to_gc_map (<[l := (v, I)]> gcm)) (to_gc_map ({[l := (v, I)]}))).
         rewrite to_gc_map_insert to_gc_map_singleton.
         pose proof (to_gc_map_valid gcm).
-        setoid_rewrite alloc_singleton_local_update=>//. }
+        apply: alloc_singleton_local_update; done. }
       iMod ("Hclose" with "[H● HsepM Hl]").
       + iExists _.
         iDestruct (big_sepM_insert with "[HsepM Hl]") as "HsepM"=>//; iFrame.
