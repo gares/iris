@@ -3,23 +3,25 @@ From iris.heap_lang Require Export lifting notation.
 Set Default Proof Using "Type".
 
 Structure lock Σ `{!heapG Σ} := Lock {
-  (* -- operations -- *)
+  (** * Operations *)
   newlock : val;
   acquire : val;
   release : val;
-  (* -- predicates -- *)
-  (* name is used to associate locked with is_lock *)
+  (** * Predicates *)
+  (** [name] is used to associate locked with [is_lock] *)
   name : Type;
+  (** No namespace [N] parameter because we only expose program specs, which
+  anyway have the full mask. *)
   is_lock (γ: name) (lock: val) (R: iProp Σ) : iProp Σ;
   locked (γ: name) : iProp Σ;
-  (* -- general properties -- *)
+  (** * General properties of the predicates *)
   is_lock_ne γ lk : Contractive (is_lock γ lk);
   is_lock_persistent γ lk R : Persistent (is_lock γ lk R);
   is_lock_iff γ lk R1 R2 :
     is_lock γ lk R1 -∗ ▷ □ (R1 ↔ R2) -∗ is_lock γ lk R2;
   locked_timeless γ : Timeless (locked γ);
   locked_exclusive γ : locked γ -∗ locked γ -∗ False;
-  (* -- operation specs -- *)
+  (** * Program specs *)
   newlock_spec (R : iProp Σ) :
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}};
   acquire_spec γ lk R :
