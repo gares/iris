@@ -25,9 +25,9 @@ Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
 
 Definition gc_mapUR (L V : Type) `{Countable L} : ucmraT := gmapUR L $ prodR
   (optionR $ exclR $ leibnizO V)
-  (agreeR $ leibnizO (V → Prop)).
+  (agreeR (V -d> PropO)).
 
-Definition to_gc_map {L V : Type} `{Countable L} (gcm: gmap L (V * (V → Prop))) : gc_mapUR L V :=
+Definition to_gc_map {L V : Type} `{Countable L} (gcm: gmap L (V * (V -d> PropO))) : gc_mapUR L V :=
   prod_map (λ x, Excl' x) to_agree <$> gcm.
 
 Class gcG (L V : Type) (Σ : gFunctors) `{Countable L} := GcG {
@@ -53,7 +53,7 @@ Section defs.
   Context `{!invG Σ, !gen_heapG L V Σ, gG: !gcG L V Σ}.
 
   Definition gc_inv_P : iProp Σ :=
-    (∃ gcm : gmap L (V * (V → Prop)),
+    (∃ gcm : gmap L (V * (V -d> PropO)),
         own (gc_name gG) (● to_gc_map gcm) ∗ [∗ map] l ↦ p ∈ gcm, ⌜p.2 p.1⌝ ∗ l ↦ p.1)%I.
 
   Definition gc_inv : iProp Σ := inv gcN gc_inv_P.
@@ -72,7 +72,7 @@ Arguments gc_inv _ _ {_ _ _ _ _ _}.
 
 Section to_gc_map.
   Context {L V : Type} `{Countable L}.
-  Implicit Types (gcm : gmap L (V * (V → Prop))).
+  Implicit Types (gcm : gmap L (V * (V -d> PropO))).
 
   Lemma to_gc_map_valid gcm : ✓ to_gc_map gcm.
   Proof. intros l. rewrite lookup_fmap. by case (gcm !! l). Qed.
@@ -118,6 +118,7 @@ Section gc.
   Context {L V : Type} `{Countable L}.
   Context `{!invG Σ, !gen_heapG L V Σ, gG: !gcG L V Σ}.
   Implicit Types (l : L) (v : V) (I : V → Prop).
+  Implicit Types (gcm : gmap L (V * (V -d> PropO))).
 
   Global Instance is_gc_loc_persistent l I : Persistent (is_gc_loc l I).
   Proof. rewrite /is_gc_loc. apply _. Qed.
@@ -166,7 +167,7 @@ Section gc.
   Qed.
 
   Lemma is_gc_lookup_Some l gcm I :
-    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜∃ v, gcm !! l = Some (v, I)⌝.
+    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜∃ v, gcm !! l ≡ Some (v, I)⌝.
   Proof.
     iIntros "Hgc_l H◯".
     iCombine "H◯ Hgc_l" as "Hcomb".
@@ -180,6 +181,7 @@ Section gc.
     rewrite ->Some_included_total in Hincl.
     apply pair_included in Hincl. simpl in Hincl.
     destruct Hincl as [_ Hincl%to_agree_included].
+    
     fold_leibniz. subst I''. done.
   Qed.
 
