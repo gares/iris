@@ -90,8 +90,8 @@ Section lifting.
   Lemma ownP_eq σ1 σ2 κs n : state_interp σ1 κs n -∗ ownP σ2 -∗ ⌜σ1 = σ2⌝.
   Proof.
     iIntros "Hσ● Hσ◯". rewrite /ownP.
-    iDestruct (own_valid_2 with "Hσ● Hσ◯") as %[Hps _]%auth_both_valid.
-    by pose proof (leibniz_equiv _ _ (Excl_included _ _ Hps)) as ->.
+    by iDestruct (own_valid_2 with "Hσ● Hσ◯")
+      as %[->%Excl_included _]%auth_both_valid.
   Qed.
   Lemma ownP_state_twice σ1 σ2 : ownP σ1 ∗ ownP σ2 ⊢ False.
   Proof. rewrite /ownP -own_op own_valid. by iIntros (?). Qed.

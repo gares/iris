@@ -118,10 +118,14 @@ Proof. by destruct mx. Qed.
 Lemma excl_validN_inv_r n mx a : ✓{n} (mx ⋅ Excl' a) → mx = None.
 Proof. by destruct mx. Qed.
 
-Lemma Excl_includedN n a b  : Excl' a ≼{n} Excl' b → a ≡{n}≡ b.
-Proof. by intros [[c|] Hb%(inj Some)]; inversion_clear Hb. Qed.
-Lemma Excl_included a b : Excl' a ≼ Excl' b → a ≡ b.
-Proof. by intros [[c|] Hb%(inj Some)]; inversion_clear Hb. Qed.
+Lemma Excl_includedN n a b  : Excl' a ≼{n} Excl' b ↔ a ≡{n}≡ b.
+Proof.
+  split; [|by intros ->]. by intros [[c|] Hb%(inj Some)]; inversion_clear Hb.
+Qed.
+Lemma Excl_included a b : Excl' a ≼ Excl' b ↔ a ≡ b.
+Proof.
+  split; [|by intros ->]. by intros [[c|] Hb%(inj Some)]; inversion_clear Hb.
+Qed.
 End excl.
 
 Arguments exclO : clear implicits.
