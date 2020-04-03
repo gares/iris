@@ -308,7 +308,7 @@ Global Instance gmap_singleton_core_id i (x : A) :
   CoreId x → CoreId {[ i := x ]}.
 Proof. intros. by apply core_id_total, core_singleton'. Qed.
 
-Lemma singleton_includedN n m i x :
+Lemma singleton_includedN_l n m i x :
   {[ i := x ]} ≼{n} m ↔ ∃ y, m !! i ≡{n}≡ Some y ∧ Some x ≼{n} Some y.
 Proof.
   split.
@@ -321,7 +321,7 @@ Proof.
     + by rewrite lookup_op lookup_singleton_ne// lookup_partial_alter_ne// left_id.
 Qed.
 (* We do not have [x ≼ y ↔ ∀ n, x ≼{n} y], so we cannot use the previous lemma *)
-Lemma singleton_included m i x :
+Lemma singleton_included_l m i x :
   {[ i := x ]} ≼ m ↔ ∃ y, m !! i ≡ Some y ∧ Some x ≼ Some y.
 Proof.
   split.
@@ -333,12 +333,20 @@ Proof.
     + by rewrite lookup_op lookup_singleton lookup_partial_alter Hi.
     + by rewrite lookup_op lookup_singleton_ne// lookup_partial_alter_ne// left_id.
 Qed.
-Lemma singleton_included_exclusive m i x :
+Lemma singleton_included_exclusive_l m i x :
   Exclusive x → ✓ m →
   {[ i := x ]} ≼ m ↔ m !! i ≡ Some x.
 Proof.
-  intros ? Hm. rewrite singleton_included. split; last by eauto.
+  intros ? Hm. rewrite singleton_included_l. split; last by eauto.
   intros (y&?&->%(Some_included_exclusive _)); eauto using lookup_valid_Some.
+Qed.
+Lemma singleton_included i x y :
+  {[ i := x ]} ≼ ({[ i := y ]} : gmap K A) ↔ x ≡ y ∨ x ≼ y.
+Proof.
+  rewrite singleton_included_l. split.
+  - intros (y'&Hi&?). rewrite lookup_insert in Hi.
+    apply Some_included. by rewrite Hi.
+  - intros ?. exists y. by rewrite lookup_insert Some_included.
 Qed.
 
 Global Instance singleton_cancelable i x :
