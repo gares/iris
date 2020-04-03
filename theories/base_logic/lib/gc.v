@@ -27,7 +27,8 @@ Definition gc_mapUR (L V : Type) `{Countable L} : ucmraT := gmapUR L $ prodR
   (optionR $ exclR $ leibnizO V)
   (agreeR (V -d> PropO)).
 
-Definition to_gc_map {L V : Type} `{Countable L} (gcm: gmap L (V * (V -d> PropO))) : gc_mapUR L V :=
+Definition to_gc_map {L V : Type} `{Countable L}
+    (gcm: gmap L (V * (V -d> PropO))) : gc_mapUR L V :=
   prod_map (λ x, Excl' x) to_agree <$> gcm.
 
 Class gcG (L V : Type) (Σ : gFunctors) `{Countable L} := GcG {
@@ -54,12 +55,13 @@ Section defs.
 
   Definition gc_inv_P : iProp Σ :=
     (∃ gcm : gmap L (V * (V -d> PropO)),
-        own (gc_name gG) (● to_gc_map gcm) ∗ [∗ map] l ↦ p ∈ gcm, ⌜p.2 p.1⌝ ∗ l ↦ p.1)%I.
+        own (gc_name gG) (● to_gc_map gcm) ∗
+        [∗ map] l ↦ p ∈ gcm, ⌜p.2 p.1⌝ ∗ l ↦ p.1)%I.
 
   Definition gc_inv : iProp Σ := inv gcN gc_inv_P.
 
   Definition gc_mapsto (l : L) (v : V) (I : V → Prop) : iProp Σ :=
-    own (gc_name gG) (◯ {[l := (Excl' v, to_agree I)]}).
+    own (gc_name gG) (◯ {[l := (Excl' v, to_agree I) ]}).
 
   Definition is_gc_loc (l : L) (I : V → Prop) : iProp Σ :=
     own (gc_name gG) (◯ {[l := (None, to_agree I)]}).
@@ -69,6 +71,9 @@ End defs.
 (* [gc_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
 Arguments gc_inv _ _ {_ _ _ _ _ _}.
+
+Instance: Params (@gc_mapsto) 8 := {}.
+Instance: Params (@gc_mapsto) 7 := {}.
 
 Section to_gc_map.
   Context {L V : Type} `{Countable L}.
@@ -95,10 +100,10 @@ Section to_gc_map.
 
   Lemma lookup_to_gc_map_Some_2 gcm l v' I' :
     to_gc_map gcm !! l ≡ Some (v', I') →
-    ∃ v I, v' ≡ Excl' v ∧ I' ≡ to_agree I ∧ gcm !! l = Some (v, I).
+    ∃ v I, v' = Excl' v ∧ I' ≡ to_agree I ∧ gcm !! l = Some (v, I).
   Proof.
     rewrite /to_gc_map /prod_map lookup_fmap. rewrite fmap_Some_equiv.
-    intros ([] & Hsome & [Heqv HeqI]). eauto.
+    intros ([] & Hsome & [Heqv HeqI]); simplify_eq/=; eauto.
   Qed.
 End to_gc_map.
 
@@ -120,6 +125,22 @@ Section gc.
   Implicit Types (l : L) (v : V) (I : V → Prop).
   Implicit Types (gcm : gmap L (V * (V -d> PropO))).
 
+  (* FIXME(Coq #6294): needs new unification
+  The uses of [apply:] and [move: ..; rewrite ..] (by lack of [apply: .. in ..])
+  in this file are needed because Coq's default unification algorithm fails. *)
+  Global Instance gc_mapsto_proper l v :
+    Proper (pointwise_relation _ iff ==> (≡)) (gc_mapsto l v).
+  Proof.
+    intros I1 I2 ?. rewrite /gc_mapsto. do 2 f_equiv.
+    apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
+  Qed.
+  Global Instance is_gc_loc_proper l :
+    Proper (pointwise_relation _ iff ==> (≡)) (is_gc_loc l).
+  Proof.
+    intros I1 I2 ?. rewrite /is_gc_loc. do 2 f_equiv.
+    apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
+  Qed.
+
   Global Instance is_gc_loc_persistent l I : Persistent (is_gc_loc l I).
   Proof. rewrite /is_gc_loc. apply _. Qed.
 
@@ -135,73 +156,55 @@ Section gc.
     gc_inv L V -∗ l ↦ v ={E}=∗ gc_mapsto l v I.
   Proof.
     iIntros (HN HI) "#Hinv Hl".
-    iMod (inv_acc_timeless _ gcN with "Hinv") as "[HP Hclose]"=>//.
+    iMod (inv_acc_timeless _ gcN with "Hinv") as "[HP Hclose]"; first done.
     iDestruct "HP" as (gcm) "[H● HsepM]".
-    destruct (gcm !! l) as [v' | ] eqn: Hlookup.
+    destruct (gcm !! l) as [v'| ] eqn: Hlookup.
     - (* auth map contains l --> contradiction *)
-      iDestruct (big_sepM_lookup with "HsepM") as "[_ Hl']"=>//.
+      iDestruct (big_sepM_lookup with "HsepM") as "[_ Hl']"; first done.
       by iDestruct (mapsto_valid_2 with "Hl Hl'") as %?.
     - iMod (own_update with "H●") as "[H● H◯]".
       { apply lookup_to_gc_map_None in Hlookup.
-        apply (auth_update_alloc _ (to_gc_map (<[l := (v, I)]> gcm)) (to_gc_map ({[l := (v, I)]}))).
+        apply (auth_update_alloc _
+          (to_gc_map (<[l:=(v,I)]> gcm)) (to_gc_map ({[l:=(v,I)]}))).
         rewrite to_gc_map_insert to_gc_map_singleton.
-        pose proof (to_gc_map_valid gcm).
-        apply: alloc_singleton_local_update; done. }
+        by apply: alloc_singleton_local_update. }
       iMod ("Hclose" with "[H● HsepM Hl]").
       + iExists _.
-        iDestruct (big_sepM_insert with "[HsepM Hl]") as "HsepM"=>//; iFrame.
-        auto with iFrame.
+        iDestruct (big_sepM_insert _ _ _ (_,_) with "[$HsepM $Hl]")
+          as "HsepM"; auto with iFrame.
       + iModIntro. by rewrite /gc_mapsto to_gc_map_singleton.
   Qed.
 
   Lemma gc_is_gc l v I : gc_mapsto l v I -∗ is_gc_loc l I.
   Proof.
-    iIntros "Hgc_l". rewrite /gc_mapsto /is_gc_loc.
-    (* We need to help Coq type inference... *)
-    change (V → Prop) with (ofe_car $ leibnizO (V → Prop)) in I.
-    (* FIXME: is there any good way to avoid repeating the goal here? *)
-    assert (◯ {[l := (Excl' v, to_agree I)]} ≡ ◯ {[l := (Excl' v, to_agree I)]} ⋅ ◯ {[l := (None, to_agree I)]}) as ->.
-    { rewrite -auth_frag_op op_singleton -pair_op agree_idemp //. }
-    iDestruct "Hgc_l" as "[_ H◯_none]".
-    iFrame.
+    apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
+    right. split; [apply: ucmra_unit_least|done].
   Qed.
 
   Lemma is_gc_lookup_Some l gcm I :
-    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜∃ v, gcm !! l ≡ Some (v, I)⌝.
+    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
+    ⌜∃ v I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hgc_l H◯".
-    iCombine "H◯ Hgc_l" as "Hcomb".
-    iDestruct (own_valid with "Hcomb") as %Hvalid.
+    iDestruct (own_valid_2 with "H◯ Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
     iPureIntro.
-    apply auth_both_valid in Hvalid as [Hincluded Hvalid].
-    setoid_rewrite singleton_included in Hincluded.
-    destruct Hincluded as ([v' I'] & Hsome & Hincl).
-    edestruct (@lookup_to_gc_map_Some_2 L V) as [v'' [I'' (_ & HI & Hgcm)]]; first done.
-    rewrite ->HI in Hincl. exists v''. rewrite Hgcm. f_equal.
-    rewrite ->Some_included_total in Hincl.
-    apply pair_included in Hincl. simpl in Hincl.
-    destruct Hincl as [_ Hincl%to_agree_included].
-    
-    fold_leibniz. subst I''. done.
+    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
+    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & _ & HI & Hgcm).
+    move: Hincl; rewrite HI Some_included_total pair_included
+      to_agree_included; intros [??]; eauto.
   Qed.
 
   Lemma gc_mapsto_lookup_Some l v gcm I :
-    gc_mapsto l v I -∗ own (gc_name gG) (● to_gc_map gcm) -∗ ⌜ gcm !! l = Some (v, I) ⌝.
+    gc_mapsto l v I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
+    ⌜ ∃ I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hgc_l H●".
-    iCombine "H● Hgc_l" as "Hcomb".
-    iDestruct (own_valid with "Hcomb") as %Hvalid.
+    iDestruct (own_valid_2 with "H● Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
     iPureIntro.
-    apply auth_both_valid in Hvalid as [Hincluded Hvalid].
-    setoid_rewrite singleton_included in Hincluded.
-    destruct Hincluded as ([v' I'] & Hsome & Hincl).
-    edestruct (@lookup_to_gc_map_Some_2 L V) as [v'' [I'' (Hv & HI & ->)]]; first done.
-    rewrite ->HI in Hincl. f_equal.
-    rewrite ->Some_included_total in Hincl.
-    apply pair_included in Hincl. simpl in Hincl.
-    destruct Hincl as [Hinclv HinclI%to_agree_included].
-    move:Hinclv. rewrite ->Hv. move=>/Excl_included ?.
-    fold_leibniz. simplify_eq. done.
+    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
+    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & -> & HI & Hgcm).
+    move: Hincl; rewrite HI Some_included_total pair_included
+      Excl_included to_agree_included; intros [-> ?]; eauto.
   Qed.
 
   (** An accessor to make use of [gc_mapsto].
@@ -216,20 +219,21 @@ Section gc.
     iMod (inv_acc_timeless _ gcN _ with "Hinv") as "[HP Hclose]"=>//.
     iIntros "!>" (l v I) "Hgc_l".
     iDestruct "HP" as (gcm) "[H● HsepM]".
-    iDestruct (gc_mapsto_lookup_Some with "Hgc_l H●") as %Hsome.
-    iDestruct (big_sepM_delete with "HsepM") as "[[HI Hl] HsepM]"=>//=.
-    iFrame. iIntros (w) "% Hl".
+    iDestruct (gc_mapsto_lookup_Some with "Hgc_l H●") as %(I'&?&HI').
+    setoid_rewrite HI'.
+    iDestruct (big_sepM_delete with "HsepM") as "[[HI Hl] HsepM]"; first done.
+    iIntros "{$HI $Hl}" (w ?) "Hl".
     iMod (own_update_2 with "H● Hgc_l") as "[H● H◯]".
-    { apply (auth_update _ _ (<[l := (Excl' w, to_agree I)]> (to_gc_map gcm))
+    { apply (auth_update _ _ (<[l := (Excl' w, to_agree I')]> (to_gc_map gcm))
              {[l := (Excl' w, to_agree I)]}).
       apply: singleton_local_update.
-      { by apply lookup_to_gc_map_Some in Hsome. }
-      apply: prod_local_update_1.  apply: option_local_update.
+      { by apply lookup_to_gc_map_Some. }
+      apply: prod_local_update_1. apply: option_local_update.
       apply: exclusive_local_update. done. }
-    iDestruct (big_sepM_insert _ _ _ (w, I) with "[$HsepM $Hl //]") as "HsepM".
+    iDestruct (big_sepM_insert _ _ _ (w, I') with "[$HsepM $Hl //]") as "HsepM".
     { apply lookup_delete. }
-    rewrite insert_delete -to_gc_map_insert. iModIntro. iFrame.
-    iMod ("Hclose" with "[H● HsepM]"); [ iExists _; by iFrame | by iModIntro].
+    rewrite insert_delete -to_gc_map_insert. iIntros "!> {$H◯}".
+    iApply ("Hclose" with "[H● HsepM]"). iExists _; by iFrame.
   Qed.
 
   (** Derive a more standard accessor. *)
@@ -238,10 +242,10 @@ Section gc.
     gc_inv L V -∗ gc_mapsto l v I ={E, E ∖ ↑gcN}=∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑gcN, E}=∗ gc_mapsto l w I)).
   Proof.
-    iIntros (HN) "#Hinv Hl".
+    iIntros (?) "#Hinv Hl".
     iMod (gc_acc_strong with "Hinv") as "Hacc"; first done.
     iDestruct ("Hacc" with "Hl") as "(HI & Hl & Hclose)".
-    iModIntro. iFrame. iIntros (w) "HI Hl".
+    iIntros "!> {$HI $Hl}" (w) "HI Hl".
     iMod ("Hclose" with "HI Hl") as "[$ $]".
   Qed.
 
@@ -254,13 +258,12 @@ Section gc.
     iMod (inv_acc_timeless _ gcN _ with "Hinv") as "[HP Hclose]"=>//.
     iModIntro.
     iDestruct "HP" as (gcm) "[H● HsepM]".
-    iDestruct (is_gc_lookup_Some with "Hgc_l H●") as %[v Hsome].
+    iDestruct (is_gc_lookup_Some with "Hgc_l H●") as %(v&I'&?&HI').
     iDestruct (big_sepM_lookup_acc with "HsepM") as "[[#HI Hl] HsepM]"=>//.
-    iExists _. iFrame "∗#".
-    iIntros "Hl".
+    setoid_rewrite HI'.
+    iExists _. iIntros "{$HI $Hl} Hl".
     iMod ("Hclose" with "[H● HsepM Hl]"); last done.
-    iExists _. iFrame.
-    iApply ("HsepM" with "[$Hl //]").
+    iExists _. iFrame "H●". iApply ("HsepM" with "[$Hl //]").
   Qed.
 
 End gc.
