@@ -155,7 +155,7 @@ Section gc.
 
   Lemma gc_is_gc l v I : gc_mapsto l v I -∗ is_gc_loc l I.
   Proof.
-    iIntros "Hgc_l". rewrite /gc_mapsto.
+    iIntros "Hgc_l". rewrite /gc_mapsto /is_gc_loc.
     (* We need to help Coq type inference... *)
     change (V → Prop) with (ofe_car $ leibnizO (V → Prop)) in I.
     (* FIXME: is there any good way to avoid repeating the goal here? *)
@@ -224,7 +224,7 @@ Section gc.
       { by apply lookup_to_gc_map_Some in Hsome. }
       apply: prod_local_update_1.  apply: option_local_update.
       apply: exclusive_local_update. done. }
-    iDestruct (big_sepM_insert _ _ _ (w, I) with "[Hl HsepM]") as "HsepM"; [ | by iFrame | ].
+    iDestruct (big_sepM_insert _ _ _ (w, I) with "[$HsepM $Hl //]") as "HsepM".
     { apply lookup_delete. }
     rewrite insert_delete -to_gc_map_insert. iModIntro. iFrame.
     iMod ("Hclose" with "[H● HsepM]"); [ iExists _; by iFrame | by iModIntro].
