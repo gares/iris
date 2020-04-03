@@ -205,7 +205,7 @@ Section gc.
   (** An accessor to make use of [gc_mapsto].
     This opens the invariant *before* consuming [gc_mapsto] so that you can use
     this before opening an atomic update that provides [gc_mapsto]!. *)
-  Lemma gc_access E :
+  Lemma gc_acc_strong E :
     ↑gcN ⊆ E →
     gc_inv L V ={E, E ∖ ↑gcN}=∗ ∀ l v I, gc_mapsto l v I -∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗ gc_mapsto l w I ∗ |={E ∖ ↑gcN, E}=> True)).
@@ -228,6 +228,19 @@ Section gc.
     { apply lookup_delete. }
     rewrite insert_delete -to_gc_map_insert. iModIntro. iFrame.
     iMod ("Hclose" with "[H● HsepM]"); [ iExists _; by iFrame | by iModIntro].
+  Qed.
+
+  (** Derive a more standard accessor. *)
+  Lemma gc_acc E l v I:
+    ↑gcN ⊆ E →
+    gc_inv L V -∗ gc_mapsto l v I ={E, E ∖ ↑gcN}=∗
+      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑gcN, E}=∗ gc_mapsto l w I)).
+  Proof.
+    iIntros (HN) "#Hinv Hl".
+    iMod (gc_acc_strong with "Hinv") as "Hacc"; first done.
+    iDestruct ("Hacc" with "Hl") as "(HI & Hl & Hclose)".
+    iModIntro. iFrame. iIntros (w) "HI Hl".
+    iMod ("Hclose" with "HI Hl") as "[$ $]".
   Qed.
 
   Lemma is_gc_access l I E :
