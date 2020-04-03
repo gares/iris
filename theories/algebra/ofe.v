@@ -946,11 +946,18 @@ Notation discrete_ofe_equivalence_of A := ltac:(
 Instance leibnizO_leibniz A : LeibnizEquiv (leibnizO A).
 Proof. by intros x y. Qed.
 
+(** * Basic Coq types *)
 Canonical Structure boolO := leibnizO bool.
 Canonical Structure natO := leibnizO nat.
 Canonical Structure positiveO := leibnizO positive.
 Canonical Structure NO := leibnizO N.
 Canonical Structure ZO := leibnizO Z.
+
+Section prop.
+  Instance Prop_equiv : Equiv Prop := iff.
+  Instance Prop_equivalence : Equivalence (≡@{PROP}) := _.
+  Canonical Structure PropO := discreteO Prop.
+End prop.
 
 (** * Option type *)
 Section option.
