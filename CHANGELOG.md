@@ -91,6 +91,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
   `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
 * Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
+* Affine, absorbing, persistent and timeless instances for telescopes.
+* Better support for telescopes in the proof mode, i.e., all tactics should
+  recognize and distribute telescopes now.
 
 **Changes in heap_lang:**
 

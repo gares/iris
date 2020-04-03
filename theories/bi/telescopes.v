@@ -20,11 +20,11 @@ Notation "'∀..' x .. y , P" := (bi_tforall (λ x, .. (bi_tforall (λ y, P)) ..
   (at level 200, x binder, y binder, right associativity,
   format "∀..  x  ..  y ,  P") : bi_scope.
 
-Section telescope_quantifiers.
+Section telescopes_bi.
   Context {PROP : bi} {TT : tele}.
+  Implicit Types Ψ : TT → PROP.
 
-  Lemma bi_tforall_forall (Ψ : TT → PROP) :
-    bi_tforall Ψ ⊣⊢ bi_forall Ψ.
+  Lemma bi_tforall_forall Ψ : bi_tforall Ψ ⊣⊢ bi_forall Ψ.
   Proof.
     symmetry. unfold bi_tforall. induction TT as [|X ft IH].
     - simpl. apply (anti_symm _).
@@ -39,8 +39,7 @@ Section telescope_quantifiers.
         rewrite 2!forall_elim. done.
   Qed.
 
-  Lemma bi_texist_exist (Ψ : TT → PROP) :
-    bi_texist Ψ ⊣⊢ bi_exist Ψ.
+  Lemma bi_texist_exist Ψ : bi_texist Ψ ⊣⊢ bi_exist Ψ.
   Proof.
     symmetry. unfold bi_texist. induction TT as [|X ft IH].
     - simpl. apply (anti_symm _).
@@ -57,26 +56,45 @@ Section telescope_quantifiers.
 
   Global Instance bi_tforall_ne n :
     Proper (pointwise_relation _ (dist n) ==> dist n) (@bi_tforall PROP TT).
-  Proof.
-    intros ?? EQ. rewrite !bi_tforall_forall. rewrite EQ //.
-  Qed.
-
+  Proof. intros ?? EQ. rewrite !bi_tforall_forall. rewrite EQ //. Qed.
   Global Instance bi_tforall_proper :
     Proper (pointwise_relation _ (⊣⊢) ==> (⊣⊢)) (@bi_tforall PROP TT).
-  Proof.
-    intros ?? EQ. rewrite !bi_tforall_forall. rewrite EQ //.
-  Qed.
+  Proof. intros ?? EQ. rewrite !bi_tforall_forall. rewrite EQ //. Qed.
 
   Global Instance bi_texist_ne n :
     Proper (pointwise_relation _ (dist n) ==> dist n) (@bi_texist PROP TT).
-  Proof.
-    intros ?? EQ. rewrite !bi_texist_exist. rewrite EQ //.
-  Qed.
-
+  Proof. intros ?? EQ. rewrite !bi_texist_exist. rewrite EQ //. Qed.
   Global Instance bi_texist_proper :
     Proper (pointwise_relation _ (⊣⊢) ==> (⊣⊢)) (@bi_texist PROP TT).
-  Proof.
-    intros ?? EQ. rewrite !bi_texist_exist. rewrite EQ //.
-  Qed.
+  Proof. intros ?? EQ. rewrite !bi_texist_exist. rewrite EQ //. Qed.
 
-End telescope_quantifiers.
+  Global Instance bi_tforall_absorbing Ψ :
+    (∀ x, Absorbing (Ψ x)) → Absorbing (∀.. x, Ψ x).
+  Proof. rewrite bi_tforall_forall. apply _. Qed.
+  Global Instance bi_tforall_persistent Ψ :
+    (∀ x, Persistent (Ψ x)) → Persistent (∀.. x, Ψ x).
+  Proof. rewrite bi_tforall_forall. apply _. Qed.
+
+  Global Instance bi_texist_affine Ψ :
+    (∀ x, Affine (Ψ x)) → Affine (∃.. x, Ψ x).
+  Proof. rewrite bi_texist_exist. apply _. Qed.
+  Global Instance bi_texist_absorbing Ψ :
+    (∀ x, Absorbing (Ψ x)) → Absorbing (∃.. x, Ψ x).
+  Proof. rewrite bi_texist_exist. apply _. Qed.
+  Global Instance bi_texist_persistent Ψ :
+    (∀ x, Persistent (Ψ x)) → Persistent (∃.. x, Ψ x).
+  Proof. rewrite bi_texist_exist. apply _. Qed.
+End telescopes_bi.
+
+Section telescopes_sbi.
+  Context {PROP : sbi} {TT : tele}.
+  Implicit Types Ψ : TT → PROP.
+
+  Global Instance bi_tforall_timeless Ψ :
+    (∀ x, Timeless (Ψ x)) → Timeless (∀.. x, Ψ x).
+  Proof. rewrite bi_tforall_forall. apply _. Qed.
+
+  Global Instance bi_texist_timeless Ψ :
+    (∀ x, Timeless (Ψ x)) → Timeless (∃.. x, Ψ x).
+  Proof. rewrite bi_texist_exist. apply _. Qed.
+End telescopes_sbi.

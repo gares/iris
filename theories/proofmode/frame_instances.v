@@ -1,5 +1,5 @@
 From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi tactics.
+From iris.bi Require Import bi tactics telescopes.
 From iris.proofmode Require Import classes.
 Set Default Proof Using "Type".
 Import bi.
@@ -265,9 +265,15 @@ Qed.
 Global Instance frame_exist {A} p R (Φ Ψ : A → PROP) :
   (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∃ x, Φ x) (∃ x, Ψ x).
 Proof. rewrite /Frame=> ?. by rewrite sep_exist_l; apply exist_mono. Qed.
+Global Instance frame_texist {TT : tele} p R (Φ Ψ : TT → PROP) :
+  (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∃.. x, Φ x) (∃.. x, Ψ x).
+Proof. rewrite /Frame !bi_texist_exist. apply frame_exist. Qed.
 Global Instance frame_forall {A} p R (Φ Ψ : A → PROP) :
   (∀ a, Frame p R (Φ a) (Ψ a)) → Frame p R (∀ x, Φ x) (∀ x, Ψ x).
 Proof. rewrite /Frame=> ?. by rewrite sep_forall_l; apply forall_mono. Qed.
+Global Instance frame_tforall {TT : tele} p R (Φ Ψ : TT → PROP) :
+  (∀ x, Frame p R (Φ x) (Ψ x)) → Frame p R (∀.. x, Φ x) (∀.. x, Ψ x).
+Proof. rewrite /Frame !bi_tforall_forall. apply frame_forall. Qed.
 
 Global Instance frame_impl_persistent R P1 P2 Q2 :
   Frame true R P2 Q2 → Frame true R (P1 → P2) (P1 → Q2).

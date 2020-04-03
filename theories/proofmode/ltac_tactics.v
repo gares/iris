@@ -785,6 +785,8 @@ Ltac iIntoEmpValid_go := first
      [(*goal for [φ] *)|iIntoEmpValid_go]
   |(* Case [∀ x : A, φ] *)
    notypeclasses refine (into_emp_valid_forall _ _ _ _); iIntoEmpValid_go
+  |(* Case [∀.. x : TT, φ] *)
+   notypeclasses refine (into_emp_valid_tforall _ _ _ _); iIntoEmpValid_go
   |(* Case [P ⊢ Q], [P ⊣⊢ Q], [⊢ P] *)
    notypeclasses refine (into_emp_valid_here _ _ _)].
 
