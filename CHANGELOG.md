@@ -100,7 +100,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   and rename existing asymmetric lemmas (with a singleton on just the LHS):
   + `singleton_includedN` → `singleton_includedN_l`.
   + `singleton_included` → `singleton_included_l`.
-  + `singleton_included_exclusive_l` → `singleton_included_exclusive`
+  + `singleton_included_exclusive` → `singleton_included_exclusive_l`
 
 **Changes in heap_lang:**
 
