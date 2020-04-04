@@ -46,8 +46,8 @@ Hint Mode BiEmbedEmp ! - - : typeclass_instances.
 Hint Mode BiEmbedEmp - ! - : typeclass_instances.
 
 Class SbiEmbed (PROP1 PROP2 : sbi) `{BiEmbed PROP1 PROP2} := {
-  embed_internal_eq_1 (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊢ x ≡ y;
-  embed_later P : ⎡▷ P⎤ ⊣⊢ ▷ ⎡P⎤;
+  embed_internal_eq_1 (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊢@{PROP2} x ≡ y;
+  embed_later P : ⎡▷ P⎤ ⊣⊢@{PROP2} ▷ ⎡P⎤;
   embed_interal_inj (PROP' : sbi) (P Q : PROP1) : ⎡P⎤ ≡ ⎡Q⎤ ⊢@{PROP'} (P ≡ Q);
 }.
 Hint Mode SbiEmbed ! - - : typeclass_instances.
@@ -265,7 +265,7 @@ Section sbi_embed.
   Context `{SbiEmbed PROP1 PROP2}.
   Implicit Types P Q R : PROP1.
 
-  Lemma embed_internal_eq (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊣⊢ x ≡ y.
+  Lemma embed_internal_eq (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊣⊢@{PROP2} x ≡ y.
   Proof.
     apply bi.equiv_spec; split; [apply embed_internal_eq_1|].
     etrans; [apply (bi.internal_eq_rewrite x y (λ y, ⎡x ≡ y⎤%I)); solve_proper|].
