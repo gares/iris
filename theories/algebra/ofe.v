@@ -955,7 +955,7 @@ Canonical Structure ZO := leibnizO Z.
 
 Section prop.
   Instance Prop_equiv : Equiv Prop := iff.
-  Instance Prop_equivalence : Equivalence (≡@{PROP}) := _.
+  Instance Prop_equivalence : Equivalence (≡@{Prop}) := _.
   Canonical Structure PropO := discreteO Prop.
 End prop.
 
