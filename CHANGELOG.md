@@ -95,6 +95,12 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Better support for telescopes in the proof mode, i.e., all tactics should
   recognize and distribute telescopes now.
 * Remove namespace `N` from `is_lock`.
+* Make lemma `Excl_included` a bi-implication.
+* Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
+  and rename existing asymmetric lemmas (with a singleton on just the LHS):
+  + `singleton_includedN` → `singleton_includedN_l`.
+  + `singleton_included` → `singleton_included_l`.
+  + `singleton_included_exclusive` → `singleton_included_exclusive_l`
 
 **Changes in heap_lang:**
 

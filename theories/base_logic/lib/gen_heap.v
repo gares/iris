@@ -146,7 +146,7 @@ Section to_gen_heap.
   Lemma gen_heap_singleton_included σ l q v :
     {[l := (q, to_agree v)]} ≼ to_gen_heap σ → σ !! l = Some v.
   Proof.
-    rewrite singleton_included=> -[[q' av] []].
+    rewrite singleton_included_l=> -[[q' av] []].
     rewrite /to_gen_heap lookup_fmap fmap_Some_equiv => -[v' [Hl [/= -> ->]]].
     move=> /Some_pair_included_total_2 [_] /to_agree_included /leibniz_equiv_iff -> //.
   Qed.

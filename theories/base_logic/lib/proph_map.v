@@ -102,7 +102,7 @@ Section to_proph_map.
   Lemma proph_map_singleton_included R p vs :
     {[p := Excl vs]} ≼ to_proph_map R → R !! p = Some vs.
   Proof.
-    rewrite singleton_included_exclusive; last by apply to_proph_map_valid.
+    rewrite singleton_included_exclusive_l; last by apply to_proph_map_valid.
     by rewrite leibniz_equiv_iff /to_proph_map lookup_fmap fmap_Some=> -[v' [-> [->]]].
   Qed.
 End to_proph_map.
