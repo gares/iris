@@ -125,6 +125,36 @@ Section gc.
   Implicit Types (l : L) (v : V) (I : V → Prop).
   Implicit Types (gcm : gmap L (V * (V -d> PropO))).
 
+  (** * Helpers *)
+
+  Lemma is_gc_lookup_Some l gcm I :
+    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
+    ⌜∃ v I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
+  Proof.
+    iIntros "Hgc_l H◯".
+    iDestruct (own_valid_2 with "H◯ Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
+    iPureIntro.
+    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
+    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & _ & HI & Hgcm).
+    move: Hincl; rewrite HI Some_included_total pair_included
+      to_agree_included; intros [??]; eauto.
+  Qed.
+
+  Lemma gc_mapsto_lookup_Some l v gcm I :
+    gc_mapsto l v I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
+    ⌜ ∃ I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
+  Proof.
+    iIntros "Hgc_l H●".
+    iDestruct (own_valid_2 with "H● Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
+    iPureIntro.
+    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
+    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & -> & HI & Hgcm).
+    move: Hincl; rewrite HI Some_included_total pair_included
+      Excl_included to_agree_included; intros [-> ?]; eauto.
+  Qed.
+
+  (** * Typeclass instances *)
+
   (* FIXME(Coq #6294): needs new unification
   The uses of [apply:] and [move: ..; rewrite ..] (by lack of [apply: .. in ..])
   in this file are needed because Coq's default unification algorithm fails. *)
@@ -149,6 +179,8 @@ Section gc.
 
   Global Instance gc_mapsto_timeless l v I : Timeless (gc_mapsto l v I).
   Proof. rewrite /is_gc_loc. apply _. Qed.
+
+  (** * Public lemmas *)
 
   Lemma make_gc l v I E :
     ↑gcN ⊆ E →
@@ -179,32 +211,6 @@ Section gc.
   Proof.
     apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
     right. split; [apply: ucmra_unit_least|done].
-  Qed.
-
-  Lemma is_gc_lookup_Some l gcm I :
-    is_gc_loc l I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
-    ⌜∃ v I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
-  Proof.
-    iIntros "Hgc_l H◯".
-    iDestruct (own_valid_2 with "H◯ Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
-    iPureIntro.
-    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
-    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & _ & HI & Hgcm).
-    move: Hincl; rewrite HI Some_included_total pair_included
-      to_agree_included; intros [??]; eauto.
-  Qed.
-
-  Lemma gc_mapsto_lookup_Some l v gcm I :
-    gc_mapsto l v I -∗ own (gc_name gG) (● to_gc_map gcm) -∗
-    ⌜ ∃ I', gcm !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
-  Proof.
-    iIntros "Hgc_l H●".
-    iDestruct (own_valid_2 with "H● Hgc_l") as %[Hincl Hvalid]%auth_both_valid.
-    iPureIntro.
-    move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
-    apply lookup_to_gc_map_Some_2 in Hsome as (v'' & I'' & -> & HI & Hgcm).
-    move: Hincl; rewrite HI Some_included_total pair_included
-      Excl_included to_agree_included; intros [-> ?]; eauto.
   Qed.
 
   (** An accessor to make use of [gc_mapsto].
@@ -249,7 +255,7 @@ Section gc.
     iMod ("Hclose" with "HI Hl") as "[$ $]".
   Qed.
 
-  Lemma is_gc_access l I E :
+  Lemma is_gc_acc l I E :
     ↑gcN ⊆ E →
     gc_inv L V -∗ is_gc_loc l I ={E, E ∖ ↑gcN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑gcN, E}=∗ ⌜True⌝).
