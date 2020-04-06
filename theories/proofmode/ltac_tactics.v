@@ -1397,7 +1397,7 @@ goal with a [unit → unit] function instead, as expected for
 [string_to_ident_hook]. *)
 Ltac make_string_to_ident_hook string_to_ident :=
   fun s => let x := string_to_ident s in
-        exact (fun (x:unit) => tt).
+        exact (λ (x:unit), tt).
 
 (* [string_to_ident] uses [string_to_ident_hook] to turn [s] into an identifier
 and return it. *)
