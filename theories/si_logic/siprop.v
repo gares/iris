@@ -33,15 +33,15 @@ Section cofe.
         by trans (Q i);[apply HP|apply HQ].
     - intros n P Q HPQ; split=> i ?; apply HPQ; auto.
   Qed.
-  Canonical Structure siPropC : ofeT := OfeT siProp siProp_ofe_mixin.
+  Canonical Structure siPropO : ofeT := OfeT siProp siProp_ofe_mixin.
 
-  Program Definition siProp_compl : Compl siPropC := λ c,
+  Program Definition siProp_compl : Compl siPropO := λ c,
     {| siProp_holds n := c n n |}.
   Next Obligation.
     intros c n1 n2 ??; simpl in *.
     apply (chain_cauchy c n2 n1); eauto using siProp_closed.
   Qed.
-  Global Program Instance siProp_cofe : Cofe siPropC := {| compl := siProp_compl |}.
+  Global Program Instance siProp_cofe : Cofe siPropO := {| compl := siProp_compl |}.
   Next Obligation.
     intros n c; split=>i ?; symmetry; apply (chain_cauchy c i n); auto.
   Qed.
