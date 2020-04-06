@@ -22,11 +22,7 @@ Lemma wp_lift_step_fupd s E Φ e1 :
       WP e2 @ s; E {{ Φ }} ∗
       [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ fork_post }})
   ⊢ WP e1 @ s; E {{ Φ }}.
-Proof.
-  rewrite wp_unfold /wp_pre=>->. iIntros "H" (σ1 κ κs n) "Hσ".
-  iMod ("H" with "Hσ") as "(%&H)". iModIntro. iSplit. by destruct s.
-  iIntros (????). iApply "H". eauto.
-Qed.
+Proof. by rewrite wp_unfold /wp_pre=>->. Qed.
 
 Lemma wp_lift_stuck E Φ e :
   to_val e = None →
