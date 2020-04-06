@@ -323,6 +323,12 @@ Section gmap.
     by apply big_opL_proper=> ? [??].
   Qed.
 
+  Lemma big_opM_insert_delete `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
+    ([^o map] k↦y ∈ <[i:=x]> m, f k y) ≡ f i x `o` [^o map] k↦y ∈ delete i m, f k y.
+  Proof.
+    rewrite -insert_delete big_opM_insert; first done. by rewrite lookup_delete.
+  Qed.
+
   Lemma big_opM_insert_override (f : K → A → M) m i x x' :
     m !! i = Some x → f i x ≡ f i x' →
     ([^o map] k↦y ∈ <[i:=x']> m, f k y) ≡ ([^o map] k↦y ∈ m, f k y).

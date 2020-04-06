@@ -789,6 +789,10 @@ Section map.
     ([∗ map] k↦y ∈ m, Φ k y) ⊣⊢ Φ i x ∗ [∗ map] k↦y ∈ delete i m, Φ k y.
   Proof. apply big_opM_delete. Qed.
 
+  Lemma big_sepM_insert_delete Φ m i x :
+    ([∗ map] k↦y ∈ <[i:=x]> m, Φ k y) ⊣⊢ Φ i x ∗ [∗ map] k↦y ∈ delete i m, Φ k y.
+  Proof. apply big_opM_insert_delete. Qed.
+
   Lemma big_sepM_insert_2 Φ m i x :
     TCOr (∀ x, Affine (Φ i x)) (Absorbing (Φ i x)) →
     Φ i x -∗ ([∗ map] k↦y ∈ m, Φ k y) -∗ [∗ map] k↦y ∈ <[i:=x]> m, Φ k y.
@@ -1078,6 +1082,14 @@ Section map2.
     - rewrite -map_delete_zip_with.
       apply (big_sepM_delete (λ i xx, Φ i xx.1 xx.2) (map_zip m1 m2) i (x1,x2)).
       by rewrite map_lookup_zip_with Hx1 Hx2.
+  Qed.
+
+  Lemma big_sepM2_insert_delete Φ m1 m2 i x1 x2 :
+    ([∗ map] k↦y1;y2 ∈ <[i:=x1]>m1; <[i:=x2]>m2, Φ k y1 y2)
+    ⊣⊢ Φ i x1 x2 ∗ [∗ map] k↦y1;y2 ∈ delete i m1;delete i m2, Φ k y1 y2.
+  Proof.
+    rewrite -(insert_delete m1) -(insert_delete m2).
+    apply big_sepM2_insert; by rewrite lookup_delete.
   Qed.
 
   Lemma big_sepM2_insert_acc Φ m1 m2 i x1 x2 :
