@@ -286,6 +286,8 @@ Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.
 Proof. done. Qed.
 Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
 Proof. intros [c ->]. rewrite auth_frag_op. apply cmra_included_l. Qed.
+Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
+Proof. done. Qed.
 
 Global Instance auth_frag_sep_homomorphism :
   MonoidHomomorphism op op (≡) (@auth_frag A).
