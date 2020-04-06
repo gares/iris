@@ -102,9 +102,11 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   + `singleton_included` → `singleton_included_l`.
   + `singleton_included_exclusive` → `singleton_included_exclusive_l`
 * The proof mode now supports names for pure facts in intro patterns. Support
-  requires implementing `string_to_ident` with either a plugin or Ltac2, which
-  only work on Coq 8.10 and Coq 8.11 respectively. Without this tactic such
-  patterns will fail.
+  requires implementing `string_to_ident`. Without this tactic such patterns
+  will fail. We provide one implementation at
+  https://gitlab.mpi-sws.org/iris/string-ident using Ltac2 which works with Coq
+  8.11. See the [README](https://gitlab.mpi-sws.org/iris/string-ident) for opam
+  installation instructions.
 
 **Changes in heap_lang:**
 
