@@ -285,18 +285,18 @@ Proof.
 Qed.
 
 Lemma core_singleton (i : K) (x : A) cx :
-  pcore x = Some cx → core ({[ i := x ]} : gmap K A) = {[ i := cx ]}.
+  pcore x = Some cx → core {[ i := x ]} =@{gmap K A} {[ i := cx ]}.
 Proof. apply omap_singleton. Qed.
 Lemma core_singleton' (i : K) (x : A) cx :
-  pcore x ≡ Some cx → core ({[ i := x ]} : gmap K A) ≡ {[ i := cx ]}.
+  pcore x ≡ Some cx → core {[ i := x ]} ≡@{gmap K A} {[ i := cx ]}.
 Proof.
   intros (cx'&?&->)%equiv_Some_inv_r'. by rewrite (core_singleton _ _ cx').
 Qed.
 Lemma singleton_core_total `{!CmraTotal A} (i : K) (x : A) :
-  core ({[ i := x ]} : gmap K A) = {[ i := core x ]}.
+  core {[ i := x ]} =@{gmap K A} {[ i := core x ]}.
 Proof. apply core_singleton. rewrite cmra_pcore_core //. Qed.
 Lemma op_singleton (i : K) (x y : A) :
-  {[ i := x ]} ⋅ {[ i := y ]} = ({[ i := x ⋅ y ]} : gmap K A).
+  {[ i := x ]} ⋅ {[ i := y ]} =@{gmap K A} {[ i := x ⋅ y ]}.
 Proof. by apply (merge_singleton _ _ _ x y). Qed.
 Global Instance is_op_singleton i a a1 a2 :
   IsOp a a1 a2 → IsOp' ({[ i := a ]} : gmap K A) {[ i := a1 ]} {[ i := a2 ]}.
