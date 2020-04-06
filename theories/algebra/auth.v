@@ -293,6 +293,19 @@ Global Instance auth_frag_sep_homomorphism :
   MonoidHomomorphism op op (≡) (@auth_frag A).
 Proof. by split; [split; try apply _|]. Qed.
 
+Lemma big_opL_auth_frag {B} (g : nat → B → A) (l : list B) :
+  (◯ [^op list] k↦x ∈ l, g k x) ≡ [^op list] k↦x ∈ l, ◯ (g k x).
+Proof. apply (big_opL_commute _). Qed.
+Lemma big_opM_auth_frag `{Countable K} {B} (g : K → B → A) (m : gmap K B) :
+  (◯ [^op map] k↦x ∈ m, g k x) ≡ [^op map] k↦x ∈ m, ◯ (g k x).
+Proof. apply (big_opM_commute _). Qed.
+Lemma big_opS_auth_frag `{Countable B} (g : B → A) (X : gset B) :
+  (◯ [^op set] x ∈ X, g x) ≡ [^op set] x ∈ X, ◯ (g x).
+Proof. apply (big_opS_commute _). Qed.
+Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
+  (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
+Proof. apply (big_opMS_commute _). Qed.
+
 Lemma auth_both_frac_op q a b : Auth (Some (q,to_agree a)) b ≡ ●{q} a ⋅ ◯ b.
 Proof. by rewrite /op /auth_op /= left_id. Qed.
 Lemma auth_both_op a b : Auth (Some (1%Qp,to_agree a)) b ≡ ● a ⋅ ◯ b.

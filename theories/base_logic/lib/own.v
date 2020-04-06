@@ -233,12 +233,55 @@ Proof.
 Qed.
 
 (** Big op class instances *)
-Instance own_cmra_sep_homomorphism `{!inG Σ (A:ucmraT)} :
-  WeakMonoidHomomorphism op uPred_sep (≡) (own γ).
-Proof. split; try apply _. apply own_op. Qed.
+Section big_op_instances.
+  Context `{!inG Σ (A:ucmraT)}.
+
+  Global Instance own_cmra_sep_homomorphism :
+    WeakMonoidHomomorphism op uPred_sep (≡) (own γ).
+  Proof. split; try apply _. apply own_op. Qed.
+
+  Lemma big_opL_own {B} γ (f : nat → B → A) (l : list B) :
+    l ≠ [] →
+    own γ ([^op list] k↦x ∈ l, f k x) ⊣⊢ [∗ list] k↦x ∈ l, own γ (f k x).
+  Proof. apply (big_opL_commute1 _). Qed.
+  Lemma big_opM_own `{Countable K} {B} γ (g : K → B → A) (m : gmap K B) :
+    m ≠ ∅ →
+    own γ ([^op map] k↦x ∈ m, g k x) ⊣⊢ [∗ map] k↦x ∈ m, own γ (g k x).
+  Proof. apply (big_opM_commute1 _). Qed.
+  Lemma big_opS_own `{Countable B} γ (g : B → A) (X : gset B) :
+    X ≠ ∅ →
+    own γ ([^op set] x ∈ X, g x) ⊣⊢ [∗ set] x ∈ X, own γ (g x).
+  Proof. apply (big_opS_commute1 _). Qed.
+  Lemma big_opMS_own `{Countable B} γ (g : B → A) (X : gmultiset B) :
+    X ≠ ∅ →
+    own γ ([^op mset] x ∈ X, g x) ⊣⊢ [∗ mset] x ∈ X, own γ (g x).
+  Proof. apply (big_opMS_commute1 _). Qed.
+
+
+  Global Instance own_cmra_sep_entails_homomorphism :
+    MonoidHomomorphism op uPred_sep (⊢) (own γ).
+  Proof.
+    split; [split|]; try apply _.
+    - intros. by rewrite own_op.
+    - apply (affine _).
+  Qed.
+
+  Lemma big_opL_own_1 {B} γ (f : nat → B → A) (l : list B) :
+    own γ ([^op list] k↦x ∈ l, f k x) ⊢ [∗ list] k↦x ∈ l, own γ (f k x).
+  Proof. apply (big_opL_commute _). Qed.
+  Lemma big_opM_own_1 `{Countable K, B} γ (g : K → B → A) (m : gmap K B) :
+    own γ ([^op map] k↦x ∈ m, g k x) ⊢ [∗ map] k↦x ∈ m, own γ (g k x).
+  Proof. apply (big_opM_commute _). Qed.
+  Lemma big_opS_own_1 `{Countable B} γ (g : B → A) (X : gset B) :
+    own γ ([^op set] x ∈ X, g x) ⊢ [∗ set] x ∈ X, own γ (g x).
+  Proof. apply (big_opS_commute _). Qed.
+  Lemma big_opMS_own_1 `{Countable B} γ (g : B → A) (X : gmultiset B) :
+    own γ ([^op mset] x ∈ X, g x) ⊢ [∗ mset] x ∈ X, own γ (g x).
+  Proof. apply (big_opMS_commute _). Qed.
+End big_op_instances.
 
 (** Proofmode class instances *)
-Section proofmode_classes.
+Section proofmode_instances.
   Context `{!inG Σ A}.
   Implicit Types a b : A.
 
@@ -259,4 +302,4 @@ Section proofmode_classes.
     intros ? Hb. rewrite /FromAnd (is_op a) own_op.
     destruct Hb; by rewrite persistent_and_sep.
   Qed.
-End proofmode_classes.
+End proofmode_instances.
