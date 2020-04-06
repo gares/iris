@@ -1591,11 +1591,11 @@ Section ofe_iso.
   Global Instance ofe_iso_2_ne : NonExpansive (ofe_iso_2 (A:=A) (B:=B)).
   Proof. by destruct 1. Qed.
 
-  Lemma iso_ofe_ofe_mixin : OfeMixin (ofe_iso A B).
+  Lemma ofe_iso_ofe_mixin : OfeMixin (ofe_iso A B).
   Proof. by apply (iso_ofe_mixin (λ I, (ofe_iso_1 I, ofe_iso_2 I))). Qed.
-  Canonical Structure ofe_isoO : ofeT := OfeT (ofe_iso A B) iso_ofe_ofe_mixin.
+  Canonical Structure ofe_isoO : ofeT := OfeT (ofe_iso A B) ofe_iso_ofe_mixin.
 
-  Global Instance iso_ofe_cofe `{!Cofe A, !Cofe B} : Cofe ofe_isoO.
+  Global Instance ofe_iso_cofe `{!Cofe A, !Cofe B} : Cofe ofe_isoO.
   Proof.
     apply (iso_cofe_subtype'
       (λ I : prodO (A -n> B) (B -n> A),
