@@ -114,7 +114,20 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `list_op_singletonM` -> `list_singletonM_op`,
   `sts_op_auth_frag` -> `sts_auth_frag_op`,
   `sts_op_auth_frag_up` -> `sts_auth_frag_up_op`,
-  `sts_op_frag` -> `sts_frag_op`.
+  `sts_op_frag` -> `sts_frag_op`,
+  `list_op_length` -> `list_length_op`.
+* Make list singleton lemmas consistent with gmap:
+  `elem_of_list_singletonM` -> `elem_of_list_singleton`,
+  `list_lookup_singletonM` -> `list_lookup_singleton`,
+  `list_lookup_singletonM_lt` -> `list_lookup_singleton_lt`,
+  `list_lookup_singletonM_gt` -> `list_lookup_singleton_gt`,
+  `list_lookup_singletonM_ne` -> `list_lookup_singleton_ne`,
+  `list_singletonM_validN` -> `list_singleton_validN`,
+  `list_singletonM_length` -> `list_singleton_length`,
+  `list_singletonM_core` -> `list_singleton_core`,
+  `list_singletonM_op` -> `list_singleton_op`,
+  `list_alter_singletonM` -> `list_alter_singleton`,
+  `list_singletonM_included` -> `list_singleton_included`.
 
 **Changes in heap_lang:**
 

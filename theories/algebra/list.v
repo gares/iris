@@ -354,7 +354,7 @@ Section properties.
   Lemma list_lookup_valid_Some l i x : ✓ l → l !! i ≡ Some x → ✓ x.
   Proof. move=> /list_lookup_valid /(_ i)=> Hl Hi; move: Hl. by rewrite Hi. Qed.
 
-  Lemma list_op_length l1 l2 : length (l1 ⋅ l2) = max (length l1) (length l2).
+  Lemma list_length_op l1 l2 : length (l1 ⋅ l2) = max (length l1) (length l2).
   Proof. revert l2. induction l1; intros [|??]; f_equal/=; auto. Qed.
 
   Lemma replicate_valid n (x : A) : ✓ x → ✓ replicate n x.
@@ -365,41 +365,41 @@ Section properties.
   Global Instance list_singletonM_proper i :
     Proper ((≡) ==> (≡)) (list_singletonM i) := ne_proper _.
 
-  Lemma elem_of_list_singletonM i z x : z ∈ ({[i := x]} : list A) → z = ε ∨ z = x.
+  Lemma elem_of_list_singleton i z x : z ∈ ({[i := x]} : list A) → z = ε ∨ z = x.
   Proof.
     rewrite elem_of_app elem_of_list_singleton elem_of_replicate. naive_solver.
   Qed.
-  Lemma list_lookup_singletonM i x : ({[ i := x ]} : list A) !! i = Some x.
+  Lemma list_lookup_singleton i x : ({[ i := x ]} : list A) !! i = Some x.
   Proof. induction i; by f_equal/=. Qed.
-  Lemma list_lookup_singletonM_lt i i' x:
+  Lemma list_lookup_singleton_lt i i' x:
     (i' < i)%nat → ({[ i := x ]} : list A) !! i' = Some ε.
   Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
-  Lemma list_lookup_singletonM_gt i i' x:
+  Lemma list_lookup_singleton_gt i i' x:
     (i < i')%nat → ({[ i := x ]} : list A) !! i' = None.
   Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
-  Lemma list_lookup_singletonM_ne i j x :
+  Lemma list_lookup_singleton_ne i j x :
     i ≠ j →
     ({[ i := x ]} : list A) !! j = None ∨ ({[ i := x ]} : list A) !! j = Some ε.
   Proof. revert j; induction i; intros [|j]; naive_solver auto with lia. Qed.
-  Lemma list_singletonM_validN n i x : ✓{n} ({[ i := x ]} : list A) ↔ ✓{n} x.
+  Lemma list_singleton_validN n i x : ✓{n} ({[ i := x ]} : list A) ↔ ✓{n} x.
   Proof.
     rewrite list_lookup_validN. split.
-    { move=> /(_ i). by rewrite list_lookup_singletonM. }
+    { move=> /(_ i). by rewrite list_lookup_singleton. }
     intros Hx j; destruct (decide (i = j)); subst.
-    - by rewrite list_lookup_singletonM.
-    - destruct (list_lookup_singletonM_ne i j x) as [Hi|Hi]; first done;
+    - by rewrite list_lookup_singleton.
+    - destruct (list_lookup_singleton_ne i j x) as [Hi|Hi]; first done;
         rewrite Hi; by try apply (ucmra_unit_validN (A:=A)).
   Qed.
   Lemma list_singleton_valid  i x : ✓ ({[ i := x ]} : list A) ↔ ✓ x.
   Proof.
-    rewrite !cmra_valid_validN. by setoid_rewrite list_singletonM_validN.
+    rewrite !cmra_valid_validN. by setoid_rewrite list_singleton_validN.
   Qed.
-  Lemma list_singletonM_length i x : length {[ i := x ]} = S i.
+  Lemma list_singleton_length i x : length {[ i := x ]} = S i.
   Proof.
     rewrite /singletonM /list_singletonM app_length replicate_length /=; lia.
   Qed.
 
-  Lemma list_singletonM_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
+  Lemma list_singleton_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
   Proof.
     rewrite /singletonM /list_singletonM.
     by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core ∅).
@@ -410,30 +410,30 @@ Section properties.
     rewrite /singletonM /list_singletonM /=.
     induction i; constructor; rewrite ?left_id; auto.
   Qed.
-  Lemma list_alter_singletonM f i x :
+  Lemma list_alter_singleton f i x :
     alter f i ({[i := x]} : list A) = {[i := f x]}.
   Proof.
     rewrite /singletonM /list_singletonM /=. induction i; f_equal/=; auto.
   Qed.
   Global Instance list_singleton_core_id i (x : A) :
     CoreId x → CoreId {[ i := x ]}.
-  Proof. by rewrite !core_id_total list_singletonM_core=> ->. Qed.
+  Proof. by rewrite !core_id_total list_singleton_core=> ->. Qed.
   Lemma list_singleton_snoc l x:
     {[length l := x]} ⋅ l ≡ l ++ [x].
   Proof. elim: l => //= ?? <-. by rewrite left_id. Qed.
-  Lemma list_singletonM_included i x l:
+  Lemma list_singleton_included i x l:
     {[i := x]} ≼ l ↔ (∃ x', l !! i = Some x' ∧ x ≼ x').
   Proof.
     rewrite list_lookup_included. split.
-    { move /(_ i). rewrite list_lookup_singletonM option_included_total.
+    { move /(_ i). rewrite list_lookup_singleton option_included_total.
       naive_solver. }
     intros (y&Hi&?) j. destruct (Nat.lt_total j i) as [?|[->|?]].
-    - rewrite list_lookup_singletonM_lt //.
+    - rewrite list_lookup_singleton_lt //.
       destruct (lookup_lt_is_Some_2 l j) as [z Hz].
       { trans i; eauto using lookup_lt_Some. }
       rewrite Hz. by apply Some_included_2, ucmra_unit_least.
-    - rewrite list_lookup_singletonM Hi. by apply Some_included_2.
-    - rewrite list_lookup_singletonM_gt //. apply: ucmra_unit_least.
+    - rewrite list_lookup_singleton Hi. by apply Some_included_2.
+    - rewrite list_lookup_singleton_gt //. apply: ucmra_unit_least.
   Qed.
 
   (* Update *)
