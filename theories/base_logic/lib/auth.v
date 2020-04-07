@@ -99,6 +99,49 @@ Section auth.
     WeakMonoidHomomorphism op uPred_sep (≡) (auth_own γ).
   Proof. split; try apply _. apply auth_own_op. Qed.
 
+  Lemma big_opL_auth_own {B} γ (g : nat → B → A) (l : list B) :
+    l ≠ [] →
+    auth_own γ ([^op list] k↦x ∈ l, g k x) ⊣⊢
+             [∗ list] k↦x ∈ l, auth_own γ (g k x).
+  Proof. apply (big_opL_commute1 _). Qed.
+  Lemma big_opM_auth_own `{Countable K} {B} γ (g : K → B → A) (m : gmap K B) :
+    m ≠ ∅ →
+    auth_own γ ([^op map] k↦x ∈ m, g k x) ⊣⊢
+             [∗ map] k↦x ∈ m, auth_own γ (g k x).
+  Proof. apply (big_opM_commute1 _). Qed.
+  Lemma big_opS_auth_own `{Countable B} γ (g : B → A) (X : gset B) :
+    X ≠ ∅ →
+    auth_own γ ([^op set] x ∈ X, g x) ⊣⊢ [∗ set] x ∈ X, auth_own γ (g x).
+  Proof. apply (big_opS_commute1 _). Qed.
+  Lemma big_opMS_auth_own `{Countable B} γ (g : B → A) (X : gmultiset B) :
+    X ≠ ∅ →
+    auth_own γ ([^op mset] x ∈ X, g x) ⊣⊢ [∗ mset] x ∈ X, auth_own γ (g x).
+  Proof. apply (big_opMS_commute1 _). Qed.
+
+  Global Instance auth_own_cmra_sep_entails_homomorphism γ :
+    MonoidHomomorphism op uPred_sep (⊢) (auth_own γ).
+  Proof.
+    split; [split|]; try apply _.
+    - intros. by rewrite auth_own_op.
+    - apply (affine _).
+  Qed.
+
+  Lemma big_opL_auth_own_1 {B} γ (g : nat → B → A) (l : list B) :
+    auth_own γ ([^op list] k↦x ∈ l, g k x) ⊢
+             [∗ list] k↦x ∈ l, auth_own γ (g k x).
+  Proof. apply (big_opL_commute _). Qed.
+  Lemma big_opM_auth_own_1 `{Countable K} {B} γ (g : K → B → A)
+        (m : gmap K B) :
+    auth_own γ ([^op map] k↦x ∈ m, g k x) ⊢ [∗ map] k↦x ∈ m, auth_own γ (g k x).
+  Proof. apply (big_opM_commute _). Qed.
+  Lemma big_opS_auth_own_1 `{Countable B} γ (g : B → A) (X : gset B) :
+    auth_own γ ([^op set] x ∈ X, g x) ⊢ [∗ set] x ∈ X, auth_own γ (g x).
+  Proof. apply (big_opS_commute _). Qed.
+  Lemma big_opMS_auth_own_1 `{Countable B} γ (g : B → A)
+        (X : gmultiset B) :
+    auth_own γ ([^op mset] x ∈ X, g x) ⊢ [∗ mset] x ∈ X, auth_own γ (g x).
+  Proof. apply (big_opMS_commute _). Qed.
+
   Global Instance own_mono' γ : Proper (flip (≼) ==> (⊢)) (auth_own γ).
   Proof. intros a1 a2. apply auth_own_mono. Qed.
 
