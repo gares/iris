@@ -106,7 +106,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   will fail. We provide one implementation using Ltac2 which works with Coq 8.11
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
-* Make names of `f_op`/`f_core` rewrite lemmas more consistent:
+* Make names of `f_op`/`f_core` rewrite lemmas more consistent by always making
+  `_core`/`_op` the suffix:
   `op_singleton` -> `singleton_op`, `core_singleton` -> `singleton_core`,
   `discrete_fun_op_singleton` -> `discrete_fun_singleton_op`,
   `discrete_fun_core_singleton` -> `discrete_fun_singleton_core`,
@@ -116,7 +117,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `sts_op_auth_frag_up` -> `sts_auth_frag_up_op`,
   `sts_op_frag` -> `sts_frag_op`,
   `list_op_length` -> `list_length_op`.
-* Make list singleton lemmas consistent with gmap:
+* Make list singleton lemmas consistent with gmap by dropping the `M` suffix of
+  `singleton`:
   `elem_of_list_singletonM` -> `elem_of_list_singleton`,
   `list_lookup_singletonM` -> `list_lookup_singleton`,
   `list_lookup_singletonM_lt` -> `list_lookup_singleton_lt`,
