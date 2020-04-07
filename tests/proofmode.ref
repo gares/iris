@@ -615,3 +615,21 @@ Tactic failure: iRevert: k is used in hypothesis "Hk".
      : string
 The command has indeed failed with message:
 Tactic failure: iLöb: not a step-indexed BI entailment.
+"test_pure_name"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  P1 : PROP
+  P2, P3 : Prop
+  Himpl : P2 → P3
+  HP2 : P2
+  ============================
+  "HP" : P1
+  --------------------------------------∗
+  P1 ∗ ⌜P3⌝
+  
+"test_not_fresh"
+     : string
+The command has indeed failed with message:
+H is already used.

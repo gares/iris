@@ -14,7 +14,7 @@ Inductive token :=
   | TParenR : token
   | TBraceL : token
   | TBraceR : token
-  | TPure : token
+  | TPure : option string → token
   | TIntuitionistic : token
   | TModal : token
   | TPureIntro : token
@@ -31,12 +31,14 @@ Inductive token :=
 Inductive state :=
   | SName : string → state
   | SNat : nat → state
+  | SPure : string -> state
   | SNone : state.
 
 Definition cons_state (kn : state) (k : list token) : list token :=
   match kn with
   | SNone => k
   | SName s => TName (string_rev s) :: k
+  | SPure s => TPure (if String.eqb s "" then None else Some (string_rev s)) :: k
   | SNat n => TNat n :: k
   end.
 
@@ -53,7 +55,7 @@ Fixpoint tokenize_go (s : string) (k : list token) (kn : state) : list token :=
   | String "&" s => tokenize_go s (TAmp :: cons_state kn k) SNone
   | String "{" s => tokenize_go s (TBraceL :: cons_state kn k) SNone
   | String "}" s => tokenize_go s (TBraceR :: cons_state kn k) SNone
-  | String "%" s => tokenize_go s (TPure :: cons_state kn k) SNone
+  | String "%" s => tokenize_go s (cons_state kn k) (SPure "")
   | String "#" s => tokenize_go s (TIntuitionistic :: cons_state kn k) SNone
   | String ">" s => tokenize_go s (TModal :: cons_state kn k) SNone
   | String "!" (String "%" s) => tokenize_go s (TPureIntro :: cons_state kn k) SNone
@@ -83,6 +85,7 @@ Fixpoint tokenize_go (s : string) (k : list token) (kn : state) : list token :=
         | None => tokenize_go s k (SName (String a ""))
         end
      | SName s' => tokenize_go s k (SName (String a s'))
+     | SPure s' => tokenize_go s k (SPure (String a s'))
      | SNat n =>
         match is_nat a with
         | Some n' => tokenize_go s k (SNat (n' + 10 * n))

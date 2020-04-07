@@ -20,7 +20,7 @@ Fixpoint parse_go (ts : list token) (k : list sel_pat) : option (list sel_pat) :
   match ts with
   | [] => Some (reverse k)
   | TName s :: ts => parse_go ts (SelIdent s :: k)
-  | TPure :: ts => parse_go ts (SelPure :: k)
+  | TPure None :: ts => parse_go ts (SelPure :: k)
   | TIntuitionistic :: ts => parse_go ts (SelIntuitionistic :: k)
   | TSep :: ts => parse_go ts (SelSpatial :: k)
   | _ => None

@@ -2,13 +2,17 @@ From stdpp Require Export strings.
 From iris.proofmode Require Import base tokens sel_patterns.
 Set Default Proof Using "Type".
 
+Inductive gallina_ident :=
+  | IGallinaNamed : string → gallina_ident
+  | IGallinaAnon : gallina_ident.
+
 Inductive intro_pat :=
   | IIdent : ident → intro_pat
   | IFresh : intro_pat
   | IDrop : intro_pat
   | IFrame : intro_pat
   | IList : list (list intro_pat) → intro_pat
-  | IPure : intro_pat
+  | IPure : gallina_ident → intro_pat
   | IIntuitionistic : intro_pat → intro_pat
   | ISpatial : intro_pat → intro_pat
   | IModalElim : intro_pat → intro_pat
@@ -84,7 +88,8 @@ Fixpoint parse_go (ts : list token) (k : stack) : option stack :=
   | TParenL :: ts => parse_go ts (StConjList :: k)
   | TAmp :: ts => parse_go ts (StAmp :: k)
   | TParenR :: ts => close_conj_list k None [] ≫= parse_go ts
-  | TPure :: ts => parse_go ts (StPat IPure :: k)
+  | TPure (Some s) :: ts => parse_go ts (StPat (IPure (IGallinaNamed s)) :: k)
+  | TPure None :: ts => parse_go ts (StPat (IPure IGallinaAnon) :: k)
   | TIntuitionistic :: ts => parse_go ts (StIntuitionistic :: k)
   | TMinus :: TIntuitionistic :: ts => parse_go ts (StSpatial :: k)
   | TModal :: ts => parse_go ts (StModalElim :: k)
@@ -101,11 +106,11 @@ Fixpoint parse_go (ts : list token) (k : stack) : option stack :=
 with parse_clear (ts : list token) (k : stack) : option stack :=
   match ts with
   | TFrame :: TName s :: ts => parse_clear ts (StPat (IClearFrame (SelIdent s)) :: k)
-  | TFrame :: TPure :: ts => parse_clear ts (StPat (IClearFrame SelPure) :: k)
+  | TFrame :: TPure None :: ts => parse_clear ts (StPat (IClearFrame SelPure) :: k)
   | TFrame :: TIntuitionistic :: ts => parse_clear ts (StPat (IClearFrame SelIntuitionistic) :: k)
   | TFrame :: TSep :: ts => parse_clear ts (StPat (IClearFrame SelSpatial) :: k)
   | TName s :: ts => parse_clear ts (StPat (IClear (SelIdent s)) :: k)
-  | TPure :: ts => parse_clear ts (StPat (IClear SelPure) :: k)
+  | TPure None :: ts => parse_clear ts (StPat (IClear SelPure) :: k)
   | TIntuitionistic :: ts => parse_clear ts (StPat (IClear SelIntuitionistic) :: k)
   | TSep :: ts => parse_clear ts (StPat (IClear SelSpatial) :: k)
   | TBraceR :: ts => parse_go ts k
@@ -153,7 +158,7 @@ End intro_pat.
 
 Fixpoint intro_pat_intuitionistic (p : intro_pat) :=
   match p with
-  | IPure => true
+  | IPure _ => true
   | IIntuitionistic _ => true
   | IList pps => forallb (forallb intro_pat_intuitionistic) pps
   | ISimpl => true
