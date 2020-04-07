@@ -235,7 +235,8 @@ _introduction patterns_:
   with Coq 8.11, and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 - `%` : move the hypothesis to the pure Coq context (anonymously). Note that if
-  `%` is followed by a string, and not another token, a space is needed.
+  `%` is followed by an identifier, and not another token, a space is needed
+  to disambiguate from `%H` above.
 - `->` and `<-` : rewrite using a pure Coq equality
 - `# ipat` : move the hypothesis into the intuitionistic context. The tactic
   will fail if the hypothesis is not intuitionistic. On success, the tactic will
