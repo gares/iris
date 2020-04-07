@@ -119,6 +119,15 @@ Proof. iIntros "-#HQ". done. Qed.
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
+Check "test_iIntros_forall_pure".
+Lemma test_iIntros_forall_pure (Ψ: nat → PROP) :
+  ⊢ ∀ x : nat, Ψ x → Ψ x.
+Proof.
+  iIntros "%".
+  (* should be a trivial implication now *)
+  Show. auto.
+Qed.
+
 Lemma test_iIntros_pure_not : ⊢@{PROP} ⌜ ¬False ⌝.
 Proof. by iIntros (?). Qed.
 
@@ -1088,6 +1097,7 @@ Ltac ltac_tactics.string_to_ident_hook ::=
   make_string_to_ident_hook ltac:(fun s => lazymatch s with
                                         | "HP2" => ident:(HP2)
                                         | "H" => ident:(H)
+                                        | "y" => ident:(y)
                                         | _ => fail 100 s
                                         end).
 
@@ -1101,6 +1111,10 @@ Proof.
   iPureIntro.
   exact (Himpl HP2).
 Qed.
+
+Lemma test_iIntros_forall_pure_named (Ψ: nat → PROP) :
+  (∀ x : nat, Ψ x) ⊢ ∀ x : nat, Ψ x.
+Proof. iIntros "HP". iIntros "%y". iApply ("HP" $! y). Qed.
 
 Check "test_not_fresh".
 Lemma test_not_fresh P1 (P2: Prop) (H:P2) :
