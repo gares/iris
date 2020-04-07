@@ -50,8 +50,8 @@ Notation "P <-> Q" := (P ↔ Q)%I (at level 95, no associativity, only parsing) 
 
 Notation "P *-* Q" := (P ∗-∗ Q)%I (at level 95, no associativity, only parsing) : bi_scope.
 
-Notation "'<intuit>' P" := (□ P)%I (at level 20, right associativity, only parsing) : bi_scope.
-Notation "'<intuit>?' p P" := (□?p P)%I (at level 20, p at level 9, P at level 20,
+Notation "'<#>' P" := (□ P)%I (at level 20, right associativity, only parsing) : bi_scope.
+Notation "'<#>?' p P" := (□?p P)%I (at level 20, p at level 9, P at level 20,
    right associativity, only parsing) : bi_scope.
 
 Notation "'<except_0>' P" := (◇ P)%I (at level 20, right associativity, only parsing) : bi_scope.

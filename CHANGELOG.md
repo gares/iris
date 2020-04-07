@@ -156,7 +156,7 @@ s/\blist_singletonM_included\b/list_singleton_included/g
   - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
   - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`
   - step indexing: `|>` for `▷`
-  - modalities: `<intuit>` for `□` and `<except_0>` for `◇`
+  - modalities: `<#>` for `□` and `<except_0>` for `◇`
   - most derived notations can be computed from previous notations using the
     substitutions above, e.g. replace `∗` with `*` and `▷` with `|>`. Examples
     include the following:

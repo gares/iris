@@ -11,10 +11,10 @@ Section base_logic_tests.
   Lemma test_random_stuff (P1 P2 P3 : nat -> uPred M) :
     |-- forall (x y : nat) a b,
       x ≡ y ->
-      <intuit> (uPred_ownM (a ⋅ b) -*
-      (exists y1 y2 c, P1 ((x + y1) + y2) ∧ True ∧ <intuit> uPred_ownM c) -*
-      <intuit> |> (forall z, P2 z ∨ True -> P2 z) -*
-      |> (forall n m : nat, P1 n -> <intuit> (True ∧ P2 n -> <intuit> (⌜n = n⌝ ↔ P3 n))) -*
+      <#> (uPred_ownM (a ⋅ b) -*
+      (exists y1 y2 c, P1 ((x + y1) + y2) ∧ True ∧ <#> uPred_ownM c) -*
+      <#> |> (forall z, P2 z ∨ True -> P2 z) -*
+      |> (forall n m : nat, P1 n -> <#> (True ∧ P2 n -> <#> (⌜n = n⌝ ↔ P3 n))) -*
       |> ⌜x = 0⌝ \/ exists x z, |> P3 (x + z) ** uPred_ownM b ** uPred_ownM (core b)).
   Proof.
     iIntros (i [|j] a b ?) "!> [Ha Hb] H1 #H2 H3"; setoid_subst.
