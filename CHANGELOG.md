@@ -11,7 +11,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   splitting and other forms of weakening.
 * Updated the strong variant of the opening lemma for cancellable invariants
   to match that of regular invariants, where you can pick the mask at a later time.
-  
+
 **Changes in program logic:**
 
 * In the axiomatization of ectx languages we replace the axiom of positivity of
@@ -148,6 +148,25 @@ s/\blist_singletonM_included\b/list_singleton_included/g
 ' $(find theories -name "*.v")
 ```
 
+* New ASCII versions of Iris notations. These are marked printing only and
+  can be made available using `Require Import iris.bi.ascii`. The new
+  notations are (notations marked [†] are disambiguated using notation scopes):
+  - entailment: `|--` for `⊢` and `-|-` for `⊣⊢`
+  - logic[†]: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
+  - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
+  - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`
+  - step indexing: `|>` for `▷`
+  - modalities: `<#>` for `□` and `<except_0>` for `◇`
+  - most derived notations can be computed from previous notations using the
+    substitutions above, e.g. replace `∗` with `*` and `▷` with `|>`. Examples
+    include the following:
+    - `|={E1,E2}=* P` for `|={E1,E2}=∗`
+    - `P ={E}=* Q` for `P ={E}=∗ Q`
+    - `P ={E1,E2}=* Q` for `P ={E1,E2}=∗ Q`
+    - `|={E1,E2,E3}|>=> Q` for `|={E1,E2,E3}▷=> Q`
+    - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
+    The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
+    where the ASCII notations are defined in terms of the unicode notations.
 
 **Changes in heap_lang:**
 
