@@ -234,7 +234,8 @@ _introduction patterns_:
   will fail. We provide an implementation of the hook using Ltac2, which works
   with Coq 8.11, and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
-- `%` : move the hypothesis to the pure Coq context (anonymously).
+- `%` : move the hypothesis to the pure Coq context (anonymously). Note that if
+  `%` is followed by a string, and not another token, a space is needed.
 - `->` and `<-` : rewrite using a pure Coq equality
 - `# ipat` : move the hypothesis into the intuitionistic context. The tactic
   will fail if the hypothesis is not intuitionistic. On success, the tactic will
