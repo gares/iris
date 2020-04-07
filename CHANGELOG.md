@@ -128,26 +128,6 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `list_singletonM_length` -> `list_singleton_length`,
   `list_alter_singletonM` -> `list_alter_singleton`,
   `list_singletonM_included` -> `list_singleton_included`.
-
-The following `sed` script should perform most of the renaming (FIXME: incomplete)
-(on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
-```
-sed -i -E '
-# f_op/f_core renames
-s/\b(op|core)_singleton\b/singleton_\1/g
-s/\bdiscrete_fun_(op|core)_singleton\b/discrete_fun_singleton_\1/g
-s/\blist_(op|core)_singletonM\b/list_singleton_\1/g
-s/\bsts_op_(auth_frag|auth_frag_up|frag)\b/sts_\1_op/g
-s/\blist_op_length\b/list_length_op/g
-# list singleton renames
-s/\belem_of_list_singletonM\b/elem_of_list_singleton/g
-s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
-s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
-s/\blist_alter_singletonM\b/list_alter_singleton/g
-s/\blist_singletonM_included\b/list_singleton_included/g
-' $(find theories -name "*.v")
-```
-
 * New ASCII versions of Iris notations. These are marked printing only and
   can be made available using `Require Import iris.bi.ascii`. The new
   notations are (notations marked [†] are disambiguated using notation scopes):
@@ -167,6 +147,25 @@ s/\blist_singletonM_included\b/list_singleton_included/g
     - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
+
+The following `sed` script should perform most of the renaming (FIXME: incomplete)
+(on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
+```
+sed -i -E '
+# f_op/f_core renames
+s/\b(op|core)_singleton\b/singleton_\1/g
+s/\bdiscrete_fun_(op|core)_singleton\b/discrete_fun_singleton_\1/g
+s/\blist_(op|core)_singletonM\b/list_singleton_\1/g
+s/\bsts_op_(auth_frag|auth_frag_up|frag)\b/sts_\1_op/g
+s/\blist_op_length\b/list_length_op/g
+# list singleton renames
+s/\belem_of_list_singletonM\b/elem_of_list_singleton/g
+s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
+s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
+s/\blist_alter_singletonM\b/list_alter_singleton/g
+s/\blist_singletonM_included\b/list_singleton_included/g
+' $(find theories -name "*.v")
+```
 
 **Changes in heap_lang:**
 
