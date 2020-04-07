@@ -228,6 +228,12 @@ _introduction patterns_:
   to eliminate nested (separating) conjunctions.
 - `[ipat1|ipat2]` : disjunction elimination.
 - `[]` : false elimination.
+- `%H` : move the hypothesis to the pure Coq context, and name it `H`. Support
+  for the `%H` introduction pattern requires an implementation of the hook
+  `string_to_ident`. Without an implementation of this hook, the `%H` pattern
+  will fail. We provide an implementation of the hook using Ltac2, which works
+  with Coq 8.11, and can be installed with opam; see
+  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 - `%` : move the hypothesis to the pure Coq context (anonymously).
 - `->` and `<-` : rewrite using a pure Coq equality
 - `# ipat` : move the hypothesis into the intuitionistic context. The tactic
