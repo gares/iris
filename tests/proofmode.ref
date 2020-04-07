@@ -77,6 +77,17 @@
   --------------------------------------∗
   Q
   
+"test_iIntros_forall_pure"
+     : string
+1 subgoal
+  
+  PROP : sbi
+  Ψ : nat → PROP
+  a : nat
+  ============================
+  --------------------------------------∗
+  Ψ a → Ψ a
+  
 The command has indeed failed with message:
 No applicable tactic.
 The command has indeed failed with message:

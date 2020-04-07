@@ -1525,7 +1525,7 @@ Ltac iIntros_go pats startproof :=
     | false => idtac
     end
   (* Optimizations to avoid generating fresh names *)
-  | IPure :: ?pats => iIntro (?); iIntros_go pats startproof
+  | IPure IGallinaAnon :: ?pats => iIntro (?); iIntros_go pats startproof
   | IIntuitionistic (IIdent ?H) :: ?pats => iIntro #H; iIntros_go pats false
   | IDrop :: ?pats => iIntro _; iIntros_go pats startproof
   | IIdent ?H :: ?pats => iIntro H; iIntros_go pats startproof
