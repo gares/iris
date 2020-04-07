@@ -213,7 +213,7 @@ Proof. rewrite namespace_map_valid_eq /=. split. done. by left. Qed.
 Lemma namespace_map_data_op N a b :
   namespace_map_data N (a ⋅ b) = namespace_map_data N a ⋅ namespace_map_data N b.
 Proof.
-  by rewrite {2}/op /namespace_map_op /namespace_map_data /= -op_singleton left_id_L.
+  by rewrite {2}/op /namespace_map_op /namespace_map_data /= singleton_op left_id_L.
 Qed.
 Lemma namespace_map_data_mono N a b :
   a ≼ b → namespace_map_data N a ≼ namespace_map_data N b.

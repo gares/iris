@@ -106,6 +106,48 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   will fail. We provide one implementation using Ltac2 which works with Coq 8.11
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
+* Make names of `f_op`/`f_core` rewrite lemmas more consistent by always making
+  `_core`/`_op` the suffix:
+  `op_singleton` -> `singleton_op`, `core_singleton` -> `singleton_core`,
+  `discrete_fun_op_singleton` -> `discrete_fun_singleton_op`,
+  `discrete_fun_core_singleton` -> `discrete_fun_singleton_core`,
+  `list_core_singletonM` -> `list_singleton_core`,
+  `list_op_singletonM` -> `list_singleton_op`,
+  `sts_op_auth_frag` -> `sts_auth_frag_op`,
+  `sts_op_auth_frag_up` -> `sts_auth_frag_up_op`,
+  `sts_op_frag` -> `sts_frag_op`,
+  `list_op_length` -> `list_length_op`.
+* Make list singleton lemmas consistent with gmap by dropping the `M` suffix of
+  `singleton`:
+  `elem_of_list_singletonM` -> `elem_of_list_singleton`,
+  `list_lookup_singletonM` -> `list_lookup_singleton`,
+  `list_lookup_singletonM_lt` -> `list_lookup_singleton_lt`,
+  `list_lookup_singletonM_gt` -> `list_lookup_singleton_gt`,
+  `list_lookup_singletonM_ne` -> `list_lookup_singleton_ne`,
+  `list_singletonM_validN` -> `list_singleton_validN`,
+  `list_singletonM_length` -> `list_singleton_length`,
+  `list_alter_singletonM` -> `list_alter_singleton`,
+  `list_singletonM_included` -> `list_singleton_included`.
+
+The following `sed` script should perform most of the renaming (FIXME: incomplete)
+(on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
+```
+sed -i -E '
+# f_op/f_core renames
+s/\b(op|core)_singleton\b/singleton_\1/g
+s/\bdiscrete_fun_(op|core)_singleton\b/discrete_fun_singleton_\1/g
+s/\blist_(op|core)_singletonM\b/list_singleton_\1/g
+s/\bsts_op_(auth_frag|auth_frag_up|frag)\b/sts_\1_op/g
+s/\blist_op_length\b/list_length_op/g
+# list singleton renames
+s/\belem_of_list_singletonM\b/elem_of_list_singleton/g
+s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
+s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
+s/\blist_alter_singletonM\b/list_alter_singleton/g
+s/\blist_singletonM_included\b/list_singleton_included/g
+' $(find theories -name "*.v")
+```
+
 
 **Changes in heap_lang:**
 
