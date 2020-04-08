@@ -223,7 +223,7 @@ Section inv_heap.
         inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
   Proof.
     iIntros (HN) "#Hinv".
-    iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"=>//.
+    iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"; first done.
     iIntros "!>" (l v I) "Hl_inv".
     iDestruct "HP" as (h) "[H● HsepM]".
     iDestruct (inv_mapsto_own_lookup_Some with "Hl_inv H●") as %(I'&?&HI').
@@ -262,11 +262,11 @@ Section inv_heap.
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑inv_heapN, E}=∗ ⌜True⌝).
   Proof.
     iIntros (HN) "#Hinv Hl_inv".
-    iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"=>//.
+    iMod (inv_acc_timeless _ inv_heapN _ with "Hinv") as "[HP Hclose]"; first done.
     iModIntro.
     iDestruct "HP" as (h) "[H● HsepM]".
     iDestruct (inv_mapsto_lookup_Some with "Hl_inv H●") as %(v&I'&?&HI').
-    iDestruct (big_sepM_lookup_acc with "HsepM") as "[[#HI Hl] HsepM]"=>//.
+    iDestruct (big_sepM_lookup_acc with "HsepM") as "[[#HI Hl] HsepM]"; first done.
     setoid_rewrite HI'.
     iExists _. iIntros "{$HI $Hl} Hl".
     iMod ("Hclose" with "[H● HsepM Hl]"); last done.
