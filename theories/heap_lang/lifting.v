@@ -223,13 +223,13 @@ Implicit Types l : loc.
 induction directly, but this demonstrates that we can state the expected
 reasoning principle for recursive functions, without any visible ▷. *)
 Lemma wp_rec_löb s E f x e Φ Ψ :
-  □ ((∀ v, Ψ v -∗ WP (rec: f x := e)%V v @ s; E {{ Φ }}) -∗
+  □ ( □ (∀ v, Ψ v -∗ WP (rec: f x := e)%V v @ s; E {{ Φ }}) -∗
      ∀ v, Ψ v -∗ WP (subst' x v (subst' f (rec: f x := e) e)) @ s; E {{ Φ }}) -∗
   ∀ v, Ψ v -∗ WP (rec: f x := e)%V v @ s; E {{ Φ }}.
 Proof.
   iIntros "#Hrec". iLöb as "IH". iIntros (v) "HΨ".
   iApply lifting.wp_pure_step_later; first done.
-  iNext. iApply ("Hrec" with "[] HΨ"). iIntros (w) "HΨ".
+  iNext. iApply ("Hrec" with "[] HΨ"). iIntros "!#" (w) "HΨ".
   iApply ("IH" with "HΨ").
 Qed.
 
