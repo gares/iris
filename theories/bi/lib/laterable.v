@@ -60,7 +60,7 @@ Section instances.
   Proof.
     rewrite /Laterable. iIntros (LΦ). iDestruct 1 as (x) "H".
     iDestruct (LΦ with "H") as (Q) "[HQ #HΦ]".
-    iExists Q. iIntros "{$HQ} !# HQ". iExists x. by iApply "HΦ".
+    iExists Q. iIntros "{$HQ} !> HQ". iExists x. by iApply "HΦ".
   Qed.
 
   Global Instance big_sepL_laterable Ps :

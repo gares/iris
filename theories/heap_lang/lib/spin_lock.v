@@ -51,7 +51,7 @@ Section proof.
   Proof.
     iDestruct 1 as (l ->) "#Hinv"; iIntros "#HR".
     iExists l; iSplit; [done|]. iApply (inv_iff with "Hinv").
-    iIntros "!> !#"; iSplit; iDestruct 1 as (b) "[Hl H]";
+    iIntros "!> !>"; iSplit; iDestruct 1 as (b) "[Hl H]";
       iExists b; iFrame "Hl"; destruct b;
       first [done|iDestruct "H" as "[$ ?]"; by iApply "HR"].
   Qed.

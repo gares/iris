@@ -229,7 +229,7 @@ Lemma wp_rec_löb s E f x e Φ Ψ :
 Proof.
   iIntros "#Hrec". iLöb as "IH". iIntros (v) "HΨ".
   iApply lifting.wp_pure_step_later; first done.
-  iNext. iApply ("Hrec" with "[] HΨ"). iIntros "!#" (w) "HΨ".
+  iNext. iApply ("Hrec" with "[] HΨ"). iIntros "!>" (w) "HΨ".
   iApply ("IH" with "HΨ").
 Qed.
 

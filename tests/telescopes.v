@@ -29,7 +29,7 @@ Section basic_tests.
   Proof. iIntros (H) "!%". done. Qed.
   Lemma test_pure_tforall_persistent {TT : tele} (Φ : TT → PROP) :
     (∀.. x, <pers> (Φ x)) -∗ <pers> ∀.. x, Φ x.
-  Proof. iIntros "#H !#" (x). done. Qed.
+  Proof. iIntros "#H !>" (x). done. Qed.
   Lemma test_pure_texists_intuitionistic {TT : tele} (Φ : TT → PROP) :
     (∃.. x, □ (Φ x)) -∗ □ ∃.. x, Φ x.
   Proof. iDestruct 1 as (x) "#H". iExists (x). done. Qed.
