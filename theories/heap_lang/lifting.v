@@ -213,11 +213,25 @@ Proof. solve_pure_exec. Qed.
 Section lifting.
 Context `{!heapG Σ}.
 Implicit Types P Q : iProp Σ.
-Implicit Types Φ : val → iProp Σ.
+Implicit Types Φ Ψ : val → iProp Σ.
 Implicit Types efs : list expr.
 Implicit Types σ : state.
 Implicit Types v : val.
 Implicit Types l : loc.
+
+(** Recursive functions: we do not use this lemmas as it is easier to use Löb
+induction directly, but this demonstrates that we can state the expected
+reasoning principle for recursive functions, without any visible ▷. *)
+Lemma wp_rec_löb s E f x e Φ Ψ :
+  □ ((∀ v, Ψ v -∗ WP (rec: f x := e)%V v @ s; E {{ Φ }}) -∗
+     ∀ v, Ψ v -∗ WP (subst' x v (subst' f (rec: f x := e) e)) @ s; E {{ Φ }}) -∗
+  ∀ v, Ψ v -∗ WP (rec: f x := e)%V v @ s; E {{ Φ }}.
+Proof.
+  iIntros "#Hrec". iLöb as "IH". iIntros (v) "HΨ".
+  iApply lifting.wp_pure_step_later; first done.
+  iNext. iApply ("Hrec" with "[] HΨ"). iIntros (w) "HΨ".
+  iApply ("IH" with "HΨ").
+Qed.
 
 (** Fork: Not using Texan triples to avoid some unnecessary [True] *)
 Lemma wp_fork s E e Φ :
