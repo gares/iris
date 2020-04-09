@@ -12,9 +12,9 @@ Section base_logic_tests.
     |-- forall (x y : nat) a b,
       x ≡ y ->
       <#> (uPred_ownM (a ⋅ b) -*
-      (exists y1 y2 c, P1 ((x + y1) + y2) ∧ True ∧ <#> uPred_ownM c) -*
+      (exists y1 y2 c, P1 ((x + y1) + y2) /\ True /\ <#> uPred_ownM c) -*
       <#> |> (forall z, P2 z ∨ True -> P2 z) -*
-      |> (forall n m : nat, P1 n -> <#> (True ∧ P2 n -> <#> (⌜n = n⌝ ↔ P3 n))) -*
+      |> (forall n m : nat, P1 n -> <#> (True /\ P2 n -> <#> (⌜n = n⌝ <-> P3 n))) -*
       |> ⌜x = 0⌝ \/ exists x z, |> P3 (x + z) ** uPred_ownM b ** uPred_ownM (core b)).
   Proof.
     iIntros (i [|j] a b ?) "!> [Ha Hb] H1 #H2 H3"; setoid_subst.
@@ -34,7 +34,7 @@ Section base_logic_tests.
   Qed.
 
   Lemma test_iFrame_pure (x y z : M) :
-    ✓ x -> ⌜y ≡ z⌝ |--@{uPredI M} ✓ x ∧ ✓ x ∧ y ≡ z.
+    ✓ x -> ⌜y ≡ z⌝ |--@{uPredI M} ✓ x /\ ✓ x /\ y ≡ z.
   Proof. iIntros (Hv) "Hxy". by iFrame (Hv) "Hxy". Qed.
 
   Lemma test_iAssert_modality P : (|==> False) -* |==> P.
@@ -159,8 +159,8 @@ Section iris_tests.
   (* test robustness in presence of other invariants *)
   Lemma test_iInv_7 t N1 N2 N3 E1 E2 P:
     ↑N3 ⊆ E1 ->
-    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P  ** na_own t E1 ** na_own t E2
-      ={⊤}=* na_own t E1 ** na_own t E2  ** |> P.
+    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P ** na_own t E1 ** na_own t E2
+      ={⊤}=* na_own t E1 ** na_own t E2 ** |> P.
   Proof.
     iIntros (?) "(#?&#?&#?&Hown1&Hown2)".
     iInv N3 with "Hown1" as "(#HP&Hown1)".
@@ -168,7 +168,7 @@ Section iris_tests.
   Qed.
 
   (* iInv should work even where we have "inv N P" in which P contains an evar *)
-  Lemma test_iInv_8 N : ∃ P, inv N P ={⊤}=* P ≡ True ∧ inv N P.
+  Lemma test_iInv_8 N : ∃ P, inv N P ={⊤}=* P ≡ True /\ inv N P.
   Proof.
     eexists. iIntros "#H".
     iInv N as "HP". iFrame "HP". auto.
@@ -177,8 +177,8 @@ Section iris_tests.
   (* test selection by hypothesis name instead of namespace *)
   Lemma test_iInv_9 t N1 N2 N3 E1 E2 P:
     ↑N3 ⊆ E1 ->
-    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P  ** na_own t E1 ** na_own t E2
-      ={⊤}=* na_own t E1 ** na_own t E2  ** |> P.
+    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P ** na_own t E1 ** na_own t E2
+      ={⊤}=* na_own t E1 ** na_own t E2 ** |> P.
   Proof.
     iIntros (?) "(#?&#HInv&#?&Hown1&Hown2)".
     iInv "HInv" with "Hown1" as "(#HP&Hown1)".
@@ -188,8 +188,8 @@ Section iris_tests.
   (* test selection by hypothesis name instead of namespace *)
   Lemma test_iInv_10 t N1 N2 N3 E1 E2 P:
     ↑N3 ⊆ E1 ->
-    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P  ** na_own t E1 ** na_own t E2
-      ={⊤}=* na_own t E1 ** na_own t E2  ** |> P.
+    inv N1 P ** na_inv t N3 (<pers> P) ** inv N2 P ** na_own t E1 ** na_own t E2
+      ={⊤}=* na_own t E1 ** na_own t E2 ** |> P.
   Proof.
     iIntros (?) "(#?&#HInv&#?&Hown1&Hown2)".
     iInv "HInv" as "(#HP&Hown1)".
