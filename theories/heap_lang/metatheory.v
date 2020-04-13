@@ -183,6 +183,10 @@ Proof.
     + by rewrite /= binder_delete_insert // delete_insert_delete
         !binder_delete_delete delete_idemp.
 Qed.
+Lemma subst_map_singleton x v e :
+  subst_map {[x:=v]} e = subst x v e.
+Proof. by rewrite subst_map_insert delete_empty subst_map_empty. Qed.
+
 Lemma subst_map_binder_insert b v vs e :
   subst_map (binder_insert b v vs) e =
   subst' b v (subst_map (binder_delete b vs) e).
