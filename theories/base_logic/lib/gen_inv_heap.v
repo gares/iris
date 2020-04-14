@@ -49,7 +49,7 @@ Instance subG_inv_heapPreG (L V : Type) `{Countable L} {Σ} :
   subG (inv_heapΣ L V) Σ → inv_heapPreG L V Σ.
 Proof. solve_inG. Qed.
 
-Section defs.
+Section definitions.
   Context {L V : Type} `{Countable L}.
   Context `{!invG Σ, !gen_heapG L V Σ, gG: !inv_heapG L V Σ}.
 
@@ -66,7 +66,13 @@ Section defs.
   Definition inv_mapsto (l : L) (I : V → Prop) : iProp Σ :=
     own (inv_heap_name gG) (◯ {[l := (None, to_agree I)]}).
 
-End defs.
+End definitions.
+
+Local Notation "l ↦□ I" := (inv_mapsto l I%stdpp%type)
+  (at level 20, format "l  ↦□  I") : bi_scope.
+
+Local Notation "l ↦@ v □ I" := (inv_mapsto_own l v I%stdpp%type)
+  (at level 20, format "l  ↦@  v  □  I") : bi_scope.
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
@@ -128,7 +134,7 @@ Section inv_heap.
   (** * Helpers *)
 
   Lemma inv_mapsto_lookup_Some l h I :
-    inv_mapsto l I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
+    l ↦□ I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜∃ v I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H◯".
@@ -141,7 +147,7 @@ Section inv_heap.
   Qed.
 
   Lemma inv_mapsto_own_lookup_Some l v h I :
-    inv_mapsto_own l v I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
+    l ↦@ v □ I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜ ∃ I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H●".
@@ -171,13 +177,13 @@ Section inv_heap.
     apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
   Qed.
 
-  Global Instance inv_mapsto_persistent l I : Persistent (inv_mapsto l I).
+  Global Instance inv_mapsto_persistent l I : Persistent (l ↦□ I).
   Proof. rewrite /inv_mapsto. apply _. Qed.
 
-  Global Instance inv_mapsto_timeless l I : Timeless (inv_mapsto l I).
+  Global Instance inv_mapsto_timeless l I : Timeless (l ↦□ I).
   Proof. rewrite /inv_mapsto. apply _. Qed.
 
-  Global Instance inv_mapsto_own_timeless l v I : Timeless (inv_mapsto_own l v I).
+  Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦@ v □ I).
   Proof. rewrite /inv_mapsto. apply _. Qed.
 
   (** * Public lemmas *)
@@ -185,7 +191,7 @@ Section inv_heap.
   Lemma make_inv_mapsto l v I E :
     ↑inv_heapN ⊆ E →
     I v →
-    inv_heap_inv L V -∗ l ↦ v ={E}=∗ inv_mapsto_own l v I.
+    inv_heap_inv L V -∗ l ↦ v ={E}=∗ l ↦@ v □ I.
   Proof.
     iIntros (HN HI) "#Hinv Hl".
     iMod (inv_acc_timeless _ inv_heapN with "Hinv") as "[HP Hclose]"; first done.
@@ -207,7 +213,7 @@ Section inv_heap.
       + iModIntro. by rewrite /inv_mapsto_own to_inv_heap_singleton.
   Qed.
 
-  Lemma inv_mapsto_own_inv l v I : inv_mapsto_own l v I -∗ inv_mapsto l I.
+  Lemma inv_mapsto_own_inv l v I : l ↦@ v □ I -∗ l ↦□ I.
   Proof.
     apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
     right. split; [apply: ucmra_unit_least|done].
@@ -218,7 +224,7 @@ Section inv_heap.
     this before opening an atomic update that provides [inv_mapsto_own]!. *)
   Lemma inv_mapsto_own_acc_strong E :
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, inv_mapsto_own l v I -∗
+    inv_heap_inv L V ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦@ v □ I -∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗
         inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
   Proof.
@@ -246,8 +252,8 @@ Section inv_heap.
   (** Derive a more standard accessor. *)
   Lemma inv_mapsto_own_acc E l v I:
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V -∗ inv_mapsto_own l v I ={E, E ∖ ↑inv_heapN}=∗
-      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ inv_mapsto_own l w I)).
+    inv_heap_inv L V -∗ l ↦@ v □ I ={E, E ∖ ↑inv_heapN}=∗
+      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦@ w □ I)).
   Proof.
     iIntros (?) "#Hinv Hl".
     iMod (inv_mapsto_own_acc_strong with "Hinv") as "Hacc"; first done.
@@ -258,7 +264,7 @@ Section inv_heap.
 
   Lemma inv_mapsto_acc l I E :
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V -∗ inv_mapsto l I ={E, E ∖ ↑inv_heapN}=∗
+    inv_heap_inv L V -∗ l ↦□ I ={E, E ∖ ↑inv_heapN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑inv_heapN, E}=∗ ⌜True⌝).
   Proof.
     iIntros (HN) "#Hinv Hl_inv".
