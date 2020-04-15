@@ -84,7 +84,7 @@ Lemma subst_rec_ne' f y e x v :
   subst' x v (Rec f y e) = Rec f y (subst' x v e).
 Proof. intros. destruct x; simplify_option_eq; naive_solver. Qed.
 
-Lemma  bin_op_eval_closed op v1 v2 v':
+Lemma bin_op_eval_closed op v1 v2 v' :
   is_closed_val v1 → is_closed_val v2 → bin_op_eval op v1 v2 = Some v' →
   is_closed_val v'.
 Proof.
@@ -124,7 +124,6 @@ Lemma head_step_is_closed e1 σ1 obs e2 σ2 es :
   is_closed_expr [] e1 →
   map_Forall (λ _ v, is_closed_val v) σ1.(heap) →
   head_step e1 σ1 obs e2 σ2 es →
-
   is_closed_expr [] e2 ∧ Forall (is_closed_expr []) es ∧
   map_Forall (λ _ v, is_closed_val v) σ2.(heap).
 Proof.
