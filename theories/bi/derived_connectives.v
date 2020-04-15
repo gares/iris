@@ -86,11 +86,11 @@ Notation "'□?' p P" := (bi_intuitionistically_if p P) : bi_scope.
 Fixpoint sbi_laterN {PROP : sbi} (n : nat) (P : PROP) : PROP :=
   match n with
   | O => P
-  | S n' => ▷ sbi_laterN n' P
-  end%I.
+  | S n' => ▷ ▷^n' P
+  end%I
+where "▷^ n P" := (sbi_laterN n P) : bi_scope.
 Arguments sbi_laterN {_} !_%nat_scope _%I.
 Instance: Params (@sbi_laterN) 2 := {}.
-Notation "▷^ n P" := (sbi_laterN n P) : bi_scope.
 Notation "▷? p P" := (sbi_laterN (Nat.b2n p) P) : bi_scope.
 
 Definition sbi_except_0 {PROP : sbi} (P : PROP) : PROP := (▷ False ∨ P)%I.
