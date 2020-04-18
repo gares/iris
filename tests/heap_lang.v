@@ -1,3 +1,4 @@
+From iris.base_logic.lib Require Import gen_inv_heap.
 From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy proofmode notation.
 (* Import lang *again*. This used to break notation. *)
@@ -201,6 +202,14 @@ Section tests.
   Qed.
 
 End tests.
+
+Section notation_tests.
+  Context `{!heapG Σ, inv_heapG loc val Σ}.
+
+  (* Make sure these parse and type-check. *)
+  Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
+  Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
+End notation_tests.
 
 Section printing_tests.
   Context `{!heapG Σ}.

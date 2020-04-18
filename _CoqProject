@@ -82,6 +82,7 @@ theories/base_logic/lib/boxes.v
 theories/base_logic/lib/na_invariants.v
 theories/base_logic/lib/cancelable_invariants.v
 theories/base_logic/lib/gen_heap.v
+theories/base_logic/lib/gen_inv_heap.v
 theories/base_logic/lib/fancy_updates_from_vs.v
 theories/base_logic/lib/proph_map.v
 theories/program_logic/adequacy.v

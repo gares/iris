@@ -17,6 +17,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * In the axiomatization of ectx languages we replace the axiom of positivity of
   context composition with an axiom that says if `fill K e` takes a head step,
   then either `K` is the empty evaluation context or `e` is a value.
+* Added a library for "invariant locations": heap locations that will not be
+  deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
+  invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
 
 **Changes in Coq:**
 
