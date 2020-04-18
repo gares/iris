@@ -204,7 +204,7 @@ Section tests.
 End tests.
 
 Section notation_tests.
-  Context `{!heapG Σ, inv_heapG loc val Σ}.
+  Context `{!heapG Σ, !inv_heapG Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
