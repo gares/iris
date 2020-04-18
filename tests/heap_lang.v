@@ -207,7 +207,7 @@ Section notation_tests.
   Context `{!heapG Σ, inv_heapG loc val Σ}.
 
   (* Make sure these parse and type-check. *)
-  Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦@ #5 □ (λ _, True). Abort.
+  Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
   Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
 End notation_tests.
 

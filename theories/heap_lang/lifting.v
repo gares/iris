@@ -33,8 +33,8 @@ Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
 Notation "l ↦□ I" := (inv_mapsto (L:=loc) (V:=val) l I%stdpp%type)
   (at level 20, format "l  ↦□  I") : bi_scope.
-Notation "l ↦@ v □ I" := (inv_mapsto_own (L:=loc) (V:=val) l v I%stdpp%type)
-  (at level 20, format "l  ↦@  v  □  I") : bi_scope.
+Notation "l ↦_ I  v" := (inv_mapsto_own (L:=loc) (V:=val) l v I%stdpp%type)
+  (at level 20, I at level 9, format "l  ↦_ I   v") : bi_scope.
 
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
 [head_step]. The tactic will discharge head-reductions starting from values, and

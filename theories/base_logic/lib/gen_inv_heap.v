@@ -68,11 +68,11 @@ Section definitions.
 
 End definitions.
 
-Local Notation "l ↦□ I" := (inv_mapsto l I%stdpp%type)
-  (at level 20, format "l  ↦□  I") : bi_scope.
+Local Notation "l '↦□' I" := (inv_mapsto l I%stdpp%type)
+  (at level 20, format "l  '↦□'  I") : bi_scope.
 
-Local Notation "l ↦@ v □ I" := (inv_mapsto_own l v I%stdpp%type)
-  (at level 20, format "l  ↦@  v  □  I") : bi_scope.
+Local Notation "l '↦_' I  v" := (inv_mapsto_own l v I%stdpp%type)
+  (at level 20, I at level 9, format "l  '↦_' I  v") : bi_scope.
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
@@ -147,7 +147,7 @@ Section inv_heap.
   Qed.
 
   Lemma inv_mapsto_own_lookup_Some l v h I :
-    l ↦@ v □ I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
+    l ↦_I v -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜ ∃ I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H●".
@@ -183,7 +183,7 @@ Section inv_heap.
   Global Instance inv_mapsto_timeless l I : Timeless (l ↦□ I).
   Proof. rewrite /inv_mapsto. apply _. Qed.
 
-  Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦@ v □ I).
+  Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦_I v).
   Proof. rewrite /inv_mapsto. apply _. Qed.
 
   (** * Public lemmas *)
@@ -191,7 +191,7 @@ Section inv_heap.
   Lemma make_inv_mapsto l v I E :
     ↑inv_heapN ⊆ E →
     I v →
-    inv_heap_inv L V -∗ l ↦ v ={E}=∗ l ↦@ v □ I.
+    inv_heap_inv L V -∗ l ↦ v ={E}=∗ l ↦_I v.
   Proof.
     iIntros (HN HI) "#Hinv Hl".
     iMod (inv_acc_timeless _ inv_heapN with "Hinv") as "[HP Hclose]"; first done.
@@ -213,7 +213,7 @@ Section inv_heap.
       + iModIntro. by rewrite /inv_mapsto_own to_inv_heap_singleton.
   Qed.
 
-  Lemma inv_mapsto_own_inv l v I : l ↦@ v □ I -∗ l ↦□ I.
+  Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦□ I.
   Proof.
     apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
     right. split; [apply: ucmra_unit_least|done].
@@ -224,7 +224,7 @@ Section inv_heap.
     this before opening an atomic update that provides [inv_mapsto_own]!. *)
   Lemma inv_mapsto_own_acc_strong E :
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦@ v □ I -∗
+    inv_heap_inv L V ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦_I v -∗
       (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗
         inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
   Proof.
@@ -252,8 +252,8 @@ Section inv_heap.
   (** Derive a more standard accessor. *)
   Lemma inv_mapsto_own_acc E l v I:
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V -∗ l ↦@ v □ I ={E, E ∖ ↑inv_heapN}=∗
-      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦@ w □ I)).
+    inv_heap_inv L V -∗ l ↦_I v ={E, E ∖ ↑inv_heapN}=∗
+      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦_I w)).
   Proof.
     iIntros (?) "#Hinv Hl".
     iMod (inv_mapsto_own_acc_strong with "Hinv") as "Hacc"; first done.
