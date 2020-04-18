@@ -71,7 +71,7 @@ End definitions.
 Local Notation "l '↦□' I" := (inv_mapsto l I%stdpp%type)
   (at level 20, format "l  '↦□'  I") : bi_scope.
 
-Local Notation "l '↦_' I  v" := (inv_mapsto_own l v I%stdpp%type)
+Local Notation "l '↦_' I v" := (inv_mapsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  '↦_' I  v") : bi_scope.
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
