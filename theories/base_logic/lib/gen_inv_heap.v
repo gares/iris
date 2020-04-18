@@ -177,14 +177,17 @@ Section inv_heap.
     apply: singletonM_proper. f_equiv. by apply: to_agree_proper.
   Qed.
 
+  Global Instance inv_heap_inv_persistent : Persistent (inv_heap_inv L V).
+  Proof. apply _. Qed.
+
   Global Instance inv_mapsto_persistent l I : Persistent (l ↦□ I).
-  Proof. rewrite /inv_mapsto. apply _. Qed.
+  Proof. apply _. Qed.
 
   Global Instance inv_mapsto_timeless l I : Timeless (l ↦□ I).
-  Proof. rewrite /inv_mapsto. apply _. Qed.
+  Proof. apply _. Qed.
 
   Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦_I v).
-  Proof. rewrite /inv_mapsto. apply _. Qed.
+  Proof. apply _. Qed.
 
   (** * Public lemmas *)
 
@@ -281,4 +284,4 @@ Section inv_heap.
 
 End inv_heap.
 
-Typeclasses Opaque inv_mapsto inv_mapsto_own.
+Typeclasses Opaque inv_heap_inv inv_mapsto inv_mapsto_own.
