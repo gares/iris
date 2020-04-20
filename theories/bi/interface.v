@@ -118,33 +118,33 @@ Section bi_mixin.
   }.
 
   Record SbiMixin := {
-    sbi_mixin_later_contractive : Contractive sbi_later;
-    sbi_mixin_internal_eq_ne (A : ofeT) : NonExpansive2 (sbi_internal_eq A);
+    bi_mixin_later_ne : NonExpansive sbi_later;
+    bi_mixin_internal_eq_ne (A : ofeT) : NonExpansive2 (sbi_internal_eq A);
 
     (* Equality *)
-    sbi_mixin_internal_eq_refl {A : ofeT} P (a : A) : P ⊢ a ≡ a;
-    sbi_mixin_internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
+    bi_mixin_internal_eq_refl {A : ofeT} P (a : A) : P ⊢ a ≡ a;
+    bi_mixin_internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
       NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b;
-    sbi_mixin_fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g;
-    sbi_mixin_sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y;
-    sbi_mixin_discrete_eq_1 {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝;
+    bi_mixin_fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g;
+    bi_mixin_sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y;
+    bi_mixin_discrete_eq_1 {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝;
 
     (* Later *)
-    sbi_mixin_later_eq_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y);
-    sbi_mixin_later_eq_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y;
+    bi_mixin_later_eq_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y);
+    bi_mixin_later_eq_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y;
 
-    sbi_mixin_later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q;
-    sbi_mixin_later_intro P : P ⊢ ▷ P;
+    bi_mixin_later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q;
+    bi_mixin_later_intro P : P ⊢ ▷ P;
 
-    sbi_mixin_later_forall_2 {A} (Φ : A → PROP) : (∀ a, ▷ Φ a) ⊢ ▷ ∀ a, Φ a;
-    sbi_mixin_later_exist_false {A} (Φ : A → PROP) :
+    bi_mixin_later_forall_2 {A} (Φ : A → PROP) : (∀ a, ▷ Φ a) ⊢ ▷ ∀ a, Φ a;
+    bi_mixin_later_exist_false {A} (Φ : A → PROP) :
       (▷ ∃ a, Φ a) ⊢ ▷ False ∨ (∃ a, ▷ Φ a);
-    sbi_mixin_later_sep_1 P Q : ▷ (P ∗ Q) ⊢ ▷ P ∗ ▷ Q;
-    sbi_mixin_later_sep_2 P Q : ▷ P ∗ ▷ Q ⊢ ▷ (P ∗ Q);
-    sbi_mixin_later_persistently_1 P : ▷ <pers> P ⊢ <pers> ▷ P;
-    sbi_mixin_later_persistently_2 P : <pers> ▷ P ⊢ ▷ <pers> P;
+    bi_mixin_later_sep_1 P Q : ▷ (P ∗ Q) ⊢ ▷ P ∗ ▷ Q;
+    bi_mixin_later_sep_2 P Q : ▷ P ∗ ▷ Q ⊢ ▷ (P ∗ Q);
+    bi_mixin_later_persistently_1 P : ▷ <pers> P ⊢ <pers> ▷ P;
+    bi_mixin_later_persistently_2 P : <pers> ▷ P ⊢ ▷ <pers> P;
 
-    sbi_mixin_later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P);
+    bi_mixin_later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P);
   }.
 End bi_mixin.
 
@@ -163,13 +163,21 @@ Structure bi := Bi {
   bi_sep : bi_car → bi_car → bi_car;
   bi_wand : bi_car → bi_car → bi_car;
   bi_persistently : bi_car → bi_car;
+  bi_internal_eq : ∀ A : ofeT, A → A → bi_car;
+  bi_later : bi_car → bi_car;
   bi_ofe_mixin : OfeMixin bi_car;
+  bi_cofe : Cofe (OfeT bi_car bi_ofe_mixin);
   bi_bi_mixin : BiMixin bi_entails bi_emp bi_pure bi_and bi_or bi_impl bi_forall
                         bi_exist bi_sep bi_wand bi_persistently;
+  bi_sbi_mixin : SbiMixin bi_entails bi_pure bi_or bi_impl
+                          bi_forall bi_exist bi_sep
+                          bi_persistently bi_internal_eq bi_later;
 }.
 
 Coercion bi_ofeO (PROP : bi) : ofeT := OfeT PROP (bi_ofe_mixin PROP).
 Canonical Structure bi_ofeO.
+Global Instance bi_cofe' (PROP : bi) : Cofe PROP.
+Proof. apply bi_cofe. Qed.
 
 Instance: Params (@bi_entails) 1 := {}.
 Instance: Params (@bi_emp) 1 := {}.
@@ -182,6 +190,8 @@ Instance: Params (@bi_exist) 2 := {}.
 Instance: Params (@bi_sep) 1 := {}.
 Instance: Params (@bi_wand) 1 := {}.
 Instance: Params (@bi_persistently) 1 := {}.
+Instance: Params (@bi_later) 1  := {}.
+Instance: Params (@bi_internal_eq) 1 := {}.
 
 Arguments bi_car : simpl never.
 Arguments bi_dist : simpl never.
@@ -197,63 +207,8 @@ Arguments bi_exist {PROP _} _%I : simpl never, rename.
 Arguments bi_sep {PROP} _%I _%I : simpl never, rename.
 Arguments bi_wand {PROP} _%I _%I : simpl never, rename.
 Arguments bi_persistently {PROP} _%I : simpl never, rename.
-
-Structure sbi := Sbi {
-  sbi_car :> Type;
-  sbi_dist : Dist sbi_car;
-  sbi_equiv : Equiv sbi_car;
-  sbi_entails : sbi_car → sbi_car → Prop;
-  sbi_emp : sbi_car;
-  sbi_pure : Prop → sbi_car;
-  sbi_and : sbi_car → sbi_car → sbi_car;
-  sbi_or : sbi_car → sbi_car → sbi_car;
-  sbi_impl : sbi_car → sbi_car → sbi_car;
-  sbi_forall : ∀ A, (A → sbi_car) → sbi_car;
-  sbi_exist : ∀ A, (A → sbi_car) → sbi_car;
-  sbi_sep : sbi_car → sbi_car → sbi_car;
-  sbi_wand : sbi_car → sbi_car → sbi_car;
-  sbi_persistently : sbi_car → sbi_car;
-  sbi_internal_eq : ∀ A : ofeT, A → A → sbi_car;
-  sbi_later : sbi_car → sbi_car;
-  sbi_ofe_mixin : OfeMixin sbi_car;
-  sbi_cofe : Cofe (OfeT sbi_car sbi_ofe_mixin);
-  sbi_bi_mixin : BiMixin sbi_entails sbi_emp sbi_pure sbi_and sbi_or sbi_impl
-                         sbi_forall sbi_exist sbi_sep sbi_wand sbi_persistently;
-  sbi_sbi_mixin : SbiMixin sbi_entails sbi_pure sbi_or sbi_impl
-                           sbi_forall sbi_exist sbi_sep
-                           sbi_persistently sbi_internal_eq sbi_later;
-}.
-
-Instance: Params (@sbi_later) 1  := {}.
-Instance: Params (@sbi_internal_eq) 1 := {}.
-
-Arguments sbi_later {PROP} _%I : simpl never, rename.
-Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
-
-Coercion sbi_ofeO (PROP : sbi) : ofeT := OfeT PROP (sbi_ofe_mixin PROP).
-Canonical Structure sbi_ofeO.
-Coercion sbi_bi (PROP : sbi) : bi :=
-  {| bi_ofe_mixin := sbi_ofe_mixin PROP; bi_bi_mixin := sbi_bi_mixin PROP |}.
-Canonical Structure sbi_bi.
-Global Instance sbi_cofe' (PROP : sbi) : Cofe PROP.
-Proof. apply sbi_cofe. Qed.
-
-Arguments sbi_car : simpl never.
-Arguments sbi_dist : simpl never.
-Arguments sbi_equiv : simpl never.
-Arguments sbi_entails {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_emp {PROP} : simpl never, rename.
-Arguments sbi_pure {PROP} _%stdpp : simpl never, rename.
-Arguments sbi_and {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_or {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_impl {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_forall {PROP _} _%I : simpl never, rename.
-Arguments sbi_exist {PROP _} _%I : simpl never, rename.
-Arguments sbi_sep {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_wand {PROP} _%I _%I : simpl never, rename.
-Arguments sbi_persistently {PROP} _%I : simpl never, rename.
-Arguments sbi_internal_eq {PROP _} _ _ : simpl never, rename.
-Arguments sbi_later {PROP} _%I : simpl never, rename.
+Arguments bi_later {PROP} _%I : simpl never, rename.
+Arguments bi_internal_eq {PROP _} _ _ : simpl never, rename.
 
 Hint Extern 0 (bi_entails _ _) => reflexivity : core.
 Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
@@ -291,14 +246,14 @@ Notation "∃ x .. y , P" :=
   (bi_exist (λ x, .. (bi_exist (λ y, P)) ..)%I) : bi_scope.
 Notation "'<pers>' P" := (bi_persistently P) : bi_scope.
 
-Infix "≡" := sbi_internal_eq : bi_scope.
-Infix "≡@{ A }" := (sbi_internal_eq (A := A)) (only parsing) : bi_scope.
+Infix "≡" := bi_internal_eq : bi_scope.
+Infix "≡@{ A }" := (bi_internal_eq (A := A)) (only parsing) : bi_scope.
 
-Notation "( X ≡.)" := (sbi_internal_eq X) (only parsing) : bi_scope.
+Notation "( X ≡.)" := (bi_internal_eq X) (only parsing) : bi_scope.
 Notation "(.≡ X )" := (λ Y, Y ≡ X)%I (only parsing) : bi_scope.
-Notation "(≡@{ A } )" := (sbi_internal_eq (A := A)) (only parsing) : bi_scope.
+Notation "(≡@{ A } )" := (bi_internal_eq (A:=A)) (only parsing) : bi_scope.
 
-Notation "▷ P" := (sbi_later P) : bi_scope.
+Notation "▷ P" := (bi_later P) : bi_scope.
 
 Definition bi_emp_valid {PROP : bi} (P : PROP) : Prop := emp ⊢ P.
 
@@ -423,60 +378,60 @@ Proof. eapply (bi_mixin_persistently_and_sep_elim bi_entails), bi_bi_mixin. Qed.
 End bi_laws.
 
 Section sbi_laws.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types φ : Prop.
 Implicit Types P Q R : PROP.
 
 (* Equality *)
-Global Instance internal_eq_ne (A : ofeT) : NonExpansive2 (@sbi_internal_eq PROP A).
-Proof. eapply sbi_mixin_internal_eq_ne, sbi_sbi_mixin. Qed.
+Global Instance internal_eq_ne (A : ofeT) : NonExpansive2 (@bi_internal_eq PROP A).
+Proof. eapply bi_mixin_internal_eq_ne, bi_sbi_mixin. Qed.
 
 Lemma internal_eq_refl {A : ofeT} P (a : A) : P ⊢ a ≡ a.
-Proof. eapply sbi_mixin_internal_eq_refl, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_internal_eq_refl, bi_sbi_mixin. Qed.
 Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
-Proof. eapply sbi_mixin_internal_eq_rewrite, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_internal_eq_rewrite, bi_sbi_mixin. Qed.
 
 Lemma fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) :
   (∀ x, f x ≡ g x) ⊢@{PROP} f ≡ g.
-Proof. eapply sbi_mixin_fun_ext, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_fun_ext, bi_sbi_mixin. Qed.
 Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) :
   `x ≡ `y ⊢@{PROP} x ≡ y.
-Proof. eapply sbi_mixin_sig_eq, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_sig_eq, bi_sbi_mixin. Qed.
 Lemma discrete_eq_1 {A : ofeT} (a b : A) :
   Discrete a → a ≡ b ⊢@{PROP} ⌜a ≡ b⌝.
-Proof. eapply sbi_mixin_discrete_eq_1, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_discrete_eq_1, bi_sbi_mixin. Qed.
 
 (* Later *)
-Global Instance later_contractive : Contractive (@sbi_later PROP).
-Proof. eapply sbi_mixin_later_contractive, sbi_sbi_mixin. Qed.
+Global Instance later_ne : NonExpansive (@bi_later PROP).
+Proof. eapply bi_mixin_later_ne, bi_sbi_mixin. Qed.
 
 Lemma later_eq_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢@{PROP} ▷ (x ≡ y).
-Proof. eapply sbi_mixin_later_eq_1, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_eq_1, bi_sbi_mixin. Qed.
 Lemma later_eq_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢@{PROP} Next x ≡ Next y.
-Proof. eapply sbi_mixin_later_eq_2, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_eq_2, bi_sbi_mixin. Qed.
 
 Lemma later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q.
-Proof. eapply sbi_mixin_later_mono, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_mono, bi_sbi_mixin. Qed.
 Lemma later_intro P : P ⊢ ▷ P.
-Proof. eapply sbi_mixin_later_intro, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_intro, bi_sbi_mixin. Qed.
 
 Lemma later_forall_2 {A} (Φ : A → PROP) : (∀ a, ▷ Φ a) ⊢ ▷ ∀ a, Φ a.
-Proof. eapply sbi_mixin_later_forall_2, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_forall_2, bi_sbi_mixin. Qed.
 Lemma later_exist_false {A} (Φ : A → PROP) :
   (▷ ∃ a, Φ a) ⊢ ▷ False ∨ (∃ a, ▷ Φ a).
-Proof. eapply sbi_mixin_later_exist_false, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_exist_false, bi_sbi_mixin. Qed.
 Lemma later_sep_1 P Q : ▷ (P ∗ Q) ⊢ ▷ P ∗ ▷ Q.
-Proof. eapply sbi_mixin_later_sep_1, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_sep_1, bi_sbi_mixin. Qed.
 Lemma later_sep_2 P Q : ▷ P ∗ ▷ Q ⊢ ▷ (P ∗ Q).
-Proof. eapply sbi_mixin_later_sep_2, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_sep_2, bi_sbi_mixin. Qed.
 Lemma later_persistently_1 P : ▷ <pers> P ⊢ <pers> ▷ P.
-Proof. eapply (sbi_mixin_later_persistently_1 bi_entails), sbi_sbi_mixin. Qed.
+Proof. eapply (bi_mixin_later_persistently_1 bi_entails), bi_sbi_mixin. Qed.
 Lemma later_persistently_2 P : <pers> ▷ P ⊢ ▷ <pers> P.
-Proof. eapply (sbi_mixin_later_persistently_2 bi_entails), sbi_sbi_mixin. Qed.
+Proof. eapply (bi_mixin_later_persistently_2 bi_entails), bi_sbi_mixin. Qed.
 
 Lemma later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P).
-Proof. eapply sbi_mixin_later_false_em, sbi_sbi_mixin. Qed.
+Proof. eapply bi_mixin_later_false_em, bi_sbi_mixin. Qed.
 End sbi_laws.
 
 End bi.

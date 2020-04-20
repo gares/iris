@@ -1,8 +1,8 @@
 1 subgoal
   
   I : biIndex
-  PROP : sbi
-  P, Q : monpred.monPred I PROP
+  PROP : bi
+  P, Q : monPred
   i : I
   ============================
   "HW" : (P -∗ Q) i
@@ -12,8 +12,8 @@
 1 subgoal
   
   I : biIndex
-  PROP : sbi
-  P, Q : monpred.monPred I PROP
+  PROP : bi
+  P, Q : monPred
   i, j : I
   ============================
   "HW" : (P -∗ Q) j
@@ -24,8 +24,8 @@
 1 subgoal
   
   I : biIndex
-  PROP : sbi
-  P, Q : monpred.monPred I PROP
+  PROP : bi
+  P, Q : monPred
   Objective0 : Objective Q
   𝓟, 𝓠 : PROP
   ============================
@@ -38,9 +38,9 @@
 1 subgoal
   
   I : biIndex
-  PROP : sbi
+  PROP : bi
   FU0 : BiFUpd PROP * ()
-  P, Q : monpred.monPred I PROP
+  P, Q : monPred
   i : I
   ============================
   --------------------------------------∗
@@ -49,9 +49,9 @@
 1 subgoal
   
   I : biIndex
-  PROP : sbi
+  PROP : bi
   FU0 : BiFUpd PROP * ()
-  P : monpred.monPred I PROP
+  P : monPred
   i : I
   ============================
   --------------------------------------∗

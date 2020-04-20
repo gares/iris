@@ -1016,7 +1016,7 @@ Section tac_modal_intro.
 End tac_modal_intro.
 
 Section sbi_tactics.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types Γ : env PROP.
 Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
@@ -1092,6 +1092,7 @@ Proof.
 Qed.
 
 Lemma tac_löb Δ i Q :
+  BiLöb PROP →
   env_spatial_is_nil Δ = true →
   match envs_app true (Esnoc Enil i (▷ Q)%I) Δ with
   | None => False
@@ -1100,7 +1101,7 @@ Lemma tac_löb Δ i Q :
   envs_entails Δ Q.
 Proof.
   destruct (envs_app _ _ _) eqn:?; last done.
-  rewrite envs_entails_eq => ? HQ.
+  rewrite envs_entails_eq => ?? HQ.
   rewrite (env_spatial_is_nil_intuitionistically Δ) //.
   rewrite -(persistently_and_emp_elim Q). apply and_intro; first apply: affine.
   rewrite -(löb (<pers> Q)%I) later_persistently. apply impl_intro_l.

@@ -83,23 +83,23 @@ Instance: Params (@bi_intuitionistically_if) 2 := {}.
 Typeclasses Opaque bi_intuitionistically_if.
 Notation "'□?' p P" := (bi_intuitionistically_if p P) : bi_scope.
 
-Fixpoint sbi_laterN {PROP : sbi} (n : nat) (P : PROP) : PROP :=
+Fixpoint bi_laterN {PROP : bi} (n : nat) (P : PROP) : PROP :=
   match n with
   | O => P
   | S n' => ▷ ▷^n' P
   end%I
-where "▷^ n P" := (sbi_laterN n P) : bi_scope.
-Arguments sbi_laterN {_} !_%nat_scope _%I.
-Instance: Params (@sbi_laterN) 2 := {}.
-Notation "▷? p P" := (sbi_laterN (Nat.b2n p) P) : bi_scope.
+where "▷^ n P" := (bi_laterN n P) : bi_scope.
+Arguments bi_laterN {_} !_%nat_scope _%I.
+Instance: Params (@bi_laterN) 2 := {}.
+Notation "▷? p P" := (bi_laterN (Nat.b2n p) P) : bi_scope.
 
-Definition sbi_except_0 {PROP : sbi} (P : PROP) : PROP := (▷ False ∨ P)%I.
-Arguments sbi_except_0 {_} _%I : simpl never.
-Notation "◇ P" := (sbi_except_0 P) : bi_scope.
-Instance: Params (@sbi_except_0) 1 := {}.
-Typeclasses Opaque sbi_except_0.
+Definition bi_except_0 {PROP : bi} (P : PROP) : PROP := (▷ False ∨ P)%I.
+Arguments bi_except_0 {_} _%I : simpl never.
+Notation "◇ P" := (bi_except_0 P) : bi_scope.
+Instance: Params (@bi_except_0) 1 := {}.
+Typeclasses Opaque bi_except_0.
 
-Class Timeless {PROP : sbi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
+Class Timeless {PROP : bi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
 Arguments Timeless {_} _%I : simpl never.
 Arguments timeless {_} _%I {_}.
 Hint Mode Timeless + ! : typeclass_instances.
@@ -116,3 +116,8 @@ Definition bi_wandM {PROP : bi} (mP : option PROP) (Q : PROP) : PROP :=
 Arguments bi_wandM {_} !_%I _%I /.
 Notation "mP -∗? Q" := (bi_wandM mP Q)
   (at level 99, Q at level 200, right associativity) : bi_scope.
+
+Class BiLöb (PROP : bi) :=
+  löb (P : PROP) : (▷ P → P) ⊢ P.
+Hint Mode BiLöb ! : typeclass_instances.
+Arguments löb {_ _} _.

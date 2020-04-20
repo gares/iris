@@ -45,9 +45,9 @@ Section base_logic_tests.
   Lemma test_iStartProof_2 P : P -* P.
   Proof. iStartProof (uPred _). iStartProof (uPredI _). iIntros "$". Qed.
   Lemma test_iStartProof_3 P : P -* P.
-  Proof. iStartProof (uPredI _). iStartProof (uPredSI _). iIntros "$". Qed.
+  Proof. iStartProof (uPredI _). iStartProof (uPredI _). iIntros "$". Qed.
   Lemma test_iStartProof_4 P : P -* P.
-  Proof. iStartProof (uPredSI _). iStartProof (uPred _). iIntros "$". Qed.
+  Proof. iStartProof (uPredI _). iStartProof (uPred _). iIntros "$". Qed.
 End base_logic_tests.
 
 Section iris_tests.
@@ -233,7 +233,6 @@ Section monpred_tests.
   Context {I : biIndex}.
   Local Notation monPred := (monPred I (iPropI Σ)).
   Local Notation monPredI := (monPredI I (iPropI Σ)).
-  Local Notation monPredSI := (monPredSI I (iPropSI Σ)).
   Implicit Types P Q R : monPred.
   Implicit Types 𝓟 𝓠 𝓡 : iProp Σ.
 
@@ -261,7 +260,7 @@ End monpred_tests.
 
 (** Test specifically if certain things parse correctly. *)
 Section parsing_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P : PROP.
 
 Lemma test_bi_emp_valid : |--@{PROP} True.

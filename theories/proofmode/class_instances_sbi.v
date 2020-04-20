@@ -5,7 +5,7 @@ Set Default Proof Using "Type".
 Import bi.
 
 Section sbi_instances.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 (** FromAssumption *)
@@ -203,7 +203,7 @@ Global Instance into_sep_affinely_later `{!Timeless (PROP:=PROP) emp} P Q1 Q2 :
 Proof.
   rewrite /IntoSep /= => -> ??.
   rewrite -{1}(affine_affinely Q1) -{1}(affine_affinely Q2) later_sep !later_affinely_1.
-  rewrite -except_0_sep /sbi_except_0 affinely_or. apply or_elim, affinely_elim.
+  rewrite -except_0_sep /bi_except_0 affinely_or. apply or_elim, affinely_elim.
   rewrite -(idemp bi_and (<affine> ▷ False)%I) persistent_and_sep_1.
   by rewrite -(False_elim Q1) -(False_elim Q2).
 Qed.

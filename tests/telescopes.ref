@@ -1,6 +1,6 @@
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   X : tele
   E1, E2 : coPset
@@ -15,7 +15,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   X : tele
   E1, E2 : coPset
@@ -24,7 +24,7 @@
   accessor E1 E2 α β γ1 -∗ accessor E1 E2 α β (λ.. x : X, γ1 x ∨ γ2 x)
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   X : tele
   E1, E2 : coPset
@@ -37,7 +37,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   X : tele
   E1, E2 : coPset
@@ -50,7 +50,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   E1, E2 : coPset
   ============================
@@ -62,7 +62,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ∃ x0 : nat, <affine> ⌜x = x0⌝
@@ -71,7 +71,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ∃ x0 : nat, <affine> ⌜x = x0⌝
@@ -82,7 +82,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   ============================
   "H" : ∃ x x0 : nat, <affine> ⌜x = x0⌝
   --------------------------------------∗
@@ -90,7 +90,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ∃ x0 : nat, <affine> ⌜x = x0⌝
@@ -99,7 +99,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ▷ (∃ x0 : nat, <affine> ⌜x = x0⌝)
@@ -110,7 +110,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ∃ x0 : nat, <affine> ⌜x = x0⌝
@@ -119,7 +119,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   ============================
   "H" : ◇ (∃ x0 : nat, <affine> ⌜x = x0⌝)

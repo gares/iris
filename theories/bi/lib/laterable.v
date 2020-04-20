@@ -3,14 +3,14 @@ From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
 (** The class of laterable assertions *)
-Class Laterable {PROP : sbi} (P : PROP) := laterable :
+Class Laterable {PROP : bi} (P : PROP) := laterable :
   P -∗ ∃ Q, ▷ Q ∗ □ (▷ Q -∗ ◇ P).
 Arguments Laterable {_} _%I : simpl never.
 Arguments laterable {_} _%I {_}.
 Hint Mode Laterable + ! : typeclass_instances.
 
 Section instances.
-  Context {PROP : sbi}.
+  Context {PROP : bi}.
   Implicit Types P : PROP.
   Implicit Types Ps : list PROP.
 

@@ -8,7 +8,7 @@ Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
-Record BiPlainlyMixin (PROP : sbi) `(Plainly PROP) := {
+Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
   bi_plainly_mixin_plainly_ne : NonExpansive (plainly (A:=PROP));
 
   bi_plainly_mixin_plainly_mono (P Q : PROP) : (P ⊢ Q) → ■ P ⊢ ■ Q;
@@ -35,7 +35,7 @@ Record BiPlainlyMixin (PROP : sbi) `(Plainly PROP) := {
   bi_plainly_mixin_later_plainly_2 (P : PROP) : ■ ▷ P ⊢ ▷ ■ P;
 }.
 
-Class BiPlainly (PROP : sbi) := {
+Class BiPlainly (PROP : bi) := {
   bi_plainly_plainly :> Plainly PROP;
   bi_plainly_mixin : BiPlainlyMixin PROP bi_plainly_plainly;
 }.
@@ -597,9 +597,9 @@ Lemma laterN_plainly_if n p P : ▷^n ■?p P ⊣⊢ ■?p (▷^n P).
 Proof. destruct p; simpl; auto using laterN_plainly. Qed.
 
 Lemma except_0_plainly_1 P : ◇ ■ P ⊢ ■ ◇ P.
-Proof. by rewrite /sbi_except_0 -plainly_or_2 -later_plainly plainly_pure. Qed.
+Proof. by rewrite /bi_except_0 -plainly_or_2 -later_plainly plainly_pure. Qed.
 Lemma except_0_plainly `{!BiPlainlyExist PROP} P : ◇ ■ P ⊣⊢ ■ ◇ P.
-Proof. by rewrite /sbi_except_0 plainly_or -later_plainly plainly_pure. Qed.
+Proof. by rewrite /bi_except_0 plainly_or -later_plainly plainly_pure. Qed.
 
 Global Instance internal_eq_plain {A : ofeT} (a b : A) :
   Plain (PROP:=PROP) (a ≡ b).
@@ -610,13 +610,13 @@ Proof. intros. by rewrite /Plain -later_plainly {1}(plain P). Qed.
 Global Instance laterN_plain n P : Plain P → Plain (▷^n P).
 Proof. induction n; apply _. Qed.
 Global Instance except_0_plain P : Plain P → Plain (◇ P).
-Proof. rewrite /sbi_except_0; apply _. Qed.
+Proof. rewrite /bi_except_0; apply _. Qed.
 
 Global Instance plainly_timeless P  `{!BiPlainlyExist PROP} :
   Timeless P → Timeless (■ P).
 Proof.
-  intros. rewrite /Timeless /sbi_except_0 later_plainly_1.
-  by rewrite (timeless P) /sbi_except_0 plainly_or {1}plainly_elim.
+  intros. rewrite /Timeless /bi_except_0 later_plainly_1.
+  by rewrite (timeless P) /bi_except_0 plainly_or {1}plainly_elim.
 Qed.
 End plainly_derived.
 

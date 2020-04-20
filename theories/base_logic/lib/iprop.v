@@ -125,7 +125,6 @@ Module Type iProp_solution_sig.
   Notation iProp Σ := (uPred (iResUR Σ)).
   Notation iPropO Σ := (uPredO (iResUR Σ)).
   Notation iPropI Σ := (uPredI (iResUR Σ)).
-  Notation iPropSI Σ := (uPredSI (iResUR Σ)).
 
   Parameter iProp_unfold: ∀ {Σ}, iPropO Σ -n> iPrePropO Σ.
   Parameter iProp_fold: ∀ {Σ}, iPrePropO Σ -n> iPropO Σ.

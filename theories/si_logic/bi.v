@@ -90,7 +90,7 @@ Lemma siProp_sbi_mixin : SbiMixin
   siProp_persistently (@siProp_internal_eq) siProp_later.
 Proof.
   split.
-  - exact: later_contractive.
+  - apply contractive_ne, later_contractive.
   - exact: internal_eq_ne.
   - exact: @internal_eq_refl.
   - exact: @internal_eq_rewrite.
@@ -120,12 +120,13 @@ Proof.
 Qed.
 
 Canonical Structure siPropI : bi :=
-  {| bi_ofe_mixin := ofe_mixin_of siProp; bi_bi_mixin := siProp_bi_mixin |}.
-Canonical Structure siPropSI : sbi :=
-  {| sbi_ofe_mixin := ofe_mixin_of siProp;
-     sbi_bi_mixin := siProp_bi_mixin; sbi_sbi_mixin := siProp_sbi_mixin |}.
+  {| bi_ofe_mixin := ofe_mixin_of siProp;
+     bi_bi_mixin := siProp_bi_mixin; bi_sbi_mixin := siProp_sbi_mixin |}.
 
-Lemma siProp_plainly_mixin : BiPlainlyMixin siPropSI siProp_plainly.
+Instance siProp_later_contractive : Contractive (bi_later (PROP:=siPropI)).
+Proof. apply later_contractive. Qed.
+
+Lemma siProp_plainly_mixin : BiPlainlyMixin siPropI siProp_plainly.
 Proof.
   split; try done.
   - solve_proper.
@@ -136,7 +137,7 @@ Proof.
   - (* ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q *)
     intros P Q. apply prop_ext_2.
 Qed.
-Global Instance siProp_plainlyC : BiPlainly siPropSI :=
+Global Instance siProp_plainlyC : BiPlainly siPropI :=
   {| bi_plainly_mixin := siProp_plainly_mixin |}.
 
 (** extra BI instances *)
@@ -152,7 +153,7 @@ Proof. done. Qed.
 Global Instance siProp_persistent (P : siProp) : Persistent P.
 Proof. done. Qed.
 
-Global Instance siProp_plainly_exist_1 : BiPlainlyExist siPropSI.
+Global Instance siProp_plainly_exist_1 : BiPlainlyExist siPropI.
 Proof. done. Qed.
 
 (** Re-state/export soundness lemmas *)

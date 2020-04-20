@@ -291,12 +291,6 @@ Proof.
   rewrite (comm _ (□ P1)%I) -assoc -persistently_and_intuitionistically_sep_l.
   rewrite persistently_elim impl_elim_r //.
 Qed.
-End bi.
-
-(** SBI Framing *)
-Section sbi.
-Context {PROP : sbi}.
-Implicit Types P Q R : PROP.
 
 Global Instance frame_eq_embed `{SbiEmbed PROP PROP'} p P Q (Q' : PROP')
        {A : ofeT} (a b : A) :
@@ -344,4 +338,4 @@ Proof.
   rewrite /Frame /MakeExcept0=><- <-.
   by rewrite except_0_sep -(except_0_intro (□?p R)%I).
 Qed.
-End sbi.
+End bi.

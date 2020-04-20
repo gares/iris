@@ -3,7 +3,7 @@ From iris.proofmode Require Export classes.
 Set Default Proof Using "Type".
 Import bi.
 
-Section bi_modalities.
+Section modalities.
   Context {PROP : bi}.
 
   Lemma modality_persistently_mixin :
@@ -45,10 +45,6 @@ Section bi_modalities.
   Qed.
   Definition modality_embed `{BiEmbed PROP PROP'} :=
     Modality _ modality_embed_mixin.
-End bi_modalities.
-
-Section sbi_modalities.
-  Context {PROP : sbi}.
 
   Lemma modality_plainly_mixin `{BiPlainly PROP} :
     modality_mixin (@plainly PROP _) (MIEnvForall Plain) MIEnvClear.
@@ -60,7 +56,7 @@ Section sbi_modalities.
     Modality _ modality_plainly_mixin.
 
   Lemma modality_laterN_mixin n :
-    modality_mixin (@sbi_laterN PROP n)
+    modality_mixin (@bi_laterN PROP n)
       (MIEnvTransform (MaybeIntoLaterN false n)) (MIEnvTransform (MaybeIntoLaterN false n)).
   Proof.
     split; simpl; split_and?; eauto using equiv_entails_sym, laterN_intro,
@@ -69,4 +65,4 @@ Section sbi_modalities.
   Qed.
   Definition modality_laterN n :=
     Modality _ (modality_laterN_mixin n).
-End sbi_modalities.
+End modalities.

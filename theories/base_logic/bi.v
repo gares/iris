@@ -72,7 +72,7 @@ Lemma uPred_sbi_mixin (M : ucmraT) : SbiMixin
   uPred_persistently (@uPred_internal_eq M) uPred_later.
 Proof.
   split.
-  - exact: later_contractive.
+  - apply contractive_ne, later_contractive.
   - exact: internal_eq_ne.
   - exact: @internal_eq_refl.
   - exact: @internal_eq_rewrite.
@@ -93,12 +93,13 @@ Proof.
 Qed.
 
 Canonical Structure uPredI (M : ucmraT) : bi :=
-  {| bi_ofe_mixin := ofe_mixin_of (uPred M); bi_bi_mixin := uPred_bi_mixin M |}.
-Canonical Structure uPredSI (M : ucmraT) : sbi :=
-  {| sbi_ofe_mixin := ofe_mixin_of (uPred M);
-     sbi_bi_mixin := uPred_bi_mixin M; sbi_sbi_mixin := uPred_sbi_mixin M |}.
+  {| bi_ofe_mixin := ofe_mixin_of (uPred M);
+     bi_bi_mixin := uPred_bi_mixin M; bi_sbi_mixin := uPred_sbi_mixin M |}.
 
-Lemma uPred_plainly_mixin M : BiPlainlyMixin (uPredSI M) uPred_plainly.
+Instance uPred_later_contractive {M} : Contractive (bi_later (PROP:=uPredI M)).
+Proof. apply later_contractive. Qed.
+
+Lemma uPred_plainly_mixin M : BiPlainlyMixin (uPredI M) uPred_plainly.
 Proof.
   split.
   - exact: plainly_ne.
@@ -123,7 +124,7 @@ Proof.
   - exact: later_plainly_1.
   - exact: later_plainly_2.
 Qed.
-Global Instance uPred_plainlyC M : BiPlainly (uPredSI M) :=
+Global Instance uPred_plainlyC M : BiPlainly (uPredI M) :=
   {| bi_plainly_mixin := uPred_plainly_mixin M |}.
 
 Lemma uPred_bupd_mixin M : BiBUpdMixin (uPredI M) uPred_bupd.
@@ -137,7 +138,7 @@ Proof.
 Qed.
 Global Instance uPred_bi_bupd M : BiBUpd (uPredI M) := {| bi_bupd_mixin := uPred_bupd_mixin M |}.
 
-Global Instance uPred_bi_bupd_plainly M : BiBUpdPlainly (uPredSI M).
+Global Instance uPred_bi_bupd_plainly M : BiBUpdPlainly (uPredI M).
 Proof. exact: bupd_plainly. Qed.
 
 (** extra BI instances *)
@@ -148,7 +149,7 @@ Proof. intros P. exact: pure_intro. Qed.
 many lemmas that have [BiAffine] as a premise. *)
 Hint Immediate uPred_affine : core.
 
-Global Instance uPred_plainly_exist_1 M : BiPlainlyExist (uPredSI M).
+Global Instance uPred_plainly_exist_1 M : BiPlainlyExist (uPredI M).
 Proof. exact: @plainly_exist_1. Qed.
 
 (** Re-state/export lemmas about Iris-specific primitive connectives (own, valid) *)
@@ -220,12 +221,10 @@ End restate.
     This is used by [base_logic.bupd_alt].
     TODO: Can we get rid of this? *)
 Ltac unseal := (* Coq unfold is used to circumvent bug #5699 in rewrite /foo *)
-  unfold bi_emp; simpl; unfold sbi_emp; simpl;
+  unfold bi_emp; simpl;
   unfold uPred_emp, bupd, bi_bupd_bupd, bi_pure,
   bi_and, bi_or, bi_impl, bi_forall, bi_exist,
-  bi_sep, bi_wand, bi_persistently, sbi_internal_eq, sbi_later; simpl;
-  unfold sbi_emp, sbi_pure, sbi_and, sbi_or, sbi_impl, sbi_forall, sbi_exist,
-  sbi_internal_eq, sbi_sep, sbi_wand, sbi_persistently; simpl;
+  bi_sep, bi_wand, bi_persistently, bi_internal_eq, bi_later; simpl;
   unfold plainly, bi_plainly_plainly; simpl;
   uPred_primitive.unseal.
 

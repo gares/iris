@@ -1557,7 +1557,7 @@ End bi_big_op.
 
 (** * Properties for step-indexed BIs*)
 Section sbi_big_op.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types Ps Qs : list PROP.
 Implicit Types A : Type.
 

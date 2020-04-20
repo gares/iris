@@ -20,7 +20,7 @@ Notation "'∀..' x .. y , P" := (bi_tforall (λ x, .. (bi_tforall (λ y, P)) ..
   (at level 200, x binder, y binder, right associativity,
   format "∀..  x  ..  y ,  P") : bi_scope.
 
-Section telescopes_bi.
+Section telescopes.
   Context {PROP : bi} {TT : tele}.
   Implicit Types Ψ : TT → PROP.
 
@@ -84,11 +84,6 @@ Section telescopes_bi.
   Global Instance bi_texist_persistent Ψ :
     (∀ x, Persistent (Ψ x)) → Persistent (∃.. x, Ψ x).
   Proof. rewrite bi_texist_exist. apply _. Qed.
-End telescopes_bi.
-
-Section telescopes_sbi.
-  Context {PROP : sbi} {TT : tele}.
-  Implicit Types Ψ : TT → PROP.
 
   Global Instance bi_tforall_timeless Ψ :
     (∀ x, Timeless (Ψ x)) → Timeless (∀.. x, Ψ x).
@@ -97,4 +92,4 @@ Section telescopes_sbi.
   Global Instance bi_texist_timeless Ψ :
     (∀ x, Timeless (Ψ x)) → Timeless (∃.. x, Ψ x).
   Proof. rewrite bi_texist_exist. apply _. Qed.
-End telescopes_sbi.
+End telescopes.

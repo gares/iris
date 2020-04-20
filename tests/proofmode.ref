@@ -2,7 +2,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   ============================
   "H2" : ∀ x : nat, ⌜x = 0⌝ ∨ ⌜x = 1⌝
@@ -13,7 +13,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   ============================
   "H2" : ∀ x : nat, ⌜x = 0⌝ ∨ ⌜x = 1⌝
@@ -25,7 +25,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Q : PROP
   ============================
   "H1" : emp
@@ -36,7 +36,7 @@
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Q : PROP
   ============================
   □ emp ∗ Q -∗ Q
@@ -44,7 +44,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   Persistent0 : Persistent P
   Persistent1 : Persistent Q
@@ -58,7 +58,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Q : PROP
   ============================
   "HQ" : <affine> Q
@@ -69,7 +69,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Q : PROP
   Affine0 : Affine Q
   ============================
@@ -81,7 +81,7 @@
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Ψ : nat → PROP
   a : nat
   ============================
@@ -109,7 +109,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   n, m, k : nat
   ============================
@@ -120,7 +120,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   φ : Prop
   P, P2, Q, R1, R2 : PROP
   H : φ
@@ -136,7 +136,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x, y : nat
   ============================
   "H" : ⌜S (S (S x)) = y⌝
@@ -145,7 +145,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x, y, z : nat
   ============================
   "H1" : ⌜S (S (S x)) = y⌝
@@ -155,7 +155,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x, y, z : nat
   ============================
   "H1" : ⌜S (S (S x)) = y⌝
@@ -172,7 +172,7 @@ Tactic failure: iEval: %: unsupported selection pattern.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   ============================
   --------------------------------------∗
@@ -182,7 +182,7 @@ Tactic failure: iEval: %: unsupported selection pattern.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P, Q : PROP
   ============================
   --------------------------------------∗
@@ -194,7 +194,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiAffine0 : BiAffine PROP
   P, Q : PROP
   ============================
@@ -207,7 +207,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   l : list nat
   P : PROP
@@ -220,7 +220,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x : nat
   l : list nat
   P : PROP
@@ -235,7 +235,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x1, x2 : nat
   l1, l2 : list nat
   P : PROP
@@ -248,7 +248,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   x1, x2 : nat
   l1, l2 : list nat
   P : PROP
@@ -264,7 +264,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   Φ : nat → nat → PROP
   x1, x2 : nat
   l1, l2 : list nat
@@ -278,7 +278,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   ============================
   "H" : □ True
   --------------------------------------∗
@@ -288,7 +288,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   ============================
   "H" : emp
   --------------------------------------□
@@ -298,7 +298,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   ============================
   "H" : emp
   --------------------------------------□
@@ -308,7 +308,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   mP : option PROP
   Q, R : PROP
   ============================
@@ -320,7 +320,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   mP : option PROP
   Q, R : PROP
   ============================
@@ -332,12 +332,11 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   X : Type
   E1, E2 : coPset.coPset
-  α : X → PROP
-  β : X → PROP
+  α, β : X → PROP
   γ : X → option PROP
   ============================
   "Hacc" : ∃ x : X, α x ∗ (β x ={E2,E1}=∗ default emp (γ x))
@@ -348,7 +347,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P : PROP
   ============================
@@ -359,7 +358,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P : PROP
   ============================
@@ -372,7 +371,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P : PROP
   ============================
@@ -383,7 +382,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P_P : PROP
   ============================
@@ -396,7 +395,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
@@ -408,7 +407,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
@@ -421,7 +420,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
@@ -433,7 +432,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
   ============================
@@ -446,7 +445,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   E : coPset.coPset
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
@@ -459,7 +458,7 @@ Tactic failure: iFrame: cannot frame Q.
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   BiFUpd0 : BiFUpd PROP
   E1, E2 : coPset.coPset
   PPPPPPPPPPPPPPPPP, QQQQQQQQQQQQQQQQQQ : PROP
@@ -537,7 +536,7 @@ Tactic failure: iClear: "HP" : P not affine and the goal not absorbing.
      : string
 The command has indeed failed with message:
 In environment
-PROP : sbi
+PROP : bi
 P : PROP
 The term "true" has type "bool" while it is expected to have type "nat".
 "iStartProof_fail"
@@ -622,15 +621,15 @@ k is used in hypothesis Hk.
      : string
 The command has indeed failed with message:
 Tactic failure: iRevert: k is used in hypothesis "Hk".
-"iLöb_no_sbi"
+"iLöb_no_bi"
      : string
 The command has indeed failed with message:
-Tactic failure: iLöb: not a step-indexed BI entailment.
+Tactic failure: iLöb: Löb induction not supported for this BI.
 "test_pure_name"
      : string
 1 subgoal
   
-  PROP : sbi
+  PROP : bi
   P1 : PROP
   P2, P3 : Prop
   Himpl : P2 → P3

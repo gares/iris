@@ -221,7 +221,7 @@ drop arbitrary resources (i.e., we can "defeat" linearity).
 Variant 1: we assume a strong invariant creation lemma that lets us create
 invariants in the "open" state. *)
 Module linear1. Section linear1.
-  Context {PROP: sbi}.
+  Context {PROP: bi}.
   Implicit Types P : PROP.
 
   (** Assumptions. *)
@@ -289,7 +289,7 @@ There, the stronger variant of the "unlock" rule (see Aquinas Hobor's PhD thesis
 entirely into that lock.
 *)
 Module linear2. Section linear2.
-  Context {PROP: sbi}.
+  Context {PROP: bi}.
   Implicit Types P : PROP.
 
   (** Assumptions. *)

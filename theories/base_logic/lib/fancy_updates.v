@@ -14,7 +14,7 @@ Definition uPred_fupd `{!invG Σ} : FUpd (iProp Σ):= uPred_fupd_aux.(unseal).
 Definition uPred_fupd_eq `{!invG Σ} : @fupd _ uPred_fupd = uPred_fupd_def :=
   uPred_fupd_aux.(seal_eq).
 
-Lemma uPred_fupd_mixin `{!invG Σ} : BiFUpdMixin (uPredSI (iResUR Σ)) uPred_fupd.
+Lemma uPred_fupd_mixin `{!invG Σ} : BiFUpdMixin (uPredI (iResUR Σ)) uPred_fupd.
 Proof.
   split.
   - rewrite uPred_fupd_eq. solve_proper.
@@ -32,13 +32,13 @@ Proof.
     iIntros "!> !>". by iApply "HP".
   - rewrite uPred_fupd_eq /uPred_fupd_def. by iIntros (????) "[HwP $]".
 Qed.
-Instance uPred_bi_fupd `{!invG Σ} : BiFUpd (uPredSI (iResUR Σ)) :=
+Instance uPred_bi_fupd `{!invG Σ} : BiFUpd (uPredI (iResUR Σ)) :=
   {| bi_fupd_mixin := uPred_fupd_mixin |}.
 
-Instance uPred_bi_bupd_fupd `{!invG Σ} : BiBUpdFUpd (uPredSI (iResUR Σ)).
+Instance uPred_bi_bupd_fupd `{!invG Σ} : BiBUpdFUpd (uPredI (iResUR Σ)).
 Proof. rewrite /BiBUpdFUpd uPred_fupd_eq. by iIntros (E P) ">? [$ $] !> !>". Qed.
 
-Instance uPred_bi_fupd_plainly `{!invG Σ} : BiFUpdPlainly (uPredSI (iResUR Σ)).
+Instance uPred_bi_fupd_plainly `{!invG Σ} : BiFUpdPlainly (uPredI (iResUR Σ)).
 Proof.
   split.
   - rewrite uPred_fupd_eq /uPred_fupd_def. iIntros (E P) "H [Hw HE]".

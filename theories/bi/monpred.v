@@ -109,7 +109,7 @@ Arguments monPred_at {_ _} _%I _.
 Local Existing Instance monPred_mono.
 Arguments monPredO _ _ : clear implicits.
 
-(** BI and SBI structures. *)
+(** BI canonical structure *)
 
 Section Bi.
 Context {I : biIndex} {PROP : bi}.
@@ -218,7 +218,7 @@ Notation "'<obj>' P" := (monPred_objectively P) : bi_scope.
 Notation "'<subj>' P" := (monPred_subjectively P) : bi_scope.
 
 Section Sbi.
-Context {I : biIndex} {PROP : sbi}.
+Context {I : biIndex} {PROP : bi}.
 Implicit Types i : I.
 Notation monPred := (monPred I PROP).
 Implicit Types P Q : monPred.
@@ -245,19 +245,16 @@ Definition unseal_eqs :=
    @monPred_embed_eq, @monPred_emp_eq, @monPred_pure_eq,
    @monPred_objectively_eq, @monPred_subjectively_eq).
 Ltac unseal :=
-  unfold bi_affinely, bi_absorbingly, sbi_except_0, bi_pure, bi_emp,
+  unfold bi_affinely, bi_absorbingly, bi_except_0, bi_pure, bi_emp,
          monPred_upclosed, bi_and, bi_or,
-         bi_impl, bi_forall, bi_exist, sbi_internal_eq, bi_sep, bi_wand,
-         bi_persistently, bi_affinely, sbi_later;
-  simpl;
-  unfold sbi_emp, sbi_pure, sbi_and, sbi_or, sbi_impl, sbi_forall, sbi_exist,
-         sbi_internal_eq, sbi_sep, sbi_wand, sbi_persistently;
+         bi_impl, bi_forall, bi_exist, bi_internal_eq, bi_sep, bi_wand,
+         bi_persistently, bi_affinely, bi_later;
   simpl;
   rewrite !unseal_eqs /=.
 End MonPred.
 Import MonPred.
 
-Section canonical_bi.
+Section canonical.
 Context (I : biIndex) (PROP : bi).
 
 Lemma monPred_bi_mixin : BiMixin (PROP:=monPred I PROP)
@@ -310,21 +307,13 @@ Proof.
   - intros P Q. split=> i. by apply bi.persistently_and_sep_elim.
 Qed.
 
-Canonical Structure monPredI : bi :=
-  {| bi_ofe_mixin := monPred_ofe_mixin; bi_bi_mixin := monPred_bi_mixin |}.
-End canonical_bi.
-
-Section canonical_sbi.
-Context (I : biIndex) (PROP : sbi).
-
 Lemma monPred_sbi_mixin :
   SbiMixin (PROP:=monPred I PROP) monPred_entails monPred_pure
            monPred_or monPred_impl monPred_forall monPred_exist
            monPred_sep monPred_persistently monPred_internal_eq monPred_later.
 Proof.
   split; unseal.
-  - intros n P Q HPQ. split=> i /=.
-    apply bi.later_contractive. destruct n as [|n]=> //. by apply HPQ.
+  - by split=> ? /=; repeat f_equiv.
   - by split=> ? /=; repeat f_equiv.
   - intros A P a. split=> i. by apply bi.internal_eq_refl.
   - intros A a b Ψ ?. split=> i /=.
@@ -347,10 +336,10 @@ Proof.
     intros j. rewrite bi.pure_impl_forall. apply bi.forall_intro=> Hij. by rewrite Hij.
 Qed.
 
-Canonical Structure monPredSI : sbi :=
-  {| sbi_ofe_mixin := monPred_ofe_mixin; sbi_bi_mixin := monPred_bi_mixin I PROP;
-     sbi_sbi_mixin := monPred_sbi_mixin |}.
-End canonical_sbi.
+Canonical Structure monPredI : bi :=
+  {| bi_ofe_mixin := monPred_ofe_mixin; bi_bi_mixin := monPred_bi_mixin;
+     bi_sbi_mixin := monPred_sbi_mixin |}.
+End canonical.
 
 Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
   objective_at i j : P i -∗ P j.
@@ -798,9 +787,9 @@ Proof. split. split=>i /=. by rewrite monPred_at_bupd !monPred_at_embed. Qed.
 End bi_facts.
 
 Section sbi_facts.
-Context {I : biIndex} {PROP : sbi}.
+Context {I : biIndex} {PROP : bi}.
 Local Notation monPred := (monPred I PROP).
-Local Notation monPredSI := (monPredSI I PROP).
+Local Notation monPredI := (monPredI I PROP).
 Implicit Types i : I.
 Implicit Types P Q : monPred.
 
@@ -819,13 +808,13 @@ Proof.
   by apply timeless, bi.exist_timeless.
 Qed.
 
-Global Instance monPred_sbi_embed : SbiEmbed PROP monPredSI.
+Global Instance monPred_sbi_embed : SbiEmbed PROP monPredI.
 Proof.
   split; unseal=> //. intros ? P Q.
   apply (@bi.f_equiv _ _ _ (λ P, monPred_at P inhabitant)); solve_proper.
 Qed.
 
-Lemma monPred_internal_eq_unfold : @sbi_internal_eq monPredSI = λ A x y, ⎡ x ≡ y ⎤%I.
+Lemma monPred_internal_eq_unfold : @bi_internal_eq monPredI = λ A x y, ⎡ x ≡ y ⎤%I.
 Proof. by unseal. Qed.
 
 (** Unfolding lemmas *)
@@ -839,7 +828,7 @@ Proof. induction n; first done. rewrite /= monPred_at_later IHn //. Qed.
 Lemma monPred_at_except_0 i P : (◇ P) i ⊣⊢ ◇ P i.
 Proof. by unseal. Qed.
 
-Lemma monPred_equivI {PROP' : sbi} P Q :
+Lemma monPred_equivI {PROP' : bi} P Q :
   P ≡ Q ⊣⊢@{PROP'} ∀ i, P i ≡ Q i.
 Proof.
   apply bi.equiv_spec. split.
@@ -858,7 +847,7 @@ Proof. intros ??. unseal. by rewrite objective_at. Qed.
 Global Instance laterN_objective P `{!Objective P} n : Objective (▷^n P).
 Proof. induction n; apply _. Qed.
 Global Instance except0_objective P `{!Objective P} : Objective (◇ P).
-Proof. rewrite /sbi_except_0. apply _. Qed.
+Proof. rewrite /bi_except_0. apply _. Qed.
 
 (** FUpd  *)
 Program Definition monPred_fupd_def `{BiFUpd PROP} (E1 E2 : coPset)
@@ -870,7 +859,7 @@ Definition monPred_fupd `{BiFUpd PROP} : FUpd _ := monPred_fupd_aux.(unseal).
 Definition monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = _ :=
   monPred_fupd_aux.(seal_eq).
 
-Lemma monPred_fupd_mixin `{BiFUpd PROP} : BiFUpdMixin monPredSI monPred_fupd.
+Lemma monPred_fupd_mixin `{BiFUpd PROP} : BiFUpdMixin monPredI monPred_fupd.
 Proof.
   split; rewrite monPred_fupd_eq.
   - split=>/= i. solve_proper.
@@ -882,13 +871,13 @@ Proof.
     rewrite monPred_impl_force monPred_at_pure -fupd_mask_frame_r' //.
   - intros E1 E2 P Q. split=>/= i. by rewrite !monPred_at_sep /= fupd_frame_r.
 Qed.
-Global Instance monPred_bi_fupd `{BiFUpd PROP} : BiFUpd monPredSI :=
+Global Instance monPred_bi_fupd `{BiFUpd PROP} : BiFUpd monPredI :=
   {| bi_fupd_mixin := monPred_fupd_mixin |}.
-Global Instance monPred_bi_bupd_fupd `{BiBUpdFUpd PROP} : BiBUpdFUpd monPredSI.
+Global Instance monPred_bi_bupd_fupd `{BiBUpdFUpd PROP} : BiBUpdFUpd monPredI.
 Proof.
   intros E P. split=>/= i. rewrite monPred_at_bupd monPred_fupd_eq bupd_fupd //=.
 Qed.
-Global Instance monPred_bi_embed_fupd `{BiFUpd PROP} : BiEmbedFUpd PROP monPredSI.
+Global Instance monPred_bi_embed_fupd `{BiFUpd PROP} : BiEmbedFUpd PROP monPredI.
 Proof. split. split=>i /=. by rewrite monPred_fupd_eq /= !monPred_at_embed. Qed.
 
 Lemma monPred_at_fupd `{BiFUpd PROP} i E1 E2 P :
@@ -906,7 +895,7 @@ Definition monPred_plainly_aux `{BiPlainly PROP} : seal monPred_plainly_def. Pro
 Definition monPred_plainly `{BiPlainly PROP} : Plainly _ := monPred_plainly_aux.(unseal).
 Definition monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = _ := monPred_plainly_aux.(seal_eq).
 
-Lemma monPred_plainly_mixin `{BiPlainly PROP} : BiPlainlyMixin monPredSI monPred_plainly.
+Lemma monPred_plainly_mixin `{BiPlainly PROP} : BiPlainlyMixin monPredI monPred_plainly.
 Proof.
   split; rewrite monPred_plainly_eq; try unseal.
   - by (split=> ? /=; repeat f_equiv).
@@ -934,11 +923,11 @@ Proof.
   - intros P. split=> i /=.
     rewrite bi.later_forall. f_equiv=> j. by rewrite -later_plainly_2.
 Qed.
-Global Instance monPred_bi_plainly `{BiPlainly PROP} : BiPlainly monPredSI :=
+Global Instance monPred_bi_plainly `{BiPlainly PROP} : BiPlainly monPredI :=
   {| bi_plainly_mixin := monPred_plainly_mixin |}.
 
 Global Instance monPred_bi_plainly_exist `{BiPlainly PROP} `{@BiIndexBottom I bot} :
-  BiPlainlyExist PROP → BiPlainlyExist monPredSI.
+  BiPlainlyExist PROP → BiPlainlyExist monPredI.
 Proof.
   split=>?/=. rewrite monPred_plainly_eq /=. repeat setoid_rewrite monPred_at_exist.
   rewrite (bi.forall_elim bot) plainly_exist_1. do 2 f_equiv.
@@ -946,7 +935,7 @@ Proof.
 Qed.
 
 Global Instance monPred_bi_embed_plainly `{BiPlainly PROP} :
-  BiEmbedPlainly PROP monPredSI.
+  BiEmbedPlainly PROP monPredI.
 Proof. apply bi_embed_plainly_emp, _. Qed.
 
 Lemma monPred_plainly_unfold `{BiPlainly PROP} : plainly = λ P, ⎡ ∀ i, ■ (P i) ⎤%I.
@@ -954,7 +943,7 @@ Proof. by rewrite monPred_plainly_eq monPred_embed_eq. Qed.
 Lemma monPred_at_plainly `{BiPlainly PROP} i P : (■ P) i ⊣⊢ ∀ j, ■ (P j).
 Proof. by rewrite monPred_plainly_eq. Qed.
 
-Global Instance monPred_bi_bupd_plainly `{BiBUpdPlainly PROP} : BiBUpdPlainly monPredSI.
+Global Instance monPred_bi_bupd_plainly `{BiBUpdPlainly PROP} : BiBUpdPlainly monPredI.
 Proof.
   intros P. split=> /= i.
   rewrite monPred_at_bupd monPred_at_plainly bi.forall_elim. apply bupd_plainly.
@@ -963,7 +952,7 @@ Qed.
 Global Instance monPred_at_plain `{BiPlainly PROP} P i : Plain P → Plain (P i).
 Proof. move => [] /(_ i). rewrite /Plain monPred_at_plainly bi.forall_elim //. Qed.
 
-Global Instance monPred_bi_fupd_plainly `{BiFUpdPlainly PROP} : BiFUpdPlainly monPredSI.
+Global Instance monPred_bi_fupd_plainly `{BiFUpdPlainly PROP} : BiFUpdPlainly monPredI.
 Proof.
   split; rewrite !monPred_fupd_eq; try unseal.
   - intros E P. split=>/= i.

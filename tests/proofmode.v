@@ -2,7 +2,7 @@ From iris.proofmode Require Import tactics intro_patterns.
 Set Default Proof Using "Type".
 
 Section tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
@@ -411,7 +411,7 @@ Proof.
   iIntros "#H HP". iDestruct ("H" with "HP") as (x) "#H2". eauto with iFrame.
 Qed.
 
-Lemma test_iLöb P : ⊢ ∃ n, ▷^n P.
+Lemma test_iLöb `{!BiLöb PROP} P : ⊢ ∃ n, ▷^n P.
 Proof.
   iLöb as "IH". iDestruct "IH" as (n) "IH".
   by iExists (S n).
@@ -822,7 +822,7 @@ Qed.
 End tests.
 
 Section parsing_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P : PROP.
 
 (** Test notations for (bi)entailment and internal equality. These tests are
@@ -860,7 +860,7 @@ Lemma test_entails_annot_sections_space_close P :
   (P ⊣⊢@{PROP} P ) ∧ (⊣⊢@{PROP} ) P P ∧ (.⊣⊢ P ) P.
 Proof. naive_solver. Qed.
 
-Lemma test_sbi_internal_eq_annot_sections P :
+Lemma test_bi_internal_eq_annot_sections P :
   ⊢@{PROP}
     P ≡@{PROP} P ∧ (≡@{PROP}) P P ∧ (P ≡.) P ∧ (.≡ P) P ∧
     ((P ≡@{PROP} P)) ∧ ((≡@{PROP})) P P ∧ ((P ≡.)) P ∧ ((.≡ P)) P ∧
@@ -870,7 +870,7 @@ Proof. naive_solver. Qed.
 End parsing_tests.
 
 Section printing_tests.
-Context {PROP : sbi} `{!BiFUpd PROP}.
+Context {PROP : bi} `{!BiFUpd PROP}.
 Implicit Types P Q R : PROP.
 
 Check "elim_mod_accessor".
@@ -944,7 +944,7 @@ End printing_tests.
 
 (** Test error messages *)
 Section error_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 Check "iStopProof_not_proofmode".
@@ -1127,13 +1127,13 @@ Section error_tests_bi.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
-Check "iLöb_no_sbi".
-Lemma iLöb_no_sbi P : ⊢ P.
+Check "iLöb_no_bi".
+Lemma iLöb_no_bi P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
 End error_tests_bi.
 
 Section pure_name_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 (* mock string_to_ident for just these tests *)
 Ltac ltac_tactics.string_to_ident_hook ::=
