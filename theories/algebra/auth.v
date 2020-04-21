@@ -385,11 +385,19 @@ Proof.
   exact: cmra_update_op_l.
 Qed.
 
-Lemma auth_update_core_id a b `{!CoreId b} :
-  b ≼ a → ● a ~~> ● a ⋅ ◯ b.
+Lemma auth_update_core_id q a b `{!CoreId b} :
+  b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
 Proof.
-  intros Hincl. apply: auth_update_alloc.
-  rewrite -(left_id ε _ b). apply: core_id_local_update. done.
+  intros Heq%core_id_extract; last done. apply cmra_total_update.
+  move=> n [[[q' ag]|] bf1] [/= VL [a0 [Eq [[bf2 Ha] VL2]]]]; do 2 red; simpl in *.
+  + split; first done.
+    exists a0. split; last split; try done. exists bf2.
+    assert (a ≡{n}≡ a0) as Eq2. { apply to_agree_includedN. exists ag. done. }
+    by rewrite left_id -Eq2 -assoc -comm Heq Eq2 Ha left_id.
+  + split; first done. exists a0.
+    split; first done. split; last done. exists bf2.
+    apply (inj to_agree) in Eq.
+    by rewrite left_id -Eq -assoc -comm Heq Eq Ha left_id.
 Qed.
 
 Lemma auth_update_dealloc a b a' : (a,b) ~l~> (a',ε) → ● a ⋅ ◯ b ~~> ● a'.

@@ -59,14 +59,6 @@ Section updates.
     destruct mz as [z|]; [|done]. by destruct (id_freeN_r n n x z).
   Qed.
 
-  Lemma core_id_local_update x y z `{!CoreId y} :
-    y ≼ x → (x, z) ~l~> (x, z ⋅ y).
-  Proof.
-    intros Hincl n mf ? Heq; simpl in *; split; first done.
-    rewrite [x]core_id_extract // Heq. destruct mf as [f|]; last done.
-    simpl. rewrite -assoc [f ⋅ y]comm assoc //.
-  Qed.
-
   Lemma local_update_discrete `{!CmraDiscrete A} (x y x' y' : A) :
     (x,y) ~l~> (x',y') ↔ ∀ mz, ✓ x → x ≡ y ⋅? mz → ✓ x' ∧ x' ≡ y' ⋅? mz.
   Proof.
