@@ -132,6 +132,19 @@ Section inv.
     rewrite inv_eq /inv_def; iIntros (?) "#HI". by iApply "HI".
   Qed.
 
+  Lemma inv_combine N1 N2 N P Q :
+    N1 ## N2 →
+    ↑N1 ∪ ↑N2 ⊆@{coPset} ↑N →
+    inv N1 P -∗ inv N2 Q -∗ inv N (P ∗ Q).
+  Proof.
+    rewrite inv_eq. iIntros (??) "#HinvP #HinvQ !#"; iIntros (E ?).
+    iMod ("HinvP" with "[%]") as "[$ HcloseP]"; first set_solver.
+    iMod ("HinvQ" with "[%]") as "[$ HcloseQ]"; first set_solver.
+    iMod (fupd_intro_mask' _ (E ∖ ↑N)) as "Hclose"; first set_solver.
+    iIntros "!> [HP HQ]".
+    iMod "Hclose" as %_. iMod ("HcloseQ" with "HQ") as %_. by iApply "HcloseP".
+  Qed.
+
   (** ** Proof mode integration *)
   Global Instance into_inv_inv N P : IntoInv (inv N P) N := {}.
 
