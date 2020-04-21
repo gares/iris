@@ -424,6 +424,13 @@ Proof. unseal. split. solve_proper. Qed.
 Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
 Proof. solve_proper. Qed.
 
+Global Instance monPred_later_contractive :
+  Contractive (bi_later (PROP:=PROP)) → Contractive (bi_later (PROP:=monPredI)).
+Proof. unseal=> ? n P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
+Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
+Proof.
+  split=> i. unseal. by rewrite (bi.forall_elim i) bi.pure_True // left_id löb.
+Qed.
 Global Instance monPred_bi_positive : BiPositive PROP → BiPositive monPredI.
 Proof. split => ?. unseal. apply bi_positive. Qed.
 Global Instance monPred_bi_affine : BiAffine PROP → BiAffine monPredI.
