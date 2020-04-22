@@ -207,7 +207,7 @@ Proof.
   by move=> /agree_op_invN->; rewrite agree_idemp.
 Qed.
 
-Lemma to_agree_includedN n a b : to_agree a ≼{n}to_agree b ↔ a ≡{n}≡ b.
+Lemma to_agree_includedN n a b : to_agree a ≼{n} to_agree b ↔ a ≡{n}≡ b.
 Proof.
   split; last by intros ->.
   intros (x & Heq). destruct Heq as [_ Hincl].
