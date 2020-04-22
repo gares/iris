@@ -148,3 +148,74 @@ Tactic failure: iInv: invariant "H2" not found.
   --------------------------------------∗
   |={E ∖ ↑N,E}=> emp
   
+"p1"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  forall (P : PROP) (_ : True), bi_entails P P
+"p2"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  forall P : PROP, and True (bi_entails P P)
+"p3"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  ex (fun P : PROP => bi_entails P P)
+"p4"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  bi_emp_valid (bi_exist (fun x : nat => bi_pure (eq x O)))
+"p5"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  bi_emp_valid (bi_exist (fun _ : nat => bi_pure (forall y : nat, eq y y)))
+"p6"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  ex
+    (unique
+       (fun z : nat =>
+        bi_emp_valid
+          (bi_exist
+             (fun _ : nat =>
+              bi_sep (bi_pure (forall y : nat, eq y y)) (bi_pure (eq z O))))))
+"p7"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  forall (a : nat) (_ : eq a O) (y : nat),
+  bi_entails (bi_pure True) (bi_pure (ge y O))
+"p8"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  forall (a : nat) (_ : eq a O) (y : nat), bi_emp_valid (bi_pure (ge y O))
+"p9"
+     : string
+1 subgoal
+  
+  PROP : bi
+  ============================
+  forall (a : nat) (_ : eq a O) (_ : nat),
+  bi_emp_valid (bi_forall (fun z : nat => bi_pure (ge z O)))
