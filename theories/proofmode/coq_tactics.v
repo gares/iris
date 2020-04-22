@@ -818,8 +818,8 @@ Class TransformIntuitionisticEnv {PROP1 PROP2} (M : modality PROP1 PROP2)
   transform_intuitionistic_env_dom i : Γin !! i = None → Γout !! i = None;
 }.
 
-(* The class [TransformIntuitionisticEnv M C Γin Γout filtered] is used to transform
-the intuitionistic environment using a type class [C].
+(* The class [TransformSpatialEnv M C Γin Γout filtered] is used to transform
+the spatial environment using a type class [C].
 
 Inputs:
 - [Γin] : the original environment.

@@ -91,7 +91,7 @@ Arguments IntoPersistent {_} _ _%I _%I : simpl never.
 Arguments into_persistent {_} _ _%I _%I {_}.
 Hint Mode IntoPersistent + + ! - : typeclass_instances.
 
-(** The [FromModal M P Q] class is used by the [iModIntro] tactic to transform
+(** The [FromModal M sel P Q] class is used by the [iModIntro] tactic to transform
 a goal [P] into a modality [M] and proposition [Q].
 
 The inputs are [P] and [sel] and the outputs are [M] and [Q].
