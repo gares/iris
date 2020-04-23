@@ -150,6 +150,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
     - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
+* Removed `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
@@ -167,6 +168,8 @@ s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
 s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
 s/\blist_alter_singletonM\b/list_alter_singleton/g
 s/\blist_singletonM_included\b/list_singleton_included/g
+# auth_both_frac_op rename
+s/\bauth_both_frac_op\b/auth_both_op/g
 ' $(find theories -name "*.v")
 ```
 
