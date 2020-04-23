@@ -306,10 +306,8 @@ Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
   (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
 Proof. apply (big_opMS_commute _). Qed.
 
-Lemma auth_both_frac_op q a b : Auth (Some (q,to_agree a)) b ≡ ●{q} a ⋅ ◯ b.
+Lemma auth_both_op q a b : Auth (Some (q,to_agree a)) b ≡ ●{q} a ⋅ ◯ b.
 Proof. by rewrite /op /auth_op /= left_id. Qed.
-Lemma auth_both_op a b : Auth (Some (1%Qp,to_agree a)) b ≡ ● a ⋅ ◯ b.
-Proof. by rewrite auth_both_frac_op. Qed.
 
 Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
 Proof.
@@ -348,7 +346,7 @@ Proof. by rewrite auth_validI. Qed.
 Lemma auth_both_validI {M} q (a b: A) :
   ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
 Proof.
-  rewrite -auth_both_frac_op auth_validI /=. apply bi.and_proper; [done|].
+  rewrite -auth_both_op auth_validI /=. apply bi.and_proper; [done|].
   setoid_rewrite agree_equivI. iSplit.
   - iDestruct 1 as (a') "[#Eq [H V]]". iDestruct "H" as (b') "H".
     iRewrite -"Eq" in "H". iRewrite -"Eq" in "V". auto.
