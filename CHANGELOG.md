@@ -151,6 +151,12 @@ Coq development, but not every API-breaking change is listed.  Changes marked
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
 * Removed `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
+* Some improvements to the `bi/lib/core` construction:
+  + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
+  + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
+    version `coreP_entails'` for `coreP P` with `P` affine.
+  + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
+    lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
