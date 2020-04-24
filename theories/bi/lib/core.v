@@ -33,6 +33,8 @@ Section core.
     iApply persistently_wand_affinely_plainly. iIntros "#HPQ".
     iApply "HQ". iApply "HC"; auto.
   Qed.
+  Global Instance coreP_affine P : Affine P → Affine (coreP P).
+  Proof. intros ?. rewrite /coreP /Affine. iIntros "HC". iApply "HC"; eauto. Qed.
 
   Global Instance coreP_ne : NonExpansive (coreP (PROP:=PROP)).
   Proof. solve_proper. Qed.
@@ -41,17 +43,38 @@ Section core.
 
   Global Instance coreP_mono : Proper ((⊢) ==> (⊢)) (coreP (PROP:=PROP)).
   Proof. solve_proper. Qed.
+  Global Instance coreP_flip_mono :
+    Proper (flip (⊢) ==> flip (⊢)) (coreP (PROP:=PROP)).
+  Proof. solve_proper. Qed.
+
+  Lemma coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q.
+  Proof.
+    rewrite /coreP. iIntros "#HPQ HP" (R) "#HR #HQR". iApply ("HP" with "HR").
+    iIntros "!> !> HP". iApply "HQR". by iApply "HPQ".
+  Qed.
 
   Lemma coreP_elim P : Persistent P → coreP P -∗ P.
   Proof. rewrite /coreP. iIntros (?) "HCP". iApply "HCP"; auto. Qed.
 
-  (* TODO: Can we generalize this to non-affine BIs? *)
-  Lemma coreP_wand `{!BiAffine PROP} P Q : (coreP P ⊢ Q) ↔ (P ⊢ <pers> Q).
+  (** The [<affine>] modality is needed for general BIs:
+  - The right-to-left direction corresponds to elimination of [<pers>], which
+    cannot be done without [<affine>].
+  - The left-to-right direction corresponds the introduction of [<pers>]. The
+    [<affine>] modality makes it stronger since it appears in the LHS of the
+    [⊢] in the premise. As a user, you have to prove [<affine> coreP P ⊢ Q],
+    which is weaker than [coreP P ⊢ Q]. *)
+  Lemma coreP_entails P Q : (<affine> coreP P ⊢ Q) ↔ (P ⊢ <pers> Q).
   Proof.
     split.
-    - iIntros (HP) "HP". iDestruct (coreP_intro with "HP") as "#HcP".
+    - iIntros (HP) "HP". iDestruct (coreP_intro with "HP") as "#HcP {HP}".
       iIntros "!>". by iApply HP.
-    - iIntros (HPQ) "HcP". iDestruct (coreP_mono _ _ HPQ with "HcP") as "HcQ".
-      by iDestruct (coreP_elim with "HcQ") as "#HQ".
+    - iIntros (->) "HcQ". by iDestruct (coreP_elim with "HcQ") as "#HQ".
+  Qed.
+  (** A more convenient variant of the above lemma for affine [P]. *)
+  Lemma coreP_entails' P Q `{!Affine P} : (coreP P ⊢ Q) ↔ (P ⊢ □ Q).
+  Proof.
+    rewrite -(affine_affinely (coreP P)) coreP_entails. split.
+    - rewrite -{2}(affine_affinely P). by intros ->.
+    - intros ->. apply affinely_elim.
   Qed.
 End core.
