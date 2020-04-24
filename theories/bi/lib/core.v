@@ -56,6 +56,13 @@ Section core.
   Lemma coreP_elim P : Persistent P → coreP P -∗ P.
   Proof. rewrite /coreP. iIntros (?) "HCP". iApply "HCP"; auto. Qed.
 
+  (** The [<affine>] modality is needed for general BIs:
+  - The right-to-left direction corresponds to elimination of [<pers>], which
+    cannot be done without [<affine>].
+  - The left-to-right direction corresponds the introduction of [<pers>]. The
+    [<affine>] modality makes it stronger since it appears in the LHS of the
+    [⊢] in the premise. As a user, you have to prove [<affine> coreP P ⊢ Q],
+    which is weaker than [coreP P ⊢ Q]. *)
   Lemma coreP_entails P Q : (<affine> coreP P ⊢ Q) ↔ (P ⊢ <pers> Q).
   Proof.
     split.
@@ -63,6 +70,7 @@ Section core.
       iIntros "!>". by iApply HP.
     - iIntros (->) "HcQ". by iDestruct (coreP_elim with "HcQ") as "#HQ".
   Qed.
+  (** A more convenient variant of the above lemma for affine [P]. *)
   Lemma coreP_entails' P Q `{!Affine P} : (coreP P ⊢ Q) ↔ (P ⊢ □ Q).
   Proof.
     rewrite -(affine_affinely (coreP P)) coreP_entails. split.
