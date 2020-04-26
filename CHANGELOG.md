@@ -157,6 +157,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
     version `coreP_entails'` for `coreP P` with `P` affine.
   + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
     lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
+* Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
