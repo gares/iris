@@ -131,7 +131,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `list_singletonM_length` -> `list_singleton_length`,
   `list_alter_singletonM` -> `list_alter_singleton`,
   `list_singletonM_included` -> `list_singleton_included`.
-* New ASCII versions of Iris notations. These are marked printing only and
+* New ASCII versions of Iris notations. These are marked parsing only and
   can be made available using `Require Import iris.bi.ascii`. The new
   notations are (notations marked [†] are disambiguated using notation scopes):
   - entailment: `|--` for `⊢` and `-|-` for `⊣⊢`
