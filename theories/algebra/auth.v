@@ -366,14 +366,13 @@ Lemma auth_update a b a' b' :
   (a,b) ~l~> (a',b') → ● a ⋅ ◯ b ~~> ● a' ⋅ ◯ b'.
 Proof.
   intros Hup; apply cmra_total_update.
-  move=> n [[[??]|] bf1] [/= VL [a0 [Eq [[bf2 Ha] VL2]]]]; do 2 red; simpl in *.
-  + exfalso. move : VL => /frac_valid'.
-    rewrite frac_op'. by apply Qp_not_plus_q_ge_1.
-  + split; [done|]. apply (inj to_agree) in Eq.
-    move: Ha; rewrite !left_id -assoc => Ha.
-    destruct (Hup n (Some (bf1 ⋅ bf2))); [by rewrite Eq..|]. simpl in *.
-    exists a'. split; [done|]. split; [|done]. exists bf2.
-    by rewrite left_id -assoc.
+  move=> n [[qa|] bf1] [/= Hq [a0 [Haa0 [[bf2 Ha] Ha0]]]]; do 2 red; simpl in *.
+  { by apply (exclusiveN_l _ _) in Hq. }
+  split; [done|]. apply (inj to_agree) in Haa0.
+  move: Ha; rewrite !left_id -assoc=> Ha.
+  destruct (Hup n (Some (bf1 ⋅ bf2))); [by rewrite Haa0..|]; simpl in *.
+  exists a'. split_and!; [done| |done].
+  exists bf2. by rewrite left_id -assoc.
 Qed.
 
 Lemma auth_update_alloc a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a' ⋅ ◯ b'.
@@ -385,11 +384,17 @@ Proof.
   exact: cmra_update_op_l.
 Qed.
 
-Lemma auth_update_core_id a b `{!CoreId b} :
-  b ≼ a → ● a ~~> ● a ⋅ ◯ b.
+Lemma auth_update_core_id q a b `{!CoreId b} :
+  b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
 Proof.
-  intros Hincl. apply: auth_update_alloc.
-  rewrite -(left_id ε _ b). apply: core_id_local_update. done.
+  intros Ha%(core_id_extract _ _). apply cmra_total_update.
+  move=> n [[[q' ag]|] bf1] [Hq [a0 [Haa0 [Hbf1 Ha0]]]]; do 2 red; simpl in *.
+  + split; [done|]. exists a0. split_and!; [done| |done].
+    assert (a ≡{n}≡ a0) as Haa0' by (apply to_agree_includedN; by exists ag).
+    rewrite -Haa0' Ha Haa0' -assoc (comm _ b) assoc. by apply cmra_monoN_r.
+  + split; [done|]. exists a0. split_and!; [done| |done].
+    apply (inj to_agree) in Haa0.
+    rewrite -Haa0 Ha Haa0 -assoc (comm _ b) assoc. by apply cmra_monoN_r.
 Qed.
 
 Lemma auth_update_dealloc a b a' : (a,b) ~l~> (a',ε) → ● a ⋅ ◯ b ~~> ● a'.
