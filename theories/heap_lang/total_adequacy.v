@@ -10,7 +10,7 @@ Definition heap_total Σ `{!heapPreG Σ} s e σ φ :
 Proof.
   intros Hwp; eapply (twp_total _ _); iIntros (?) "".
   iMod (gen_heap_init σ.(heap)) as (?) "Hh".
-  iMod (inv_heap_init loc val) as (?) ">Hi".
+  iMod (inv_heap_init loc (option val)) as (?) ">Hi".
   iMod (proph_map_init [] σ.(used_proph_id)) as (?) "Hp".
   iModIntro.
   iExists

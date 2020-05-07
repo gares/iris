@@ -10,8 +10,8 @@ Set Default Proof Using "Type".
 
 Class heapG Σ := HeapG {
   heapG_invG : invG Σ;
-  heapG_gen_heapG :> gen_heapG loc val Σ;
-  heapG_inv_heapG :> inv_heapG loc val Σ;
+  heapG_gen_heapG :> gen_heapG loc (option val) Σ;
+  heapG_inv_heapG :> inv_heapG loc (option val) Σ;
   heapG_proph_mapG :> proph_mapG proph_id (val * val) Σ;
 }.
 
@@ -23,19 +23,21 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 }.
 
 (** Override the notations so that scopes and coercions work out *)
-Notation "l ↦{ q } v" := (mapsto (L:=loc) (V:=val) l q v%V)
+Notation "l ↦{ q } v" := (mapsto (L:=loc) (V:=option val) l q (Some v%V))
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
-Notation "l ↦ v" :=
-  (mapsto (L:=loc) (V:=val) l 1 v%V) (at level 20) : bi_scope.
+Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l 1%Qp (Some v%V))
+  (at level 20) : bi_scope.
 Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
   (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
 Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
-Notation "l ↦□ I" := (inv_mapsto (L:=loc) (V:=val) l I%stdpp%type)
+Notation "l ↦□ I" :=
+  (inv_mapsto (L:=loc) (V:=option val) l (from_option I%stdpp%type False))
   (at level 20, format "l  ↦□  I") : bi_scope.
-Notation "l ↦_ I v" := (inv_mapsto_own (L:=loc) (V:=val) l v I%stdpp%type)
+Notation "l ↦_ I v" :=
+  (inv_mapsto_own (L:=loc) (V:=option val) l (Some v%V) (from_option I%stdpp%type False))
   (at level 20, I at level 9, format "l  ↦_ I   v") : bi_scope.
-Notation inv_heap_inv := (inv_heap_inv loc val).
+Notation inv_heap_inv := (inv_heap_inv loc (option val)).
 
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
 [head_step]. The tactic will discharge head-reductions starting from values, and
@@ -257,6 +259,20 @@ Proof.
 Qed.
 
 (** Heap *)
+
+(** We need to adjust some [gen_heap] lemmas because of our value type
+being [option val]. *)
+
+Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
+Proof. iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %[=?]. done. Qed.
+
+Lemma mapsto_combine l q1 q2 v1 v2 :
+  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 + q2} v1 ∗ ⌜v1 = v2⌝.
+Proof.
+  iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
+  iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
+Qed.
+
 (** The usable rules for [allocN] stated in terms of the [array] proposition
 are derived in te file [array]. *)
 Lemma heap_array_to_seq_meta l vs (n : nat) :
@@ -267,7 +283,7 @@ Proof.
   iIntros (<-) "Hvs". iInduction vs as [|v vs] "IH" forall (l)=> //=.
   rewrite big_opM_union; last first.
   { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
-    intros (j&?&Hjl&_)%heap_array_lookup.
+    intros (j&w&?&Hjl&?&?)%heap_array_lookup.
     rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl. simplify_eq; lia. }
   rewrite loc_add_0 -fmap_S_seq big_sepL_fmap.
   setoid_rewrite Nat2Z.inj_succ. setoid_rewrite <-Z.add_1_l.
@@ -276,14 +292,14 @@ Proof.
 Qed.
 
 Lemma heap_array_to_seq_mapsto l v (n : nat) :
-  ([∗ map] l' ↦ v ∈ heap_array l (replicate n v), l' ↦ v) -∗
+  ([∗ map] l' ↦ ov ∈ heap_array l (replicate n v), gen_heap.mapsto l' 1 ov) -∗
   [∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦ v.
 Proof.
   iIntros "Hvs". iInduction n as [|n] "IH" forall (l); simpl.
   { done. }
   rewrite big_opM_union; last first.
   { apply map_disjoint_spec=> l' v1 v2 /lookup_singleton_Some [-> _].
-    intros (j&?&Hjl&_)%heap_array_lookup.
+    intros (j&w&?&Hjl&_)%heap_array_lookup.
     rewrite loc_add_assoc -{1}[l']loc_add_0 in Hjl. simplify_eq; lia. }
   rewrite loc_add_0 -fmap_S_seq big_sepL_fmap.
   setoid_rewrite Nat2Z.inj_succ. setoid_rewrite <-Z.add_1_l.

@@ -137,4 +137,4 @@ Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
      cmpxchg_spec := primitive_cmpxchg_spec;
-     mapsto_agree := gen_heap.mapsto_agree  |}.
+     mapsto_agree := lifting.mapsto_agree |}.
