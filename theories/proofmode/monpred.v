@@ -34,7 +34,7 @@ Section modalities.
       (MIEnvFilter Objective) (MIEnvFilter Objective).
   Proof.
     split; simpl; split_and?; intros;
-      try match goal with H : TCDiag _ _ _ |- _ => destruct H end;
+      try select (TCDiag _ _ _) (fun H => destruct H);
       eauto using bi.equiv_entails_sym, objective_objectively,
         monPred_objectively_mono, monPred_objectively_and,
         monPred_objectively_sep_2 with typeclass_instances.

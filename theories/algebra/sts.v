@@ -248,7 +248,7 @@ Proof.
   - by destruct 1; simpl; intros ?; setoid_subst.
   - by intros ? [|]; destruct 1; inversion_clear 1; econstructor; setoid_subst.
   - destruct 3; simpl in *; destruct_and?; eauto using closed_op;
-      match goal with H : closed _ _ |- _ => destruct H end; set_solver.
+      select (closed _ _) (fun H => destruct H); set_solver.
   - intros []; naive_solver eauto using closed_up, closed_up_set,
       elem_of_up, elem_of_up_set with sts.
   - intros [] [] [] _ _ _ _ _; constructor; rewrite ?assoc; auto with sts.
