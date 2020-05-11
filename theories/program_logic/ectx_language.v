@@ -148,7 +148,7 @@ Section ectx_language.
       head_step e σ κ e' σ' efs →
       if a is WeaklyAtomic then irreducible e' σ' else is_Some (to_val e').
 
-  (* Some lemmas about this language *)
+  (** * Some lemmas about this language *)
   Lemma fill_not_val K e : to_val e = None → to_val (fill K e) = None.
   Proof. rewrite !eq_None_not_Some. eauto using fill_val. Qed.
 
@@ -158,6 +158,10 @@ Section ectx_language.
   Lemma not_head_reducible e σ : ¬head_reducible e σ ↔ head_irreducible e σ.
   Proof. unfold head_reducible, head_irreducible. naive_solver. Qed.
 
+  (** Head redices are unique.  In all sensible instances, [comp_ectx K'
+      empty_ectx] will be the same as [K'], so the conclusion is [K = K' ∧ e =
+      e'], but we do not require a law to actually prove that so we cannot use
+      that fact here. *)
   Lemma head_redex_unique K K' e e' σ :
     fill K e = fill K' e' →
     head_reducible e σ →
