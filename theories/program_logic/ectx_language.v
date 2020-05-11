@@ -169,11 +169,11 @@ Section ectx_language.
     K = comp_ectx K' empty_ectx ∧ e = e'.
   Proof.
     intros Heq (κ & e2 & σ2 & efs & Hred) (κ' & e2' & σ2' & efs' & Hred').
-    edestruct (step_by_val K' K e' e) as [K'' HK]; try done.
-    { exact: val_head_stuck. }
-    subst K. move: Heq. rewrite -fill_comp=> /fill_inj He'.
-    subst e'. edestruct (head_ctx_step_val _ _ _ _ _ _ _ Hred') as [Hval|HK''].
-    { erewrite val_head_stuck in Hval; last done. destruct Hval. done. }
+    edestruct (step_by_val K' K e' e) as [K'' HK];
+      [by eauto using val_head_stuck..|].
+    subst K. move: Heq. rewrite -fill_comp. intros <-%(inj (fill _)).
+    destruct (head_ctx_step_val _ _ _ _ _ _ _ Hred') as [[]%not_eq_None_Some|HK''].
+    { by eapply val_head_stuck. }
     subst K''. rewrite fill_empty. done.
   Qed.
 
