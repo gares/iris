@@ -4,7 +4,7 @@ From iris.algebra Require Export base.
 From iris.program_logic Require Import language.
 Set Default Proof Using "Type".
 
-(* TAKE CARE: When you define an [ectxLanguage] canonical structure for your
+(** TAKE CARE: When you define an [ectxLanguage] canonical structure for your
 language, you need to also define a corresponding [language] canonical
 structure. Use the coercion [LanguageOfEctx] as defined in the bottom of this
 file for doing that. *)
@@ -29,15 +29,23 @@ Section ectx_language_mixin.
     mixin_fill_inj K : Inj (=) (=) (fill K);
     mixin_fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e);
 
+    (** Given a head redex [e1'] somewhere in a term, and another decomposition
+        of the same term into [fill K e1] such that [e1] is not a value, then
+        the head redex context is [e1]'s context [K] filled with another context
+        [K''].  In particular, this implies [e1 = fill K'' e1'] by [fill_inj],
+        i.e., [e1] contains the head redex.)
+
+        This implies there can always be only one head redex, see
+        [head_redex_unique]. *)
     mixin_step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
       fill K e1 = fill K' e1' →
       to_val e1 = None →
       head_step e1' σ1 κ e2 σ2 efs →
       ∃ K'', K' = comp_ectx K K'';
 
-    (* If [fill K e] takes a head step, then either [e] is a value or [K] is
-       the empty evaluation context. In other words, if [e] is not a value then
-       there cannot be another redex position elsewhere in [fill K e]. *)
+    (** If [fill K e] takes a head step, then either [e] is a value or [K] is
+        the empty evaluation context. In other words, if [e] is not a value
+        wrapping it in a context does not add new head redex positions. *)
     mixin_head_ctx_step_val K e σ1 κ e2 σ2 efs :
       head_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx;
   }.
@@ -144,15 +152,30 @@ Section ectx_language.
   Lemma fill_not_val K e : to_val e = None → to_val (fill K e) = None.
   Proof. rewrite !eq_None_not_Some. eauto using fill_val. Qed.
 
-  Lemma head_prim_step e1 σ1 κ e2 σ2 efs :
-    head_step e1 σ1 κ e2 σ2 efs → prim_step e1 σ1 κ e2 σ2 efs.
-  Proof. apply Ectx_step with empty_ectx; by rewrite ?fill_empty. Qed.
-
   Lemma head_reducible_no_obs_reducible e σ :
     head_reducible_no_obs e σ → head_reducible e σ.
   Proof. intros (?&?&?&?). eexists. eauto. Qed.
   Lemma not_head_reducible e σ : ¬head_reducible e σ ↔ head_irreducible e σ.
   Proof. unfold head_reducible, head_irreducible. naive_solver. Qed.
+
+  Lemma head_redex_unique K K' e e' σ :
+    fill K e = fill K' e' →
+    head_reducible e σ →
+    head_reducible e' σ →
+    K = comp_ectx K' empty_ectx ∧ e = e'.
+  Proof.
+    intros Heq (κ & e2 & σ2 & efs & Hred) (κ' & e2' & σ2' & efs' & Hred').
+    edestruct (step_by_val K' K e' e) as [K'' HK]; try done.
+    { exact: val_head_stuck. }
+    subst K. move: Heq. rewrite -fill_comp=> /fill_inj He'.
+    subst e'. edestruct (head_ctx_step_val _ _ _ _ _ _ _ Hred') as [Hval|HK''].
+    { erewrite val_head_stuck in Hval; last done. destruct Hval. done. }
+    subst K''. rewrite fill_empty. done.
+  Qed.
+
+  Lemma head_prim_step e1 σ1 κ e2 σ2 efs :
+    head_step e1 σ1 κ e2 σ2 efs → prim_step e1 σ1 κ e2 σ2 efs.
+  Proof. apply Ectx_step with empty_ectx; by rewrite ?fill_empty. Qed.
 
   Lemma head_step_not_stuck e σ κ e' σ' efs : head_step e σ κ e' σ' efs → not_stuck e σ.
   Proof. rewrite /not_stuck /reducible /=. eauto 10 using head_prim_step. Qed.
