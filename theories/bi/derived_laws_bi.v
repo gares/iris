@@ -427,6 +427,15 @@ Proof. by apply forall_intro=> a; rewrite forall_elim. Qed.
 Lemma sep_forall_r {A} (Φ : A → PROP) Q : (∀ a, Φ a) ∗ Q ⊢ ∀ a, Φ a ∗ Q.
 Proof. by apply forall_intro=> a; rewrite forall_elim. Qed.
 
+Lemma exist_wand_forall {A} P (Ψ : A → PROP) :
+  ((∃ x : A, Ψ x) -∗ P) ⊣⊢ ∀ x : A, Ψ x -∗ P.
+Proof.
+  apply equiv_spec; split.
+  - apply forall_intro=>x. by rewrite -exist_intro.
+  - apply wand_intro_r, wand_elim_r', exist_elim=>x.
+    apply wand_intro_r. by rewrite (forall_elim x) wand_elim_r.
+Qed.
+
 Global Instance wand_iff_ne : NonExpansive2 (@bi_wand_iff PROP).
 Proof. solve_proper. Qed.
 Global Instance wand_iff_proper :
