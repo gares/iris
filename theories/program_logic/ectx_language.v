@@ -29,19 +29,19 @@ Section ectx_language_mixin.
     mixin_fill_inj K : Inj (=) (=) (fill K);
     mixin_fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e);
 
-    (** Given a head redex [e1'] somewhere in a term, and another decomposition
-        of the same term into [fill K e1] such that [e1] is not a value, then
-        the head redex context is [e1]'s context [K] filled with another context
-        [K''].  In particular, this implies [e1 = fill K'' e1'] by [fill_inj],
-        i.e., [e1] contains the head redex.)
+    (** Given a head redex [e1_redex] somewhere in a term, and another
+        decomposition of the same term into [fill K' e1'] such that [e1'] is not
+        a value, then the head redex context is [e1']'s context [K'] filled with
+        another context [K''].  In particular, this implies [e1 = fill K''
+        e1_redex] by [fill_inj], i.e., [e1]' contains the head redex.)
 
         This implies there can be only one head redex, see
         [head_redex_unique]. *)
-    mixin_step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
-      fill K e1 = fill K' e1' →
-      to_val e1 = None →
-      head_step e1' σ1 κ e2 σ2 efs →
-      ∃ K'', K' = comp_ectx K K'';
+    mixin_step_by_val K' K_redex e1' e1_redex σ1 κ e2 σ2 efs :
+      fill K' e1' = fill K_redex e1_redex →
+      to_val e1' = None →
+      head_step e1_redex σ1 κ e2 σ2 efs →
+      ∃ K'', K_redex = comp_ectx K' K'';
 
     (** If [fill K e] takes a head step, then either [e] is a value or [K] is
         the empty evaluation context. In other words, if [e] is not a value
@@ -98,11 +98,11 @@ Section ectx_language.
   Proof. apply ectx_language_mixin. Qed.
   Lemma fill_val K e : is_Some (to_val (fill K e)) → is_Some (to_val e).
   Proof. apply ectx_language_mixin. Qed.
-  Lemma step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
-    fill K e1 = fill K' e1' →
-    to_val e1 = None →
-    head_step e1' σ1 κ e2 σ2 efs →
-    ∃ K'', K' = comp_ectx K K''.
+  Lemma step_by_val K' K_redex e1' e1_redex σ1 κ e2 σ2 efs :
+      fill K' e1' = fill K_redex e1_redex →
+      to_val e1' = None →
+      head_step e1_redex σ1 κ e2 σ2 efs →
+      ∃ K'', K_redex = comp_ectx K' K''.
   Proof. apply ectx_language_mixin. Qed.
   Lemma head_ctx_step_val K e σ1 κ e2 σ2 efs :
     head_step (fill K e) σ1 κ e2 σ2 efs → is_Some (to_val e) ∨ K = empty_ectx.
