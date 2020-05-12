@@ -2534,7 +2534,7 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
      refine should use the other unification algorithm, which should
      not have this issue. *)
   notypeclasses refine (tac_löb _ IH _ _ _ _);
-    [iSolveTC || fail "iLöb: Löb induction not supported for this BI"
+    [iSolveTC || fail "iLöb: no 'BiLöb' instance found"
     |reflexivity || fail "iLöb: spatial context not empty, this should not happen"
     |pm_reduce;
      lazymatch goal with

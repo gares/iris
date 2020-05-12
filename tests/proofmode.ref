@@ -621,10 +621,10 @@ k is used in hypothesis Hk.
      : string
 The command has indeed failed with message:
 Tactic failure: iRevert: k is used in hypothesis "Hk".
-"iLöb_no_bi"
+"iLöb_no_BiLöb"
      : string
 The command has indeed failed with message:
-Tactic failure: iLöb: Löb induction not supported for this BI.
+Tactic failure: iLöb: no 'BiLöb' instance found.
 "test_pure_name"
      : string
 1 subgoal

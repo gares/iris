@@ -1127,8 +1127,8 @@ Section error_tests_bi.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
-Check "iLöb_no_bi".
-Lemma iLöb_no_bi P : ⊢ P.
+Check "iLöb_no_BiLöb".
+Lemma iLöb_no_BiLöb P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
 End error_tests_bi.
 
