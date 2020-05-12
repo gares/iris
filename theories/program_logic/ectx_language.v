@@ -35,7 +35,7 @@ Section ectx_language_mixin.
         [K''].  In particular, this implies [e1 = fill K'' e1'] by [fill_inj],
         i.e., [e1] contains the head redex.)
 
-        This implies there can always be only one head redex, see
+        This implies there can be only one head redex, see
         [head_redex_unique]. *)
     mixin_step_by_val K K' e1 e1' σ1 κ e2 σ2 efs :
       fill K e1 = fill K' e1' →
@@ -158,10 +158,11 @@ Section ectx_language.
   Lemma not_head_reducible e σ : ¬head_reducible e σ ↔ head_irreducible e σ.
   Proof. unfold head_reducible, head_irreducible. naive_solver. Qed.
 
-  (** Head redices are unique.  In all sensible instances, [comp_ectx K'
-      empty_ectx] will be the same as [K'], so the conclusion is [K = K' ∧ e =
-      e'], but we do not require a law to actually prove that so we cannot use
-      that fact here. *)
+  (** The decomposition into head redex and context is unique.
+
+      In all sensible instances, [comp_ectx K' empty_ectx] will be the same as
+      [K'], so the conclusion is [K = K' ∧ e = e'], but we do not require a law
+      to actually prove that so we cannot use that fact here. *)
   Lemma head_redex_unique K K' e e' σ :
     fill K e = fill K' e' →
     head_reducible e σ →
