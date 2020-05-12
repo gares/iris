@@ -109,6 +109,7 @@ Inductive expr :=
   | Fork (e : expr)
   (* Heap *)
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
+  | Free (e : expr)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
   | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-exchange *)
@@ -242,6 +243,8 @@ Proof.
      | Fork e, Fork e' => cast_if (decide (e = e'))
      | AllocN e1 e2, AllocN e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
+     | Free e, Free e' =>
+        cast_if (decide (e = e'))
      | Load e, Load e' => cast_if (decide (e = e'))
      | Store e1 e2, Store e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
@@ -325,12 +328,13 @@ Proof.
      | Case e0 e1 e2 => GenNode 11 [go e0; go e1; go e2]
      | Fork e => GenNode 12 [go e]
      | AllocN e1 e2 => GenNode 13 [go e1; go e2]
-     | Load e => GenNode 14 [go e]
-     | Store e1 e2 => GenNode 15 [go e1; go e2]
-     | CmpXchg e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
-     | FAA e1 e2 => GenNode 17 [go e1; go e2]
-     | NewProph => GenNode 18 []
-     | Resolve e0 e1 e2 => GenNode 19 [go e0; go e1; go e2]
+     | Free e => GenNode 14 [go e]
+     | Load e => GenNode 15 [go e]
+     | Store e1 e2 => GenNode 16 [go e1; go e2]
+     | CmpXchg e0 e1 e2 => GenNode 17 [go e0; go e1; go e2]
+     | FAA e1 e2 => GenNode 18 [go e1; go e2]
+     | NewProph => GenNode 19 []
+     | Resolve e0 e1 e2 => GenNode 20 [go e0; go e1; go e2]
      end
    with gov v :=
      match v with
@@ -360,12 +364,13 @@ Proof.
      | GenNode 11 [e0; e1; e2] => Case (go e0) (go e1) (go e2)
      | GenNode 12 [e] => Fork (go e)
      | GenNode 13 [e1; e2] => AllocN (go e1) (go e2)
-     | GenNode 14 [e] => Load (go e)
-     | GenNode 15 [e1; e2] => Store (go e1) (go e2)
-     | GenNode 16 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
-     | GenNode 17 [e1; e2] => FAA (go e1) (go e2)
-     | GenNode 18 [] => NewProph
-     | GenNode 19 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
+     | GenNode 14 [e] => Free (go e)
+     | GenNode 15 [e] => Load (go e)
+     | GenNode 16 [e1; e2] => Store (go e1) (go e2)
+     | GenNode 17 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
+     | GenNode 18 [e1; e2] => FAA (go e1) (go e2)
+     | GenNode 19 [] => NewProph
+     | GenNode 20 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
      | _ => Val $ LitV LitUnit (* dummy *)
      end
    with gov v :=
@@ -380,7 +385,7 @@ Proof.
    for go).
  refine (inj_countable' enc dec _).
  refine (fix go (e : expr) {struct e} := _ with gov (v : val) {struct v} := _ for go).
- - destruct e as [v| | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
+ - destruct e as [v| | | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
      [exact (gov v)|done..].
  - destruct v; by f_equal.
 Qed.
@@ -414,6 +419,7 @@ Inductive ectx_item :=
   | CaseCtx (e1 : expr) (e2 : expr)
   | AllocNLCtx (v2 : val)
   | AllocNRCtx (e1 : expr)
+  | FreeCtx
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
@@ -450,6 +456,7 @@ Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   | CaseCtx e1 e2 => Case e e1 e2
   | AllocNLCtx v2 => AllocN e (Val v2)
   | AllocNRCtx e1 => AllocN e1 e
+  | FreeCtx => Free e
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
@@ -482,6 +489,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | Case e0 e1 e2 => Case (subst x v e0) (subst x v e1) (subst x v e2)
   | Fork e => Fork (subst x v e)
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
+  | Free e => Free (subst x v e)
   | Load e => Load (subst x v e)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst x v e0) (subst x v e1) (subst x v e2)
@@ -649,6 +657,12 @@ Inductive head_step : expr → state → list observation → expr → state →
      head_step (AllocN (Val $ LitV $ LitInt n) (Val v)) σ
                []
                (Val $ LitV $ LitLoc l) (state_init_heap l n v σ)
+               []
+  | FreeS l v σ :
+     σ.(heap) !! l = Some $ Some v →
+     head_step (Free (Val $ LitV $ LitLoc l)) σ
+               []
+               (Val $ LitV LitUnit) (state_upd_heap <[l:=None]> σ)
                []
   | LoadS l v σ :
      σ.(heap) !! l = Some $ Some v →
