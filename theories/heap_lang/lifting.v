@@ -348,6 +348,24 @@ Proof.
   iApply twp_alloc; [auto..|]; iIntros (l) "H HΦ". by iApply "HΦ".
 Qed.
 
+Lemma twp_free s E l v :
+  [[{ l ↦ v }]] Free (Val $ LitV $ LitLoc l) @ s; E
+  [[{ RET LitV LitUnit; True }]].
+Proof.
+  iIntros (Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
+  iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
+  iSplit; first by eauto. iIntros (κ v2 σ2 efs Hstep); inv_head_step.
+  iMod (@gen_heap_update with "Hσ Hl") as "[$ Hl]".
+  iModIntro. iSplit=>//. iSplit; first done. iFrame. by iApply "HΦ".
+Qed.
+Lemma wp_free s E l v :
+  {{{ ▷ l ↦ v }}} Free (Val $ LitV (LitLoc l)) @ s; E
+  {{{ RET LitV LitUnit; True }}}.
+Proof.
+  iIntros (Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
+  iApply (twp_free with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
+Qed.
+
 Lemma twp_load s E l q v :
   [[{ l ↦{q} v }]] Load (Val $ LitV $ LitLoc l) @ s; E [[{ RET v; l ↦{q} v }]].
 Proof.

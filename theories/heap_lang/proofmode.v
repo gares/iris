@@ -237,6 +237,32 @@ Proof.
   apply wand_intro_l. by rewrite (sep_elim_l (l ↦ v)%I) right_id wand_elim_r.
 Qed.
 
+Lemma tac_wp_free Δ Δ' Δ'' s E i K l v Φ :
+  MaybeIntoLaterNEnvs 1 Δ Δ' →
+  envs_lookup i Δ' = Some (false, l ↦ v)%I →
+  envs_delete false i false Δ' = Δ'' →
+  envs_entails Δ'' (WP fill K (Val $ LitV LitUnit) @ s; E {{ Φ }}) →
+  envs_entails Δ (WP fill K (Free (LitV l)) @ s; E {{ Φ }}).
+Proof.
+  rewrite envs_entails_eq=> ? Hlk <- Hfin.
+  rewrite -wp_bind. eapply wand_apply; first exact: wp_free.
+  rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
+  rewrite -Hfin wand_elim_r (envs_lookup_sound' _ _ _ _ _ Hlk).
+  apply later_mono, sep_mono_r, wand_intro_r. rewrite right_id //.
+Qed.
+Lemma tac_twp_free Δ Δ' s E i K l v Φ :
+  envs_lookup i Δ = Some (false, l ↦ v)%I →
+  envs_delete false i false Δ = Δ' →
+  envs_entails Δ' (WP fill K (Val $ LitV LitUnit) @ s; E [{ Φ }]) →
+  envs_entails Δ (WP fill K (Free (LitV l)) @ s; E [{ Φ }]).
+Proof.
+  rewrite envs_entails_eq=> Hlk <- Hfin.
+  rewrite -twp_bind. eapply wand_apply; first exact: twp_free.
+  rewrite envs_lookup_split //; simpl.
+  rewrite -Hfin wand_elim_r (envs_lookup_sound' _ _ _ _ _ Hlk).
+  apply sep_mono_r, wand_intro_r. rewrite right_id //.
+Qed.
+
 Lemma tac_wp_load Δ Δ' s E i K l q v Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
@@ -491,6 +517,30 @@ Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=
 
 Tactic Notation "wp_alloc" ident(l) :=
   wp_alloc l as "?".
+
+Tactic Notation "wp_free" :=
+  let solve_mapsto _ :=
+    let l := match goal with |- _ = Some (_, (?l ↦{_} _)%I) => l end in
+    iAssumptionCore || fail "wp_free: cannot find" l "↦ ?" in
+  wp_pures;
+  lazymatch goal with
+  | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+    first
+      [reshape_expr e ltac:(fun K e' => eapply (tac_wp_free _ _ _ _ _ _ K))
+      |fail 1 "wp_free: cannot find 'Free' in" e];
+    [iSolveTC
+    |solve_mapsto ()
+    |pm_reflexivity
+    |wp_finish]
+  | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
+    first
+      [reshape_expr e ltac:(fun K e' => eapply (tac_twp_free _ _ _ _ _ K))
+      |fail 1 "wp_free: cannot find 'Free' in" e];
+    [solve_mapsto ()
+    |pm_reflexivity
+    |wp_finish]
+  | _ => fail "wp_load: not a 'wp'"
+  end.
 
 Tactic Notation "wp_load" :=
   let solve_mapsto _ :=
