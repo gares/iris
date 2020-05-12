@@ -4,18 +4,28 @@ From iris.heap_lang Require Export lang array.
 From iris.heap_lang Require Import proofmode notation.
 Set Default Proof Using "Type".
 
-(** Implement [array_copy_to], a function which copies to an array in-place.
+(** Provides some array utilities:
 
-Using [array_copy_to] we also implement [array_clone], which allocates a fresh
-array and copies to it. *)
+* [array_free], to deallocate an entire array in one go.
+* [array_copy_to], a function which copies to an array in-place.
+* Using [array_copy_to] we also implement [array_clone], which allocates a fresh
+array and copies to it.
 
-Definition array_copy_to: val :=
+*)
+
+Definition array_free : val :=
+  rec: "freeN" "ptr" "n" :=
+    if: "n" ≤ #0 then #()
+    else Free "ptr";;
+         "freeN" ("ptr" +ₗ #1) ("n" - #1).
+
+Definition array_copy_to : val :=
   rec: "array_copy_to" "dst" "src" "n" :=
     if: "n" ≤ #0 then #()
     else "dst" <- !"src";;
          "array_copy_to" ("dst" +ₗ #1) ("src" +ₗ #1) ("n" - #1).
 
-Definition array_clone: val :=
+Definition array_clone : val :=
   λ: "src" "n",
     let: "dst" := AllocN "n" #() in
     array_copy_to "dst" "src" "n";;
@@ -24,7 +34,25 @@ Definition array_clone: val :=
 Section proof.
   Context `{!heapG Σ}.
 
-  Theorem twp_array_copy_to stk E (dst src: loc) vdst vsrc q (n:Z) :
+  Lemma twp_array_free s E l vs (n : Z) :
+    n = length vs →
+    [[{ l ↦∗ vs }]] array_free #l #n @ s; E [[{ RET #(); True }]].
+  Proof.
+    iIntros (Hlen Φ) "Hl HΦ".
+    iInduction vs as [|v vs] "IH" forall (l n Hlen); subst n; wp_rec; wp_pures.
+    { iApply "HΦ". done. }
+    iDestruct (array_cons with "Hl") as "[Hv Hl]".
+    wp_free. wp_pures. iApply ("IH" with "[] Hl"); eauto with lia.
+  Qed.
+  Lemma wp_array_free s E l vs (n : Z) :
+    n = length vs →
+    {{{ l ↦∗ vs }}} array_free #l #n @ s; E {{{ RET #(); True }}}.
+  Proof.
+    iIntros (? Φ) "H HΦ". iApply (twp_wp_step with "HΦ").
+    iApply (twp_array_free with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
+  Qed.
+
+  Theorem twp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
     [[{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }]]
       array_copy_to #dst #src #n @ stk; E
@@ -41,7 +69,7 @@ Section proof.
     iIntros "[Hvdst Hvsrc]".
     iApply "HΦ"; by iFrame.
   Qed.
-  Theorem wp_array_copy_to stk E (dst src: loc) vdst vsrc q (n:Z) :
+  Theorem wp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
     {{{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }}}
       array_copy_to #dst #src #n @ stk; E
