@@ -117,6 +117,11 @@ Arguments bi_wandM {_} !_%I _%I /.
 Notation "mP -∗? Q" := (bi_wandM mP Q)
   (at level 99, Q at level 200, right associativity) : bi_scope.
 
+(** This class is required for the [iLöb] tactic. For most logics this class
+should not be inhabited directly, but the instance [Contractive (▷) → BiLöb PROP]
+in [derived_laws_sbi] should be used. A direct instance of the class is useful
+when considering a BI logic with a discrete OFE, instead of a OFE that takes
+step-indexing of the logic in account.*)
 Class BiLöb (PROP : bi) :=
   löb (P : PROP) : (▷ P → P) ⊢ P.
 Hint Mode BiLöb ! : typeclass_instances.
