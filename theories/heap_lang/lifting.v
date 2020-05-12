@@ -36,7 +36,7 @@ Notation "l ↦□ I" :=
   (at level 20, format "l  ↦□  I") : bi_scope.
 Notation "l ↦_ I v" :=
   (inv_mapsto_own (L:=loc) (V:=option val) l (Some v%V) (from_option I%stdpp%type False))
-  (at level 20, I at level 9, format "l  ↦_ I   v") : bi_scope.
+  (at level 20, I at level 9, format "l  ↦_ I  v") : bi_scope.
 Notation inv_heap_inv := (inv_heap_inv loc (option val)).
 
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
@@ -260,7 +260,7 @@ Qed.
 
 (** Heap *)
 
-(** We need to adjust some [gen_heap] lemmas because of our value type
+(** We need to adjust the [gen_heap] lemmas because of our value type
 being [option val]. *)
 
 Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
@@ -272,6 +272,22 @@ Proof.
   iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
   iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
 Qed.
+
+Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
+Proof. apply mapsto_valid. Qed.
+Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ✓ (q1 + q2)%Qp.
+Proof. apply mapsto_valid_2. Qed.
+Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
+  ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+Proof. apply mapsto_mapsto_ne. Qed.
+
+Lemma make_inv_mapsto l v (I : val → Prop) E :
+  ↑inv_heapN ⊆ E →
+  I v →
+  inv_heap_inv -∗ l ↦ v ={E}=∗ l ↦_I v.
+Proof. iIntros (??) "#HI Hl". iApply make_inv_mapsto; done. Qed.
+Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦□ I.
+Proof. apply inv_mapsto_own_inv. Qed.
 
 (** The usable rules for [allocN] stated in terms of the [array] proposition
 are derived in te file [array]. *)

@@ -588,7 +588,7 @@ Proof.
   - intros [[-> ?] | (Hl & j & w & ? & -> & -> & ?)].
     { eexists 0, _. rewrite loc_add_0. naive_solver lia. }
     eexists (1 + j), _. rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
-  - intros (j & ? & ? & -> & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
+  - intros (j & w & ? & -> & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
     { rewrite loc_add_0; eauto. }
     right. split.
     { rewrite -{1}(loc_add_0 l). intros ?%(inj (loc_add _)); lia. }
@@ -604,7 +604,7 @@ Lemma heap_array_map_disjoint (h : gmap loc (option val)) (l : loc) (vs : list v
   (heap_array l vs) ##ₘ h.
 Proof.
   intros Hdisj. apply map_disjoint_spec=> l' v1 v2.
-  intros (j&?&?&->&?&Hj%lookup_lt_Some%inj_lt)%heap_array_lookup.
+  intros (j&w&?&->&?&Hj%lookup_lt_Some%inj_lt)%heap_array_lookup.
   move: Hj. rewrite Z2Nat.id // => ?. by rewrite Hdisj.
 Qed.
 
