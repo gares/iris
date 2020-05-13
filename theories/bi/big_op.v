@@ -292,6 +292,12 @@ Section sep_list2.
   Proof. done. Qed.
   Lemma big_sepL2_nil' `{BiAffine PROP} P Φ : P ⊢ [∗ list] k↦y1;y2 ∈ [];[], Φ k y1 y2.
   Proof. apply (affine _). Qed.
+  Lemma big_sepL2_nil_inv_l Φ l2 :
+    ([∗ list] k↦y1;y2 ∈ []; l2, Φ k y1 y2) -∗ ⌜l2 = []⌝.
+  Proof. destruct l2; simpl; auto using False_elim, pure_intro. Qed.
+  Lemma big_sepL2_nil_inv_r Φ l1 :
+    ([∗ list] k↦y1;y2 ∈ l1; [], Φ k y1 y2) -∗ ⌜l1 = []⌝.
+  Proof. destruct l1; simpl; auto using False_elim, pure_intro. Qed.
 
   Lemma big_sepL2_cons Φ x1 x2 l1 l2 :
     ([∗ list] k↦y1;y2 ∈ x1 :: l1; x2 :: l2, Φ k y1 y2)
