@@ -25,7 +25,7 @@ Section tests.
   Proof. iStartProof PROP. iIntros (i) "$". Qed.
   Lemma test_iStartProof_6 P : P ⊣⊢ P.
   Proof. iStartProof PROP. iIntros (i). iSplit; iIntros "$". Qed.
-  Lemma test_iStartProof_7 P : ⊢@{monPredI} P ≡ P.
+  Lemma test_iStartProof_7 `{!BiInternalEq PROP} P : ⊢@{monPredI} P ≡ P.
   Proof. iStartProof PROP. done. Qed.
 
   Lemma test_intowand_1 P Q : (P -∗ Q) -∗ P -∗ Q.

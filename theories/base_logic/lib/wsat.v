@@ -113,7 +113,7 @@ Proof.
   rewrite -own_op own_valid auth_both_validI /=. iIntros "[_ [#HI #HvI]]".
   iDestruct "HI" as (I') "HI". rewrite gmap_equivI gmap_validI.
   iSpecialize ("HI" $! i). iSpecialize ("HvI" $! i).
-  rewrite lookup_fmap lookup_op lookup_singleton bi.option_equivI.
+  rewrite lookup_fmap lookup_op lookup_singleton option_equivI.
   case: (I !! i)=> [Q|] /=; [|case: (I' !! i)=> [Q'|] /=; by iExFalso].
   iExists Q; iSplit; first done.
   iAssert (invariant_unfold Q ≡ invariant_unfold P)%I as "?".
@@ -121,7 +121,7 @@ Proof.
     iRewrite "HI" in "HvI". rewrite uPred.option_validI agree_validI.
     iRewrite -"HvI" in "HI". by rewrite agree_idemp. }
   rewrite /invariant_unfold.
-  by rewrite agree_equivI bi.later_equivI iProp_unfold_equivI.
+  by rewrite agree_equivI later_equivI iProp_unfold_equivI.
 Qed.
 
 Lemma ownI_open i P : wsat ∗ ownI i P ∗ ownE {[i]} ⊢ wsat ∗ ▷ P ∗ ownD {[i]}.

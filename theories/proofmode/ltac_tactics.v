@@ -3242,7 +3242,7 @@ Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
 (* TODO: look for a more principled way of adding trivial hints like those
 below; see the discussion in !75 for further details. *)
 Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
-  rewrite envs_entails_eq; apply bi.internal_eq_refl : core.
+  rewrite envs_entails_eq; apply internal_eq_refl : core.
 Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
   rewrite envs_entails_eq; apply big_sepL_nil' : core.
 Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>

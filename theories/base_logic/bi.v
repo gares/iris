@@ -1,4 +1,4 @@
-From iris.bi Require Export derived_connectives updates plainly.
+From iris.bi Require Export derived_connectives updates internal_eq plainly.
 From iris.base_logic Require Export upred.
 Import uPred_primitive.
 
@@ -66,21 +66,13 @@ Proof.
   - exact: persistently_and_sep_l_1.
 Qed.
 
-Lemma uPred_sbi_mixin (M : ucmraT) : SbiMixin
-  uPred_entails uPred_pure uPred_or uPred_impl
-  (@uPred_forall M) (@uPred_exist M) uPred_sep
-  uPred_persistently (@uPred_internal_eq M) uPred_later.
+Lemma uPred_bi_later_mixin (M : ucmraT) :
+  BiLaterMixin
+    uPred_entails uPred_pure uPred_or uPred_impl
+    (@uPred_forall M) (@uPred_exist M) uPred_sep uPred_persistently uPred_later.
 Proof.
   split.
   - apply contractive_ne, later_contractive.
-  - exact: internal_eq_ne.
-  - exact: @internal_eq_refl.
-  - exact: @internal_eq_rewrite.
-  - exact: @fun_ext.
-  - exact: @sig_eq.
-  - exact: @discrete_eq_1.
-  - exact: @later_eq_1.
-  - exact: @later_eq_2.
   - exact: later_mono.
   - exact: later_intro.
   - exact: @later_forall_2.
@@ -94,10 +86,26 @@ Qed.
 
 Canonical Structure uPredI (M : ucmraT) : bi :=
   {| bi_ofe_mixin := ofe_mixin_of (uPred M);
-     bi_bi_mixin := uPred_bi_mixin M; bi_sbi_mixin := uPred_sbi_mixin M |}.
+     bi_bi_mixin := uPred_bi_mixin M;
+     bi_bi_later_mixin := uPred_bi_later_mixin M |}.
 
 Instance uPred_later_contractive {M} : Contractive (bi_later (PROP:=uPredI M)).
 Proof. apply later_contractive. Qed.
+
+Lemma uPred_internal_eq_mixin M : BiInternalEqMixin (uPredI M) (@uPred_internal_eq M).
+Proof.
+  split.
+  - exact: internal_eq_ne.
+  - exact: @internal_eq_refl.
+  - exact: @internal_eq_rewrite.
+  - exact: @fun_ext.
+  - exact: @sig_eq.
+  - exact: @discrete_eq_1.
+  - exact: @later_eq_1.
+  - exact: @later_eq_2.
+Qed.
+Global Instance uPred_internal_eq M : BiInternalEq (uPredI M) :=
+  {| bi_internal_eq_mixin := uPred_internal_eq_mixin M |}.
 
 Lemma uPred_plainly_mixin M : BiPlainlyMixin (uPredI M) uPred_plainly.
 Proof.
@@ -120,12 +128,14 @@ Proof.
     etrans; first exact: sep_comm'.
     apply sep_mono; last done.
     exact: pure_intro.
-  - exact: prop_ext_2.
   - exact: later_plainly_1.
   - exact: later_plainly_2.
 Qed.
-Global Instance uPred_plainlyC M : BiPlainly (uPredI M) :=
+Global Instance uPred_plainly M : BiPlainly (uPredI M) :=
   {| bi_plainly_mixin := uPred_plainly_mixin M |}.
+
+Global Instance uPred_prop_ext M : BiPropExt (uPredI M).
+Proof. exact: prop_ext_2. Qed.
 
 Lemma uPred_bupd_mixin M : BiBUpdMixin (uPredI M) uPred_bupd.
 Proof.
@@ -223,9 +233,10 @@ End restate.
 Ltac unseal := (* Coq unfold is used to circumvent bug #5699 in rewrite /foo *)
   unfold bi_emp; simpl;
   unfold uPred_emp, bupd, bi_bupd_bupd, bi_pure,
-  bi_and, bi_or, bi_impl, bi_forall, bi_exist,
-  bi_sep, bi_wand, bi_persistently, bi_internal_eq, bi_later; simpl;
-  unfold plainly, bi_plainly_plainly; simpl;
+    bi_and, bi_or, bi_impl, bi_forall, bi_exist,
+    bi_sep, bi_wand, bi_persistently, bi_later; simpl;
+  unfold internal_eq, bi_internal_eq_internal_eq,
+    plainly, bi_plainly_plainly; simpl;
   uPred_primitive.unseal.
 
 End uPred.

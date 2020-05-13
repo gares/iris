@@ -59,7 +59,7 @@ Section excl_auth.
   Proof.
     rewrite auth_both_validI bi.and_elim_r bi.and_elim_l.
     apply bi.exist_elim=> -[[c|]|];
-      by rewrite bi.option_equivI /= excl_equivI //= bi.False_elim.
+      by rewrite option_equivI /= excl_equivI //= bi.False_elim.
   Qed.
 
   Lemma excl_auth_frag_validN_op_1_l n a b : ✓{n} (◯E a ⋅ ◯E b) → False.

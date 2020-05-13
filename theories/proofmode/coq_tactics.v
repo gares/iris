@@ -1022,7 +1022,7 @@ Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
 (** * Rewriting *)
-Lemma tac_rewrite Δ i p Pxy d Q :
+Lemma tac_rewrite `{!BiInternalEq PROP} Δ i p Pxy d Q :
   envs_lookup i Δ = Some (p, Pxy) →
   ∀ {A : ofeT} (x y : A) (Φ : A → PROP),
     IntoInternalEq Pxy x y →
@@ -1036,7 +1036,7 @@ Proof.
   destruct d; auto using internal_eq_sym.
 Qed.
 
-Lemma tac_rewrite_in Δ i p Pxy j q P d Q :
+Lemma tac_rewrite_in `{!BiInternalEq PROP} Δ i p Pxy j q P d Q :
   envs_lookup i Δ = Some (p, Pxy) →
   envs_lookup j Δ = Some (q, P) →
   ∀ {A : ofeT} (x y : A) (Φ : A → PROP),

@@ -119,7 +119,7 @@ Proof.
   rewrite own_eq /own_def later_ownM. apply exist_elim=> r.
   assert (NonExpansive (λ r : iResUR Σ, r (inG_id Hin) !! γ)).
   { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id Hin)). }
-  rewrite (f_equiv (λ r : iResUR Σ, r (inG_id Hin) !! γ) _ r).
+  rewrite (f_equivI (λ r : iResUR Σ, r (inG_id Hin) !! γ) _ r).
   rewrite {1}/iRes_singleton discrete_fun_lookup_singleton lookup_singleton.
   rewrite option_equivI. case Hb: (r (inG_id _) !! γ)=> [b|]; last first.
   { by rewrite and_elim_r /bi_except_0 -or_intro_l. }

@@ -62,7 +62,7 @@ Section saved_anything.
     assert (∀ z, G2 (G1 z) ≡ z) as help.
     { intros z. rewrite /G1 /G2 -oFunctor_map_compose -{2}[z]oFunctor_map_id.
       apply (ne_proper (oFunctor_map F)); split=>?; apply iProp_fold_unfold. }
-    rewrite -{2}[x]help -{2}[y]help. by iApply f_equiv.
+    rewrite -{2}[x]help -{2}[y]help. by iApply f_equivI.
   Qed.
 End saved_anything.
 

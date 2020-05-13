@@ -1,4 +1,4 @@
-From iris.bi Require Import derived_laws_sbi big_op.
+From iris.bi Require Import derived_laws_sbi big_op internal_eq.
 From iris.algebra Require Import monoid.
 Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
 
@@ -29,8 +29,6 @@ Record BiPlainlyMixin (PROP : bi) `(Plainly PROP) := {
   bi_plainly_mixin_plainly_emp_intro (P : PROP) : P ⊢ ■ emp;
   bi_plainly_mixin_plainly_absorb (P Q : PROP) : ■ P ∗ Q ⊢ ■ P;
 
-  bi_plainly_mixin_prop_ext_2 (P Q : PROP) : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q;
-
   bi_plainly_mixin_later_plainly_1 (P : PROP) : ▷ ■ P ⊢ ■ ▷ P;
   bi_plainly_mixin_later_plainly_2 (P : PROP) : ■ ▷ P ⊢ ▷ ■ P;
 }.
@@ -49,6 +47,13 @@ Arguments BiPlainlyExist : clear implicits.
 Arguments BiPlainlyExist _ {_}.
 Arguments plainly_exist_1 _ {_ _} _.
 Hint Mode BiPlainlyExist ! - : typeclass_instances.
+
+Class BiPropExt `{!BiPlainly PROP, !BiInternalEq PROP} :=
+  prop_ext_2 (P Q : PROP) : ■ (P ∗-∗ Q) ⊢ P ≡ Q.
+Arguments BiPropExt : clear implicits.
+Arguments BiPropExt _ {_ _}.
+Arguments prop_ext_2 _ {_ _ _} _.
+Hint Mode BiPropExt ! - - : typeclass_instances.
 
 Section plainly_laws.
   Context `{BiPlainly PROP}.
@@ -73,9 +78,6 @@ Section plainly_laws.
   Proof. eapply bi_plainly_mixin_plainly_absorb, bi_plainly_mixin. Qed.
   Lemma plainly_emp_intro P : P ⊢ ■ emp.
   Proof. eapply bi_plainly_mixin_plainly_emp_intro, bi_plainly_mixin. Qed.
-
-  Lemma prop_ext_2 P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
-  Proof. eapply bi_plainly_mixin_prop_ext_2, bi_plainly_mixin. Qed.
 
   Lemma later_plainly_1 P : ▷ ■ P ⊢ ■ (▷ P).
   Proof. eapply bi_plainly_mixin_later_plainly_1, bi_plainly_mixin. Qed.
@@ -540,50 +542,62 @@ Global Instance big_sepMS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) 
 Proof. rewrite big_opMS_eq. apply _. Qed.
 
 (* Interaction with equality *)
-Lemma plainly_internal_eq {A:ofeT} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.
-Proof.
-  apply (anti_symm (⊢)).
-  { by rewrite plainly_elim. }
-  apply (internal_eq_rewrite' a b (λ  b, ■ (a ≡ b))%I); [solve_proper|done|].
-  rewrite -(internal_eq_refl True%I a) plainly_pure; auto.
-Qed.
+Section internal_eq.
+  Context `{!BiInternalEq PROP}.
 
-Lemma prop_ext P Q : P ≡ Q ⊣⊢ ■ (P ∗-∗ Q).
-Proof.
-  apply (anti_symm (⊢)); last exact: prop_ext_2.
-  apply (internal_eq_rewrite' P Q (λ Q, ■ (P ∗-∗ Q))%I);
-    [ solve_proper | done | ].
-  rewrite (plainly_emp_intro (P ≡ Q)%I).
-  apply plainly_mono, wand_iff_refl.
-Qed.
+  Lemma plainly_internal_eq {A:ofeT} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.
+  Proof.
+    apply (anti_symm (⊢)).
+    { by rewrite plainly_elim. }
+    apply (internal_eq_rewrite' a b (λ  b, ■ (a ≡ b))%I); [solve_proper|done|].
+    rewrite -(internal_eq_refl True%I a) plainly_pure; auto.
+  Qed.
 
-Lemma plainly_alt P : ■ P ⊣⊢ <affine> P ≡ emp.
-Proof.
-  rewrite -plainly_affinely_elim. apply (anti_symm (⊢)).
-  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l.
-    + by rewrite affinely_elim_emp left_id.
-    + by rewrite left_id.
-  - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
-    by rewrite -plainly_True_emp plainly_pure True_impl.
-Qed.
+  Global Instance internal_eq_plain {A : ofeT} (a b : A) :
+    Plain (PROP:=PROP) (a ≡ b).
+  Proof. by intros; rewrite /Plain plainly_internal_eq. Qed.
+End internal_eq.
 
-Lemma plainly_alt_absorbing P `{!Absorbing P} : ■ P ⊣⊢ P ≡ True.
-Proof.
-  apply (anti_symm (⊢)).
-  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
-  - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
-    by rewrite plainly_pure True_impl.
-Qed.
+Section prop_ext.
+  Context `{!BiInternalEq PROP, !BiPropExt PROP}.
 
-Lemma plainly_True_alt P : ■ (True -∗ P) ⊣⊢ P ≡ True.
-Proof.
-  apply (anti_symm (⊢)).
-  - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
-    by rewrite wand_elim_r.
-  - rewrite internal_eq_sym (internal_eq_rewrite _ _
-      (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.
-    by rewrite -entails_wand // -(plainly_emp_intro True%I) True_impl.
-Qed.
+  Lemma prop_ext P Q : P ≡ Q ⊣⊢ ■ (P ∗-∗ Q).
+  Proof.
+    apply (anti_symm (⊢)); last exact: prop_ext_2.
+    apply (internal_eq_rewrite' P Q (λ Q, ■ (P ∗-∗ Q))%I);
+      [ solve_proper | done | ].
+    rewrite (plainly_emp_intro (P ≡ Q)%I).
+    apply plainly_mono, wand_iff_refl.
+  Qed.
+
+  Lemma plainly_alt P : ■ P ⊣⊢ <affine> P ≡ emp.
+  Proof.
+    rewrite -plainly_affinely_elim. apply (anti_symm (⊢)).
+    - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l.
+      + by rewrite affinely_elim_emp left_id.
+      + by rewrite left_id.
+    - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
+      by rewrite -plainly_True_emp plainly_pure True_impl.
+  Qed.
+
+  Lemma plainly_alt_absorbing P `{!Absorbing P} : ■ P ⊣⊢ P ≡ True.
+  Proof.
+    apply (anti_symm (⊢)).
+    - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+    - rewrite internal_eq_sym (internal_eq_rewrite _ _ plainly).
+      by rewrite plainly_pure True_impl.
+  Qed.
+
+  Lemma plainly_True_alt P : ■ (True -∗ P) ⊣⊢ P ≡ True.
+  Proof.
+    apply (anti_symm (⊢)).
+    - rewrite prop_ext. apply plainly_mono, and_intro; apply wand_intro_l; auto.
+      by rewrite wand_elim_r.
+    - rewrite internal_eq_sym (internal_eq_rewrite _ _
+        (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.
+      by rewrite -entails_wand // -(plainly_emp_intro True%I) True_impl.
+  Qed.
+End prop_ext.
 
 (* Interaction with ▷ *)
 Lemma later_plainly P : ▷ ■ P ⊣⊢ ■ ▷ P.
@@ -600,10 +614,6 @@ Lemma except_0_plainly_1 P : ◇ ■ P ⊢ ■ ◇ P.
 Proof. by rewrite /bi_except_0 -plainly_or_2 -later_plainly plainly_pure. Qed.
 Lemma except_0_plainly `{!BiPlainlyExist PROP} P : ◇ ■ P ⊣⊢ ■ ◇ P.
 Proof. by rewrite /bi_except_0 plainly_or -later_plainly plainly_pure. Qed.
-
-Global Instance internal_eq_plain {A : ofeT} (a b : A) :
-  Plain (PROP:=PROP) (a ≡ b).
-Proof. by intros; rewrite /Plain plainly_internal_eq. Qed.
 
 Global Instance later_plain P : Plain P → Plain (▷ P).
 Proof. intros. by rewrite /Plain -later_plainly {1}(plain P). Qed.
