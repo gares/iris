@@ -133,6 +133,21 @@ Section bi_mixin.
 
     bi_mixin_later_false_em P : ▷ P ⊢ ▷ False ∨ (▷ False → P);
   }.
+
+  Lemma bi_later_mixin_id :
+    (∀ (P : PROP), (▷ P)%I = P) →
+    BiMixin → BiLaterMixin.
+  Proof.
+    intros Hlater Hbi. pose proof (bi_mixin_entails_po Hbi).
+    split; repeat intro; rewrite ?Hlater ?Hequiv //.
+    - apply (bi_mixin_forall_intro Hbi)=> a.
+      etrans; [apply (bi_mixin_forall_elim Hbi a)|]. by rewrite Hlater.
+    - etrans; [|apply (bi_mixin_or_intro_r Hbi)].
+      apply (bi_mixin_exist_elim Hbi)=> a.
+      etrans; [|apply (bi_mixin_exist_intro Hbi a)]. by rewrite /= Hlater.
+    - etrans; [|apply (bi_mixin_or_intro_r Hbi)].
+      apply (bi_mixin_impl_intro_r Hbi), (bi_mixin_and_elim_l Hbi).
+  Qed.
 End bi_mixin.
 
 Structure bi := Bi {
