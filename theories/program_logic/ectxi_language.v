@@ -4,7 +4,7 @@ From iris.algebra Require Export base.
 From iris.program_logic Require Import language ectx_language.
 Set Default Proof Using "Type".
 
-(* TAKE CARE: When you define an [ectxiLanguage] canonical structure for your
+(** TAKE CARE: When you define an [ectxiLanguage] canonical structure for your
 language, you need to also define a corresponding [language] and [ectxLanguage]
 canonical structure for canonical structure inference to work properly. You
 should use the coercion [EctxLanguageOfEctxi] and [LanguageOfEctx] for that, and
@@ -38,12 +38,20 @@ Section ectxi_language_mixin.
     mixin_of_to_val e v : to_val e = Some v → of_val v = e;
     mixin_val_stuck e1 σ1 κ e2 σ2 efs : head_step e1 σ1 κ e2 σ2 efs → to_val e1 = None;
 
-    mixin_fill_item_inj Ki : Inj (=) (=) (fill_item Ki);
     mixin_fill_item_val Ki e : is_Some (to_val (fill_item Ki e)) → is_Some (to_val e);
+    (** [fill_item] is always injective on the expression for a fixed
+        context. *)
+    mixin_fill_item_inj Ki : Inj (=) (=) (fill_item Ki);
+    (** [fill_item] with (potentially different) non-value expressions is
+        injective on the context. *)
     mixin_fill_item_no_val_inj Ki1 Ki2 e1 e2 :
       to_val e1 = None → to_val e2 = None →
       fill_item Ki1 e1 = fill_item Ki2 e2 → Ki1 = Ki2;
 
+    (** If [fill_item Ki e] takes a head step, then [e] is a value (unlike for
+        [ectx_language], an empty context is impossible here).  In other words,
+        if [e] is not a value then wrapping it in a context does not add new
+        head redex positions. *)
     mixin_head_ctx_step_val Ki e σ1 κ e2 σ2 efs :
       head_step (fill_item Ki e) σ1 κ e2 σ2 efs → is_Some (to_val e);
   }.
