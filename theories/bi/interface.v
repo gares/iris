@@ -16,7 +16,7 @@ Section bi_mixin.
   Context (bi_wand : PROP → PROP → PROP).
   Context (bi_persistently : PROP → PROP).
 
-  Local Bind Scope bi_scope with PROP.
+  Bind Scope bi_scope with PROP.
   Local Infix "⊢" := bi_entails.
   Local Notation "'emp'" := bi_emp : bi_scope.
   Local Notation "'True'" := (bi_pure True) : bi_scope.
