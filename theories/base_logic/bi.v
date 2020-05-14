@@ -217,7 +217,7 @@ End restate.
 
 
 (** New unseal tactic that also unfolds the BI layer.
-    This is used by [base_logic.double_negation].
+    This is used by [base_logic.bupd_alt].
     TODO: Can we get rid of this? *)
 Ltac unseal := (* Coq unfold is used to circumvent bug #5699 in rewrite /foo *)
   unfold bi_emp; simpl; unfold sbi_emp; simpl;
