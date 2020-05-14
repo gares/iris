@@ -124,7 +124,7 @@ Definition clientΣ : gFunctors := #[ heapΣ; one_shotΣ; spawnΣ ].
 (** This lemma implicitly shows that these functors are enough to meet
 all library assumptions. *)
 Lemma client_adequate σ : adequate NotStuck client σ (λ _ _, True).
-Proof. apply (heap_adequacy clientΣ)=> ?. apply client_safe. Qed.
+Proof. apply (heap_adequacy clientΣ)=> ?. iIntros "_". iApply client_safe. Qed.
 
 (* Since we check the output of the test files, this means
 our test suite will fail if we ever accidentally add an axiom

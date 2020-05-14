@@ -11,6 +11,7 @@ Set Default Proof Using "Type".
 Class heapG Σ := HeapG {
   heapG_invG : invG Σ;
   heapG_gen_heapG :> gen_heapG loc val Σ;
+  heapG_inv_heapG :> inv_heapG loc val Σ;
   heapG_proph_mapG :> proph_mapG proph_id (val * val) Σ;
 }.
 
@@ -34,7 +35,6 @@ Notation "l ↦□ I" := (inv_mapsto (L:=loc) (V:=val) l I%stdpp%type)
   (at level 20, format "l  ↦□  I") : bi_scope.
 Notation "l ↦_ I v" := (inv_mapsto_own (L:=loc) (V:=val) l v I%stdpp%type)
   (at level 20, I at level 9, format "l  ↦_ I   v") : bi_scope.
-Notation inv_heapG := (inv_heapG loc val).
 Notation inv_heap_inv := (inv_heap_inv loc val).
 
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
