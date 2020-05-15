@@ -121,6 +121,23 @@ Section tests.
     ⊢ WP let: "x" := Pred #42 in Pred "x" @ E [{ v, ⌜v = #40⌝ }].
   Proof. iIntros "". wp_apply Pred_spec. by wp_apply Pred_spec. Qed.
 
+  Definition Id : val :=
+    rec: "go" "x" :=
+      if: "x" = #0 then #() else "go" ("x" - #1).
+
+  (** These tests specially test the handling of the [vals_compare_safe]
+  side-condition of the [=] operator. *)
+  Lemma Id_wp (n : nat) : ⊢ WP Id #n {{ v, ⌜ v = #() ⌝ }}.
+  Proof.
+    iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
+    by replace (S n - 1) with (n:Z) by lia.
+  Qed.
+  Lemma Id_twp (n : nat) : ⊢ WP Id #n [{ v, ⌜ v = #() ⌝ }].
+  Proof.
+    iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
+    by replace (S n - 1) with (n:Z) by lia.
+  Qed.
+
   Lemma wp_apply_evar e P :
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
