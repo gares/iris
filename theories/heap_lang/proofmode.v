@@ -97,7 +97,7 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
       unify e' efoc;
       eapply (tac_twp_pure _ _ _ (fill K e'));
       [iSolveTC                       (* PureExec *)
-      |try fast_done                  (* The pure condition for PureExec *)
+      |try solve_vals_compare_safe    (* The pure condition for PureExec *)
       |wp_finish                      (* new goal *)
       ])
     || fail "wp_pure: cannot find" efoc "in" e "or" efoc "is not a redex"
