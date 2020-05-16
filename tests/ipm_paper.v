@@ -232,7 +232,7 @@ Section counter_proof.
       wp_cmpxchg_suc. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. rewrite {3}/C; eauto 10.
-    - wp_cmpxchg_fail; first (intros [=]; abstract omega).
+    - wp_cmpxchg_fail; first (intros [=]; abstract lia).
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. iApply ("IH" with "[Hγf]"). rewrite {3}/C; eauto 10.
   Qed.
@@ -248,6 +248,6 @@ Section counter_proof.
     { iApply own_op. by iFrame. }
     rewrite (auth_frag_op c c); last lia; iDestruct "Hγ" as "[Hγ Hγf']".
     iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
-    rewrite /C; eauto 10 with omega.
+    rewrite /C; eauto 10 with lia.
   Qed.
 End counter_proof.

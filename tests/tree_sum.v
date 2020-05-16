@@ -48,7 +48,7 @@ Proof.
     wp_load. wp_apply ("IH" with "Hl Htl"). iIntros "[Hl Htl]".
     wp_load. wp_apply ("IH1" with "Hl Htr"). iIntros "[Hl Htr]".
     iApply "HΦ". iSplitL "Hl".
-    { by replace (sum tl + sum tr + n) with (sum tr + (sum tl + n)) by omega. }
+    { by replace (sum tl + sum tr + n) with (sum tr + (sum tl + n)) by lia. }
     iExists ll, lr, vl, vr. by iFrame.
 Qed.
 
