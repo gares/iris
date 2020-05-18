@@ -41,6 +41,11 @@ Either way, you can now do `opam install coq-iris`.  To fetch updates later, run
 backwards-compatibility, so upgrading Iris may break your Iris-using
 developments.
 
+The development version of Iris is regularly subject to breaking changes.  If
+you want to be notified of such changes, please let us know your account name on
+the [MPI-SWS GitLab](https://gitlab.mpi-sws.org/) so we can add you to the
+notification group.
+
 ### Working *on* Iris
 
 To work on Iris itself, you need to install its build-dependencies.  Again we
