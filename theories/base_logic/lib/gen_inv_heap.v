@@ -113,7 +113,7 @@ Section to_inv_heap.
   Qed.
 End to_inv_heap.
 
-Lemma inv_heap_init {L V : Type} `{Countable L, !invG Σ, !gen_heapG L V Σ, !inv_heapPreG L V Σ} E:
+Lemma inv_heap_init (L V : Type) `{Countable L, !invG Σ, !gen_heapG L V Σ, !inv_heapPreG L V Σ} E :
   ⊢ |==> ∃ _ : inv_heapG L V Σ, |={E}=> inv_heap_inv L V.
 Proof.
   iMod (own_alloc (● (to_inv_heap ∅))) as (γ) "H●".

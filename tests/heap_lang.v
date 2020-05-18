@@ -221,7 +221,7 @@ Section tests.
 End tests.
 
 Section notation_tests.
-  Context `{!heapG Σ, inv_heapG loc val Σ}.
+  Context `{!heapG Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
@@ -291,4 +291,4 @@ Section error_tests.
 End error_tests.
 
 Lemma heap_e_adequate σ : adequate NotStuck heap_e σ (λ v _, v = #2).
-Proof. eapply (heap_adequacy heapΣ)=> ?. by apply heap_e_spec. Qed.
+Proof. eapply (heap_adequacy heapΣ)=> ?. iIntros "_". by iApply heap_e_spec. Qed.
