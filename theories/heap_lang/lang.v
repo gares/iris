@@ -162,7 +162,7 @@ Definition lit_is_unboxed (l: base_lit) : Prop :=
   (** Disallow comparing (erased) prophecies with (erased) prophecies, by
   considering them boxed. *)
   | LitProphecy _ | LitPoison => False
-  | _ => True
+  | LitInt _ | LitBool _  | LitLoc _ | LitUnit => True
   end.
 Definition val_is_unboxed (v : val) : Prop :=
   match v with
