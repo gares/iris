@@ -7,19 +7,27 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 **Changes in the theory of Iris itself:**
 
-* [#] Redefine invariants as "semantic invariants" so that they support
+* [#] Redefined invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
 * Updated the strong variant of the opening lemma for cancellable invariants
   to match that of regular invariants, where you can pick the mask at a later time.
 
 **Changes in program logic:**
 
-* In the axiomatization of ectx languages we replace the axiom of positivity of
+* In the axiomatization of ectx languages we replaced the axiom of positivity of
   context composition with an axiom that says if `fill K e` takes a head step,
   then either `K` is the empty evaluation context or `e` is a value.
 * Added a library for "invariant locations": heap locations that will not be
   deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
   invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
+
+**Changes in heap_lang:**
+
+* Added a fraction to the heap_lang `array` assertion.
+* Added array_copy library for copying and cloning arrays.
+* Added the ghost state for "invariant locations" to `heapG`.  This affects the
+  statement of `heap_adequacy`, which is now responsible for initializing the
+  "invariant locations" invariant.
 
 **Changes in Coq:**
 
@@ -169,11 +177,6 @@ s/\blist_alter_singletonM\b/list_alter_singleton/g
 s/\blist_singletonM_included\b/list_singleton_included/g
 ' $(find theories -name "*.v")
 ```
-
-**Changes in heap_lang:**
-
-* Added a fraction to the heap_lang `array` assertion.
-* Added array_copy library for copying and cloning arrays.
 
 ## Iris 3.2.0 (released 2019-08-29)
 
