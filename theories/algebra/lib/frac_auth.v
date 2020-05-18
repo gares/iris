@@ -3,7 +3,7 @@ From iris.algebra Require Import proofmode_classes.
 
 (** Authoritative CMRA where the NON-authoritative parts can be fractional.
   This CMRA allows the original non-authoritative element `◯ a` to be split into
-  fractional parts `◯!{q} a`. Using `◯! a ≡ ◯!{1} a` is in effect the same as
+  fractional parts `◯F{q} a`. Using `◯F a ≡ ◯F{1} a` is in effect the same as
   using the original `◯ a`. Currently, however, this CMRA hides the ability to
   split the authoritative part into fractions.
 *)
