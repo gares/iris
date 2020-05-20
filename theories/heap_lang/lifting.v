@@ -32,10 +32,11 @@ Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
   (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
 Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
-(** Same for [gen_inv_heap], except that these are higher-order notations
-so to make rewriting work we need actual definitions here. *)
+(** Same for [gen_inv_heap], except that these are higher-order notations so to
+make setoid rewriting in the predicate [I] work we need actual definitions
+here. *)
 Section definitions.
-  Context {L V : Type} `{Countable L} `{!heapG Σ}.
+  Context `{!heapG Σ}.
   Definition inv_mapsto_own (l : loc) (v : val) (I : val → Prop) : iProp Σ :=
     inv_mapsto_own l (Some v) (from_option I False).
   Definition inv_mapsto (l : loc) (I : val → Prop) : iProp Σ :=
@@ -48,7 +49,7 @@ Instance: Params (@inv_mapsto) 3 := {}.
 Notation inv_heap_inv := (inv_heap_inv loc (option val)).
 Notation "l ↦□ I" := (inv_mapsto l I%stdpp%type)
   (at level 20, format "l  ↦□  I") : bi_scope.
-Notation "l ↦_ I v" := (inv_mapsto_own l v%V I%stdpp%type)
+Notation "l ↦_ I v" := (inv_mapsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  ↦_ I  v") : bi_scope.
 
 (** The tactic [inv_head_step] performs inversion on hypotheses of the shape
@@ -296,13 +297,13 @@ Proof. apply mapsto_mapsto_ne. Qed.
 Global Instance inv_mapsto_own_proper l v :
   Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto_own l v).
 Proof.
-  intros I1 I2 HI. rewrite /inv_mapsto_own. f_equiv=>[] [w|]; last done.
+  intros I1 I2 HI. rewrite /inv_mapsto_own. f_equiv=>-[w|]; last done.
   simpl. apply HI.
 Qed.
 Global Instance inv_mapsto_proper l :
   Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto l).
 Proof.
-  intros I1 I2 HI. rewrite /inv_mapsto. f_equiv=>[] [w|]; last done.
+  intros I1 I2 HI. rewrite /inv_mapsto. f_equiv=>-[w|]; last done.
   simpl. apply HI.
 Qed.
 
@@ -315,21 +316,21 @@ Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦□ I.
 Proof. apply inv_mapsto_own_inv. Qed.
 
 Lemma inv_mapsto_own_acc_strong E :
-    ↑inv_heapN ⊆ E →
-    inv_heap_inv ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦_I v -∗
-      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗
-        inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
+  ↑inv_heapN ⊆ E →
+  inv_heap_inv ={E, E ∖ ↑inv_heapN}=∗ ∀ l v I, l ↦_I v -∗
+    (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ==∗
+      inv_mapsto_own l w I ∗ |={E ∖ ↑inv_heapN, E}=> True)).
 Proof.
   iIntros (?) "#Hinv".
   iMod (inv_mapsto_own_acc_strong with "Hinv") as "Hacc"; first done.
-  iIntros "!> * Hl". iDestruct ("Hacc" with "Hl") as "(% & Hl & Hclose)".
+  iIntros "!>" (l v I) "Hl". iDestruct ("Hacc" with "Hl") as "(% & Hl & Hclose)".
   iFrame "%∗". iIntros (w) "% Hl". iApply "Hclose"; done.
 Qed.
 
 Lemma inv_mapsto_own_acc E l v I:
-    ↑inv_heapN ⊆ E →
-    inv_heap_inv -∗ l ↦_I v ={E, E ∖ ↑inv_heapN}=∗
-      (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦_I w)).
+  ↑inv_heapN ⊆ E →
+  inv_heap_inv -∗ l ↦_I v ={E, E ∖ ↑inv_heapN}=∗
+    (⌜I v⌝ ∗ l ↦ v ∗ (∀ w, ⌜I w ⌝ -∗ l ↦ w ={E ∖ ↑inv_heapN, E}=∗ l ↦_I w)).
 Proof.
   iIntros (?) "#Hinv Hl".
   iMod (inv_mapsto_own_acc with "Hinv Hl") as "(% & Hl & Hclose)"; first done.
@@ -337,8 +338,8 @@ Proof.
 Qed.
 
 Lemma inv_mapsto_acc l I E :
-    ↑inv_heapN ⊆ E →
-    inv_heap_inv -∗ l ↦□ I ={E, E ∖ ↑inv_heapN}=∗
+  ↑inv_heapN ⊆ E →
+  inv_heap_inv -∗ l ↦□ I ={E, E ∖ ↑inv_heapN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑inv_heapN, E}=∗ ⌜True⌝).
 Proof.
   iIntros (?) "#Hinv Hl".

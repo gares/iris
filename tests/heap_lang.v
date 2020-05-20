@@ -228,9 +228,9 @@ Section inv_mapsto_tests.
   Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
 
   (* Make sure [setoid_rewrite] works. *)
-  Lemma inv_mapsto_setoid_rewrite (l : loc) (f : val → Prop) :
-    (∀ v, f v ↔ f #true) →
-    ⊢ l ↦□ (λ v, f v).
+  Lemma inv_mapsto_setoid_rewrite (l : loc) (I : val → Prop) :
+    (∀ v, I v ↔ I #true) →
+    ⊢ l ↦□ (λ v, I v).
   Proof.
     iIntros (Heq). setoid_rewrite Heq. Show.
   Abort.

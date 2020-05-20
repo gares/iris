@@ -118,10 +118,10 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   Σ : gFunctors
   heapG0 : heapG Σ
   l : loc
-  f : val → Prop
-  Heq : ∀ v : val, f v ↔ f #true
+  I : val → Prop
+  Heq : ∀ v : val, I v ↔ I #true
   ============================
-  ⊢ l ↦□ (λ _ : val, f #true)
+  ⊢ l ↦□ (λ _ : val, I #true)
 1 subgoal
   
   Σ : gFunctors

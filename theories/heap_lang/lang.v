@@ -18,7 +18,7 @@ Noteworthy design choices:
 - Even after deallocating a location, the heap remembers that these locations
   were previously allocated and makes sure they do not get reused. This is
   necessary to ensure soundness of the [meta] feature provided by [gen_heap].
-  Also, unlike in langauges like C, allocated and deallocated "blocks" do not
+  Also, unlike in languages like C, allocated and deallocated "blocks" do not
   have to match up: you can allocate a large array of locations and then
   deallocate a hole out of it in the middle.
 

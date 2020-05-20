@@ -539,7 +539,7 @@ Tactic Notation "wp_free" :=
     [solve_mapsto ()
     |pm_reflexivity
     |wp_finish]
-  | _ => fail "wp_load: not a 'wp'"
+  | _ => fail "wp_free: not a 'wp'"
   end.
 
 Tactic Notation "wp_load" :=

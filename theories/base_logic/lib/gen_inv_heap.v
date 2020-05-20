@@ -14,7 +14,7 @@ it is that they are reading in that case. In that extreme case, the invariant
 may just be [True].
 
 Since invariant locations cannot be deallocated, they only make sense when
-modelling languages with garbage collection.  HeapLang can be used to model
+modeling languages with garbage collection.  HeapLang can be used to model
 either language by choosing whether or not to use the [Free] operation.  By
 making "invariant" locations a separate assertion, we can keep all the other
 proofs that do not need it conservative.  *)
