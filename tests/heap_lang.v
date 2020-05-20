@@ -220,13 +220,21 @@ Section tests.
 
 End tests.
 
-Section notation_tests.
+Section inv_mapsto_tests.
   Context `{!heapG Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
   Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
-End notation_tests.
+
+  (* Make sure [setoid_rewrite] works. *)
+  Lemma inv_mapsto_setoid_rewrite (l : loc) (f : val → Prop) :
+    (∀ v, f v ↔ f #true) →
+    ⊢ l ↦□ (λ v, f v).
+  Proof.
+    iIntros (Heq). setoid_rewrite Heq. Show.
+  Abort.
+End inv_mapsto_tests.
 
 Section printing_tests.
   Context `{!heapG Σ}.
