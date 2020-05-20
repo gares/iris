@@ -218,6 +218,18 @@ Section tests.
     iIntros "[$ _]". (* splits the fraction, not the app *)
   Qed.
 
+
+  Lemma test_wp_free l v :
+    {{{ l ↦ v }}} Free #l {{{ RET #(); True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_free. iApply "HΦ". done.
+  Qed.
+
+  Lemma test_twp_free l v :
+    [[{ l ↦ v }]] Free #l [[{ RET #(); True }]].
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_free. iApply "HΦ". done.
+  Qed.
 End tests.
 
 Section inv_mapsto_tests.
