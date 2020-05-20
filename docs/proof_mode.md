@@ -187,8 +187,18 @@ Iris
 Miscellaneous
 -------------
 
-- The tactic `done` is extended so that it also performs `iAssumption` and
-  introduces pure connectives.
+- The tactic `done` of [std++](https://gitlab.mpi-sws.org/iris/stdpp/-/blob/master/theories/tactics.v)
+  (which solves "trivial" goals using `intros`, `reflexivity`, `symmetry`,
+  `eassumption`, `trivial`, `split`, `discriminate`, `contradiction`, etc.) is
+  extended so that it also, among other things:
+  + performs `iAssumption`,
+  + introduces `∀`, `→`, and `-∗` in the proof mode,
+  + introduces pure goals `⌜ φ ⌝` using `iPureIntro` and calls `done` on `φ`, and,
+  + solves other trivial proof mode goals, such as `emp`, `x ≡ x`, big operators
+    over the empty list/map/set/multiset.
+
+  (Note that ssreflect also has a `done` tactic. Although Iris uses ssreflect,
+  it overrides ssreflect's `done` tactic with std++'s.)
 - The proof mode adds hints to the core `eauto` database so that `eauto`
   automatically introduces: conjunctions and disjunctions, universal and
   existential quantifiers, implications and wand, plainness, persistence, later
