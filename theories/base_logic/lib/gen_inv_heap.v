@@ -16,8 +16,8 @@ may just be [True].
 Since invariant locations cannot be deallocated, they only make sense when
 modeling languages with garbage collection.  HeapLang can be used to model
 either language by choosing whether or not to use the [Free] operation.  By
-making "invariant" locations a separate assertion, we can keep all the other
-proofs that do not need it conservative.  *)
+using a separate assertion [inv_mapsto_own] for "invariant" locations, we can
+keep all the other proofs that do not need it conservative.  *)
 
 Definition inv_heapN: namespace := nroot .@ "inv_heap".
 Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
