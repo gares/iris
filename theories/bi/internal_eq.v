@@ -1,6 +1,10 @@
 From iris.bi Require Import derived_laws_sbi big_op.
 Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
 
+(** This file defines a type class for BIs with a notion of internal equality.
+Internal equality is not part of the [bi] canonical structure as [internal_eq]
+can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
+[▷ (x ≡ y) ⊢ Next x ≡ Next y] if the BI is step-indexed. *)
 Class InternalEq (PROP : bi) :=
   internal_eq : ∀ {A : ofeT}, A → A → PROP.
 Arguments internal_eq {_ _ _} _ _ : simpl never.
