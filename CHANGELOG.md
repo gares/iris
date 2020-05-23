@@ -166,6 +166,32 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
     lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
 * Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
+* Flatten the BI hierarchy by merging the `bi` and `sbi` canonical structures.
+  This gives significant performance benefits on developments that construct BIs
+  from BIs (e.g., use `monPred`). For, example it gives a performance gain of 37%
+  overall on lambdarust-weak, with improvements for individual files up to 72%,
+  see Iris issue #303. The concrete changes are as follows:
+  + The `sbi` canonical structure has been removed.
+  + The `bi` canonical structure contains the later modality. It does not
+    require the later modality to be contractive or to satisfy the Löb rule, so
+    we provide a smart constructor `bi_later_mixin_id` to get the later axioms
+    "for free" if later is defined to be the identity function.
+  + There is a separate class `BiLöb`, and a "free" instance of that class if
+    the later modality is contractive. A `BiLöb` instance is required for the
+    `iLöb` tactic, and for timeless instances of implication and wand.
+  + There is a separate type class `BiInternalEq` for BIs with a notion of
+    internal equality (internal equality was part of `sbi`). An instance of this
+    class is needed for the `iRewrite` tactic, and the various lemmas about
+    internal equality.
+  + The class `SbiEmbed` has been removed and been replaced by classes
+    `BiEmbedLater` and `BiEmbedInternalEq`.
+  + The class `BiPlainly` has been generalized to BIs without internal equality.
+    As a consequence, there is a separate class `BiPropExt` for BIs with
+    propositional extensionality (i.e., `■ (P ∗-∗ Q) ⊢ P ≡ Q`).
+  + The class `BiEmbedPlainly` is a bi-entailment (i.e., `⎡■ P⎤ ⊣⊢ ■ ⎡P⎤`
+    instead of `■ ⎡P⎤ ⊢ ⎡■ P⎤`) as it has been generalized to BIs without a
+    internal equality. In the past, the left-to-right direction was obtained for
+    "free" using the rules of internal equality.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
