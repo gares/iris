@@ -114,6 +114,17 @@ Section bi_mixin.
     bi_mixin_persistently_and_sep_elim P Q : <pers> P ∧ Q ⊢ P ∗ Q;
   }.
 
+  (** We equip any BI with a later modality. This avoids an additional layer in
+  the BI hierachy and improves performance significantly (see Iris issue #303).
+
+  For non step-indexed BIs the later modality can simply be defined as the
+  identity function, as the Löb axiom or contractiveness of later is not part of
+  [BiLaterMixin]. For step-indexed BIs one should separately prove an instance
+  of the class [BiLöb PROP] or [Contractive (▷)]. (Note that there is an
+  instance [Contractive (▷) → BiLöb PROP] in [derived_laws_sbi].)
+
+  For non step-indexed BIs one can get a "free" instance of [BiLaterMixin] using
+  the smart constructor [bi_later_mixin_id] below. *)
   Context (bi_later : PROP → PROP).
   Local Notation "▷ P" := (bi_later P) : bi_scope.
 
