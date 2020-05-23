@@ -17,6 +17,11 @@ Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
   bi_embed_mixin_mono : Proper ((⊢) ==> (⊢)) (embed (A:=PROP1) (B:=PROP2));
   bi_embed_mixin_emp_valid_inj (P : PROP1) :
     (⊢@{PROP2} ⎡P⎤) → ⊢ P;
+  (** The following axiom expresses that the embedding is injective in the OFE
+  sense. Instead of this axiom being expressed in terms of [siProp] or
+  externally (i.e., as [Inj (dist n) (dist n) embed]), it is expressed using the
+  internal equality of _any other_ BI [PROP']. This is more general, as we do
+  not have any machinary to embed [siProp] into a BI with internal equality. *)
   bi_embed_mixin_interal_inj `{BiInternalEq PROP'} (P Q : PROP1) :
     ⎡P⎤ ≡ ⎡Q⎤ ⊢@{PROP'} (P ≡ Q);
   bi_embed_mixin_emp_2 : emp ⊢@{PROP2} ⎡emp⎤;
