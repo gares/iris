@@ -121,7 +121,7 @@ Section bi_mixin.
   identity function, as the Löb axiom or contractiveness of later is not part of
   [BiLaterMixin]. For step-indexed BIs one should separately prove an instance
   of the class [BiLöb PROP] or [Contractive (▷)]. (Note that there is an
-  instance [Contractive (▷) → BiLöb PROP] in [derived_laws_sbi].)
+  instance [Contractive (▷) → BiLöb PROP] in [derived_laws_later].)
 
   For non step-indexed BIs one can get a "free" instance of [BiLaterMixin] using
   the smart constructor [bi_later_mixin_id] below. *)

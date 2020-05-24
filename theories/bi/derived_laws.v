@@ -10,7 +10,7 @@ From iris.algebra Require Import monoid.
 
 Module bi.
 Import interface.bi.
-Section bi_derived.
+Section derived.
 Context {PROP : bi}.
 Implicit Types φ : Prop.
 Implicit Types P Q R : PROP.
@@ -1551,5 +1551,5 @@ Qed.
 Global Instance limit_preserving_Persistent {A:ofeT} `{Cofe A} (Φ : A → PROP) :
   NonExpansive Φ → LimitPreserving (λ x, Persistent (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
-End bi_derived.
+End derived.
 End bi.
