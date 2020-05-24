@@ -145,6 +145,18 @@ Section inv.
     iMod "Hclose" as %_. iMod ("HcloseQ" with "HQ") as %_. by iApply "HcloseP".
   Qed.
 
+  Lemma inv_combine_dup_l N P Q :
+    □ (P -∗ P ∗ P) -∗
+    inv N P -∗ inv N Q -∗ inv N (P ∗ Q).
+  Proof.
+    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !#" (E ?).
+    iMod ("HinvP" with "[//]") as "[HP HcloseP]".
+    iDestruct ("HPdup" with "HP") as "[$ HP]".
+    iMod ("HcloseP" with "HP") as %_.
+    iMod ("HinvQ" with "[//]") as "[$ HcloseQ]".
+    iIntros "!> [HP HQ]". by iApply "HcloseQ".
+  Qed.
+
   (** ** Proof mode integration *)
   Global Instance into_inv_inv N P : IntoInv (inv N P) N := {}.
 
