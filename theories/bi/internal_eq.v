@@ -1,5 +1,5 @@
-From iris.bi Require Import derived_laws_sbi big_op.
-Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
+From iris.bi Require Import derived_laws_later big_op.
+Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 (** This file defines a type class for BIs with a notion of internal equality.
 Internal equality is not part of the [bi] canonical structure as [internal_eq]

@@ -44,8 +44,8 @@ theories/si_logic/bi.v
 theories/bi/notation.v
 theories/bi/interface.v
 theories/bi/derived_connectives.v
-theories/bi/derived_laws_bi.v
-theories/bi/derived_laws_sbi.v
+theories/bi/derived_laws.v
+theories/bi/derived_laws_later.v
 theories/bi/plainly.v
 theories/bi/internal_eq.v
 theories/bi/big_op.v

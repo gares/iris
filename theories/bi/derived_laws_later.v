@@ -1,10 +1,11 @@
-From iris.bi Require Export derived_laws_bi.
+From iris.bi Require Export derived_laws.
 From iris.algebra Require Import monoid.
 
 Module bi.
 Import interface.bi.
-Import derived_laws_bi.bi.
-Section sbi_derived.
+Import derived_laws.bi.
+
+Section later_derived.
 Context {PROP : bi}.
 Implicit Types φ : Prop.
 Implicit Types P Q R : PROP.
@@ -398,5 +399,5 @@ Proof. split; try apply _. apply laterN_intro. Qed.
 Global Instance bi_except_0_sep_entails_homomorphism :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_except_0 PROP).
 Proof. split; try apply _. apply except_0_intro. Qed.
-End sbi_derived.
+End later_derived.
 End bi.

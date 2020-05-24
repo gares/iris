@@ -119,7 +119,7 @@ Notation "mP -∗? Q" := (bi_wandM mP Q)
 
 (** This class is required for the [iLöb] tactic. For most logics this class
 should not be inhabited directly, but the instance [Contractive (▷) → BiLöb PROP]
-in [derived_laws_sbi] should be used. A direct instance of the class is useful
+in [derived_laws_later] should be used. A direct instance of the class is useful
 when considering a BI logic with a discrete OFE, instead of a OFE that takes
 step-indexing of the logic in account.*)
 Class BiLöb (PROP : bi) :=

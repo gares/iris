@@ -1,6 +1,6 @@
-From iris.bi Require Import derived_laws_sbi big_op internal_eq.
+From iris.bi Require Import derived_laws_later big_op internal_eq.
 From iris.algebra Require Import monoid.
-Import interface.bi derived_laws_bi.bi derived_laws_sbi.bi.
+Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 Class Plainly (A : Type) := plainly : A → A.
 Hint Mode Plainly ! : typeclass_instances.
