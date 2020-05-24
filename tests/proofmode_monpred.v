@@ -3,10 +3,9 @@ From iris.base_logic.lib Require Import invariants.
 Unset Printing Use Implicit Types. (* FIXME: remove once all supported Coq versions ship with <https://github.com/coq/coq/pull/11261>. *)
 
 Section tests.
-  Context {I : biIndex} {PROP : sbi}.
+  Context {I : biIndex} {PROP : bi}.
   Local Notation monPred := (monPred I PROP).
   Local Notation monPredI := (monPredI I PROP).
-  Local Notation monPredSI := (monPredSI I PROP).
   Implicit Types P Q R : monPred.
   Implicit Types 𝓟 𝓠 𝓡 : PROP.
   Implicit Types i j : I.
@@ -19,14 +18,14 @@ Section tests.
   Lemma test_iStartProof_2 P : P -∗ P.
   Proof. iStartProof monPred. iStartProof monPredI. iIntros "$". Qed.
   Lemma test_iStartProof_3 P : P -∗ P.
-  Proof. iStartProof monPredI. iStartProof monPredSI. iIntros "$". Qed.
+  Proof. iStartProof monPredI. iStartProof monPredI. iIntros "$". Qed.
   Lemma test_iStartProof_4 P : P -∗ P.
-  Proof. iStartProof monPredSI. iStartProof monPred. iIntros "$". Qed.
+  Proof. iStartProof monPredI. iStartProof monPred. iIntros "$". Qed.
   Lemma test_iStartProof_5 P : P -∗ P.
   Proof. iStartProof PROP. iIntros (i) "$". Qed.
   Lemma test_iStartProof_6 P : P ⊣⊢ P.
   Proof. iStartProof PROP. iIntros (i). iSplit; iIntros "$". Qed.
-  Lemma test_iStartProof_7 P : ⊢@{monPredI} P ≡ P.
+  Lemma test_iStartProof_7 `{!BiInternalEq PROP} P : ⊢@{monPredI} P ≡ P.
   Proof. iStartProof PROP. done. Qed.
 
   Lemma test_intowand_1 P Q : (P -∗ Q) -∗ P -∗ Q.

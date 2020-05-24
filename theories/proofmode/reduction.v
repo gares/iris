@@ -34,7 +34,7 @@ Declare Reduction pm_prettify := cbn [
   tele_fold tele_bind tele_app
   (* BI connectives *)
   bi_persistently_if bi_affinely_if bi_absorbingly_if bi_intuitionistically_if
-  bi_wandM sbi_laterN
+  bi_wandM bi_laterN
   bi_tforall bi_texist
 ].
 Ltac pm_prettify :=

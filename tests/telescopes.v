@@ -3,7 +3,7 @@ From iris.proofmode Require Import tactics.
 Set Default Proof Using "Type".
 
 Section basic_tests.
-  Context {PROP : sbi}.
+  Context {PROP : bi}.
   Implicit Types P Q R : PROP.
 
   Lemma test_iIntros_tforall {TT : tele} (Φ : TT → PROP) :
@@ -113,7 +113,7 @@ End accessor.
 (* Robbert's tests *)
 Section telescopes_and_tactics.
 
-Definition test1 {PROP : sbi} {X : tele} (α : X → PROP) : PROP :=
+Definition test1 {PROP : bi} {X : tele} (α : X → PROP) : PROP :=
   (∃.. x, α x)%I.
 
 Notation "'TEST1' {{ ∃ x1 .. xn , α } }" :=
@@ -122,7 +122,7 @@ Notation "'TEST1' {{ ∃ x1 .. xn , α } }" :=
                       fun x1 => .. (fun xn => α%I) ..))
   (at level 20, α at level 200, x1 binder, xn binder, only parsing).
 
-Definition test2 {PROP : sbi} {X : tele} (α : X → PROP) : PROP :=
+Definition test2 {PROP : bi} {X : tele} (α : X → PROP) : PROP :=
   (▷ ∃.. x, α x)%I.
 
 Notation "'TEST2' {{ ∃ x1 .. xn , α } }" :=
@@ -131,7 +131,7 @@ Notation "'TEST2' {{ ∃ x1 .. xn , α } }" :=
                       fun x1 => .. (fun xn => α%I) ..))
   (at level 20, α at level 200, x1 binder, xn binder, only parsing).
 
-Definition test3 {PROP : sbi} {X : tele} (α : X → PROP) : PROP :=
+Definition test3 {PROP : bi} {X : tele} (α : X → PROP) : PROP :=
   (◇ ∃.. x, α x)%I.
 
 Notation "'TEST3' {{ ∃ x1 .. xn , α } }" :=
@@ -141,7 +141,7 @@ Notation "'TEST3' {{ ∃ x1 .. xn , α } }" :=
   (at level 20, α at level 200, x1 binder, xn binder, only parsing).
 
 Check "test1_test".
-Lemma test1_test {PROP : sbi}  :
+Lemma test1_test {PROP : bi}  :
   TEST1 {{ ∃ a b : nat, <affine> ⌜a = b⌝ }} ⊢@{PROP} ▷ False.
 Proof.
   iIntros "H". iDestruct "H" as (x) "H". Show.
@@ -150,7 +150,7 @@ Restart.
 Abort.
 
 Check "test2_test".
-Lemma test2_test {PROP : sbi}  :
+Lemma test2_test {PROP : bi}  :
   TEST2 {{ ∃ a b : nat, <affine> ⌜a = b⌝ }} ⊢@{PROP} ▷ False.
 Proof.
   iIntros "H". iModIntro. Show.
@@ -160,7 +160,7 @@ Restart.
 Abort.
 
 Check "test3_test".
-Lemma test3_test {PROP : sbi}  :
+Lemma test3_test {PROP : bi}  :
   TEST3 {{ ∃ a b : nat, <affine> ⌜a = b⌝ }} ⊢@{PROP} ▷ False.
 Proof.
   iIntros "H". iMod "H".

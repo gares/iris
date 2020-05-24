@@ -46,7 +46,7 @@ Record BiBUpdMixin (PROP : bi) `(BUpd PROP) := {
   bi_bupd_mixin_bupd_frame_r (P R : PROP) : (|==> P) ∗ R ==∗ P ∗ R;
 }.
 
-Record BiFUpdMixin (PROP : sbi) `(FUpd PROP) := {
+Record BiFUpdMixin (PROP : bi) `(FUpd PROP) := {
   bi_fupd_mixin_fupd_ne E1 E2 : NonExpansive (fupd (PROP:=PROP) E1 E2);
   bi_fupd_mixin_fupd_intro_mask E1 E2 (P : PROP) : E2 ⊆ E1 → P ⊢ |={E1,E2}=> |={E2,E1}=> P;
   bi_fupd_mixin_except_0_fupd E1 E2 (P : PROP) : ◇ (|={E1,E2}=> P) ={E1,E2}=∗ P;
@@ -64,18 +64,18 @@ Class BiBUpd (PROP : bi) := {
 Hint Mode BiBUpd ! : typeclass_instances.
 Arguments bi_bupd_bupd : simpl never.
 
-Class BiFUpd (PROP : sbi) := {
+Class BiFUpd (PROP : bi) := {
   bi_fupd_fupd :> FUpd PROP;
   bi_fupd_mixin : BiFUpdMixin PROP bi_fupd_fupd;
 }.
 Hint Mode BiFUpd ! : typeclass_instances.
 Arguments bi_fupd_fupd : simpl never.
 
-Class BiBUpdFUpd (PROP : sbi) `{BiBUpd PROP, BiFUpd PROP} :=
+Class BiBUpdFUpd (PROP : bi) `{BiBUpd PROP, BiFUpd PROP} :=
   bupd_fupd E (P : PROP) : (|==> P) ={E}=∗ P.
 Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
 
-Class BiBUpdPlainly (PROP : sbi) `{!BiBUpd PROP, !BiPlainly PROP} :=
+Class BiBUpdPlainly (PROP : bi) `{!BiBUpd PROP, !BiPlainly PROP} :=
   bupd_plainly (P : PROP) : (|==> ■ P) -∗ P.
 Hint Mode BiBUpdPlainly ! - - : typeclass_instances.
 
@@ -83,7 +83,7 @@ Hint Mode BiBUpdPlainly ! - - : typeclass_instances.
 only make sense for affine logics. From the axioms below, one could derive
 [■ P ={E}=∗ P] (see the lemma [fupd_plainly_elim]), which in turn gives
 [True ={E}=∗ emp]. *)
-Class BiFUpdPlainly (PROP : sbi) `{!BiFUpd PROP, !BiPlainly PROP} := {
+Class BiFUpdPlainly (PROP : bi) `{!BiFUpd PROP, !BiPlainly PROP} := {
   (** When proving a fancy update of a plain proposition, you can also prove it
   while being allowed to open all invariants. *)
   fupd_plainly_mask_empty E (P : PROP) :
@@ -180,20 +180,15 @@ Section bupd_derived.
   Lemma big_sepMS_bupd `{Countable A} (Φ : A → PROP) l :
     ([∗ mset] x ∈ l, |==> Φ x) ⊢ |==> [∗ mset] x ∈ l, Φ x.
   Proof. by rewrite (big_opMS_commute _). Qed.
-End bupd_derived.
-
-Section bupd_derived_sbi.
-  Context {PROP : sbi} `{BiBUpd PROP}.
-  Implicit Types P Q R : PROP.
 
   Lemma except_0_bupd P : ◇ (|==> P) ⊢ (|==> ◇ P).
   Proof.
-    rewrite /sbi_except_0. apply or_elim; eauto using bupd_mono, or_intro_r.
+    rewrite /bi_except_0. apply or_elim; eauto using bupd_mono, or_intro_r.
     by rewrite -bupd_intro -or_intro_l.
   Qed.
 
   Section bupd_plainly.
-    Context `{BiBUpdPlainly PROP}.
+    Context `{!BiPlainly PROP, !BiBUpdPlainly PROP}.
 
     Lemma bupd_plain P `{!Plain P} : (|==> P) ⊢ P.
     Proof. by rewrite {1}(plain P) bupd_plainly. Qed.
@@ -207,7 +202,7 @@ Section bupd_derived_sbi.
         by rewrite (forall_elim x) bupd_plain.
     Qed.
   End bupd_plainly.
-End bupd_derived_sbi.
+End bupd_derived.
 
 Section fupd_derived.
   Context `{BiFUpd PROP}.
@@ -404,7 +399,7 @@ Section fupd_derived.
   Qed.
 
   Section fupd_plainly_derived.
-    Context `{BiPlainly PROP, !BiFUpdPlainly PROP}.
+    Context `{!BiPlainly PROP, !BiFUpdPlainly PROP}.
 
     Lemma fupd_plainly_mask E E' P : (|={E,E'}=> ■ P) ⊢ |={E}=> P.
     Proof.

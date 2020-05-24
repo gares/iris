@@ -2,7 +2,7 @@ From iris.proofmode Require Import tactics intro_patterns.
 Set Default Proof Using "Type".
 
 Section tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 Lemma test_eauto_emp_isplit_biwand P : emp ⊢ P ∗-∗ P.
@@ -68,11 +68,11 @@ Check "test_iStopProof".
 Lemma test_iStopProof Q : emp -∗ Q -∗ Q.
 Proof. iIntros "#H1 H2". Show. iStopProof. Show. by rewrite bi.sep_elim_r. Qed.
 
-Lemma test_iRewrite {A : ofeT} (x y : A) P :
+Lemma test_iRewrite `{!BiInternalEq PROP} {A : ofeT} (x y : A) P :
   □ (∀ z, P -∗ <affine> (z ≡ y)) -∗ (P -∗ P ∧ (x,x) ≡ (y,x)).
 Proof.
   iIntros "#H1 H2".
-  iRewrite (bi.internal_eq_sym x x with "[# //]").
+  iRewrite (internal_eq_sym x x with "[# //]").
   iRewrite -("H1" $! _ with "[- //]").
   auto.
 Qed.
@@ -127,7 +127,7 @@ Qed.
 Lemma test_iIntros_pure_not : ⊢@{PROP} ⌜ ¬False ⌝.
 Proof. by iIntros (?). Qed.
 
-Lemma test_fast_iIntros P Q :
+Lemma test_fast_iIntros `{!BiInternalEq PROP} P Q :
   ⊢ ∀ x y z : nat,
     ⌜x = plus 0 x⌝ → ⌜y = 0⌝ → ⌜z = 0⌝ → P → □ Q → foo (x ≡ x).
 Proof.
@@ -298,7 +298,7 @@ Proof.
   unshelve iSpecialize ("H" $! ∅ {[ 1%positive ]} ∅); try apply _. done.
 Qed.
 
-Lemma test_iFrame_pure {A : ofeT} (φ : Prop) (y z : A) :
+Lemma test_iFrame_pure `{!BiInternalEq PROP} {A : ofeT} (φ : Prop) (y z : A) :
   φ → <affine> ⌜y ≡ z⌝ -∗ (⌜ φ ⌝ ∧ ⌜ φ ⌝ ∧ y ≡ z : PROP).
 Proof. iIntros (Hv) "#Hxy". iFrame (Hv) "Hxy". Qed.
 
@@ -390,7 +390,7 @@ Lemma test_iNext_quantifier {A} (Φ : A → A → PROP) :
   (∀ y, ∃ x, ▷ Φ x y) -∗ ▷ (∀ y, ∃ x, Φ x y).
 Proof. iIntros "H". iNext. done. Qed.
 
-Lemma text_iNext_Next {A B : ofeT} (f : A -n> A) x y :
+Lemma text_iNext_Next `{!BiInternalEq PROP} {A B : ofeT} (f : A -n> A) x y :
   Next x ≡ Next y -∗ (Next (f x) ≡ Next (f y) : PROP).
 Proof. iIntros "H". iNext. by iRewrite "H". Qed.
 
@@ -411,7 +411,7 @@ Proof.
   iIntros "#H HP". iDestruct ("H" with "HP") as (x) "#H2". eauto with iFrame.
 Qed.
 
-Lemma test_iLöb P : ⊢ ∃ n, ▷^n P.
+Lemma test_iLöb `{!BiLöb PROP} P : ⊢ ∃ n, ▷^n P.
 Proof.
   iLöb as "IH". iDestruct "IH" as (n) "IH".
   by iExists (S n).
@@ -458,7 +458,8 @@ Lemma test_iIntros_let P :
   ∀ Q, let R := emp%I in P -∗ R -∗ Q -∗ P ∗ Q.
 Proof. iIntros (Q R) "$ _ $". Qed.
 
-Lemma test_iNext_iRewrite P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
+Lemma test_iNext_iRewrite `{!BiInternalEq PROP} P Q :
+  <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
 Proof.
   iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ".
 Qed.
@@ -475,7 +476,8 @@ Lemma test_iIntros_rewrite P (x1 x2 x3 x4 : nat) :
   x1 = x2 → (⌜ x2 = x3 ⌝ ∗ ⌜ x3 ≡ x4 ⌝ ∗ P) -∗ ⌜ x1 = x4 ⌝ ∗ P.
 Proof. iIntros (?) "(-> & -> & $)"; auto. Qed.
 
-Lemma test_iNext_affine P Q : <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
+Lemma test_iNext_affine `{!BiInternalEq PROP} P Q :
+  <affine> ▷ (Q ≡ P) -∗ <affine> ▷ Q -∗ <affine> ▷ P.
 Proof. iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ". Qed.
 
 Lemma test_iAlways P Q R :
@@ -822,7 +824,7 @@ Qed.
 End tests.
 
 Section parsing_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P : PROP.
 
 (** Test notations for (bi)entailment and internal equality. These tests are
@@ -860,7 +862,7 @@ Lemma test_entails_annot_sections_space_close P :
   (P ⊣⊢@{PROP} P ) ∧ (⊣⊢@{PROP} ) P P ∧ (.⊣⊢ P ) P.
 Proof. naive_solver. Qed.
 
-Lemma test_sbi_internal_eq_annot_sections P :
+Lemma test_bi_internal_eq_annot_sections `{!BiInternalEq PROP} P :
   ⊢@{PROP}
     P ≡@{PROP} P ∧ (≡@{PROP}) P P ∧ (P ≡.) P ∧ (.≡ P) P ∧
     ((P ≡@{PROP} P)) ∧ ((≡@{PROP})) P P ∧ ((P ≡.)) P ∧ ((.≡ P)) P ∧
@@ -870,7 +872,7 @@ Proof. naive_solver. Qed.
 End parsing_tests.
 
 Section printing_tests.
-Context {PROP : sbi} `{!BiFUpd PROP}.
+Context {PROP : bi} `{!BiFUpd PROP}.
 Implicit Types P Q R : PROP.
 
 Check "elim_mod_accessor".
@@ -944,7 +946,7 @@ End printing_tests.
 
 (** Test error messages *)
 Section error_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 Check "iStopProof_not_proofmode".
@@ -1127,13 +1129,13 @@ Section error_tests_bi.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
-Check "iLöb_no_sbi".
-Lemma iLöb_no_sbi P : ⊢ P.
+Check "iLöb_no_BiLöb".
+Lemma iLöb_no_BiLöb P : ⊢ P.
 Proof. Fail iLöb as "IH". Abort.
 End error_tests_bi.
 
 Section pure_name_tests.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 (* mock string_to_ident for just these tests *)
 Ltac ltac_tactics.string_to_ident_hook ::=

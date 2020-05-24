@@ -79,11 +79,11 @@ Proof. by exists φ. Qed.
 Hint Extern 0 (FromPureT _ _ _) =>
   notypeclasses refine (from_pureT_hint _ _ _ _) : typeclass_instances.
 
-Class IntoInternalEq {PROP : sbi} {A : ofeT} (P : PROP) (x y : A) :=
+Class IntoInternalEq `{BiInternalEq PROP} {A : ofeT} (P : PROP) (x y : A) :=
   into_internal_eq : P ⊢ x ≡ y.
-Arguments IntoInternalEq {_ _} _%I _%type_scope _%type_scope : simpl never.
-Arguments into_internal_eq {_ _} _%I _%type_scope _%type_scope {_}.
-Hint Mode IntoInternalEq + - ! - - : typeclass_instances.
+Arguments IntoInternalEq {_ _ _} _%I _%type_scope _%type_scope : simpl never.
+Arguments into_internal_eq {_ _ _} _%I _%type_scope _%type_scope {_}.
+Hint Mode IntoInternalEq + - - ! - - : typeclass_instances.
 
 Class IntoPersistent {PROP : bi} (p : bool) (P Q : PROP) :=
   into_persistent : <pers>?p P ⊢ <pers> Q.
@@ -222,7 +222,7 @@ Arguments FromForall {_ _} _%I _%I : simpl never.
 Arguments from_forall {_ _} _%I _%I {_}.
 Hint Mode FromForall + - ! - : typeclass_instances.
 
-Class IsExcept0 {PROP : sbi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
+Class IsExcept0 {PROP : bi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
 Arguments IsExcept0 {_} _%I : simpl never.
 Arguments is_except_0 {_} _%I {_}.
 Hint Mode IsExcept0 + ! : typeclass_instances.
@@ -390,25 +390,25 @@ Class KnownMakePersistently {PROP : bi} (P Q : PROP) :=
 Arguments KnownMakePersistently {_} _%I _%I.
 Hint Mode KnownMakePersistently + ! - : typeclass_instances.
 
-Class MakeLaterN {PROP : sbi} (n : nat) (P lP : PROP) :=
+Class MakeLaterN {PROP : bi} (n : nat) (P lP : PROP) :=
   make_laterN : ▷^n P ⊣⊢ lP.
 Arguments MakeLaterN {_} _%nat _%I _%I.
 Hint Mode MakeLaterN + + - - : typeclass_instances.
-Class KnownMakeLaterN {PROP : sbi} (n : nat) (P lP : PROP) :=
+Class KnownMakeLaterN {PROP : bi} (n : nat) (P lP : PROP) :=
   known_make_laterN :> MakeLaterN n P lP.
 Arguments KnownMakeLaterN {_} _%nat _%I _%I.
 Hint Mode KnownMakeLaterN + + ! - : typeclass_instances.
 
-Class MakeExcept0 {PROP : sbi} (P Q : PROP) :=
-  make_except_0 : sbi_except_0 P ⊣⊢ Q.
+Class MakeExcept0 {PROP : bi} (P Q : PROP) :=
+  make_except_0 : ◇ P ⊣⊢ Q.
 Arguments MakeExcept0 {_} _%I _%I.
 Hint Mode MakeExcept0 + - - : typeclass_instances.
-Class KnownMakeExcept0 {PROP : sbi} (P Q : PROP) :=
+Class KnownMakeExcept0 {PROP : bi} (P Q : PROP) :=
   known_make_except_0 :> MakeExcept0 P Q.
 Arguments KnownMakeExcept0 {_} _%I _%I.
 Hint Mode KnownMakeExcept0 + ! - : typeclass_instances.
 
-Class IntoExcept0 {PROP : sbi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
+Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Arguments IntoExcept0 {_} _%I _%I : simpl never.
 Arguments into_except_0 {_} _%I _%I {_}.
 Hint Mode IntoExcept0 + ! - : typeclass_instances.
@@ -448,24 +448,24 @@ Lemma test_iFrame_later_1 P Q : P ∗ ▷ Q -∗ ▷ (P ∗ ▷ Q).
 Proof. iIntros "H". iFrame "H". Qed.
 >>
 *)
-Class MaybeIntoLaterN {PROP : sbi} (only_head : bool) (n : nat) (P Q : PROP) :=
+Class MaybeIntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   maybe_into_laterN : P ⊢ ▷^n Q.
 Arguments MaybeIntoLaterN {_} _ _%nat_scope _%I _%I.
 Arguments maybe_into_laterN {_} _ _%nat_scope _%I _%I {_}.
 Hint Mode MaybeIntoLaterN + + + - - : typeclass_instances.
 
-Class IntoLaterN {PROP : sbi} (only_head : bool) (n : nat) (P Q : PROP) :=
+Class IntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   into_laterN :> MaybeIntoLaterN only_head n P Q.
 Arguments IntoLaterN {_} _ _%nat_scope _%I _%I.
 Hint Mode IntoLaterN + + + ! - : typeclass_instances.
 
-Instance maybe_into_laterN_default {PROP : sbi} only_head n (P : PROP) :
+Instance maybe_into_laterN_default {PROP : bi} only_head n (P : PROP) :
   MaybeIntoLaterN only_head n P P | 1000.
 Proof. apply laterN_intro. Qed.
 (* In the case both parameters are evars and n=0, we have to stop the
    search and unify both evars immediately instead of looping using
    other instances. *)
-Instance maybe_into_laterN_default_0 {PROP : sbi} only_head (P : PROP) :
+Instance maybe_into_laterN_default_0 {PROP : bi} only_head (P : PROP) :
   MaybeIntoLaterN only_head 0 P P | 0.
 Proof. apply _. Qed.
 
@@ -630,6 +630,6 @@ Instance elim_modal_tc_opaque {PROP : bi} φ p p' (P P' Q Q' : PROP) :
   ElimModal φ p p' P P' Q Q' → ElimModal φ p p' (tc_opaque P) P' Q Q' := id.
 Instance into_inv_tc_opaque {PROP : bi} (P : PROP) N :
   IntoInv P N → IntoInv (tc_opaque P) N := id.
-Instance elim_inv_tc_opaque {PROP : sbi} {X} φ Pinv Pin Pout Pclose Q Q' :
+Instance elim_inv_tc_opaque {PROP : bi} {X} φ Pinv Pin Pout Pclose Q Q' :
   ElimInv (PROP:=PROP) (X:=X) φ Pinv Pin Pout Pclose Q Q' →
   ElimInv φ (tc_opaque Pinv) Pin Pout Pclose Q Q' := id.

@@ -1,5 +1,5 @@
-From iris.bi Require Export derived_laws_bi derived_laws_sbi
-     big_op updates plainly embedding.
+From iris.bi Require Export derived_laws_bi derived_laws_sbi big_op.
+From iris.bi Require Export updates internal_eq plainly embedding.
 Set Default Proof Using "Type".
 
 Module Import bi.

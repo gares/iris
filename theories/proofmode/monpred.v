@@ -454,37 +454,6 @@ Qed.
 Global Instance add_modal_at_bupd_goal `{BiBUpd PROP} φ 𝓟 𝓟' Q i :
   AddModal 𝓟 𝓟' (|==> Q i)%I → AddModal 𝓟 𝓟' ((|==> Q) i).
 Proof. by rewrite /AddModal !monPred_at_bupd. Qed.
-End bi.
-
-(* When P and/or Q are evars when doing typeclass search on [IntoWand
-   (R i) P Q], we use [MakeMonPredAt] in order to normalize the
-   result of unification. However, when they are not evars, we want to
-   propagate the known information through typeclass search. Hence, we
-   do not want to use [MakeMonPredAt].
-
-   As a result, depending on P and Q being evars, we use a different
-   version of [into_wand_monPred_at_xx_xx]. *)
-Hint Extern 3 (IntoWand _ _ (monPred_at _ _) ?P ?Q) =>
-     is_evar P; is_evar Q;
-     eapply @into_wand_monPred_at_unknown_unknown
-     : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) ?P (monPred_at ?Q _)) =>
-     eapply @into_wand_monPred_at_unknown_known
-     : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
-     eapply @into_wand_monPred_at_known_unknown_le
-     : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
-     eapply @into_wand_monPred_at_known_unknown_ge
-     : typeclass_instances.
-
-Section sbi.
-Context {I : biIndex} {PROP : sbi}.
-Local Notation monPred := (monPred I PROP).
-Implicit Types P Q R : monPred.
-Implicit Types 𝓟 𝓠 𝓡 : PROP.
-Implicit Types φ : Prop.
-Implicit Types i j : I.
 
 Global Instance from_forall_monPred_at_plainly `{BiPlainly PROP} i P Φ :
   (∀ i, MakeMonPredAt i P (Φ i)) →
@@ -505,8 +474,8 @@ Global Instance is_except_0_monPred_at i P :
   IsExcept0 P → IsExcept0 (P i).
 Proof. rewrite /IsExcept0=>- [/(_ i)]. by rewrite monPred_at_except_0. Qed.
 
-Global Instance make_monPred_at_internal_eq {A : ofeT} (x y : A) i :
-  @MakeMonPredAt I PROP i (x ≡ y) (x ≡ y).
+Global Instance make_monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofeT} (x y : A) i :
+  MakeMonPredAt i (x ≡ y) (x ≡ y).
 Proof. by rewrite /MakeMonPredAt monPred_at_internal_eq. Qed.
 Global Instance make_monPred_at_except_0 i P 𝓠 :
   MakeMonPredAt i P 𝓠 → MakeMonPredAt i (◇ P)%I (◇ 𝓠)%I.
@@ -521,7 +490,8 @@ Global Instance make_monPred_at_fupd `{BiFUpd PROP} i E1 E2 P 𝓟 :
   MakeMonPredAt i P 𝓟 → MakeMonPredAt i (|={E1,E2}=> P)%I (|={E1,E2}=> 𝓟)%I.
 Proof. by rewrite /MakeMonPredAt monPred_at_fupd=> <-. Qed.
 
-Global Instance into_internal_eq_monPred_at {A : ofeT} (x y : A) P i :
+Global Instance into_internal_eq_monPred_at `{!BiInternalEq PROP}
+    {A : ofeT} (x y : A) P i :
   IntoInternalEq P x y → IntoInternalEq (P i) x y.
 Proof. rewrite /IntoInternalEq=> ->. by rewrite monPred_at_internal_eq. Qed.
 
@@ -556,6 +526,36 @@ Proof. rewrite /Frame /FrameMonPredAt=> ->. by rewrite monPred_at_laterN. Qed.
 Global Instance frame_monPred_at_fupd `{BiFUpd PROP} E1 E2 p P 𝓡 𝓠 i :
   Frame p 𝓡 (|={E1,E2}=> P i) 𝓠 → FrameMonPredAt p i 𝓡 (|={E1,E2}=> P) 𝓠.
 Proof. rewrite /Frame /FrameMonPredAt=> ->. by rewrite monPred_at_fupd. Qed.
+End bi.
+(* When P and/or Q are evars when doing typeclass search on [IntoWand
+   (R i) P Q], we use [MakeMonPredAt] in order to normalize the
+   result of unification. However, when they are not evars, we want to
+   propagate the known information through typeclass search. Hence, we
+   do not want to use [MakeMonPredAt].
+
+   As a result, depending on P and Q being evars, we use a different
+   version of [into_wand_monPred_at_xx_xx]. *)
+Hint Extern 3 (IntoWand _ _ (monPred_at _ _) ?P ?Q) =>
+     is_evar P; is_evar Q;
+     eapply @into_wand_monPred_at_unknown_unknown
+     : typeclass_instances.
+Hint Extern 2 (IntoWand _ _ (monPred_at _ _) ?P (monPred_at ?Q _)) =>
+     eapply @into_wand_monPred_at_unknown_known
+     : typeclass_instances.
+Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
+     eapply @into_wand_monPred_at_known_unknown_le
+     : typeclass_instances.
+Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
+     eapply @into_wand_monPred_at_known_unknown_ge
+     : typeclass_instances.
+
+Section modal.
+Context {I : biIndex} {PROP : bi}.
+Local Notation monPred := (monPred I PROP).
+Implicit Types P Q R : monPred.
+Implicit Types 𝓟 𝓠 𝓡 : PROP.
+Implicit Types φ : Prop.
+Implicit Types i j : I.
 
 Global Instance elim_modal_at_fupd_goal `{BiFUpd PROP} φ p p' E1 E2 E3 𝓟 𝓟' Q Q' i :
   ElimModal φ p p' 𝓟 𝓟' (|={E1,E3}=> Q i) (|={E2,E3}=> Q' i) →
@@ -567,10 +567,10 @@ Global Instance elim_modal_at_fupd_hyp `{BiFUpd PROP} φ p p' E1 E2 P 𝓟 𝓟'
   ElimModal φ p p' ((|={E1,E2}=> P) i) 𝓟' 𝓠 𝓠'.
 Proof. by rewrite /MakeMonPredAt /ElimModal monPred_at_fupd=><-. Qed.
 
-Global Instance elim_acc_at_None `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' P P'x V:
+Global Instance elim_acc_at_None `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' P P'x i :
   (∀ x, MakeEmbed (α x) (α' x)) → (∀ x, MakeEmbed (β x) (β' x)) →
   ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ _, None) P P'x →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ _, None) (P V) (λ x, P'x x V).
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ _, None) (P i) (λ x, P'x x i).
 Proof.
   rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ HEA) "Hinner Hacc".
   iApply (HEA with "[Hinner]").
@@ -578,12 +578,12 @@ Proof.
   - iMod "Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]". iModIntro. iExists x.
     rewrite -Hα -Hβ. iFrame. iIntros (? _) "Hβ". by iApply "Hclose".
 Qed.
-Global Instance elim_acc_at_Some `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' γ γ' P P'x V:
+Global Instance elim_acc_at_Some `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' γ γ' P P'x i :
   (∀ x, MakeEmbed (α x) (α' x)) →
   (∀ x, MakeEmbed (β x) (β' x)) →
   (∀ x, MakeEmbed (γ x) (γ' x)) →
   ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ x, Some (γ' x)) P P'x →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ x, Some (γ x)) (P V) (λ x, P'x x V).
+  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ x, Some (γ x)) (P i) (λ x, P'x x i).
 Proof.
   rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ Hγ HEA) "Hinner Hacc".
   iApply (HEA with "[Hinner]").
@@ -599,9 +599,9 @@ Proof. by rewrite /AddModal !monPred_at_fupd. Qed.
 (* This hard-codes the fact that ElimInv with_close returns a
    [(λ _, ...)] as Q'. *)
 Global Instance elim_inv_embed_with_close {X : Type} φ
-       𝓟inv 𝓟in (𝓟out 𝓟close : X → PROP)
-       Pin (Pout Pclose : X → monPred)
-       Q Q' :
+    𝓟inv 𝓟in (𝓟out 𝓟close : X → PROP)
+    Pin (Pout Pclose : X → monPred)
+    Q Q' :
   (∀ i, ElimInv φ 𝓟inv 𝓟in 𝓟out (Some 𝓟close) (Q i) (λ _, Q' i)) →
   MakeEmbed 𝓟in Pin → (∀ x, MakeEmbed (𝓟out x) (Pout x)) →
   (∀ x, MakeEmbed (𝓟close x) (Pclose x)) →
@@ -609,16 +609,18 @@ Global Instance elim_inv_embed_with_close {X : Type} φ
 Proof.
   rewrite /MakeEmbed /ElimInv=>H <- Hout Hclose ?. iStartProof PROP.
   setoid_rewrite <-Hout. setoid_rewrite <-Hclose.
-  iIntros (?) "(?&?&HQ')". iApply H; [done|]. iFrame. iIntros (x) "?". by iApply "HQ'".
+  iIntros (?) "(?&?&HQ')". iApply H; [done|]. iFrame. iIntros (x) "?".
+  by iApply "HQ'".
 Qed.
 Global Instance elim_inv_embed_without_close  {X : Type}
-       φ 𝓟inv 𝓟in (𝓟out : X → PROP) Pin (Pout : X → monPred) Q (Q' : X → monPred) :
+    φ 𝓟inv 𝓟in (𝓟out : X → PROP) Pin (Pout : X → monPred) Q (Q' : X → monPred) :
   (∀ i, ElimInv φ 𝓟inv 𝓟in 𝓟out None (Q i) (λ x, Q' x i)) →
   MakeEmbed 𝓟in Pin → (∀ x, MakeEmbed (𝓟out x) (Pout x)) →
   ElimInv (X:=X) φ ⎡𝓟inv⎤ Pin Pout None Q Q'.
 Proof.
   rewrite /MakeEmbed /ElimInv=>H <-Hout ?. iStartProof PROP.
   setoid_rewrite <-Hout.
-  iIntros (?) "(?&?&HQ')". iApply H; [done|]. iFrame. iIntros (x) "?". by iApply "HQ'".
+  iIntros (?) "(?&?&HQ')". iApply H; [done|]. iFrame. iIntros (x) "?".
+  by iApply "HQ'".
 Qed.
-End sbi.
+End modal.

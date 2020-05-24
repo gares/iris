@@ -2533,10 +2533,9 @@ Tactic Notation "iLöbCore" "as" constr (IH) :=
   (* apply is sometimes confused wrt. canonical structures search.
      refine should use the other unification algorithm, which should
      not have this issue. *)
-  first
-      [notypeclasses refine (tac_löb _ IH _ _ _)
-      |fail 1 "iLöb: not a step-indexed BI entailment"];
-    [reflexivity || fail "iLöb: spatial context not empty, this should not happen"
+  notypeclasses refine (tac_löb _ IH _ _ _ _);
+    [iSolveTC || fail "iLöb: no 'BiLöb' instance found"
+    |reflexivity || fail "iLöb: spatial context not empty, this should not happen"
     |pm_reduce;
      lazymatch goal with
      | |- False =>
@@ -2743,9 +2742,7 @@ Local Ltac iRewriteFindPred :=
 
 Local Tactic Notation "iRewriteCore" constr(lr) open_constr(lem) :=
   iPoseProofCore lem as true (fun Heq =>
-    first
-        [eapply (tac_rewrite _ Heq _ _ lr)
-        |fail 1 "iRewrite: not a step-indexed BI entailment"];
+    eapply (tac_rewrite _ Heq _ _ lr);
       [pm_reflexivity ||
        let Heq := pretty_ident Heq in
        fail "iRewrite:" Heq "not found"
@@ -3245,7 +3242,7 @@ Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
 (* TODO: look for a more principled way of adding trivial hints like those
 below; see the discussion in !75 for further details. *)
 Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
-  rewrite envs_entails_eq; apply bi.internal_eq_refl : core.
+  rewrite envs_entails_eq; apply internal_eq_refl : core.
 Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
   rewrite envs_entails_eq; apply big_sepL_nil' : core.
 Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>

@@ -1016,13 +1016,13 @@ Section tac_modal_intro.
 End tac_modal_intro.
 
 Section sbi_tactics.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types Γ : env PROP.
 Implicit Types Δ : envs PROP.
 Implicit Types P Q : PROP.
 
 (** * Rewriting *)
-Lemma tac_rewrite Δ i p Pxy d Q :
+Lemma tac_rewrite `{!BiInternalEq PROP} Δ i p Pxy d Q :
   envs_lookup i Δ = Some (p, Pxy) →
   ∀ {A : ofeT} (x y : A) (Φ : A → PROP),
     IntoInternalEq Pxy x y →
@@ -1036,7 +1036,7 @@ Proof.
   destruct d; auto using internal_eq_sym.
 Qed.
 
-Lemma tac_rewrite_in Δ i p Pxy j q P d Q :
+Lemma tac_rewrite_in `{!BiInternalEq PROP} Δ i p Pxy j q P d Q :
   envs_lookup i Δ = Some (p, Pxy) →
   envs_lookup j Δ = Some (q, P) →
   ∀ {A : ofeT} (x y : A) (Φ : A → PROP),
@@ -1092,6 +1092,7 @@ Proof.
 Qed.
 
 Lemma tac_löb Δ i Q :
+  BiLöb PROP →
   env_spatial_is_nil Δ = true →
   match envs_app true (Esnoc Enil i (▷ Q)%I) Δ with
   | None => False
@@ -1100,7 +1101,7 @@ Lemma tac_löb Δ i Q :
   envs_entails Δ Q.
 Proof.
   destruct (envs_app _ _ _) eqn:?; last done.
-  rewrite envs_entails_eq => ? HQ.
+  rewrite envs_entails_eq => ?? HQ.
   rewrite (env_spatial_is_nil_intuitionistically Δ) //.
   rewrite -(persistently_and_emp_elim Q). apply and_intro; first apply: affine.
   rewrite -(löb (<pers> Q)%I) later_persistently. apply impl_intro_l.

@@ -5,7 +5,7 @@ Set Default Proof Using "Type".
 Import bi.
 
 Section sbi_instances.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types P Q R : PROP.
 
 (** FromAssumption *)
@@ -37,7 +37,7 @@ Proof.
 Qed.
 
 (** FromPure *)
-Global Instance from_pure_internal_eq {A : ofeT} (a b : A) :
+Global Instance from_pure_internal_eq `{!BiInternalEq PROP} {A : ofeT} (a b : A) :
   @FromPure PROP false (a ≡ b) (a ≡ b).
 Proof. by rewrite /FromPure pure_internal_eq. Qed.
 Global Instance from_pure_later a P φ : FromPure a P φ → FromPure a (▷ P) φ.
@@ -56,7 +56,7 @@ Global Instance from_pure_plainly `{BiPlainly PROP} P φ :
 Proof. rewrite /FromPure=> <-. by rewrite plainly_pure. Qed.
 
 (** IntoPure *)
-Global Instance into_pure_eq {A : ofeT} (a b : A) :
+Global Instance into_pure_eq `{!BiInternalEq PROP} {A : ofeT} (a b : A) :
   Discrete a → @IntoPure PROP (a ≡ b) (a ≡ b).
 Proof. intros. by rewrite /IntoPure discrete_eq. Qed.
 
@@ -203,7 +203,7 @@ Global Instance into_sep_affinely_later `{!Timeless (PROP:=PROP) emp} P Q1 Q2 :
 Proof.
   rewrite /IntoSep /= => -> ??.
   rewrite -{1}(affine_affinely Q1) -{1}(affine_affinely Q2) later_sep !later_affinely_1.
-  rewrite -except_0_sep /sbi_except_0 affinely_or. apply or_elim, affinely_elim.
+  rewrite -except_0_sep /bi_except_0 affinely_or. apply or_elim, affinely_elim.
   rewrite -(idemp bi_and (<affine> ▷ False)%I) persistent_and_sep_1.
   by rewrite -(False_elim Q1) -(False_elim Q2).
 Qed.
@@ -354,7 +354,7 @@ Global Instance is_except_0_except_0 P : IsExcept0 (◇ P).
 Proof. by rewrite /IsExcept0 except_0_idemp. Qed.
 Global Instance is_except_0_later P : IsExcept0 (▷ P).
 Proof. by rewrite /IsExcept0 except_0_later. Qed.
-Global Instance is_except_0_embed `{SbiEmbed PROP PROP'} P :
+Global Instance is_except_0_embed `{BiEmbedLater PROP PROP'} P :
   IsExcept0 P → IsExcept0 ⎡P⎤.
 Proof. by rewrite /IsExcept0 -embed_except_0=>->. Qed.
 Global Instance is_except_0_bupd `{BiBUpd PROP} P : IsExcept0 P → IsExcept0 (|==> P).
@@ -373,7 +373,7 @@ Proof. by rewrite /FromModal. Qed.
 Global Instance from_modal_laterN n P :
   FromModal (modality_laterN n) (▷^n P) (▷^n P) P.
 Proof. by rewrite /FromModal. Qed.
-Global Instance from_modal_Next {A : ofeT} (x y : A) :
+Global Instance from_modal_Next `{!BiInternalEq PROP} {A : ofeT} (x y : A) :
   FromModal (PROP1:=PROP) (PROP2:=PROP) (modality_laterN 1)
     (▷^1 (x ≡ y) : PROP)%I (Next x ≡ Next y) (x ≡ y).
 Proof. by rewrite /FromModal /= later_equivI. Qed.
@@ -385,7 +385,7 @@ Global Instance from_modal_fupd E P `{BiFUpd PROP} :
   FromModal modality_id (|={E}=> P) (|={E}=> P) P.
 Proof. by rewrite /FromModal /= -fupd_intro. Qed.
 
-Global Instance from_modal_later_embed `{SbiEmbed PROP PROP'} `(sel : A) n P Q :
+Global Instance from_modal_later_embed `{BiEmbedLater PROP PROP'} `(sel : A) n P Q :
   FromModal (modality_laterN n) sel P Q →
   FromModal (modality_laterN n) sel ⎡P⎤ ⎡Q⎤.
 Proof. rewrite /FromModal /= =><-. by rewrite embed_laterN. Qed.
@@ -394,35 +394,40 @@ Global Instance from_modal_plainly `{BiPlainly PROP} P :
   FromModal modality_plainly (■ P) (■ P) P | 2.
 Proof. by rewrite /FromModal. Qed.
 
-Global Instance from_modal_plainly_embed `{BiPlainly PROP, BiPlainly PROP',
-    BiEmbedPlainly PROP PROP', !SbiEmbed PROP PROP'} `(sel : A) P Q :
+Global Instance from_modal_plainly_embed `{!BiPlainly PROP, !BiPlainly PROP',
+    !BiEmbed PROP PROP', !BiEmbedPlainly PROP PROP'} `(sel : A) P Q :
   FromModal modality_plainly sel P Q →
   FromModal (PROP2:=PROP') modality_plainly sel ⎡P⎤ ⎡Q⎤ | 100.
 Proof. rewrite /FromModal /= =><-. by rewrite embed_plainly. Qed.
 
 (** IntoInternalEq *)
-Global Instance into_internal_eq_internal_eq {A : ofeT} (x y : A) :
-  @IntoInternalEq PROP A (x ≡ y) x y.
-Proof. by rewrite /IntoInternalEq. Qed.
-Global Instance into_internal_eq_affinely {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq (<affine> P) x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite affinely_elim. Qed.
-Global Instance into_internal_eq_intuitionistically {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq (□ P) x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite intuitionistically_elim. Qed.
-Global Instance into_internal_eq_absorbingly {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq (<absorb> P) x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite absorbingly_internal_eq. Qed.
-Global Instance into_internal_eq_plainly `{BiPlainly PROP} {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq (■ P) x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite plainly_elim. Qed.
-Global Instance into_internal_eq_persistently {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq (<pers> P) x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite persistently_elim. Qed.
-Global Instance into_internal_eq_embed
-       `{SbiEmbed PROP PROP'} {A : ofeT} (x y : A) P :
-  IntoInternalEq P x y → IntoInternalEq ⎡P⎤ x y.
-Proof. rewrite /IntoInternalEq=> ->. by rewrite embed_internal_eq. Qed.
+Section internal_eq.
+  Context `{!BiInternalEq PROP}.
+
+  Global Instance into_internal_eq_internal_eq {A : ofeT} (x y : A) :
+    @IntoInternalEq PROP _ A (x ≡ y) x y.
+  Proof. by rewrite /IntoInternalEq. Qed.
+  Global Instance into_internal_eq_affinely {A : ofeT} (x y : A) P :
+    IntoInternalEq P x y → IntoInternalEq (<affine> P) x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite affinely_elim. Qed.
+  Global Instance into_internal_eq_intuitionistically {A : ofeT} (x y : A) P :
+    IntoInternalEq P x y → IntoInternalEq (□ P) x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite intuitionistically_elim. Qed.
+  Global Instance into_internal_eq_absorbingly {A : ofeT} (x y : A) P :
+    IntoInternalEq P x y → IntoInternalEq (<absorb> P) x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite absorbingly_internal_eq. Qed.
+  Global Instance into_internal_eq_plainly `{BiPlainly PROP} {A : ofeT} (x y : A) P :
+    IntoInternalEq P x y → IntoInternalEq (■ P) x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite plainly_elim. Qed.
+  Global Instance into_internal_eq_persistently {A : ofeT} (x y : A) P :
+    IntoInternalEq P x y → IntoInternalEq (<pers> P) x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite persistently_elim. Qed.
+  Global Instance into_internal_eq_embed
+       `{!BiInternalEq PROP', BiEmbedInternalEq PROP PROP'}
+       {A : ofeT} (x y : A) (P : PROP) :
+    IntoInternalEq P x y → IntoInternalEq (⎡P⎤ : PROP')%I x y.
+  Proof. rewrite /IntoInternalEq=> ->. by rewrite embed_internal_eq. Qed.
+End internal_eq.
 
 (** IntoExcept0 *)
 Global Instance into_except_0_except_0 P : IntoExcept0 (◇ P) P.
@@ -447,7 +452,7 @@ Proof. rewrite /IntoExcept0=> ->. by rewrite except_0_plainly. Qed.
 Global Instance into_except_0_persistently P Q :
   IntoExcept0 P Q → IntoExcept0 (<pers> P) (<pers> Q).
 Proof. rewrite /IntoExcept0=> ->. by rewrite except_0_persistently. Qed.
-Global Instance into_except_0_embed `{SbiEmbed PROP PROP'} P Q :
+Global Instance into_except_0_embed `{BiEmbedLater PROP PROP'} P Q :
   IntoExcept0 P Q → IntoExcept0 ⎡P⎤ ⎡Q⎤.
 Proof. rewrite /IntoExcept0=> ->. by rewrite embed_except_0. Qed.
 
@@ -572,7 +577,8 @@ Proof.
   move=> Hn [_ ->|->] <-; by rewrite -!laterN_plus -Hn Nat.add_comm.
 Qed.
 
-Global Instance into_laterN_Next {A : ofeT} only_head n n' (x y : A) :
+Global Instance into_laterN_Next `{!BiInternalEq PROP}
+    {A : ofeT} only_head n n' (x y : A) :
   NatCancel n 1 n' 0 →
   IntoLaterN (PROP:=PROP) only_head n (Next x ≡ Next y) (x ≡ y) | 2.
 Proof.
@@ -625,7 +631,7 @@ Proof. rewrite /IntoLaterN /MaybeIntoLaterN=> ->. by rewrite laterN_plainly. Qed
 Global Instance into_later_persistently n P Q :
   IntoLaterN false n P Q → IntoLaterN false n (<pers> P) (<pers> Q).
 Proof. rewrite /IntoLaterN /MaybeIntoLaterN=> ->. by rewrite laterN_persistently. Qed.
-Global Instance into_later_embed`{SbiEmbed PROP PROP'} n P Q :
+Global Instance into_later_embed`{BiEmbedLater PROP PROP'} n P Q :
   IntoLaterN false n P Q → IntoLaterN false n ⎡P⎤ ⎡Q⎤.
 Proof. rewrite /IntoLaterN /MaybeIntoLaterN=> ->. by rewrite embed_laterN. Qed.
 

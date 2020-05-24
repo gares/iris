@@ -5,7 +5,7 @@ Module bi.
 Import interface.bi.
 Import derived_laws_bi.bi.
 Section sbi_derived.
-Context {PROP : sbi}.
+Context {PROP : bi}.
 Implicit Types φ : Prop.
 Implicit Types P Q R : PROP.
 Implicit Types Ps : list PROP.
@@ -18,169 +18,15 @@ Notation "P ⊣⊢ Q" := (P ⊣⊢@{PROP} Q).
 Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
 Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
 
-Global Instance internal_eq_proper (A : ofeT) :
-  Proper ((≡) ==> (≡) ==> (⊣⊢)) (@sbi_internal_eq PROP A) := ne_proper_2 _.
 Global Instance later_proper :
-  Proper ((⊣⊢) ==> (⊣⊢)) (@sbi_later PROP) := ne_proper _.
-
-(* Equality *)
-Hint Resolve internal_eq_refl : core.
-Hint Extern 100 (NonExpansive _) => solve_proper : core.
-
-Lemma equiv_internal_eq {A : ofeT} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
-Proof. intros ->. auto. Qed.
-Lemma internal_eq_rewrite' {A : ofeT} a b (Ψ : A → PROP) P
-  {HΨ : NonExpansive Ψ} : (P ⊢ a ≡ b) → (P ⊢ Ψ a) → P ⊢ Ψ b.
-Proof.
-  intros Heq HΨa. rewrite -(idemp bi_and P) {1}Heq HΨa.
-  apply impl_elim_l'. by apply internal_eq_rewrite.
-Qed.
-
-Lemma internal_eq_sym {A : ofeT} (a b : A) : a ≡ b ⊢ b ≡ a.
-Proof. apply (internal_eq_rewrite' a b (λ b, b ≡ a)%I); auto. Qed.
-Lemma internal_eq_iff P Q : P ≡ Q ⊢ P ↔ Q.
-Proof. apply (internal_eq_rewrite' P Q (λ Q, P ↔ Q))%I; auto using iff_refl. Qed.
-
-Lemma f_equiv {A B : ofeT} (f : A → B) `{!NonExpansive f} x y :
-  x ≡ y ⊢ f x ≡ f y.
-Proof. apply (internal_eq_rewrite' x y (λ y, f x ≡ f y)%I); auto. Qed.
-Lemma f_equiv_contractive {A B : ofeT} (f : A → B) `{Hf : !Contractive f} x y :
-  ▷ (x ≡ y) ⊢ f x ≡ f y.
-Proof.
-  rewrite later_eq_2. move: Hf=>/contractive_alt [g [? Hfg]]. rewrite !Hfg.
-  by apply f_equiv.
-Qed.
-
-Lemma prod_equivI {A B : ofeT} (x y : A * B) : x ≡ y ⊣⊢ x.1 ≡ y.1 ∧ x.2 ≡ y.2.
-Proof.
-  apply (anti_symm _).
-  - apply and_intro; apply f_equiv; apply _.
-  - rewrite {3}(surjective_pairing x) {3}(surjective_pairing y).
-    apply (internal_eq_rewrite' (x.1) (y.1) (λ a, (x.1,x.2) ≡ (a,y.2))%I); auto.
-    apply (internal_eq_rewrite' (x.2) (y.2) (λ b, (x.1,x.2) ≡ (x.1,b))%I); auto.
-Qed.
-Lemma sum_equivI {A B : ofeT} (x y : A + B) :
-  x ≡ y ⊣⊢
-    match x, y with
-    | inl a, inl a' => a ≡ a' | inr b, inr b' => b ≡ b' | _, _ => False
-    end.
-Proof.
-  apply (anti_symm _).
-  - apply (internal_eq_rewrite' x y (λ y,
-             match x, y with
-             | inl a, inl a' => a ≡ a' | inr b, inr b' => b ≡ b' | _, _ => False
-             end)%I); auto.
-    destruct x; auto.
-  - destruct x as [a|b], y as [a'|b']; auto; apply f_equiv, _.
-Qed.
-Lemma option_equivI {A : ofeT} (x y : option A) :
-  x ≡ y ⊣⊢ match x, y with
-           | Some a, Some a' => a ≡ a' | None, None => True | _, _ => False
-           end.
-Proof.
-  apply (anti_symm _).
-  - apply (internal_eq_rewrite' x y (λ y,
-             match x, y with
-             | Some a, Some a' => a ≡ a' | None, None => True | _, _ => False
-             end)%I); auto.
-    destruct x; auto.
-  - destruct x as [a|], y as [a'|]; auto. apply f_equiv, _.
-Qed.
-
-Lemma sig_equivI {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
-Proof. apply (anti_symm _). apply sig_eq. apply f_equiv, _. Qed.
-
-Section sigT_equivI.
-Import EqNotations.
-
-Lemma sigT_equivI {A : Type} {P : A → ofeT} (x y : sigT P) :
-  x ≡ y ⊣⊢
-  ∃ eq : projT1 x = projT1 y, rew eq in projT2 x ≡ projT2 y.
-Proof.
-  apply (anti_symm _).
-  - apply (internal_eq_rewrite' x y (λ y,
-             ∃ eq : projT1 x = projT1 y,
-               rew eq in projT2 x ≡ projT2 y))%I;
-        [| done | exact: (exist_intro' _ _ eq_refl) ].
-    move => n [a pa] [b pb] [/=]; intros -> => /= Hab.
-    apply exist_ne => ?. by rewrite Hab.
-  - apply exist_elim. move: x y => [a pa] [b pb] /=. intros ->; simpl.
-    apply f_equiv, _.
-Qed.
-End sigT_equivI.
-
-Lemma discrete_fun_equivI {A} {B : A → ofeT} (f g : discrete_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
-Proof.
-  apply (anti_symm _); auto using fun_ext.
-  apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
-  intros n h h' Hh; apply forall_ne=> x; apply internal_eq_ne; auto.
-Qed.
-Lemma ofe_morO_equivI {A B : ofeT} (f g : A -n> B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
-Proof.
-  apply (anti_symm _).
-  - apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
-  - rewrite -(discrete_fun_equivI (ofe_mor_car _ _ f) (ofe_mor_car _ _ g)).
-    set (h1 (f : A -n> B) :=
-      exist (λ f : A -d> B, NonExpansive (f : A → B)) f (ofe_mor_ne A B f)).
-    set (h2 (f : sigO (λ f : A -d> B, NonExpansive (f : A → B))) :=
-      @OfeMor A B (`f) (proj2_sig f)).
-    assert (∀ f, h2 (h1 f) = f) as Hh by (by intros []).
-    assert (NonExpansive h2) by (intros ??? EQ; apply EQ).
-    by rewrite -{2}[f]Hh -{2}[g]Hh -f_equiv -sig_equivI.
-Qed.
-
-Lemma pure_internal_eq {A : ofeT} (x y : A) : ⌜x ≡ y⌝ ⊢ x ≡ y.
-Proof. apply pure_elim'=> ->. apply internal_eq_refl. Qed.
-Lemma discrete_eq {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊣⊢ ⌜a ≡ b⌝.
-Proof.
-  intros. apply (anti_symm _); auto using discrete_eq_1, pure_internal_eq.
-Qed.
-
-Lemma absorbingly_internal_eq {A : ofeT} (x y : A) : <absorb> (x ≡ y) ⊣⊢ x ≡ y.
-Proof.
-  apply (anti_symm _), absorbingly_intro.
-  apply wand_elim_r', (internal_eq_rewrite' x y (λ y, True -∗ x ≡ y)%I); auto.
-  apply wand_intro_l, internal_eq_refl.
-Qed.
-Lemma persistently_internal_eq {A : ofeT} (a b : A) : <pers> (a ≡ b) ⊣⊢ a ≡ b.
-Proof.
-  apply (anti_symm (⊢)).
-  { by rewrite persistently_into_absorbingly absorbingly_internal_eq. }
-  apply (internal_eq_rewrite' a b (λ b, <pers> (a ≡ b))%I); auto.
-  rewrite -(internal_eq_refl emp%I a). apply persistently_emp_intro.
-Qed.
-
-Global Instance internal_eq_absorbing {A : ofeT} (x y : A) :
-  Absorbing (PROP:=PROP) (x ≡ y).
-Proof. by rewrite /Absorbing absorbingly_internal_eq. Qed.
-Global Instance internal_eq_persistent {A : ofeT} (a b : A) :
-  Persistent (PROP:=PROP) (a ≡ b).
-Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
-
-(* Equality under a later. *)
-Lemma internal_eq_rewrite_contractive {A : ofeT} a b (Ψ : A → PROP)
-  {HΨ : Contractive Ψ} : ▷ (a ≡ b) ⊢ Ψ a → Ψ b.
-Proof.
-  rewrite f_equiv_contractive. apply (internal_eq_rewrite (Ψ a) (Ψ b) id _).
-Qed.
-Lemma internal_eq_rewrite_contractive' {A : ofeT} a b (Ψ : A → PROP) P
-  {HΨ : Contractive Ψ} : (P ⊢ ▷ (a ≡ b)) → (P ⊢ Ψ a) → P ⊢ Ψ b.
-Proof.
-  rewrite later_eq_2. move: HΨ=>/contractive_alt [g [? HΨ]]. rewrite !HΨ.
-  by apply internal_eq_rewrite'.
-Qed.
-
-Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
-Proof. apply (anti_symm _); auto using later_eq_1, later_eq_2. Qed.
-Lemma later_equivI_prop_2 (P Q : PROP) : ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
-Proof. apply (f_equiv_contractive _). Qed.
+  Proper ((⊣⊢) ==> (⊣⊢)) (@bi_later PROP) := ne_proper _.
 
 (* Later derived *)
 Hint Resolve later_mono : core.
-Global Instance later_mono' : Proper ((⊢) ==> (⊢)) (@sbi_later PROP).
+Global Instance later_mono' : Proper ((⊢) ==> (⊢)) (@bi_later PROP).
 Proof. intros P Q; apply later_mono. Qed.
 Global Instance later_flip_mono' :
-  Proper (flip (⊢) ==> flip (⊢)) (@sbi_later PROP).
+  Proper (flip (⊢) ==> flip (⊢)) (@bi_later PROP).
 Proof. intros P Q; apply later_mono. Qed.
 
 Lemma later_True : ▷ True ⊣⊢ True.
@@ -237,12 +83,13 @@ Proof. intros. by rewrite /Persistent -later_persistently {1}(persistent P). Qed
 Global Instance later_absorbing P : Absorbing P → Absorbing (▷ P).
 Proof. intros ?. by rewrite /Absorbing -later_absorbingly absorbing. Qed.
 
-Section löb.
-  (* Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
-     Their Ψ is called Q in our proof. *)
-  Lemma weak_löb P : (▷ P ⊢ P) → (True ⊢ P).
-  Proof.
-    pose (flöb_pre (P Q : PROP) := (▷ Q → P)%I).
+(* Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
+Their [Ψ] is called [Q] in our proof. *)
+Global Instance later_contractive_bi_löb :
+  Contractive (bi_later (PROP:=PROP)) → BiLöb PROP.
+Proof.
+  intros. assert (∀ P, (▷ P ⊢ P) → (True ⊢ P)) as weak_löb.
+  { intros P. pose (flöb_pre (P Q : PROP) := (▷ Q → P)%I).
     assert (∀ P, Contractive (flöb_pre P)) by solve_contractive.
     set (Q := fixpoint (flöb_pre P)).
     assert (Q ⊣⊢ (▷ Q → P)) as HQ by (exact: fixpoint_unfold).
@@ -251,25 +98,20 @@ Section löb.
     { rewrite -HP. rewrite -(idemp (∧) (▷ Q))%I {2}(later_intro (▷ Q))%I.
       by rewrite {1}HQ {1}later_impl impl_elim_l. }
     rewrite -HQP HQ -2!later_intro.
-    apply (entails_impl_True _ P). done.
-  Qed.
-
-  Lemma löb P : (▷ P → P) ⊢ P.
-  Proof.
-    apply entails_impl_True, weak_löb. apply impl_intro_r.
-    rewrite -{2}(idemp (∧) (▷ P → P))%I.
-    rewrite {2}(later_intro (▷ P → P))%I.
-    rewrite later_impl.
-    rewrite assoc impl_elim_l.
-    rewrite impl_elim_r. done.
-  Qed.
-End löb.
+    apply (entails_impl_True _ P). done. }
+  intros P. apply entails_impl_True, weak_löb. apply impl_intro_r.
+  rewrite -{2}(idemp (∧) (▷ P → P))%I.
+  rewrite {2}(later_intro (▷ P → P))%I.
+  rewrite later_impl.
+  rewrite assoc impl_elim_l.
+  rewrite impl_elim_r. done.
+Qed.
 
 (* Iterated later modality *)
-Global Instance laterN_ne m : NonExpansive (@sbi_laterN PROP m).
+Global Instance laterN_ne m : NonExpansive (@bi_laterN PROP m).
 Proof. induction m; simpl. by intros ???. solve_proper. Qed.
 Global Instance laterN_proper m :
-  Proper ((⊣⊢) ==> (⊣⊢)) (@sbi_laterN PROP m) := ne_proper _.
+  Proper ((⊣⊢) ==> (⊣⊢)) (@bi_laterN PROP m) := ne_proper _.
 
 Lemma laterN_0 P : ▷^0 P ⊣⊢ P.
 Proof. done. Qed.
@@ -282,15 +124,15 @@ Proof. induction n1; f_equiv/=; auto. Qed.
 Lemma laterN_le n1 n2 P : n1 ≤ n2 → ▷^n1 P ⊢ ▷^n2 P.
 Proof. induction 1; simpl; by rewrite -?later_intro. Qed.
 
-Lemma laterN_iter n P : (▷^n P)%I = Nat.iter n sbi_later P.
+Lemma laterN_iter n P : (▷^n P)%I = Nat.iter n bi_later P.
 Proof. induction n; f_equal/=; auto. Qed.
 
 Lemma laterN_mono n P Q : (P ⊢ Q) → ▷^n P ⊢ ▷^n Q.
 Proof. induction n; simpl; auto. Qed.
-Global Instance laterN_mono' n : Proper ((⊢) ==> (⊢)) (@sbi_laterN PROP n).
+Global Instance laterN_mono' n : Proper ((⊢) ==> (⊢)) (@bi_laterN PROP n).
 Proof. intros P Q; apply laterN_mono. Qed.
 Global Instance laterN_flip_mono' n :
-  Proper (flip (⊢) ==> flip (⊢)) (@sbi_laterN PROP n).
+  Proper (flip (⊢) ==> flip (⊢)) (@bi_laterN PROP n).
 Proof. intros P Q; apply laterN_mono. Qed.
 
 Lemma laterN_intro n P : P ⊢ ▷^n P.
@@ -336,34 +178,34 @@ Global Instance laterN_absorbing n P : Absorbing P → Absorbing (▷^n P).
 Proof. induction n; apply _. Qed.
 
 (* Except-0 *)
-Global Instance except_0_ne : NonExpansive (@sbi_except_0 PROP).
+Global Instance except_0_ne : NonExpansive (@bi_except_0 PROP).
 Proof. solve_proper. Qed.
-Global Instance except_0_proper : Proper ((⊣⊢) ==> (⊣⊢)) (@sbi_except_0 PROP).
+Global Instance except_0_proper : Proper ((⊣⊢) ==> (⊣⊢)) (@bi_except_0 PROP).
 Proof. solve_proper. Qed.
-Global Instance except_0_mono' : Proper ((⊢) ==> (⊢)) (@sbi_except_0 PROP).
+Global Instance except_0_mono' : Proper ((⊢) ==> (⊢)) (@bi_except_0 PROP).
 Proof. solve_proper. Qed.
 Global Instance except_0_flip_mono' :
-  Proper (flip (⊢) ==> flip (⊢)) (@sbi_except_0 PROP).
+  Proper (flip (⊢) ==> flip (⊢)) (@bi_except_0 PROP).
 Proof. solve_proper. Qed.
 
 Lemma except_0_intro P : P ⊢ ◇ P.
-Proof. rewrite /sbi_except_0; auto. Qed.
+Proof. rewrite /bi_except_0; auto. Qed.
 Lemma except_0_mono P Q : (P ⊢ Q) → ◇ P ⊢ ◇ Q.
 Proof. by intros ->. Qed.
 Lemma except_0_idemp P : ◇ ◇ P ⊣⊢ ◇ P.
-Proof. apply (anti_symm _); rewrite /sbi_except_0; auto. Qed.
+Proof. apply (anti_symm _); rewrite /bi_except_0; auto. Qed.
 
 Lemma except_0_True : ◇ True ⊣⊢ True.
-Proof. rewrite /sbi_except_0. apply (anti_symm _); auto. Qed.
+Proof. rewrite /bi_except_0. apply (anti_symm _); auto. Qed.
 Lemma except_0_emp `{!BiAffine PROP} : ◇ emp ⊣⊢ emp.
 Proof. by rewrite -True_emp except_0_True. Qed.
 Lemma except_0_or P Q : ◇ (P ∨ Q) ⊣⊢ ◇ P ∨ ◇ Q.
-Proof. rewrite /sbi_except_0. apply (anti_symm _); auto. Qed.
+Proof. rewrite /bi_except_0. apply (anti_symm _); auto. Qed.
 Lemma except_0_and P Q : ◇ (P ∧ Q) ⊣⊢ ◇ P ∧ ◇ Q.
-Proof. by rewrite /sbi_except_0 or_and_l. Qed.
+Proof. by rewrite /bi_except_0 or_and_l. Qed.
 Lemma except_0_sep P Q : ◇ (P ∗ Q) ⊣⊢ ◇ P ∗ ◇ Q.
 Proof.
-  rewrite /sbi_except_0. apply (anti_symm _).
+  rewrite /bi_except_0. apply (anti_symm _).
   - apply or_elim; last by auto using sep_mono.
     by rewrite -!or_intro_l -persistently_pure -later_sep -persistently_sep_dup.
   - rewrite sep_or_r !sep_or_l {1}(later_intro P) {1}(later_intro Q).
@@ -391,14 +233,14 @@ Proof.
   - apply exist_mono=> a. apply except_0_intro.
 Qed.
 Lemma except_0_later P : ◇ ▷ P ⊢ ▷ P.
-Proof. by rewrite /sbi_except_0 -later_or False_or. Qed.
+Proof. by rewrite /bi_except_0 -later_or False_or. Qed.
 Lemma except_0_laterN n P : ◇ ▷^n P ⊢ ▷^n ◇ P.
 Proof. by destruct n as [|n]; rewrite //= ?except_0_later -except_0_intro. Qed.
 Lemma except_0_into_later P : ◇ P ⊢ ▷ P.
 Proof. by rewrite -except_0_later -later_intro. Qed.
 Lemma except_0_persistently P : ◇ <pers> P ⊣⊢ <pers> ◇ P.
 Proof.
-  by rewrite /sbi_except_0 persistently_or -later_persistently persistently_pure.
+  by rewrite /bi_except_0 persistently_or -later_persistently persistently_pure.
 Qed.
 Lemma except_0_affinely_2 P : <affine> ◇ P ⊢ ◇ <affine> P.
 Proof. rewrite /bi_affinely except_0_and. auto using except_0_intro. Qed.
@@ -421,9 +263,9 @@ Proof.
 Qed.
 
 Global Instance except_0_persistent P : Persistent P → Persistent (◇ P).
-Proof. rewrite /sbi_except_0; apply _. Qed.
+Proof. rewrite /bi_except_0; apply _. Qed.
 Global Instance except_0_absorbing P : Absorbing P → Absorbing (◇ P).
-Proof. rewrite /sbi_except_0; apply _. Qed.
+Proof. rewrite /bi_except_0; apply _. Qed.
 
 (* Timeless instances *)
 Global Instance Timeless_proper : Proper ((≡) ==> iff) (@Timeless PROP).
@@ -431,7 +273,7 @@ Proof. solve_proper. Qed.
 
 Global Instance pure_timeless φ : Timeless (PROP:=PROP) ⌜φ⌝.
 Proof.
-  rewrite /Timeless /sbi_except_0 pure_alt later_exist_false.
+  rewrite /Timeless /bi_except_0 pure_alt later_exist_false.
   apply or_elim, exist_elim; [auto|]=> Hφ. rewrite -(exist_intro Hφ). auto.
 Qed.
 Global Instance emp_timeless `{BiAffine PROP} : Timeless (PROP:=PROP) emp.
@@ -442,12 +284,12 @@ Proof. intros; rewrite /Timeless except_0_and later_and; auto. Qed.
 Global Instance or_timeless P Q : Timeless P → Timeless Q → Timeless (P ∨ Q).
 Proof. intros; rewrite /Timeless except_0_or later_or; auto. Qed.
 
-Global Instance impl_timeless P Q : Timeless Q → Timeless (P → Q).
+Global Instance impl_timeless `{!BiLöb PROP} P Q : Timeless Q → Timeless (P → Q).
 Proof.
   rewrite /Timeless=> HQ. rewrite later_false_em.
   apply or_mono, impl_intro_l; first done.
-  rewrite -{2}(löb Q); apply impl_intro_l.
-  rewrite HQ /sbi_except_0 !and_or_r. apply or_elim; last auto.
+  rewrite -{2}(löb Q). apply impl_intro_l.
+  rewrite HQ /bi_except_0 !and_or_r. apply or_elim; last auto.
   by rewrite assoc (comm _ _ P) -assoc !impl_elim_r.
 Qed.
 Global Instance sep_timeless P Q: Timeless P → Timeless Q → Timeless (P ∗ Q).
@@ -455,12 +297,12 @@ Proof.
   intros; rewrite /Timeless except_0_sep later_sep; auto using sep_mono.
 Qed.
 
-Global Instance wand_timeless P Q : Timeless Q → Timeless (P -∗ Q).
+Global Instance wand_timeless `{!BiLöb PROP} P Q : Timeless Q → Timeless (P -∗ Q).
 Proof.
   rewrite /Timeless=> HQ. rewrite later_false_em.
   apply or_mono, wand_intro_l; first done.
   rewrite -{2}(löb Q); apply impl_intro_l.
-  rewrite HQ /sbi_except_0 !and_or_r. apply or_elim; last auto.
+  rewrite HQ /bi_except_0 !and_or_r. apply or_elim; last auto.
   by rewrite (comm _ P) persistent_and_sep_assoc impl_elim_r wand_elim_l.
 Qed.
 Global Instance forall_timeless {A} (Ψ : A → PROP) :
@@ -473,13 +315,13 @@ Global Instance exist_timeless {A} (Ψ : A → PROP) :
   (∀ x, Timeless (Ψ x)) → Timeless (∃ x, Ψ x).
 Proof.
   rewrite /Timeless=> ?. rewrite later_exist_false. apply or_elim.
-  - rewrite /sbi_except_0; auto.
+  - rewrite /bi_except_0; auto.
   - apply exist_elim=> x. rewrite -(exist_intro x); auto.
 Qed.
 Global Instance persistently_timeless P : Timeless P → Timeless (<pers> P).
 Proof.
-  intros. rewrite /Timeless /sbi_except_0 later_persistently_1.
-  by rewrite (timeless P) /sbi_except_0 persistently_or {1}persistently_elim.
+  intros. rewrite /Timeless /bi_except_0 later_persistently_1.
+  by rewrite (timeless P) /bi_except_0 persistently_or {1}persistently_elim.
 Qed.
 
 Global Instance affinely_timeless P :
@@ -492,72 +334,69 @@ Global Instance intuitionistically_timeless P :
   Timeless (PROP:=PROP) emp → Timeless P → Timeless (□ P).
 Proof. rewrite /bi_intuitionistically; apply _. Qed.
 
-Global Instance eq_timeless {A : ofeT} (a b : A) :
-  Discrete a → Timeless (PROP:=PROP) (a ≡ b).
-Proof. intros. rewrite /Discrete !discrete_eq. apply (timeless _). Qed.
 Global Instance from_option_timeless {A} P (Ψ : A → PROP) (mx : option A) :
   (∀ x, Timeless (Ψ x)) → Timeless P → Timeless (from_option Ψ P mx).
 Proof. destruct mx; apply _. Qed.
 
 (* Big op stuff *)
-Global Instance sbi_later_monoid_and_homomorphism :
-  MonoidHomomorphism bi_and bi_and (≡) (@sbi_later PROP).
+Global Instance bi_later_monoid_and_homomorphism :
+  MonoidHomomorphism bi_and bi_and (≡) (@bi_later PROP).
 Proof. split; [split|]; try apply _. apply later_and. apply later_True. Qed.
-Global Instance sbi_laterN_and_homomorphism n :
-  MonoidHomomorphism bi_and bi_and (≡) (@sbi_laterN PROP n).
+Global Instance bi_laterN_and_homomorphism n :
+  MonoidHomomorphism bi_and bi_and (≡) (@bi_laterN PROP n).
 Proof. split; [split|]; try apply _. apply laterN_and. apply laterN_True. Qed.
-Global Instance sbi_except_0_and_homomorphism :
-  MonoidHomomorphism bi_and bi_and (≡) (@sbi_except_0 PROP).
+Global Instance bi_except_0_and_homomorphism :
+  MonoidHomomorphism bi_and bi_and (≡) (@bi_except_0 PROP).
 Proof. split; [split|]; try apply _. apply except_0_and. apply except_0_True. Qed.
 
-Global Instance sbi_later_monoid_or_homomorphism :
-  WeakMonoidHomomorphism bi_or bi_or (≡) (@sbi_later PROP).
+Global Instance bi_later_monoid_or_homomorphism :
+  WeakMonoidHomomorphism bi_or bi_or (≡) (@bi_later PROP).
 Proof. split; try apply _. apply later_or. Qed.
-Global Instance sbi_laterN_or_homomorphism n :
-  WeakMonoidHomomorphism bi_or bi_or (≡) (@sbi_laterN PROP n).
+Global Instance bi_laterN_or_homomorphism n :
+  WeakMonoidHomomorphism bi_or bi_or (≡) (@bi_laterN PROP n).
 Proof. split; try apply _. apply laterN_or. Qed.
-Global Instance sbi_except_0_or_homomorphism :
-  WeakMonoidHomomorphism bi_or bi_or (≡) (@sbi_except_0 PROP).
+Global Instance bi_except_0_or_homomorphism :
+  WeakMonoidHomomorphism bi_or bi_or (≡) (@bi_except_0 PROP).
 Proof. split; try apply _. apply except_0_or. Qed.
 
-Global Instance sbi_later_monoid_sep_weak_homomorphism :
-  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@sbi_later PROP).
+Global Instance bi_later_monoid_sep_weak_homomorphism :
+  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_later PROP).
 Proof. split; try apply _. apply later_sep. Qed.
-Global Instance sbi_laterN_sep_weak_homomorphism n :
-  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@sbi_laterN PROP n).
+Global Instance bi_laterN_sep_weak_homomorphism n :
+  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_laterN PROP n).
 Proof. split; try apply _. apply laterN_sep. Qed.
-Global Instance sbi_except_0_sep_weak_homomorphism :
-  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@sbi_except_0 PROP).
+Global Instance bi_except_0_sep_weak_homomorphism :
+  WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_except_0 PROP).
 Proof. split; try apply _. apply except_0_sep. Qed.
 
-Global Instance sbi_later_monoid_sep_homomorphism `{!BiAffine PROP} :
-  MonoidHomomorphism bi_sep bi_sep (≡) (@sbi_later PROP).
+Global Instance bi_later_monoid_sep_homomorphism `{!BiAffine PROP} :
+  MonoidHomomorphism bi_sep bi_sep (≡) (@bi_later PROP).
 Proof. split; try apply _. apply later_emp. Qed.
-Global Instance sbi_laterN_sep_homomorphism `{!BiAffine PROP} n :
-  MonoidHomomorphism bi_sep bi_sep (≡) (@sbi_laterN PROP n).
+Global Instance bi_laterN_sep_homomorphism `{!BiAffine PROP} n :
+  MonoidHomomorphism bi_sep bi_sep (≡) (@bi_laterN PROP n).
 Proof. split; try apply _. apply laterN_emp. Qed.
-Global Instance sbi_except_0_sep_homomorphism `{!BiAffine PROP} :
-  MonoidHomomorphism bi_sep bi_sep (≡) (@sbi_except_0 PROP).
+Global Instance bi_except_0_sep_homomorphism `{!BiAffine PROP} :
+  MonoidHomomorphism bi_sep bi_sep (≡) (@bi_except_0 PROP).
 Proof. split; try apply _. apply except_0_emp. Qed.
 
-Global Instance sbi_later_monoid_sep_entails_weak_homomorphism :
-  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_later PROP).
+Global Instance bi_later_monoid_sep_entails_weak_homomorphism :
+  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_later PROP).
 Proof. split; try apply _. intros P Q. by rewrite later_sep. Qed.
-Global Instance sbi_laterN_sep_entails_weak_homomorphism n :
-  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_laterN PROP n).
+Global Instance bi_laterN_sep_entails_weak_homomorphism n :
+  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_laterN PROP n).
 Proof. split; try apply _. intros P Q. by rewrite laterN_sep. Qed.
-Global Instance sbi_except_0_sep_entails_weak_homomorphism :
-  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_except_0 PROP).
+Global Instance bi_except_0_sep_entails_weak_homomorphism :
+  WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_except_0 PROP).
 Proof. split; try apply _. intros P Q. by rewrite except_0_sep. Qed.
 
-Global Instance sbi_later_monoid_sep_entails_homomorphism :
-  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_later PROP).
+Global Instance bi_later_monoid_sep_entails_homomorphism :
+  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_later PROP).
 Proof. split; try apply _. apply later_intro. Qed.
-Global Instance sbi_laterN_sep_entails_homomorphism n :
-  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_laterN PROP n).
+Global Instance bi_laterN_sep_entails_homomorphism n :
+  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_laterN PROP n).
 Proof. split; try apply _. apply laterN_intro. Qed.
-Global Instance sbi_except_0_sep_entails_homomorphism :
-  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@sbi_except_0 PROP).
+Global Instance bi_except_0_sep_entails_homomorphism :
+  MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_except_0 PROP).
 Proof. split; try apply _. apply except_0_intro. Qed.
 End sbi_derived.
 End bi.

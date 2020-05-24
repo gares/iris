@@ -3,13 +3,13 @@ its reflexive transitive closure. *)
 From iris.bi.lib Require Export fixpoint.
 From iris.proofmode Require Import tactics.
 
-Definition bi_rtc_pre
-    {PROP : sbi} {A : ofeT} (R : A → A → PROP)
+Definition bi_rtc_pre `{!BiInternalEq PROP}
+    {A : ofeT} (R : A → A → PROP)
     (x2 : A) (rec : A → PROP) (x1 : A) : PROP :=
   (<affine> (x1 ≡ x2) ∨ ∃ x', R x1 x' ∗ rec x')%I.
 
-Instance bi_rtc_pre_mono
-    {PROP : sbi} {A : ofeT} (R : A → A → PROP) `{NonExpansive2 R} (x : A) :
+Instance bi_rtc_pre_mono `{!BiInternalEq PROP}
+    {A : ofeT} (R : A → A → PROP) `{NonExpansive2 R} (x : A) :
   BiMonoPred (bi_rtc_pre R x).
 Proof.
   constructor; [|solve_proper].
@@ -20,28 +20,26 @@ Proof.
   iDestruct ("H" with "Hrec") as "Hrec". eauto with iFrame.
 Qed.
 
-Definition bi_rtc {PROP : sbi} {A : ofeT} (R : A → A → PROP)
-    (x1 x2 : A) : PROP :=
+Definition bi_rtc `{!BiInternalEq PROP}
+    {A : ofeT} (R : A → A → PROP) (x1 x2 : A) : PROP :=
   bi_least_fixpoint (bi_rtc_pre R x2) x1.
 
 Instance: Params (@bi_rtc) 3 := {}.
 Typeclasses Opaque bi_rtc.
 
-Instance bi_rtc_ne
-    {PROP : sbi} {A : ofeT} (R : A → A → PROP)
-  : NonExpansive2 (bi_rtc R).
+Instance bi_rtc_ne `{!BiInternalEq PROP} {A : ofeT} (R : A → A → PROP) :
+  NonExpansive2 (bi_rtc R).
 Proof.
   intros n x1 x2 Hx y1 y2 Hy. rewrite /bi_rtc Hx. f_equiv=> rec z.
   solve_proper.
 Qed.
 
-Instance bi_rtc_proper
-    {PROP : sbi} {A : ofeT} (R : A → A → PROP)
+Instance bi_rtc_proper `{!BiInternalEq PROP} {A : ofeT} (R : A → A → PROP)
   : Proper ((≡) ==> (≡) ==> (⊣⊢)) (bi_rtc R).
 Proof. apply ne_proper_2. apply _. Qed.
 
 Section bi_rtc.
-  Context {PROP : sbi}.
+  Context `{!BiInternalEq PROP}.
   Context {A : ofeT}.
   Context (R : A → A → PROP) `{NonExpansive2 R}.
 
