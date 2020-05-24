@@ -165,22 +165,20 @@ Section inv.
     iIntros "!> {$HP} HP". iApply "Hclose"; auto.
   Qed.
 
-  Lemma inv_sep_l N P Q : inv N (P ∗ Q) -∗ inv N P.
+  Lemma inv_split_l N P Q : inv N (P ∗ Q) -∗ inv N P.
   Proof.
     iIntros "#HI". iApply inv_alter; eauto.
     iIntros "!> !> [$ $] $".
   Qed.
-
-  Lemma inv_sep_r N P Q : inv N (P ∗ Q) -∗ inv N Q.
+  Lemma inv_split_r N P Q : inv N (P ∗ Q) -∗ inv N Q.
   Proof.
-    rewrite (comm _ P Q). eapply inv_sep_l.
+    rewrite (comm _ P Q). eapply inv_split_l.
   Qed.
-
-  Lemma inv_sep N P Q : inv N (P ∗ Q) -∗ inv N P ∗ inv N Q.
+  Lemma inv_split N P Q : inv N (P ∗ Q) -∗ inv N P ∗ inv N Q.
   Proof.
     iIntros "#H".
-    iPoseProof (inv_sep_l with "H") as "$".
-    iPoseProof (inv_sep_r with "H") as "$".
+    iPoseProof (inv_split_l with "H") as "$".
+    iPoseProof (inv_split_r with "H") as "$".
   Qed.
 
 End inv.
