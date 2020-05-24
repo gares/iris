@@ -138,8 +138,12 @@ theories/proofmode/sel_patterns.v
 theories/proofmode/tactics.v
 theories/proofmode/notation.v
 theories/proofmode/classes.v
-theories/proofmode/class_instances_bi.v
-theories/proofmode/class_instances_sbi.v
+theories/proofmode/class_instances.v
+theories/proofmode/class_instances_later.v
+theories/proofmode/class_instances_updates.v
+theories/proofmode/class_instances_embedding.v
+theories/proofmode/class_instances_plainly.v
+theories/proofmode/class_instances_internal_eq.v
 theories/proofmode/frame_instances.v
 theories/proofmode/monpred.v
 theories/proofmode/modalities.v
