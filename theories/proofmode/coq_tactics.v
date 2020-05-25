@@ -844,11 +844,8 @@ Proof.
   destruct (envs_app _ _ _) as [Δ'|] eqn:?; last done.
   rewrite envs_entails_eq => ?? HQ.
   rewrite (env_spatial_is_nil_intuitionistically Δ) //.
-  rewrite -(persistently_and_emp_elim Q). apply and_intro; first apply: affine.
-  rewrite -(löb (<pers> Q)%I) later_persistently. apply impl_intro_l.
-  rewrite envs_app_singleton_sound //; simpl; rewrite HQ.
-  rewrite persistently_and_intuitionistically_sep_l -{1}intuitionistically_idemp.
-  rewrite intuitionistically_sep_2 wand_elim_r intuitionistically_into_persistently_1 //.
+  rewrite envs_app_singleton_sound //; simpl. rewrite HQ.
+  apply löb_wand_intuitionistically.
 Qed.
 End tactics.
 

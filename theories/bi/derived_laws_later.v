@@ -108,6 +108,33 @@ Proof.
   rewrite impl_elim_r. done.
 Qed.
 
+Lemma löb_wand_intuitionistically `{!BiLöb PROP} P : □ (□ ▷ P -∗ P) ⊢ P.
+Proof.
+  rewrite -{3}(intuitionistically_elim P) -(löb (□ P)%I). apply impl_intro_l.
+  rewrite {1}intuitionistically_into_persistently_1 later_persistently.
+  rewrite persistently_and_intuitionistically_sep_l.
+  rewrite -{1}(intuitionistically_idemp (▷ P)%I) intuitionistically_sep_2.
+  by rewrite wand_elim_r.
+Qed.
+Lemma löb_wand `{!BiLöb PROP} P : □ (▷ P -∗ P) ⊢ P.
+Proof.
+  by rewrite -(intuitionistically_elim (▷ P)%I) löb_wand_intuitionistically.
+Qed.
+
+(** The proof of the right-to-left direction relies on the BI being affine. It
+is unclear how to generalize the lemma or proof to support non-affine BIs. *)
+Lemma löb_alt `{!BiAffine PROP} : BiLöb PROP ↔ ∀ P, □ (▷ P -∗ P) ⊢ P.
+Proof.
+  split; intros Hlöb P; [by apply löb_wand|].
+  rewrite bi.impl_alt. apply bi.exist_elim=> R. apply impl_elim_r'.
+  rewrite -(Hlöb (R → P)%I) -intuitionistically_into_persistently.
+  apply intuitionistically_intro', wand_intro_l, impl_intro_l.
+  rewrite -persistently_and_intuitionistically_sep_r assoc
+    persistently_and_intuitionistically_sep_r intuitionistically_elim.
+  rewrite -{1}(idemp bi_and R) -(assoc _ R) {2}(later_intro R).
+  by rewrite -later_and impl_elim_r (comm _ R) wand_elim_r.
+Qed.
+
 (* Iterated later modality *)
 Global Instance laterN_ne m : NonExpansive (@bi_laterN PROP m).
 Proof. induction m; simpl. by intros ???. solve_proper. Qed.
