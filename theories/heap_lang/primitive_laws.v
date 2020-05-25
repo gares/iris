@@ -1,4 +1,5 @@
-(** This file proves the basic laws of the HeapLang program logic. *)
+(** This file proves the basic laws of the HeapLang program logic by applying
+the Iris lifting lemmas. *)
 
 From stdpp Require Import fin_maps.
 From iris.proofmode Require Import tactics.

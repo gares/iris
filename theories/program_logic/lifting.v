@@ -1,3 +1,6 @@
+(** The "lifting lemmas" in this file serve to lift the rules of the operational
+semantics to the program logic. *)
+
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
 Set Default Proof Using "Type".

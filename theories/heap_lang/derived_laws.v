@@ -1,13 +1,12 @@
-(** This file extens the HeapLang program logic with some derived laws about
-arrays and prophecies.
+(** This file extends the HeapLang program logic with some derived laws (not
+using the lifting lemmas) about arrays and prophecies.
 
-For more array operations, see [heap_lang.lib.array].
-*)
+For utility functions on arrays (e.g., freeing/copying an array), see
+[heap_lang.lib.array].  *)
 
 From stdpp Require Import fin_maps.
 From iris.bi Require Import lib.fractional.
 From iris.proofmode Require Import tactics.
-From iris.program_logic Require Import ectx_lifting.
 From iris.heap_lang Require Export primitive_laws.
 From iris.heap_lang Require Import tactics notation.
 Set Default Proof Using "Type".
@@ -333,7 +332,7 @@ Lemma wp_resolve_proph s E (p : proph_id) (pvs : list (val * val)) v :
   {{{ pvs', RET (LitV LitUnit); ⌜pvs = (LitV LitUnit, v)::pvs'⌝ ∗ proph p pvs' }}}.
 Proof.
   iIntros (Φ) "Hp HΦ". iApply (wp_resolve with "Hp"); first done.
-  iApply wp_pure_step_later=> //=. iApply wp_value.
+  iApply lifting.wp_pure_step_later=> //=. iApply wp_value.
   iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
 Qed.
 
