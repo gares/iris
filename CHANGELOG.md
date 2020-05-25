@@ -193,6 +193,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
     instead of `■ ⎡P⎤ ⊢ ⎡■ P⎤`) as it has been generalized to BIs without a
     internal equality. In the past, the left-to-right direction was obtained for
     "free" using the rules of internal equality.
+* Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
+  `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
+* Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
@@ -212,6 +215,8 @@ s/\blist_alter_singletonM\b/list_alter_singleton/g
 s/\blist_singletonM_included\b/list_singleton_included/g
 # auth_both_frac_op rename
 s/\bauth_both_frac_op\b/auth_both_op/g
+# inv_sep
+s/\binv_sep\b/inv_split/g
 ' $(find theories -name "*.v")
 ```
 

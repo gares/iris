@@ -132,6 +132,31 @@ Section inv.
     rewrite inv_eq /inv_def; iIntros (?) "#HI". by iApply "HI".
   Qed.
 
+  Lemma inv_combine N1 N2 N P Q :
+    N1 ## N2 →
+    ↑N1 ∪ ↑N2 ⊆@{coPset} ↑N →
+    inv N1 P -∗ inv N2 Q -∗ inv N (P ∗ Q).
+  Proof.
+    rewrite inv_eq. iIntros (??) "#HinvP #HinvQ !#"; iIntros (E ?).
+    iMod ("HinvP" with "[%]") as "[$ HcloseP]"; first set_solver.
+    iMod ("HinvQ" with "[%]") as "[$ HcloseQ]"; first set_solver.
+    iMod (fupd_intro_mask' _ (E ∖ ↑N)) as "Hclose"; first set_solver.
+    iIntros "!> [HP HQ]".
+    iMod "Hclose" as %_. iMod ("HcloseQ" with "HQ") as %_. by iApply "HcloseP".
+  Qed.
+
+  Lemma inv_combine_dup_l N P Q :
+    □ (P -∗ P ∗ P) -∗
+    inv N P -∗ inv N Q -∗ inv N (P ∗ Q).
+  Proof.
+    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !#" (E ?).
+    iMod ("HinvP" with "[//]") as "[HP HcloseP]".
+    iDestruct ("HPdup" with "HP") as "[$ HP]".
+    iMod ("HcloseP" with "HP") as %_.
+    iMod ("HinvQ" with "[//]") as "[$ HcloseQ]".
+    iIntros "!> [HP HQ]". by iApply "HcloseQ".
+  Qed.
+
   (** ** Proof mode integration *)
   Global Instance into_inv_inv N P : IntoInv (inv N P) N := {}.
 
@@ -165,22 +190,20 @@ Section inv.
     iIntros "!> {$HP} HP". iApply "Hclose"; auto.
   Qed.
 
-  Lemma inv_sep_l N P Q : inv N (P ∗ Q) -∗ inv N P.
+  Lemma inv_split_l N P Q : inv N (P ∗ Q) -∗ inv N P.
   Proof.
     iIntros "#HI". iApply inv_alter; eauto.
     iIntros "!> !> [$ $] $".
   Qed.
-
-  Lemma inv_sep_r N P Q : inv N (P ∗ Q) -∗ inv N Q.
+  Lemma inv_split_r N P Q : inv N (P ∗ Q) -∗ inv N Q.
   Proof.
-    rewrite (comm _ P Q). eapply inv_sep_l.
+    rewrite (comm _ P Q). eapply inv_split_l.
   Qed.
-
-  Lemma inv_sep N P Q : inv N (P ∗ Q) -∗ inv N P ∗ inv N Q.
+  Lemma inv_split N P Q : inv N (P ∗ Q) -∗ inv N P ∗ inv N Q.
   Proof.
     iIntros "#H".
-    iPoseProof (inv_sep_l with "H") as "$".
-    iPoseProof (inv_sep_r with "H") as "$".
+    iPoseProof (inv_split_l with "H") as "$".
+    iPoseProof (inv_split_r with "H") as "$".
   Qed.
 
 End inv.
