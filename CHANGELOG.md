@@ -196,6 +196,8 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
   `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
 * Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
+* Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
+  exists `heap_lang.derived_laws`.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
