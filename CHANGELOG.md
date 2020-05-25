@@ -23,8 +23,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 
 **Changes in heap_lang:**
 
+* Added support for deallocation of locations via the `Free` operation.
 * Added a fraction to the heap_lang `array` assertion.
-* Added array_copy library for copying and cloning arrays.
+* Added `lib.array` module for deallocating, copying and cloning arrays.
 * Added the ghost state for "invariant locations" to `heapG`.  This affects the
   statement of `heap_adequacy`, which is now responsible for initializing the
   "invariant locations" invariant.

@@ -14,11 +14,10 @@ it is that they are reading in that case. In that extreme case, the invariant
 may just be [True].
 
 Since invariant locations cannot be deallocated, they only make sense when
-modelling languages with garbage collection.  Note that heap_lang does not
-actually have explicit dealloaction. However, the proof rules we provide for
-heap operations currently are conservative in the sense that they do not expose
-this fact.  By making "invariant" locations a separate assertion, we can keep
-all the other proofs that do not need it conservative.  *)
+modeling languages with garbage collection.  HeapLang can be used to model
+either language by choosing whether or not to use the [Free] operation.  By
+using a separate assertion [inv_mapsto_own] for "invariant" locations, we can
+keep all the other proofs that do not need it conservative.  *)
 
 Definition inv_heapN: namespace := nroot .@ "inv_heap".
 Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.

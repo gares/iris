@@ -10,7 +10,7 @@ Fixpoint is_closed_expr (X : list string) (e : expr) : bool :=
   | Val v => is_closed_val v
   | Var x => bool_decide (x ∈ X)
   | Rec f x e => is_closed_expr (f :b: x :b: X) e
-  | UnOp _ e | Fst e | Snd e | InjL e | InjR e | Fork e | Load e =>
+  | UnOp _ e | Fst e | Snd e | InjL e | InjR e | Fork e | Free e | Load e =>
      is_closed_expr X e
   | App e1 e2 | BinOp _ e1 e2 | Pair e1 e2 | AllocN e1 e2 | Store e1 e2 | FAA e1 e2 =>
      is_closed_expr X e1 && is_closed_expr X e2
@@ -95,9 +95,9 @@ Qed.
 Lemma heap_closed_alloc σ l n w :
   0 < n →
   is_closed_val w →
-  map_Forall (λ _ v, is_closed_val v) (heap σ) →
+  map_Forall (λ _ v, from_option is_closed_val true v) (heap σ) →
   (∀ i : Z, 0 ≤ i → i < n → heap σ !! (l +ₗ i) = None) →
-  map_Forall (λ _ v, is_closed_val v)
+  map_Forall (λ _ v, from_option is_closed_val true v)
              (heap_array l (replicate (Z.to_nat n) w) ∪ heap σ).
 Proof.
   intros Hn Hw Hσ Hl.
@@ -110,9 +110,9 @@ Proof.
     apply lookup_union_Some in Hix; last first.
     { eapply heap_array_map_disjoint;
         rewrite replicate_length Z2Nat.id; auto with lia. }
-    destruct Hix as [(?&?&?&[-> Hlt%inj_lt]%lookup_replicate_1)%heap_array_lookup|
+    destruct Hix as [(?&?&?&?&?&[-> Hlt%inj_lt]%lookup_replicate_1)%heap_array_lookup|
                      [j Hj]%elem_of_map_to_list%elem_of_list_lookup_1].
-    + rewrite !Z2Nat.id in Hlt; eauto with lia.
+    + simplify_eq/=. rewrite !Z2Nat.id in Hlt; eauto with lia.
     + apply map_Forall_to_list in Hσ.
       by eapply Forall_lookup in Hσ; eauto; simpl in *.
   - apply map_Forall_to_list, Forall_forall.
@@ -122,10 +122,10 @@ Qed.
 (* The stepping relation preserves closedness *)
 Lemma head_step_is_closed e1 σ1 obs e2 σ2 es :
   is_closed_expr [] e1 →
-  map_Forall (λ _ v, is_closed_val v) σ1.(heap) →
+  map_Forall (λ _ v, from_option is_closed_val true v) σ1.(heap) →
   head_step e1 σ1 obs e2 σ2 es →
   is_closed_expr [] e2 ∧ Forall (is_closed_expr []) es ∧
-  map_Forall (λ _ v, is_closed_val v) σ2.(heap).
+  map_Forall (λ _ v, from_option is_closed_val true v) σ2.(heap).
 Proof.
   intros Cl1 Clσ1 STEP.
   induction STEP; simpl in *; split_and!;
@@ -134,6 +134,8 @@ Proof.
   - unfold un_op_eval in *. repeat case_match; naive_solver.
   - eapply bin_op_eval_closed; eauto; naive_solver.
   - by apply heap_closed_alloc.
+  - select (_ !! _ = Some _) ltac:(fun H => by specialize (Clσ1 _ _ H)).
+  - select (_ !! _ = Some _) ltac:(fun H => by specialize (Clσ1 _ _ H)).
   - case_match; try apply map_Forall_insert_2; by naive_solver.
 Qed.
 
@@ -154,6 +156,7 @@ Fixpoint subst_map (vs : gmap string val) (e : expr) : expr :=
   | Case e0 e1 e2 => Case (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)
   | Fork e => Fork (subst_map vs e)
   | AllocN e1 e2 => AllocN (subst_map vs e1) (subst_map vs e2)
+  | Free e => Free (subst_map vs e)
   | Load e => Load (subst_map vs e)
   | Store e1 e2 => Store (subst_map vs e1) (subst_map vs e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst_map vs e0) (subst_map vs e1) (subst_map vs e2)

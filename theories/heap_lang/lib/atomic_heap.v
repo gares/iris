@@ -9,6 +9,7 @@ Set Default Proof Using "Type".
 Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   (* -- operations -- *)
   alloc : val;
+  free : val;
   load : val;
   store : val;
   cmpxchg : val;
@@ -23,6 +24,8 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   (* -- operation specs -- *)
   alloc_spec (v : val) :
     {{{ True }}} alloc v {{{ l, RET #l; mapsto l 1 v }}};
+  free_spec (l : loc) (v : val) :
+    {{{ mapsto l 1 v }}} free #l {{{ l, RET #l; True }}};
   load_spec (l : loc) :
     ⊢ <<< ∀ (v : val) q, mapsto l q v >>> load #l @ ⊤ <<< mapsto l q v, RET v >>>;
   store_spec (l : loc) (w : val) :
@@ -81,6 +84,8 @@ End derived.
 (** Proof that the primitive physical operations of heap_lang satisfy said interface. *)
 Definition primitive_alloc : val :=
   λ: "v", ref "v".
+Definition primitive_free : val :=
+  λ: "v", Free "v".
 Definition primitive_load : val :=
   λ: "l", !"l".
 Definition primitive_store : val :=
@@ -95,6 +100,12 @@ Section proof.
     {{{ True }}} primitive_alloc v {{{ l, RET #l; l ↦ v }}}.
   Proof.
     iIntros (Φ) "_ HΦ". wp_lam. wp_alloc l. iApply "HΦ". done.
+  Qed.
+
+  Lemma primitive_free_spec (l : loc) (v : val) :
+    {{{ l ↦ v }}} primitive_free #l {{{ l, RET #l; True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_lam. wp_free. iApply "HΦ". done.
   Qed.
 
   Lemma primitive_load_spec (l : loc) :
@@ -134,7 +145,8 @@ End proof.
      (using [Explicit Instance]). *)
 Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
   {| alloc_spec := primitive_alloc_spec;
+     free_spec := primitive_free_spec;
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
      cmpxchg_spec := primitive_cmpxchg_spec;
-     mapsto_agree := gen_heap.mapsto_agree  |}.
+     mapsto_agree := lifting.mapsto_agree |}.

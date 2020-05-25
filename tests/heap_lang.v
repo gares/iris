@@ -218,15 +218,35 @@ Section tests.
     iIntros "[$ _]". (* splits the fraction, not the app *)
   Qed.
 
+
+  Lemma test_wp_free l v :
+    {{{ l ↦ v }}} Free #l {{{ RET #(); True }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_free. iApply "HΦ". done.
+  Qed.
+
+  Lemma test_twp_free l v :
+    [[{ l ↦ v }]] Free #l [[{ RET #(); True }]].
+  Proof.
+    iIntros (Φ) "Hl HΦ". wp_free. iApply "HΦ". done.
+  Qed.
 End tests.
 
-Section notation_tests.
+Section inv_mapsto_tests.
   Context `{!heapG Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
   Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
-End notation_tests.
+
+  (* Make sure [setoid_rewrite] works. *)
+  Lemma inv_mapsto_setoid_rewrite (l : loc) (I : val → Prop) :
+    (∀ v, I v ↔ I #true) →
+    ⊢ l ↦□ (λ v, I v).
+  Proof.
+    iIntros (Heq). setoid_rewrite Heq. Show.
+  Abort.
+End inv_mapsto_tests.
 
 Section printing_tests.
   Context `{!heapG Σ}.

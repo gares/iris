@@ -7,11 +7,20 @@ Set Default Proof Using "Type".
 
 (** heap_lang.  A fairly simple language used for common Iris examples.
 
+Noteworthy design choices:
+
 - This is a right-to-left evaluated language, like CakeML and OCaml.  The reason
   for this is that it makes curried functions usable: Given a WP for [f a b], we
   know that any effects [f] might have to not matter until after *both* [a] and
   [b] are evaluated.  With left-to-right evaluation, that triple is basically
   useless unless the user let-expands [b].
+
+- Even after deallocating a location, the heap remembers that these locations
+  were previously allocated and makes sure they do not get reused. This is
+  necessary to ensure soundness of the [meta] feature provided by [gen_heap].
+  Also, unlike in languages like C, allocated and deallocated "blocks" do not
+  have to match up: you can allocate a large array of locations and then
+  deallocate a hole out of it in the middle.
 
 - For prophecy variables, we annotate the reduction steps with an "observation"
   and tweak adequacy such that WP knows all future observations. There is
@@ -100,6 +109,7 @@ Inductive expr :=
   | Fork (e : expr)
   (* Heap *)
   | AllocN (e1 e2 : expr) (* array length (positive number), initial value *)
+  | Free (e : expr)
   | Load (e : expr)
   | Store (e1 : expr) (e2 : expr)
   | CmpXchg (e0 : expr) (e1 : expr) (e2 : expr) (* Compare-exchange *)
@@ -185,9 +195,9 @@ Definition vals_compare_safe (vl v1 : val) : Prop :=
   val_is_unboxed vl ∨ val_is_unboxed v1.
 Arguments vals_compare_safe !_ !_ /.
 
-(** The state: heaps of vals. *)
+(** The state: heaps of [option val]s, with [None] representing deallocated locations. *)
 Record state : Type := {
-  heap: gmap loc val;
+  heap: gmap loc (option val);
   used_proph_id: gset proph_id;
 }.
 
@@ -233,6 +243,8 @@ Proof.
      | Fork e, Fork e' => cast_if (decide (e = e'))
      | AllocN e1 e2, AllocN e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
+     | Free e, Free e' =>
+        cast_if (decide (e = e'))
      | Load e, Load e' => cast_if (decide (e = e'))
      | Store e1 e2, Store e1' e2' =>
         cast_if_and (decide (e1 = e1')) (decide (e2 = e2'))
@@ -316,12 +328,13 @@ Proof.
      | Case e0 e1 e2 => GenNode 11 [go e0; go e1; go e2]
      | Fork e => GenNode 12 [go e]
      | AllocN e1 e2 => GenNode 13 [go e1; go e2]
-     | Load e => GenNode 14 [go e]
-     | Store e1 e2 => GenNode 15 [go e1; go e2]
-     | CmpXchg e0 e1 e2 => GenNode 16 [go e0; go e1; go e2]
-     | FAA e1 e2 => GenNode 17 [go e1; go e2]
-     | NewProph => GenNode 18 []
-     | Resolve e0 e1 e2 => GenNode 19 [go e0; go e1; go e2]
+     | Free e => GenNode 14 [go e]
+     | Load e => GenNode 15 [go e]
+     | Store e1 e2 => GenNode 16 [go e1; go e2]
+     | CmpXchg e0 e1 e2 => GenNode 17 [go e0; go e1; go e2]
+     | FAA e1 e2 => GenNode 18 [go e1; go e2]
+     | NewProph => GenNode 19 []
+     | Resolve e0 e1 e2 => GenNode 20 [go e0; go e1; go e2]
      end
    with gov v :=
      match v with
@@ -351,12 +364,13 @@ Proof.
      | GenNode 11 [e0; e1; e2] => Case (go e0) (go e1) (go e2)
      | GenNode 12 [e] => Fork (go e)
      | GenNode 13 [e1; e2] => AllocN (go e1) (go e2)
-     | GenNode 14 [e] => Load (go e)
-     | GenNode 15 [e1; e2] => Store (go e1) (go e2)
-     | GenNode 16 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
-     | GenNode 17 [e1; e2] => FAA (go e1) (go e2)
-     | GenNode 18 [] => NewProph
-     | GenNode 19 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
+     | GenNode 14 [e] => Free (go e)
+     | GenNode 15 [e] => Load (go e)
+     | GenNode 16 [e1; e2] => Store (go e1) (go e2)
+     | GenNode 17 [e0; e1; e2] => CmpXchg (go e0) (go e1) (go e2)
+     | GenNode 18 [e1; e2] => FAA (go e1) (go e2)
+     | GenNode 19 [] => NewProph
+     | GenNode 20 [e0; e1; e2] => Resolve (go e0) (go e1) (go e2)
      | _ => Val $ LitV LitUnit (* dummy *)
      end
    with gov v :=
@@ -371,7 +385,7 @@ Proof.
    for go).
  refine (inj_countable' enc dec _).
  refine (fix go (e : expr) {struct e} := _ with gov (v : val) {struct v} := _ for go).
- - destruct e as [v| | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
+ - destruct e as [v| | | | | | | | | | | | | | | | | | | | |]; simpl; f_equal;
      [exact (gov v)|done..].
  - destruct v; by f_equal.
 Qed.
@@ -405,6 +419,7 @@ Inductive ectx_item :=
   | CaseCtx (e1 : expr) (e2 : expr)
   | AllocNLCtx (v2 : val)
   | AllocNRCtx (e1 : expr)
+  | FreeCtx
   | LoadCtx
   | StoreLCtx (v2 : val)
   | StoreRCtx (e1 : expr)
@@ -441,6 +456,7 @@ Fixpoint fill_item (Ki : ectx_item) (e : expr) : expr :=
   | CaseCtx e1 e2 => Case e e1 e2
   | AllocNLCtx v2 => AllocN e (Val v2)
   | AllocNRCtx e1 => AllocN e1 e
+  | FreeCtx => Free e
   | LoadCtx => Load e
   | StoreLCtx v2 => Store e (Val v2)
   | StoreRCtx e1 => Store e1 e
@@ -473,6 +489,7 @@ Fixpoint subst (x : string) (v : val) (e : expr)  : expr :=
   | Case e0 e1 e2 => Case (subst x v e0) (subst x v e1) (subst x v e2)
   | Fork e => Fork (subst x v e)
   | AllocN e1 e2 => AllocN (subst x v e1) (subst x v e2)
+  | Free e => Free (subst x v e)
   | Load e => Load (subst x v e)
   | Store e1 e2 => Store (subst x v e1) (subst x v e2)
   | CmpXchg e0 e1 e2 => CmpXchg (subst x v e0) (subst x v e1) (subst x v e2)
@@ -544,7 +561,7 @@ Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
     | _, _ => None
     end.
 
-Definition state_upd_heap (f: gmap loc val → gmap loc val) (σ: state) : state :=
+Definition state_upd_heap (f: gmap loc (option val) → gmap loc (option val)) (σ: state) : state :=
   {| heap := f σ.(heap); used_proph_id := σ.(used_proph_id) |}.
 Arguments state_upd_heap _ !_ /.
 
@@ -552,42 +569,42 @@ Definition state_upd_used_proph_id (f: gset proph_id → gset proph_id) (σ: sta
   {| heap := σ.(heap); used_proph_id := f σ.(used_proph_id) |}.
 Arguments state_upd_used_proph_id _ !_ /.
 
-Fixpoint heap_array (l : loc) (vs : list val) : gmap loc val :=
+Fixpoint heap_array (l : loc) (vs : list val) : gmap loc (option val) :=
   match vs with
   | [] => ∅
-  | v :: vs' => {[l := v]} ∪ heap_array (l +ₗ 1) vs'
+  | v :: vs' => {[l := Some v]} ∪ heap_array (l +ₗ 1) vs'
   end.
 
-Lemma heap_array_singleton l v : heap_array l [v] = {[l := v]}.
+Lemma heap_array_singleton l v : heap_array l [v] = {[l := Some v]}.
 Proof. by rewrite /heap_array right_id. Qed.
 
-Lemma heap_array_lookup l vs w k :
-  heap_array l vs !! k = Some w ↔
-  ∃ j, 0 ≤ j ∧ k = l +ₗ j ∧ vs !! (Z.to_nat j) = Some w.
+Lemma heap_array_lookup l vs ow k :
+  heap_array l vs !! k = Some ow ↔
+  ∃ j w, 0 ≤ j ∧ k = l +ₗ j ∧ ow = Some w ∧ vs !! (Z.to_nat j) = Some w.
 Proof.
   revert k l; induction vs as [|v' vs IH]=> l' l /=.
   { rewrite lookup_empty. naive_solver lia. }
   rewrite -insert_union_singleton_l lookup_insert_Some IH. split.
-  - intros [[-> ->] | (Hl & j & ? & -> & ?)].
-    { exists 0. rewrite loc_add_0. naive_solver lia. }
-    exists (1 + j). rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
-  - intros (j & ? & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
+  - intros [[-> ?] | (Hl & j & w & ? & -> & -> & ?)].
+    { eexists 0, _. rewrite loc_add_0. naive_solver lia. }
+    eexists (1 + j), _. rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
+  - intros (j & w & ? & -> & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
     { rewrite loc_add_0; eauto. }
     right. split.
     { rewrite -{1}(loc_add_0 l). intros ?%(inj (loc_add _)); lia. }
     assert (Z.to_nat j = S (Z.to_nat (j - 1))) as Hj.
     { rewrite -Z2Nat.inj_succ; last lia. f_equal; lia. }
     rewrite Hj /= in Hil.
-    exists (j - 1). rewrite loc_add_assoc Z.add_sub_assoc Z.add_simpl_l.
+    eexists (j - 1), _. rewrite loc_add_assoc Z.add_sub_assoc Z.add_simpl_l.
     auto with lia.
 Qed.
 
-Lemma heap_array_map_disjoint (h : gmap loc val) (l : loc) (vs : list val) :
+Lemma heap_array_map_disjoint (h : gmap loc (option val)) (l : loc) (vs : list val) :
   (∀ i, (0 ≤ i) → (i < length vs) → h !! (l +ₗ i) = None) →
   (heap_array l vs) ##ₘ h.
 Proof.
   intros Hdisj. apply map_disjoint_spec=> l' v1 v2.
-  intros (j&?&->&Hj%lookup_lt_Some%inj_lt)%heap_array_lookup.
+  intros (j&w&?&->&?&Hj%lookup_lt_Some%inj_lt)%heap_array_lookup.
   move: Hj. rewrite Z2Nat.id // => ?. by rewrite Hdisj.
 Qed.
 
@@ -596,7 +613,7 @@ Definition state_init_heap (l : loc) (n : Z) (v : val) (σ : state) : state :=
   state_upd_heap (λ h, heap_array l (replicate (Z.to_nat n) v) ∪ h) σ.
 
 Lemma state_init_heap_singleton l v σ :
-  state_init_heap l 1 v σ = state_upd_heap <[l:=v]> σ.
+  state_init_heap l 1 v σ = state_upd_heap <[l:=Some v]> σ.
 Proof.
   destruct σ as [h p]. rewrite /state_init_heap /=. f_equiv.
   rewrite right_id insert_union_singleton_l. done.
@@ -641,29 +658,35 @@ Inductive head_step : expr → state → list observation → expr → state →
                []
                (Val $ LitV $ LitLoc l) (state_init_heap l n v σ)
                []
-  | LoadS l v σ :
-     σ.(heap) !! l = Some v →
-     head_step (Load (Val $ LitV $ LitLoc l)) σ [] (of_val v) σ []
-  | StoreS l v σ :
-     is_Some (σ.(heap) !! l) →
-     head_step (Store (Val $ LitV $ LitLoc l) (Val v)) σ
+  | FreeS l v σ :
+     σ.(heap) !! l = Some $ Some v →
+     head_step (Free (Val $ LitV $ LitLoc l)) σ
                []
-               (Val $ LitV LitUnit) (state_upd_heap <[l:=v]> σ)
+               (Val $ LitV LitUnit) (state_upd_heap <[l:=None]> σ)
+               []
+  | LoadS l v σ :
+     σ.(heap) !! l = Some $ Some v →
+     head_step (Load (Val $ LitV $ LitLoc l)) σ [] (of_val v) σ []
+  | StoreS l v w σ :
+     σ.(heap) !! l = Some $ Some v →
+     head_step (Store (Val $ LitV $ LitLoc l) (Val w)) σ
+               []
+               (Val $ LitV LitUnit) (state_upd_heap <[l:=Some w]> σ)
                []
   | CmpXchgS l v1 v2 vl σ b :
-     σ.(heap) !! l = Some vl →
+     σ.(heap) !! l = Some $ Some vl →
      (* Crucially, this compares the same way as [EqOp]! *)
      vals_compare_safe vl v1 →
      b = bool_decide (vl = v1) →
      head_step (CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2)) σ
                []
-               (Val $ PairV vl (LitV $ LitBool b)) (if b then state_upd_heap <[l:=v2]> σ else σ)
+               (Val $ PairV vl (LitV $ LitBool b)) (if b then state_upd_heap <[l:=Some v2]> σ else σ)
                []
   | FaaS l i1 i2 σ :
-     σ.(heap) !! l = Some (LitV (LitInt i1)) →
+     σ.(heap) !! l = Some $ Some (LitV (LitInt i1)) →
      head_step (FAA (Val $ LitV $ LitLoc l) (Val $ LitV $ LitInt i2)) σ
                []
-               (Val $ LitV $ LitInt i1) (state_upd_heap <[l:=LitV (LitInt (i1 + i2))]>σ)
+               (Val $ LitV $ LitInt i1) (state_upd_heap <[l:=Some $ LitV (LitInt (i1 + i2))]>σ)
                []
   | NewProphS σ p :
      p ∉ σ.(used_proph_id) →
