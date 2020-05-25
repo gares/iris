@@ -841,7 +841,7 @@ Lemma tac_löb Δ i Q :
   end →
   envs_entails Δ Q.
 Proof.
-  destruct (envs_app _ _ _) eqn:?; last done.
+  destruct (envs_app _ _ _) as [Δ'|] eqn:?; last done.
   rewrite envs_entails_eq => ?? HQ.
   rewrite (env_spatial_is_nil_intuitionistically Δ) //.
   rewrite -(persistently_and_emp_elim Q). apply and_intro; first apply: affine.
