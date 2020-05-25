@@ -1,6 +1,5 @@
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export atomic.
-From iris.heap_lang Require Export lifting notation.
 From iris.heap_lang Require Import proofmode notation atomic_heap.
 Set Default Proof Using "Type".
 

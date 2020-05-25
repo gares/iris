@@ -1,13 +1,19 @@
+(** This file extens the HeapLang program logic with some derived laws about
+arrays and prophecies.
+
+For more array operations, see [heap_lang.lib.array].
+*)
+
 From stdpp Require Import fin_maps.
 From iris.bi Require Import lib.fractional.
 From iris.proofmode Require Import tactics.
-From iris.heap_lang Require Export lifting.
+From iris.program_logic Require Import ectx_lifting.
+From iris.heap_lang Require Export primitive_laws.
 From iris.heap_lang Require Import tactics notation.
 Set Default Proof Using "Type".
 
-(** This file defines the [array] connective, a version of [mapsto] that works
-with lists of values. It also contains array versions of the basic heap
-operations of HeapLang. *)
+(** The [array] connective is a version of [mapsto] that works
+with lists of values. *)
 
 Definition array `{!heapG Σ} (l : loc) (q : Qp) (vs : list val) : iProp Σ :=
   ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{q} v)%I.
@@ -317,6 +323,45 @@ Proof.
   iIntros (? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_faa_offset_vec with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
+
+(** Derived prophecy laws *)
+
+(** Lemmas for some particular expression inside the [Resolve]. *)
+Lemma wp_resolve_proph s E (p : proph_id) (pvs : list (val * val)) v :
+  {{{ proph p pvs }}}
+    ResolveProph (Val $ LitV $ LitProphecy p) (Val v) @ s; E
+  {{{ pvs', RET (LitV LitUnit); ⌜pvs = (LitV LitUnit, v)::pvs'⌝ ∗ proph p pvs' }}}.
+Proof.
+  iIntros (Φ) "Hp HΦ". iApply (wp_resolve with "Hp"); first done.
+  iApply wp_pure_step_later=> //=. iApply wp_value.
+  iIntros "!>" (vs') "HEq Hp". iApply "HΦ". iFrame.
+Qed.
+
+Lemma wp_resolve_cmpxchg_suc s E l (p : proph_id) (pvs : list (val * val)) v1 v2 v :
+  vals_compare_safe v1 v1 →
+  {{{ proph p pvs ∗ ▷ l ↦ v1 }}}
+    Resolve (CmpXchg #l v1 v2) #p v @ s; E
+  {{{ RET (v1, #true) ; ∃ pvs', ⌜pvs = ((v1, #true)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦ v2 }}}.
+Proof.
+  iIntros (Hcmp Φ) "[Hp Hl] HΦ".
+  iApply (wp_resolve with "Hp"); first done.
+  assert (val_is_unboxed v1) as Hv1; first by destruct Hcmp.
+  iApply (wp_cmpxchg_suc with "Hl"); [done..|]. iIntros "!> Hl".
+  iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
+Qed.
+
+Lemma wp_resolve_cmpxchg_fail s E l (p : proph_id) (pvs : list (val * val)) q v' v1 v2 v :
+  v' ≠ v1 → vals_compare_safe v' v1 →
+  {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
+    Resolve (CmpXchg #l v1 v2) #p v @ s; E
+  {{{ RET (v', #false) ; ∃ pvs', ⌜pvs = ((v', #false)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
+Proof.
+  iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
+  iApply (wp_resolve with "Hp"); first done.
+  iApply (wp_cmpxchg_fail with "Hl"); [done..|]. iIntros "!> Hl".
+  iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
+Qed.
+
 End lifting.
 
 Typeclasses Opaque array.
