@@ -1094,6 +1094,9 @@ Proof.
     apply sep_mono; first done. apply and_elim_r.
 Qed.
 
+Lemma intuitionistically_impl_wand_2 P Q : □ (P -∗ Q) ⊢ □ (P → Q).
+Proof. by rewrite /bi_intuitionistically persistently_impl_wand_2. Qed.
+
 Lemma impl_alt P Q : (P → Q) ⊣⊢ ∃ R, R ∧ <pers> (P ∧ R -∗ Q).
 Proof.
   apply (anti_symm (⊢)).
