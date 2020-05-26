@@ -232,6 +232,18 @@ Section tests.
   Qed.
 End tests.
 
+Section mapsto_tests.
+  Context `{!heapG Σ}.
+
+  (* Make sure certain tactic sequences can solve certain goals. *)
+  Lemma mapsto_combine l v :
+    l ↦{1/2} - ∗ l ↦{1/2} v -∗ l ↦ -.
+  Proof.
+    iIntros "[Hl1 Hl2]". iFrame. iExists _. done.
+  Qed.
+
+End mapsto_tests.
+
 Section inv_mapsto_tests.
   Context `{!heapG Σ}.
 
