@@ -1,8 +1,8 @@
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export atomic.
-From iris.heap_lang Require Export lifting notation.
-From iris.heap_lang Require Import proofmode.
+From iris.heap_lang Require Export derived_laws.
+From iris.heap_lang Require Import notation proofmode.
 Set Default Proof Using "Type".
 
 (** A general logically atomic interface for a heap. *)
@@ -149,4 +149,4 @@ Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
      cmpxchg_spec := primitive_cmpxchg_spec;
-     mapsto_agree := lifting.mapsto_agree |}.
+     mapsto_agree := primitive_laws.mapsto_agree |}.
