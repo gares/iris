@@ -64,7 +64,6 @@ Delimit Scope expr_scope with E.
 Delimit Scope val_scope with V.
 
 Module heap_lang.
-Open Scope Z_scope.
 
 (** Expressions and vals. *)
 Definition proph_id := positive.
@@ -526,7 +525,7 @@ Definition bin_op_eval_int (op : bin_op) (n1 n2 : Z) : option base_lit :=
   | LtOp => Some $ LitBool (bool_decide (n1 < n2))
   | EqOp => Some $ LitBool (bool_decide (n1 = n2))
   | OffsetOp => None (* Pointer arithmetic *)
-  end.
+  end%Z.
 
 Definition bin_op_eval_bool (op : bin_op) (b1 b2 : bool) : option base_lit :=
   match op with
@@ -580,14 +579,14 @@ Proof. by rewrite /heap_array right_id. Qed.
 
 Lemma heap_array_lookup l vs ow k :
   heap_array l vs !! k = Some ow ↔
-  ∃ j w, 0 ≤ j ∧ k = l +ₗ j ∧ ow = Some w ∧ vs !! (Z.to_nat j) = Some w.
+  ∃ j w, (0 ≤ j)%Z ∧ k = l +ₗ j ∧ ow = Some w ∧ vs !! (Z.to_nat j) = Some w.
 Proof.
   revert k l; induction vs as [|v' vs IH]=> l' l /=.
   { rewrite lookup_empty. naive_solver lia. }
   rewrite -insert_union_singleton_l lookup_insert_Some IH. split.
   - intros [[-> ?] | (Hl & j & w & ? & -> & -> & ?)].
     { eexists 0, _. rewrite loc_add_0. naive_solver lia. }
-    eexists (1 + j), _. rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
+    eexists (1 + j)%Z, _. rewrite loc_add_assoc !Z.add_1_l Z2Nat.inj_succ; auto with lia.
   - intros (j & w & ? & -> & -> & Hil). destruct (decide (j = 0)); simplify_eq/=.
     { rewrite loc_add_0; eauto. }
     right. split.
@@ -595,12 +594,12 @@ Proof.
     assert (Z.to_nat j = S (Z.to_nat (j - 1))) as Hj.
     { rewrite -Z2Nat.inj_succ; last lia. f_equal; lia. }
     rewrite Hj /= in Hil.
-    eexists (j - 1), _. rewrite loc_add_assoc Z.add_sub_assoc Z.add_simpl_l.
+    eexists (j - 1)%Z, _. rewrite loc_add_assoc Z.add_sub_assoc Z.add_simpl_l.
     auto with lia.
 Qed.
 
 Lemma heap_array_map_disjoint (h : gmap loc (option val)) (l : loc) (vs : list val) :
-  (∀ i, (0 ≤ i) → (i < length vs) → h !! (l +ₗ i) = None) →
+  (∀ i, (0 ≤ i)%Z → (i < length vs)%Z → h !! (l +ₗ i) = None) →
   (heap_array l vs) ##ₘ h.
 Proof.
   intros Hdisj. apply map_disjoint_spec=> l' v1 v2.
@@ -652,8 +651,8 @@ Inductive head_step : expr → state → list observation → expr → state →
   | ForkS e σ:
      head_step (Fork e) σ [] (Val $ LitV LitUnit) σ [e]
   | AllocNS n v σ l :
-     0 < n →
-     (∀ i, 0 ≤ i → i < n → σ.(heap) !! (l +ₗ i) = None) →
+     (0 < n)%Z →
+     (∀ i, (0 ≤ i)%Z → (i < n)%Z → σ.(heap) !! (l +ₗ i) = None) →
      head_step (AllocN (Val $ LitV $ LitInt n) (Val v)) σ
                []
                (Val $ LitV $ LitLoc l) (state_init_heap l n v σ)
@@ -721,7 +720,7 @@ Proof. revert Ki1. induction Ki2, Ki1; naive_solver eauto with f_equal. Qed.
 
 Lemma alloc_fresh v n σ :
   let l := fresh_locs (dom (gset loc) σ.(heap)) in
-  0 < n →
+  (0 < n)%Z →
   head_step (AllocN ((Val $ LitV $ LitInt $ n)) (Val v)) σ []
             (Val $ LitV $ LitLoc l) (state_init_heap l n v σ) [].
 Proof.

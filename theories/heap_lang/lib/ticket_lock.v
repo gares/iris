@@ -85,11 +85,11 @@ Section proof.
   Proof.
     iIntros (Φ) "HR HΦ". rewrite -wp_fupd. wp_lam.
     wp_alloc ln as "Hln". wp_alloc lo as "Hlo".
-    iMod (own_alloc (● (Excl' 0%nat, GSet ∅) ⋅ ◯ (Excl' 0%nat, GSet ∅))) as (γ) "[Hγ Hγ']".
+    iMod (own_alloc (● (Excl' 0, GSet ∅) ⋅ ◯ (Excl' 0, GSet ∅))) as (γ) "[Hγ Hγ']".
     { by apply auth_both_valid. }
     iMod (inv_alloc _ _ (lock_inv γ lo ln R) with "[-HΦ]").
     { iNext. rewrite /lock_inv.
-      iExists 0%nat, 0%nat. iFrame. iLeft. by iFrame. }
+      iExists 0, 0. iFrame. iLeft. by iFrame. }
     wp_pures. iModIntro. iApply ("HΦ" $! (#lo, #ln)%V γ). iExists lo, ln. eauto.
   Qed.
 

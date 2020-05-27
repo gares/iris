@@ -245,8 +245,8 @@ Lemma erased_head_step_head_step_NewProph σ :
   head_steps_to_erasure_of NewProph σ #LitPoison (erase_state σ) [].
 Proof. eexists _, _, _, _; split; first eapply new_proph_id_fresh; done. Qed.
 Lemma erased_head_step_head_step_AllocN n v σ l :
-  0 < n →
-  (∀ i : Z, 0 ≤ i → i < n → erase_heap (heap σ) !! (l +ₗ i) = None) →
+  (0 < n)%Z →
+  (∀ i : Z, (0 ≤ i)%Z → (i < n)%Z → erase_heap (heap σ) !! (l +ₗ i) = None) →
   head_steps_to_erasure_of
     (AllocN #n v) σ #l (state_init_heap l n (erase_val v) (erase_state σ)) [].
 Proof.
@@ -508,9 +508,8 @@ Proof.
   (** Case split on whether e1 is a [Resolve] expression. *)
   destruct (decide (is_Resolve e1)); last first.
   { (** e1 is not a [Resolve] expression. *)
-    eapply non_resolve_prim_step_matched_by_erased_steps_ectx_item; eauto; [|].
-    - by eapply fill_not_val, val_head_stuck.
-    - intros; eapply (IH K); simpl; eauto with lia. }
+    eapply non_resolve_prim_step_matched_by_erased_steps_ectx_item; [|by eauto..].
+    by eapply fill_not_val, val_head_stuck. }
   (** e1 is a [Resolve] expression. *)
   destruct Ki; simplify_eq/=;
     repeat
@@ -677,7 +676,8 @@ Proof.
 Qed.
 
 Lemma head_step_erased_prim_step_allocN σ l n v:
-  0 < n → (∀ i : Z, 0 ≤ i → i < n → heap σ !! (l +ₗ i) = None) →
+  (0 < n)%Z →
+  (∀ i : Z, (0 ≤ i)%Z → (i < n)%Z → heap σ !! (l +ₗ i) = None) →
   ∃ e2' σ2' ef',
     prim_step (AllocN #n (erase_val v)) (erase_state σ) [] e2' σ2' ef'.
 Proof.

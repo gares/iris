@@ -78,7 +78,7 @@ Proof.
   rewrite -[X in (l ↦∗{_} X)%I](take_drop_middle _ off v); last done.
   iDestruct (array_app with "Hl") as "[Hl1 Hl]".
   iDestruct (array_cons with "Hl") as "[Hl2 Hl3]".
-  assert (off < length vs)%nat as H by (apply lookup_lt_is_Some; by eexists).
+  assert (off < length vs) as H by (apply lookup_lt_is_Some; by eexists).
   rewrite take_length min_l; last by lia. iFrame "Hl2".
   iIntros (w) "Hl2".
   clear Hlookup. assert (<[off:=w]> vs !! off = Some w) as Hlookup.
@@ -102,7 +102,7 @@ Proof.
 Qed.
 
 Lemma twp_allocN s E v n :
-  0 < n →
+  (0 < n)%Z →
   [[{ True }]] AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
   [[{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
          [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }]].
@@ -113,7 +113,7 @@ Proof.
   by iApply mapsto_seq_array.
 Qed.
 Lemma wp_allocN s E v n :
-  0 < n →
+  (0 < n)%Z →
   {{{ True }}} AllocN (Val $ LitV $ LitInt $ n) (Val v) @ s; E
   {{{ l, RET LitV (LitLoc l); l ↦∗ replicate (Z.to_nat n) v ∗
          [∗ list] i ∈ seq 0 (Z.to_nat n), meta_token (l +ₗ (i : nat)) ⊤ }}}.
@@ -123,7 +123,7 @@ Proof.
 Qed.
 
 Lemma twp_allocN_vec s E v n :
-  0 < n →
+  (0 < n)%Z →
   [[{ True }]]
     AllocN #n v @ s ; E
   [[{ l, RET #l; l ↦∗ vreplicate (Z.to_nat n) v ∗
@@ -133,7 +133,7 @@ Proof.
   iIntros (l) "[Hl Hm]". iApply "HΦ". rewrite vec_to_list_replicate. iFrame.
 Qed.
 Lemma wp_allocN_vec s E v n :
-  0 < n →
+  (0 < n)%Z →
   {{{ True }}}
     AllocN #n v @ s ; E
   {{{ l, RET #l; l ↦∗ vreplicate (Z.to_nat n) v ∗

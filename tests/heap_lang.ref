@@ -90,7 +90,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   Σ : gFunctors
   heapG0 : heapG Σ
   n : Z
-  H : 0 < n
+  H : (0 < n)%Z
   Φ : val → iPropI Σ
   l : loc
   ============================

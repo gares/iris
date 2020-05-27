@@ -39,7 +39,7 @@ Section mono_proof.
     iMod (own_alloc (● (O:mnat) ⋅ ◯ (O:mnat))) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid.
     iMod (inv_alloc N _ (mcounter_inv γ l) with "[Hl Hγ]").
-    { iNext. iExists 0%nat. by iFrame. }
+    { iNext. iExists 0. by iFrame. }
     iModIntro. iApply "HΦ". rewrite /mcounter; eauto 10.
   Qed.
 
@@ -70,7 +70,7 @@ Section mono_proof.
   Qed.
 
   Lemma read_mono_spec l j :
-    {{{ mcounter l j }}} read #l {{{ i, RET #i; ⌜j ≤ i⌝%nat ∧ mcounter l i }}}.
+    {{{ mcounter l j }}} read #l {{{ i, RET #i; ⌜j ≤ i⌝ ∧ mcounter l i }}}.
   Proof.
     iIntros (ϕ) "Hc HΦ". iDestruct "Hc" as (γ) "[#Hinv Hγf]".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]".
@@ -115,10 +115,10 @@ Section contrib_spec.
     {{{ γ l, RET #l; ccounter_ctx γ l ∗ ccounter γ 1 0 }}}.
   Proof.
     iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
-    iMod (own_alloc (●F O%nat ⋅ ◯F 0%nat)) as (γ) "[Hγ Hγ']";
+    iMod (own_alloc (●F O ⋅ ◯F 0)) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid.
     iMod (inv_alloc N _ (ccounter_inv γ l) with "[Hl Hγ]").
-    { iNext. iExists 0%nat. by iFrame. }
+    { iNext. iExists 0. by iFrame. }
     iModIntro. iApply "HΦ". rewrite /ccounter_ctx /ccounter; eauto 10.
   Qed.
 
@@ -144,7 +144,7 @@ Section contrib_spec.
 
   Lemma read_contrib_spec γ l q n :
     {{{ ccounter_ctx γ l ∗ ccounter γ q n }}} read #l
-    {{{ c, RET #c; ⌜n ≤ c⌝%nat ∧ ccounter γ q n }}}.
+    {{{ c, RET #c; ⌜n ≤ c⌝ ∧ ccounter γ q n }}}.
   Proof.
     iIntros (Φ) "[#? Hγf] HΦ".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]". wp_load.
