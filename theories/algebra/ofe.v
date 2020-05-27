@@ -169,11 +169,15 @@ Section ofe.
   Proof. induction 2; eauto using dist_S. Qed.
   Lemma dist_le' n n' x y : n' ≤ n → x ≡{n}≡ y → x ≡{n'}≡ y.
   Proof. intros; eauto using dist_le. Qed.
-  Instance ne_proper {B : ofeT} (f : A → B) `{!NonExpansive f} :
-    Proper ((≡) ==> (≡)) f | 100.
+  (** [ne_proper] and [ne_proper_2] are not instances to improve efficiency of
+  type class search during setoid rewriting.
+  Instances of [NonExpansive{,2}] are hence accompanied by instances of
+  [Proper] built using these lemmas. *)
+  Lemma ne_proper {B : ofeT} (f : A → B) `{!NonExpansive f} :
+    Proper ((≡) ==> (≡)) f.
   Proof. by intros x1 x2; rewrite !equiv_dist; intros Hx n; rewrite (Hx n). Qed.
-  Instance ne_proper_2 {B C : ofeT} (f : A → B → C) `{!NonExpansive2 f} :
-    Proper ((≡) ==> (≡) ==> (≡)) f | 100.
+  Lemma ne_proper_2 {B C : ofeT} (f : A → B → C) `{!NonExpansive2 f} :
+    Proper ((≡) ==> (≡) ==> (≡)) f.
   Proof.
      unfold Proper, respectful; setoid_rewrite equiv_dist.
      by intros x1 x2 Hx y1 y2 Hy n; rewrite (Hx n) (Hy n).
