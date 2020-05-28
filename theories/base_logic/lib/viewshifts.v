@@ -3,7 +3,7 @@ From iris.base_logic.lib Require Export invariants.
 Set Default Proof Using "Type".
 
 Definition vs `{!invG Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=
-  (□ (P -∗ |={E1,E2}=> Q))%I.
+  □ (P -∗ |={E1,E2}=> Q).
 Arguments vs {_ _} _ _ _%I _%I.
 
 Instance: Params (@vs) 4 := {}.

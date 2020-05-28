@@ -28,16 +28,16 @@ Section box_defs.
     own γ (ε, Some (to_agree (Next (iProp_unfold P)))).
 
   Definition slice_inv (γ : slice_name) (P : iProp Σ) : iProp Σ :=
-    (∃ b, box_own_auth γ (●E b) ∗ if b then P else True)%I.
+    ∃ b, box_own_auth γ (●E b) ∗ if b then P else True.
 
   Definition slice (γ : slice_name) (P : iProp Σ) : iProp Σ :=
-    (box_own_prop γ P ∗ inv N (slice_inv γ P))%I.
+    box_own_prop γ P ∗ inv N (slice_inv γ P).
 
   Definition box (f : gmap slice_name bool) (P : iProp Σ) : iProp Σ :=
-    (∃ Φ : slice_name → iProp Σ,
+    ∃ Φ : slice_name → iProp Σ,
       ▷ (P ≡ [∗ map] γ ↦ _ ∈ f, Φ γ) ∗
       [∗ map] γ ↦ b ∈ f, box_own_auth γ (◯E b) ∗ box_own_prop γ (Φ γ) ∗
-                         inv N (slice_inv γ (Φ γ)))%I.
+                         inv N (slice_inv γ (Φ γ)).
 End box_defs.
 
 Instance: Params (@box_own_prop) 3 := {}.

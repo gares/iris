@@ -23,7 +23,7 @@ Section definitions.
   Definition sts_own (s : sts.state sts) (T : sts.tokens sts) : iProp Σ :=
     own γ (sts_frag_up s T).
   Definition sts_inv (φ : sts.state sts → iProp Σ) : iProp Σ :=
-    (∃ s, own γ (sts_auth s ∅) ∗ φ s)%I.
+    ∃ s, own γ (sts_auth s ∅) ∗ φ s.
   Definition sts_ctx `{!invG Σ} (N : namespace) (φ: sts.state sts → iProp Σ) : iProp Σ :=
     inv N (sts_inv φ).
 

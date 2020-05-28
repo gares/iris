@@ -30,11 +30,11 @@ Section proof.
 Context `{!heapG Σ, !spawnG Σ} (N : namespace).
 
 Definition spawn_inv (γ : gname) (l : loc) (Ψ : val → iProp Σ) : iProp Σ :=
-  (∃ lv, l ↦ lv ∗ (⌜lv = NONEV⌝ ∨
-                   ∃ w, ⌜lv = SOMEV w⌝ ∗ (Ψ w ∨ own γ (Excl ()))))%I.
+  ∃ lv, l ↦ lv ∗ (⌜lv = NONEV⌝ ∨
+                  ∃ w, ⌜lv = SOMEV w⌝ ∗ (Ψ w ∨ own γ (Excl ()))).
 
 Definition join_handle (l : loc) (Ψ : val → iProp Σ) : iProp Σ :=
-  (∃ γ, own γ (Excl ()) ∗ inv N (spawn_inv γ l Ψ))%I.
+  ∃ γ, own γ (Excl ()) ∗ inv N (spawn_inv γ l Ψ).
 
 Global Instance spawn_inv_ne n γ l :
   Proper (pointwise_relation val (dist n) ==> dist n) (spawn_inv γ l).

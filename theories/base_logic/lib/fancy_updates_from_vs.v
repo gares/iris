@@ -29,7 +29,7 @@ Context (vs_persistent_intro_r : ∀ E1 E2 P Q R,
   (R -∗ (P ={E1,E2}=> Q)) ⊢ P ∗ R ={E1,E2}=> Q).
 
 Definition fupd (E1 E2 : coPset) (P : uPred M) : uPred M :=
-  (∃ R, R ∗ vs E1 E2 R P)%I.
+  ∃ R, R ∗ vs E1 E2 R P.
 
 Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q)
   (at level 99, E1, E2 at level 50, Q at level 200,
