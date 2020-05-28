@@ -3,6 +3,7 @@ From iris.algebra Require Import monoid.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 Class Plainly (A : Type) := plainly : A → A.
+Arguments plainly {A}%type_scope {_} _%I.
 Hint Mode Plainly ! : typeclass_instances.
 Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.

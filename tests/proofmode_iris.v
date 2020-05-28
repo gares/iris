@@ -9,6 +9,8 @@ Section base_logic_tests.
   (* Test scopes for bupd *)
   Definition use_bupd_uPred (n : nat) : uPred M :=
     □ |==> ∃ m : nat , ⌜ n = 2 ⌝.
+  Definition use_plainly_uPred (n : nat) : uPred M :=
+    ■ |==> ∃ m : nat , ⌜ n = 2 ⌝.
 
   Lemma test_random_stuff (P1 P2 P3 : nat → uPred M) :
     ⊢ ∀ (x y : nat) a b,
