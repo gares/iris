@@ -41,19 +41,19 @@ Section proof.
   Let N := nroot .@ "ticket_lock".
 
   Definition lock_inv (γ : gname) (lo ln : loc) (R : iProp Σ) : iProp Σ :=
-    (∃ o n : nat,
+    ∃ o n : nat,
       lo ↦ #o ∗ ln ↦ #n ∗
       own γ (● (Excl' o, GSet (set_seq 0 n))) ∗
-      ((own γ (◯ (Excl' o, GSet ∅)) ∗ R) ∨ own γ (◯ (ε, GSet {[ o ]}))))%I.
+      ((own γ (◯ (Excl' o, GSet ∅)) ∗ R) ∨ own γ (◯ (ε, GSet {[ o ]}))).
 
   Definition is_lock (γ : gname) (lk : val) (R : iProp Σ) : iProp Σ :=
-    (∃ lo ln : loc,
-       ⌜lk = (#lo, #ln)%V⌝ ∗ inv N (lock_inv γ lo ln R))%I.
+    ∃ lo ln : loc,
+      ⌜lk = (#lo, #ln)%V⌝ ∗ inv N (lock_inv γ lo ln R).
 
   Definition issued (γ : gname) (x : nat) : iProp Σ :=
-    own γ (◯ (ε, GSet {[ x ]}))%I.
+    own γ (◯ (ε, GSet {[ x ]})).
 
-  Definition locked (γ : gname) : iProp Σ := (∃ o, own γ (◯ (Excl' o, GSet ∅)))%I.
+  Definition locked (γ : gname) : iProp Σ := ∃ o, own γ (◯ (Excl' o, GSet ∅)).
 
   Global Instance lock_inv_ne γ lo ln : NonExpansive (lock_inv γ lo ln).
   Proof. solve_proper. Qed.

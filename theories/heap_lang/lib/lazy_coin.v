@@ -28,9 +28,9 @@ Section proof.
   Proof. by destruct b. Qed.
 
   Definition coin (cp : val) (b : bool) : iProp Σ :=
-    (∃ (c : loc) (p : proph_id) (vs : list (val * val)),
-        ⌜cp = (#c, #p)%V⌝ ∗ proph p vs ∗
-        (c ↦ SOMEV #b ∨ (c ↦ NONEV ∗ ⌜b = prophecy_to_bool vs⌝)))%I.
+    ∃ (c : loc) (p : proph_id) (vs : list (val * val)),
+       ⌜cp = (#c, #p)%V⌝ ∗ proph p vs ∗
+       (c ↦ SOMEV #b ∨ (c ↦ NONEV ∗ ⌜b = prophecy_to_bool vs⌝)).
 
   Lemma new_coin_spec : {{{ True }}} new_coin #() {{{ c b, RET c; coin c b }}}.
   Proof.

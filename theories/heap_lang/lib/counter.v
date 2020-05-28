@@ -23,10 +23,10 @@ Section mono_proof.
   Context `{!heapG Σ, !mcounterG Σ} (N : namespace).
 
   Definition mcounter_inv (γ : gname) (l : loc) : iProp Σ :=
-    (∃ n, own γ (● (n : mnat)) ∗ l ↦ #n)%I.
+    ∃ n, own γ (● (n : mnat)) ∗ l ↦ #n.
 
   Definition mcounter (l : loc) (n : nat) : iProp Σ :=
-    (∃ γ, inv N (mcounter_inv γ l) ∧ own γ (◯ (n : mnat)))%I.
+    ∃ γ, inv N (mcounter_inv γ l) ∧ own γ (◯ (n : mnat)).
 
   (** The main proofs. *)
   Global Instance mcounter_persistent l n : Persistent (mcounter l n).
@@ -97,7 +97,7 @@ Section contrib_spec.
   Context `{!heapG Σ, !ccounterG Σ} (N : namespace).
 
   Definition ccounter_inv (γ : gname) (l : loc) : iProp Σ :=
-    (∃ n, own γ (●F n) ∗ l ↦ #n)%I.
+    ∃ n, own γ (●F n) ∗ l ↦ #n.
 
   Definition ccounter_ctx (γ : gname) (l : loc) : iProp Σ :=
     inv N (ccounter_inv γ l).

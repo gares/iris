@@ -29,11 +29,11 @@ Section proof.
     (λ v, bool_decide (v = #true)) ∘ snd <$> vs.
 
   Definition coin (cp : val) (bs : list bool) : iProp Σ :=
-    (∃ (c : loc) (p : proph_id) (vs : list (val * val)),
-        ⌜cp = (#c, #p)%V⌝ ∗
-        ⌜bs ≠ []⌝ ∗ ⌜tail bs = prophecy_to_list_bool vs⌝ ∗
-        proph p vs ∗
-        from_option (λ b : bool, c ↦ #b) (∃ b : bool, c ↦ #b) (head bs))%I.
+    ∃ (c : loc) (p : proph_id) (vs : list (val * val)),
+       ⌜cp = (#c, #p)%V⌝ ∗
+       ⌜bs ≠ []⌝ ∗ ⌜tail bs = prophecy_to_list_bool vs⌝ ∗
+       proph p vs ∗
+       from_option (λ b : bool, c ↦ #b) (∃ b : bool, c ↦ #b) (head bs).
 
   Lemma new_coin_spec : {{{ True }}} new_coin #() {{{ c bs, RET c; coin c bs }}}.
   Proof.

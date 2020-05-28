@@ -21,7 +21,7 @@ Section definitions.
   Definition auth_own (a : A) : iProp Σ :=
     own γ (◯ a).
   Definition auth_inv (f : T → A) (φ : T → iProp Σ) : iProp Σ :=
-    (∃ t, own γ (● f t) ∗ φ t)%I.
+    ∃ t, own γ (● f t) ∗ φ t.
   Definition auth_ctx (N : namespace) (f : T → A) (φ : T → iProp Σ) : iProp Σ :=
     inv N (auth_inv f φ).
 

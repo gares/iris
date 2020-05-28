@@ -97,12 +97,12 @@ Proof. solve_inG. Qed.
 Section definitions.
   Context `{Countable L, hG : !gen_heapG L V Σ}.
 
-  Definition gen_heap_ctx (σ : gmap L V) : iProp Σ := (∃ m,
+  Definition gen_heap_ctx (σ : gmap L V) : iProp Σ := ∃ m,
     (* The [⊆] is used to avoid assigning ghost information to the locations in
     the initial heap (see [gen_heap_init]). *)
     ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∧
     own (gen_heap_name hG) (● (to_gen_heap σ)) ∗
-    own (gen_meta_name hG) (● (to_gen_meta m)))%I.
+    own (gen_meta_name hG) (● (to_gen_meta m)).
 
   Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
     own (gen_heap_name hG) (◯ {[ l := (q, to_agree (v : leibnizO V)) ]}).
@@ -111,15 +111,15 @@ Section definitions.
   Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
 
   Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
-    (∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
-           own γm (namespace_map_token E))%I.
+    ∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
+          own γm (namespace_map_token E).
   Definition meta_token_aux : seal (@meta_token_def). Proof. by eexists. Qed.
   Definition meta_token := meta_token_aux.(unseal).
   Definition meta_token_eq : @meta_token = @meta_token_def := meta_token_aux.(seal_eq).
 
   Definition meta_def `{Countable A} (l : L) (N : namespace) (x : A) : iProp Σ :=
-    (∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
-           own γm (namespace_map_data N (to_agree (encode x))))%I.
+    ∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
+          own γm (namespace_map_data N (to_agree (encode x))).
   Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
   Definition meta {A dA cA} := meta_aux.(unseal) A dA cA.
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
