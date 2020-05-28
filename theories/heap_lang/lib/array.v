@@ -81,7 +81,7 @@ Section proof.
 
   Theorem twp_array_clone stk E l q vl n :
     Z.of_nat (length vl) = n →
-    0 < n →
+    (0 < n)%Z →
     [[{ l ↦∗{q} vl }]]
       array_clone #l #n @ stk; E
     [[{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{q} vl }]].
@@ -98,7 +98,7 @@ Section proof.
   Qed.
   Theorem wp_array_clone stk E l q vl n :
     Z.of_nat (length vl) = n →
-    0 < n →
+    (0 < n)%Z →
     {{{ l ↦∗{q} vl }}}
       array_clone #l #n @ stk; E
     {{{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{q} vl }}}.

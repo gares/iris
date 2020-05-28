@@ -98,14 +98,14 @@ Section tests.
       if: "x" ≤ #0 then -FindPred (-"x" + #2) #0 else FindPred "x" #0.
 
   Lemma FindPred_spec n1 n2 E Φ :
-    n1 < n2 →
+    (n1 < n2)%Z →
     Φ #(n2 - 1) -∗ WP FindPred #n2 #n1 @ E [{ Φ }].
   Proof.
     iIntros (Hn) "HΦ".
     iInduction (Z.gt_wf n2 n1) as [n1' _] "IH" forall (Hn).
     wp_rec. wp_pures. case_bool_decide; wp_if.
     - iApply ("IH" with "[%] [%] HΦ"); lia.
-    - by assert (n1' = n2 - 1) as -> by lia.
+    - by assert (n1' = n2 - 1)%Z as -> by lia.
   Qed.
 
   Lemma Pred_spec n E Φ : Φ #(n - 1) -∗ WP Pred #n @ E [{ Φ }].
@@ -113,7 +113,7 @@ Section tests.
     iIntros "HΦ". wp_lam.
     wp_op. case_bool_decide.
     - wp_apply FindPred_spec; first lia. wp_pures.
-      by replace (n - 1) with (- (-n + 2 - 1)) by lia.
+      by replace (n - 1)%Z with (- (-n + 2 - 1))%Z by lia.
     - wp_apply FindPred_spec; eauto with lia.
   Qed.
 
@@ -130,12 +130,12 @@ Section tests.
   Lemma Id_wp (n : nat) : ⊢ WP Id #n {{ v, ⌜ v = #() ⌝ }}.
   Proof.
     iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
-    by replace (S n - 1) with (n:Z) by lia.
+    by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
   Lemma Id_twp (n : nat) : ⊢ WP Id #n [{ v, ⌜ v = #() ⌝ }].
   Proof.
     iInduction n as [|n] "IH"; wp_rec; wp_pures; first done.
-    by replace (S n - 1) with (n:Z) by lia.
+    by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
 
   Lemma wp_apply_evar e P :
@@ -162,20 +162,22 @@ Section tests.
     ⊢ WP let: "x" := #() in (λ: "y", "x")%V #() {{ _, True }}.
   Proof. wp_let. wp_lam. Fail wp_pure _. Show. Abort.
 
-  Lemma wp_alloc_array n : 0 < n →
+  Lemma wp_alloc_array n :
+    (0 < n)%Z →
     ⊢ {{{ True }}}
         AllocN #n #0
-      {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0}}}.
+      {{{ l, RET #l;  l ↦∗ replicate (Z.to_nat n) #0 }}}.
   Proof.
     iIntros (? Φ) "!> _ HΦ".
     wp_alloc l as "?"; first done.
     by iApply "HΦ".
   Qed.
 
-  Lemma twp_alloc_array n : 0 < n →
+  Lemma twp_alloc_array n :
+    (0 < n)%Z →
     ⊢ [[{ True }]]
         AllocN #n #0
-      [[{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0}]].
+      [[{ l, RET #l; l ↦∗ replicate (Z.to_nat n) #0 }]].
   Proof.
     iIntros (? Φ) "!> _ HΦ".
     wp_alloc l as "?"; first done. Show.

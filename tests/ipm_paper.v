@@ -137,7 +137,7 @@ Section M.
   Instance M_valid : Valid M := λ x, x ≠ Bot.
   Instance M_op : Op M := λ x y,
     match x, y with
-    | Auth n, Frag j | Frag j, Auth n => if decide (j ≤ n)%nat then Auth n else Bot
+    | Auth n, Frag j | Frag j, Auth n => if decide (j ≤ n) then Auth n else Bot
     | Frag i, Frag j => Frag (max i j)
     | _, _ => Bot
     end.
@@ -171,9 +171,9 @@ Section M.
 
   Global Instance frag_core_id n : CoreId (Frag n).
   Proof. by constructor. Qed.
-  Lemma auth_frag_valid j n : ✓ (Auth n ⋅ Frag j) → (j ≤ n)%nat.
+  Lemma auth_frag_valid j n : ✓ (Auth n ⋅ Frag j) → j ≤ n.
   Proof. simpl. case_decide. done. by intros []. Qed.
-  Lemma auth_frag_op (j n : nat) : (j ≤ n)%nat → Auth n = Auth n ⋅ Frag j.
+  Lemma auth_frag_op (j n : nat) : j ≤ n → Auth n = Auth n ⋅ Frag j.
   Proof. intros. by rewrite /= decide_True. Qed.
 
   Lemma M_update n : Auth n ~~> Auth (S n).
@@ -209,7 +209,7 @@ Section counter_proof.
     rewrite (auth_frag_op 0 0) //; iDestruct "Hγ" as "[Hγ Hγf]".
     set (N:= nroot .@ "counter").
     iMod (inv_alloc N _ (I γ l) with "[Hl Hγ]") as "#?".
-    { iIntros "!>". iExists 0%nat. by iFrame. }
+    { iIntros "!>". iExists 0. by iFrame. }
     iModIntro. rewrite /C; eauto 10.
   Qed.
 

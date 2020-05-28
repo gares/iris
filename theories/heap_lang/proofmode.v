@@ -183,7 +183,7 @@ Implicit Types v : val.
 Implicit Types z : Z.
 
 Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
-  0 < n →
+  (0 < n)%Z →
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   (∀ l, ∃ Δ'',
     envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ' = Some Δ'' ∧
@@ -197,7 +197,7 @@ Proof.
   apply wand_intro_l. by rewrite (sep_elim_l (l ↦∗ _)%I) right_id wand_elim_r.
 Qed.
 Lemma tac_twp_allocN Δ s E j K v n Φ :
-  0 < n →
+  (0 < n)%Z →
   (∀ l, ∃ Δ',
     envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ
     = Some Δ' ∧
@@ -407,7 +407,7 @@ Qed.
 Lemma tac_wp_faa Δ Δ' Δ'' s E i K l z1 z2 Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   envs_lookup i Δ' = Some (false, l ↦ LitV z1)%I →
-  envs_simple_replace i false (Esnoc Enil i (l ↦ LitV (z1 + z2))) Δ' = Some Δ'' →
+  envs_simple_replace i false (Esnoc Enil i (l ↦ LitV (LitInt (z1 + z2)))) Δ' = Some Δ'' →
   envs_entails Δ'' (WP fill K (Val $ LitV z1) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (FAA (LitV l) (LitV z2)) @ s; E {{ Φ }}).
 Proof.
@@ -418,7 +418,7 @@ Proof.
 Qed.
 Lemma tac_twp_faa Δ Δ' s E i K l z1 z2 Φ :
   envs_lookup i Δ = Some (false, l ↦ LitV z1)%I →
-  envs_simple_replace i false (Esnoc Enil i (l ↦ LitV (z1 + z2))) Δ = Some Δ' →
+  envs_simple_replace i false (Esnoc Enil i (l ↦ LitV (LitInt (z1 + z2)))) Δ = Some Δ' →
   envs_entails Δ' (WP fill K (Val $ LitV z1) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (FAA (LitV l) (LitV z2)) @ s; E [{ Φ }]).
 Proof.
