@@ -143,7 +143,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
 * New ASCII versions of Iris notations. These are marked parsing only and
   can be made available using `Require Import iris.bi.ascii`. The new
   notations are (notations marked [†] are disambiguated using notation scopes):
-  - entailment: `|--` for `⊢` and `-|-` for `⊣⊢`
+  - entailment: `|-` for `⊢` and `-|-` for `⊣⊢`
   - logic[†]: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
   - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
   - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`

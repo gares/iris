@@ -12,7 +12,7 @@ Section base_logic_tests.
   Implicit Types P Q R : uPred M.
 
   Lemma test_random_stuff (P1 P2 P3 : nat -> uPred M) :
-    |-- forall (x y : nat) a b,
+    |- forall (x y : nat) a b,
       x ≡ y ->
       <#> (uPred_ownM (a ⋅ b) -*
       (exists y1 y2 c, P1 ((x + y1) + y2) /\ True /\ <#> uPred_ownM c) -*
@@ -37,7 +37,7 @@ Section base_logic_tests.
   Qed.
 
   Lemma test_iFrame_pure (x y z : M) :
-    ✓ x -> ⌜y ≡ z⌝ |--@{uPredI M} ✓ x /\ ✓ x /\ y ≡ z.
+    ✓ x -> ⌜y ≡ z⌝ |-@{uPredI M} ✓ x /\ ✓ x /\ y ≡ z.
   Proof. iIntros (Hv) "Hxy". by iFrame (Hv) "Hxy". Qed.
 
   Lemma test_iAssert_modality P : (|==> False) -* |==> P.
@@ -119,7 +119,7 @@ Section iris_tests.
   Lemma test_iInv_4 t N E1 E2 P:
     ↑N ⊆ E2 ->
     na_inv t N (<pers> P) ** na_own t E1 ** na_own t E2
-         |-- |={⊤}=> na_own t E1 ** na_own t E2  ** |> P.
+         |- |={⊤}=> na_own t E1 ** na_own t E2  ** |> P.
   Proof.
     iIntros (?) "(#?&Hown1&Hown2)".
     iInv N as "(#HP&Hown2)". Show.
@@ -129,7 +129,7 @@ Section iris_tests.
   Lemma test_iInv_4_with_close t N E1 E2 P:
     ↑N ⊆ E2 ->
     na_inv t N (<pers> P) ** na_own t E1 ** na_own t E2
-         |-- |={⊤}=> na_own t E1 ** na_own t E2  ** |> P.
+         |- |={⊤}=> na_own t E1 ** na_own t E2  ** |> P.
   Proof.
     iIntros (?) "(#?&Hown1&Hown2)".
     iInv N as "(#HP&Hown2)" "Hclose". Show.
@@ -242,7 +242,7 @@ Section monpred_tests.
   Check "test_iInv".
   Lemma test_iInv N E 𝓟 :
     ↑N ⊆ E ->
-    ⎡inv N 𝓟⎤ |--@{monPredI} |={E}=> emp.
+    ⎡inv N 𝓟⎤ |-@{monPredI} |={E}=> emp.
   Proof.
     iIntros (?) "Hinv".
     iInv N as "HP". Show.
@@ -252,7 +252,7 @@ Section monpred_tests.
   Check "test_iInv_with_close".
   Lemma test_iInv_with_close N E 𝓟 :
     ↑N ⊆ E ->
-    ⎡inv N 𝓟⎤ |--@{monPredI} |={E}=> emp.
+    ⎡inv N 𝓟⎤ |-@{monPredI} |={E}=> emp.
   Proof.
     iIntros (?) "Hinv".
     iInv N as "HP" "Hclose". Show.
@@ -266,89 +266,89 @@ Section parsing_tests.
 Context {PROP : bi}.
 Implicit Types P : PROP.
 
-Lemma test_bi_emp_valid : |--@{PROP} True.
+Lemma test_bi_emp_valid : |-@{PROP} True.
 Proof. naive_solver. Qed.
 
-Lemma test_bi_emp_valid_parens : (|--@{PROP} True) /\ ((|--@{PROP} True)).
+Lemma test_bi_emp_valid_parens : (|-@{PROP} True) /\ ((|-@{PROP} True)).
 Proof. naive_solver. Qed.
 
-Lemma test_bi_emp_valid_parens_space_open : ( |--@{PROP} True).
+Lemma test_bi_emp_valid_parens_space_open : ( |-@{PROP} True).
 Proof. naive_solver. Qed.
 
-Lemma test_bi_emp_valid_parens_space_close : (|--@{PROP} True ).
+Lemma test_bi_emp_valid_parens_space_close : (|-@{PROP} True ).
 Proof. naive_solver. Qed.
 
 Lemma test_entails_annot_sections P :
-  (P |--@{PROP} P) /\ (|--@{PROP}) P P /\
+  (P |-@{PROP} P) /\ (|-@{PROP}) P P /\
   (P -|-@{PROP} P) /\ (-|-@{PROP}) P P.
 Proof. naive_solver. Qed.
 
 Lemma test_entails_annot_sections_parens P :
-  ((P |--@{PROP} P)) /\ ((|--@{PROP})) P P /\
+  ((P |-@{PROP} P)) /\ ((|-@{PROP})) P P /\
   ((P -|-@{PROP} P)) /\ ((-|-@{PROP})) P P.
 Proof. naive_solver. Qed.
 
 Lemma test_entails_annot_sections_space_open P :
-  ( P |--@{PROP} P) /\
+  ( P |-@{PROP} P) /\
   ( P -|-@{PROP} P).
 Proof. naive_solver. Qed.
 
 Lemma test_entails_annot_sections_space_close P :
-  (P |--@{PROP} P ) /\ (|--@{PROP} ) P P /\
+  (P |-@{PROP} P ) /\ (|-@{PROP} ) P P /\
   (P -|-@{PROP} P ) /\ (-|-@{PROP} ) P P.
 Proof. naive_solver. Qed.
 
 
 Check "p1".
-Lemma p1 : forall P, True -> P |-- P.
+Lemma p1 : forall P, True -> P |- P.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p2".
-Lemma p2 : forall P, True /\ (P |-- P).
+Lemma p2 : forall P, True /\ (P |- P).
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p3".
-Lemma p3 : exists P, P |-- P.
+Lemma p3 : exists P, P |- P.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p4".
-Lemma p4 : |--@{PROP} exists (x : nat), ⌜x = 0⌝.
+Lemma p4 : |-@{PROP} exists (x : nat), ⌜x = 0⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p5".
-Lemma p5 : |--@{PROP} exists (x : nat), ⌜forall y : nat, y = y⌝.
+Lemma p5 : |-@{PROP} exists (x : nat), ⌜forall y : nat, y = y⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p6".
-Lemma p6 : exists! (z : nat), |--@{PROP} exists (x : nat), ⌜forall y : nat, y = y⌝ ** ⌜z = 0⌝.
+Lemma p6 : exists! (z : nat), |-@{PROP} exists (x : nat), ⌜forall y : nat, y = y⌝ ** ⌜z = 0⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p7".
-Lemma p7 : forall (a : nat), a = 0 -> forall y, True |--@{PROP} ⌜y >= 0⌝.
+Lemma p7 : forall (a : nat), a = 0 -> forall y, True |-@{PROP} ⌜y >= 0⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p8".
-Lemma p8 : forall (a : nat), a = 0 -> forall y, |--@{PROP} ⌜y >= 0⌝.
+Lemma p8 : forall (a : nat), a = 0 -> forall y, |-@{PROP} ⌜y >= 0⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
 
 Check "p9".
-Lemma p9 : forall (a : nat), a = 0 -> forall y : nat, |--@{PROP} forall z : nat, ⌜z >= 0⌝.
+Lemma p9 : forall (a : nat), a = 0 -> forall y : nat, |-@{PROP} forall z : nat, ⌜z >= 0⌝.
 Proof.
   Unset Printing Notations. Show. Set Printing Notations.
 Abort.
