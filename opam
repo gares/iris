@@ -10,8 +10,8 @@ dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
 synopsis: "This is the Coq development of the Iris Project"
 
 depends: [
-  "coq" { (>= "8.9.1" & < "8.12~") | (= "dev") }
-  "coq-stdpp" { (= "dev.2020-05-27.1.3196e5ca") | (= "dev") }
+  "coq" { (>= "8.9.1" & < "8.13~") | (= "dev") }
+  "coq-stdpp" { (= "dev.2020-05-29.0.b6d4c71e") | (= "dev") }
 ]
 
 build: [make "-j%{jobs}%"]
