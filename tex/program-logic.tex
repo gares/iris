@@ -17,35 +17,35 @@ To this end, we use tokens that manage which invariants are currently enabled.
 We assume to have the following four cameras available:
 \begin{align*}
   \InvName \eqdef{}& \nat \\
-  \textmon{Inv} \eqdef{}& \authm(\InvName \fpfn \agm(\latert \iPreProp)) \\
-  \textmon{En} \eqdef{}& \pset{\InvName} \\
-  \textmon{Dis} \eqdef{}& \finpset{\InvName}
+  \textdom{Inv} \eqdef{}& \authm(\InvName \fpfn \agm(\latert \iPreProp)) \\
+  \textdom{En} \eqdef{}& \pset{\InvName} \\
+  \textdom{Dis} \eqdef{}& \finpset{\InvName}
 \end{align*}
-The last two are the tokens used for managing invariants, $\textmon{Inv}$ is the monoid used to manage the invariants themselves.
+The last two are the tokens used for managing invariants, $\textdom{Inv}$ is the monoid used to manage the invariants themselves.
 
-We assume that at the beginning of the verification, instances named $\gname_{\textmon{State}}$, $\gname_{\textmon{Inv}}$, $\gname_{\textmon{En}}$ and $\gname_{\textmon{Dis}}$ of these cameras have been created, such that these names are globally known.
+We assume that at the beginning of the verification, instances named $\gname_{\textdom{State}}$, $\gname_{\textdom{Inv}}$, $\gname_{\textdom{En}}$ and $\gname_{\textdom{Dis}}$ of these cameras have been created, such that these names are globally known.
 
 \paragraph{World Satisfaction.}
 We can now define the proposition $W$ (\emph{world satisfaction}) which ensures that the enabled invariants are actually maintained:
 \begin{align*}
   W \eqdef{}& \Exists I : \InvName \fpfn \Prop.
   \begin{array}[t]{@{} l}
-    \ownGhost{\gname_{\textmon{Inv}}}{\authfull
+    \ownGhost{\gname_{\textdom{Inv}}}{\authfull
       \mapComp {\iname}
         {\aginj(\latertinj(\wIso(I(\iname))))}
         {\iname \in \dom(I)}} * \\
-    \Sep_{\iname \in \dom(I)} \left( \later I(\iname) * \ownGhost{\gname_{\textmon{Dis}}}{\set{\iname}} \lor \ownGhost{\gname_{\textmon{En}}}{\set{\iname}} \right)
+    \Sep_{\iname \in \dom(I)} \left( \later I(\iname) * \ownGhost{\gname_{\textdom{Dis}}}{\set{\iname}} \lor \ownGhost{\gname_{\textdom{En}}}{\set{\iname}} \right)
   \end{array}
 \end{align*}
 
 \paragraph{Invariants.}
 The following proposition states that an invariant with name $\iname$ exists and maintains proposition $\prop$:
-\[ \knowInv\iname\prop \eqdef \ownGhost{\gname_{\textmon{Inv}}}
+\[ \knowInv\iname\prop \eqdef \ownGhost{\gname_{\textdom{Inv}}}
   {\authfrag \mapsingleton \iname {\aginj(\latertinj(\wIso(\prop)))}} \]
 
 \paragraph{Fancy Updates and View Shifts.}
 Next, we define \emph{fancy updates}, which are essentially the same as the basic updates of the base logic ($\Sref{sec:base-logic}$), except that they also have access to world satisfaction and can enable and disable invariants:
-\[ \pvs[\mask_1][\mask_2] \prop \eqdef W * \ownGhost{\gname_{\textmon{En}}}{\mask_1} \wand \upd\diamond (W * \ownGhost{\gname_{\textmon{En}}}{\mask_2} * \prop) \]
+\[ \pvs[\mask_1][\mask_2] \prop \eqdef W * \ownGhost{\gname_{\textdom{En}}}{\mask_1} \wand \upd\diamond (W * \ownGhost{\gname_{\textdom{En}}}{\mask_2} * \prop) \]
 Here, $\mask_1$ and $\mask_2$ are the \emph{masks} of the view update, defining which invariants have to be (at least!) available before and after the update.
 Masks are sets of natural numbers, \ie they are subsets of $\mathbb{N}$.%
 \footnote{Actually, in the Coq development masks are restricted to a class of sets of natural numbers that contains all finite sets and is closed under union, intersection, difference and complement.
@@ -169,7 +169,7 @@ Finally, weakest precondition takes a parameter $\stuckness \in \set{\NotStuck, 
         & (\Exists\val. \toval(\expr) = \val \land \pvs[\mask] \pred(\val)) \lor {}\\
         & \Bigl(\toval(\expr) = \bot \land \All \state, \vec\obs, \vec\obs', n. \stateinterp(\state, \vec\obs \dplus \vec\obs', n) \vsW[\mask][\emptyset] {}\\
         &\qquad (s = \NotStuck \Ra \red(\expr, \state)) * \All \expr', \state', \vec\expr. (\expr, \state \step[\vec\obs] \expr', \state', \vec\expr) \vsW[\emptyset][\emptyset]\later\pvs[\emptyset][\mask] {}\\
-        &\qquad\qquad \stateinterp(\state', \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * \Sep[\expr'' \in \vec\expr] \textdom{wp\any rec}(\top, \expr'', \pred_F)\Bigr) \\
+        &\qquad\qquad \stateinterp(\state', \vec\obs', n + |\vec\expr|) * \textdom{wp\any rec}(\mask, \expr', \pred) * \Sep_{\expr'' \in \vec\expr} \textdom{wp\any rec}(\top, \expr'', \pred_F)\Bigr) \\
   \wpre[\stateinterp;\pred_F]\expr[\stuckness;\mask]{\Ret\val. \prop} \eqdef{}& \textdom{wp}(\stateinterp,\pred_F,\stuckness)(\mask, \expr, \Lam\val.\prop)
 \end{align*}
 The $\stateinterp$ and $\pred_F$ will always be set by the context; typically, when instantiating Iris with a language, we also pick the corresponding state interpretation $\stateinterp$ and fork-postcondition $\pred_F$.
@@ -220,7 +220,7 @@ This basically just copies the second branch (the non-value case) of the definit
   { {\begin{inbox} % for some crazy reason, LaTeX is actually sensitive to the space between the "{ {" here and the "} }" below...
         ~~\All \state_1,\vec\obs,\vec\obs',n. \stateinterp(\state_1,\vec\obs \dplus \vec\obs', n) \vsW[\mask][\emptyset] (\stuckness = \NotStuck \Ra \red(\expr_1,\state_1)) * {}\\
         \qquad~ \All \expr_2, \state_2, \vec\expr.  (\expr_1, \state_1 \step[\vec\obs] \expr_2, \state_2, \vec\expr)  \vsW[\emptyset][\emptyset]\later\pvs[\emptyset][\mask] {}\\
-        \qquad\qquad\Bigl(\stateinterp(\state_2,\vec\obs',n+|\vec\expr|) * \wpre[\stateinterp;\pred_F]{\expr_2}[\stuckness;\mask]{\Ret\var.\prop} * \Sep[\expr_\f \in \vec\expr] \wpre[\stateinterp\pred_F]{\expr_\f}[\stuckness;\top]{\pred_F}\Bigr)  {}\\
+        \qquad\qquad\left(\stateinterp(\state_2,\vec\obs',n+|\vec\expr|) * \wpre[\stateinterp;\pred_F]{\expr_2}[\stuckness;\mask]{\Ret\var.\prop} * \Sep_{\expr_\f \in \vec\expr} \wpre[\stateinterp\pred_F]{\expr_\f}[\stuckness;\top]{\pred_F}\right)  {}\\
         \proves \wpre[\stateinterp\pred_F]{\expr_1}[\stuckness;\mask]{\Ret\var.\prop}
       \end{inbox}} }
 \end{mathpar}
@@ -245,7 +245,7 @@ where $\consstate$ describes states that are consistent with the state interpret
  &\quad (s = \NotStuck \Ra \All \expr \in \tpool_2. \toval(\expr) \neq \bot \lor \red(\expr, \state_2) ) *{}\\
  &\quad \stateinterp(\state_2, (), |\tpool_2'|) *{}\\
  &\quad (\toval(\expr_2) \ne \bot \wand \pred(\toval(\expr_2))) *{}\\
- &\quad \left(\Sep[\expr \in \tpool_2'] \toval(\expr) \ne \bot \wand \pred_F(\toval(\expr))\right)
+ &\quad \left(\Sep_{\expr \in \tpool_2'} \toval(\expr) \ne \bot \wand \pred_F(\toval(\expr))\right)
 \end{align*}
 The $\hat\metaprop$ here arises because we need a way to talk about $\metaprop$ inside Iris.
 To this end, we assume that the signature $\Sig$ contains some assertion $\hat{\metaprop}$:
@@ -484,7 +484,7 @@ For this reason, we also call such accessors \emph{non-atomic}.
 The reasons accessors are useful is that they let us talk about ``opening X'' (\eg ``opening invariants'') without having to care what X is opened around.
 Furthermore, as we construct more sophisticated and more interesting things that can be opened (\eg invariants that can be ``cancelled'', or STSs), accessors become a useful interface that allows us to mix and match different abstractions in arbitrary ways.
 
-For the special case that $\prop = \propC$ and $\propB = \propB'$, we use the following notation that avoids repetition:
+For the symmetric case where $\prop = \propC$ and $\propB = \propB'$, we use the following notation that avoids repetition:
 \[ \Acc[\mask_1][\mask_2]\prop{\Ret x. \propB} \eqdef \prop \vs[\mask_1][\mask_2] \Exists\var. \propB * (\propB \vsW[\mask_2][\mask_1] \prop)  \]
 This accessor is ``idempotent'' in the sense that it does not actually change the state.  After applying it, we get our $\prop$ back so we end up where we started.
 

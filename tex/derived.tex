@@ -7,7 +7,7 @@ However, based on them, it is possible to \emph{encode} a form of invariants tha
 
 First, we need some ghost state:
 \begin{align*}
-  \textmon{CInvTok} \eqdef{}& \fracm
+  \textdom{CInvTok} \eqdef{}& \fracm
 \end{align*}
 
 Now we define:
@@ -48,7 +48,7 @@ As a consequence, they can be kept open around any sequence of expressions (\ie 
 Concretely, this is the monoid structure we need:
 \begin{align*}
 \textdom{PId} \eqdef{}& \GName \\
-\textmon{NaTok} \eqdef{}& \finpset{\InvName} \times \pset{\InvName}
+\textdom{NaTok} \eqdef{}& \finpset{\InvName} \times \pset{\InvName}
 \end{align*}
 For every pool, there is a set of tokens designating which invariants are \emph{enabled} (closed).
 This corresponds to the mask of ``normal'' invariants.
@@ -135,7 +135,7 @@ This is essentially an \emph{optional later}, indicating that the lemmas can be 
 
 \begingroup
 \paragraph{Model.}
-\newcommand\BoxM{\textmon{Box}}
+\newcommand\BoxM{\textdom{Box}}
 \newcommand\SliceInv{\textlog{SliceInv}}
 
 The above rules are validated by the following model.

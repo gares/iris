@@ -7,15 +7,24 @@
 \RequirePackage{array}
 \RequirePackage{dashbox}
 \RequirePackage{tensor}
-\RequirePackage{xifthen}
 \RequirePackage{xparse}
+\RequirePackage{xifthen}
 \RequirePackage{mathtools}
 
 \usetikzlibrary{shapes}
-%\usetikzlibrary{snakes}
 \usetikzlibrary{arrows}
 \usetikzlibrary{calc}
 \usetikzlibrary{arrows.meta}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% FONTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\textdom}[1]{\textit{#1}} % for domains/sets/types
+\newcommand{\textproj}[1]{\textsc{#1}} % for projections/fields
+\newcommand{\textlog}[1]{\textsf{\upshape #1}} % for mathematical/logic-level identifiers (make sure we do not inherit italic shape from the environment)
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MATH SYMBOLS & NOTATION & IDENTIFIERS
@@ -23,7 +32,7 @@
 
 \newcommand{\nat}{\mathbb{N}}
 
-\newcommand*{\Sep}[1][]{\scalerel*{\ast}{\sum}\ifthenelse{\isempty{#1}}{}{_{#1}\;}}
+\DeclareMathOperator*{\Sep}{\scalerel*{\ast}{\sum}}
 \newcommand*{\disj}[1][]{\mathrel{\#_{#1}}}
 \newcommand\pord{\sqsubseteq}
 
@@ -32,6 +41,7 @@
 \newcommand\dplus{\mathbin{+\kern-1.0ex+}}
 }{}
 \makeatother%
+\newcommand\fmap{\mathrel{\langle\$\rangle}}
 
 \newcommand{\upclose}{\mathord{\uparrow}}
 \newcommand{\ALT}{\ |\ }
@@ -44,17 +54,18 @@
 
 \newcommand{\any}{{\rule[-.2ex]{1ex}{.4pt}}}%
 
-\newcommand{\judgment}[2][]{\paragraph{#1}\hspace{\stretch{1}}\fbox{$#2$}}
+% For some reason \paragraph gives the weirdest errors ("missing \item").
+\newcommand{\judgment}[2][]{\bigskip\noindent\textit{#1}\hspace{\stretch{1}}\fbox{$#2$}}
 
 \newcommand{\pfn}{\rightharpoonup}
-\newcommand\fpfn{\xrightharpoonup{\kern-0.25ex\textrm{fin}\kern-0.25ex}}
+\newcommand\fpfn{\xrightharpoonup{\smash{\raisebox{-.3ex}{\ensuremath{\scriptstyle\kern-0.25ex\textlog{fin}\kern-0.1ex}}}}}
 \newcommand{\la}{\leftarrow}
 \newcommand{\ra}{\rightarrow}
 \newcommand{\Ra}{\Rightarrow}
 \newcommand{\Lra}{\Leftrightarrow}
-\newcommand\monra{\xrightarrow{\kern-0.15ex\textrm{mon}\kern-0.05ex}}
-\newcommand\monnra{\xrightarrow{\kern-0.15ex\textrm{mon,ne}\kern-0.05ex}}
-\newcommand\nfn{\xrightarrow{\kern-0.15ex\textrm{ne}\kern-0.05ex}}
+\newcommand\monra[1][]{\xrightarrow{\smash{\raisebox{-.3ex}{\ensuremath{\scriptstyle\kern-0.15ex\textlog{mon}_{#1}\kern-0.05ex}}}}}
+\newcommand\monnra{\xrightarrow{\smash{\raisebox{-.3ex}{\ensuremath{\scriptstyle\kern-0.15ex\textlog{mon,ne}\kern-0.05ex}}}}}
+\newcommand\nfn{\xrightarrow{\smash{\raisebox{-.3ex}{\ensuremath{\scriptstyle\kern-0.15ex\textlog{ne}\kern-0.05ex}}}}}
 \newcommand{\eqdef}{\triangleq}
 \newcommand{\bnfdef}{\vcentcolon\vcentcolon=}
 
@@ -71,23 +82,27 @@
   \end{array}
 }
 
-\newcommand{\op}{\textrm{op}}
-\newcommand{\dom}{\mathrm{dom}}
-\newcommand{\cod}{\mathrm{cod}}
-\newcommand{\chain}{\mathrm{chain}}
+\newcommand{\op}{\textlog{op}}
+\newcommand{\dom}{\textlog{dom}}
+\newcommand{\cod}{\textlog{cod}}
+\renewcommand{\lim}{\textlog{lim}}
+
+\newcommand{\Chains}{\textdom{Chains}}
 
 \newcommand{\pset}[1]{\wp(#1)} % Powerset
 \newcommand{\psetdown}[1]{\wp^\downarrow(#1)}
-\newcommand{\finpset}[1]{\wp^\mathrm{fin}(#1)}
+\newcommand{\finpset}[1]{\wp^\textlog{fin}(#1)}
 \newcommand{\pmultiset}[1]{\wp^{+}(#1)}
-\newcommand{\finpmultiset}[1]{\wp^{\mathrm{fin},+}(#1)}
+\newcommand{\finpmultiset}[1]{\wp^{\textlog{fin},+}(#1)}
 
 \newcommand{\Func}{F} % functor
 
 \newcommand{\subst}[3]{{#1}[{#3} / {#2}]}
 
-\newcommand{\mapinsert}[3]{#3\left[#1\mathop{\la}#2\right]}
-\newcommand{\mapsingleton}[2]{\mapinsert{#1}{#2}{}}
+\newcommand{\mapelem}[2]{#1\mathop{\la}#2}
+\newcommand{\mapinsert}[3]{#3\!\left[\mapelem{#1}{#2}\right]}
+\newcommand{\mapdelete}[2]{#2\setminus\set{#1}}
+\newcommand{\mapsingleton}[2]{\mapinsert{#1}{#2}{\,}}
 \newcommand{\mapinsertComp}[4]
   {\mapinsert{#1}{#2 \spac\middle|\spac #3}{#4}}
 \newcommand{\mapComp}[3]
@@ -101,7 +116,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MODEL-SPECIFIC SYMBOLS & NOTATION & IDENTIFIERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\textdom}[1]{\textit{#1}}
 
 \newcommand{\wIso}{\xi}
 
@@ -157,7 +171,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CMRA (RESOURCE ALGEBRA) SYMBOLS & NOTATION & IDENTIFIERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\textmon}[1]{\textsc{#1}}
 
 \newcommand{\monoid}{M}
 \newcommand{\mval}{\mathcal{V}}
@@ -169,7 +182,7 @@
 \newcommand{\melts}{A}
 \newcommand{\meltsB}{B}
 
-\newcommand{\f}{\mathrm{f}} % for "frame"
+\newcommand{\f}{\textlog{f}} % used as subscript, for "frame"
 
 \newcommand{\munit}{\varepsilon}
 \newcommand{\mcore}[1]{{\mid}#1{\mid}} % using "|" here makes LaTeX diverge. WTF.
@@ -178,9 +191,10 @@
 \newcommand{\mtimes}{\mathbin{\cdot}}
 \newcommand{\mundef}{\lightning}
 
-\newcommand{\exclusive}{\mathrm{exclusive}}
+\newcommand{\exclusive}{\textlog{exclusive}}
 
 \newcommand{\mupd}{\rightsquigarrow}
+\newcommand{\lupd}{\rightsquigarrow_{\mathfrak{L}}}
 \newcommand{\mincl}[1][]{%
   \ensuremath{\mathrel{\vbox{\offinterlineskip\ialign{%
     \hfil##\hfil\cr
@@ -189,12 +203,11 @@
     $\preccurlyeq$\cr
 }}}}}
 
-\newcommand{\CMRAs}{\mathbf{Camera}}
+\newcommand{\CMRAs}{\mathbf{Camera}} % category of Cameras/CMRAs
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% LOGIC SYMBOLS & NOTATION & IDENTIFIERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\textlog}[1]{\textsf{#1}}
 
 \newcommand{\Sig}{\mathcal{S}}
 \newcommand{\SigType}{\mathcal{T}}
@@ -240,16 +253,17 @@
 \newcommand{\fixp}{\mathit{fix}}
 
 %% various pieces of Syntax
-\def\MU #1.{\mu\,#1.\spac}%
-\def\Lam #1.{\lambda\,#1.\spac}%
+\def\MU #1.{\mu #1.\spac}%
+\def\Lam #1.{\lambda #1.\spac}%
 
 \newcommand{\proves}{\vdash}
 \newcommand{\provesIff}{\mathrel{\dashv\vdash}}
 
-\newcommand{\wand}{\mathrel{-\!\!*}}
+\newcommand{\wand}{\mathrel{-\!\!\ast}}
+\newcommand{\wandIff}{\mathrel{\ast\!\!{-}\!\!\ast}}
 
 % oh my... I have to wrap the "-" in a \mathrm, otherwise all hell breaks lose...
-\newcommand{\fmapsto}[1][]{\xmapsto{#1}}
+\newcommand{\fmapsto}[1][]{\xmapsto{\smash{\raisebox{-.15ex}{\ensuremath{\scriptstyle #1}}}}}
 \newcommand{\gmapsto}{\hookrightarrow}%
 \newcommand{\fgmapsto}[1][\mathrm{-}]{\xhookrightarrow{#1}}%
 
@@ -264,8 +278,9 @@
 
 \newcommand{\later}{\mathop{{\triangleright}}}
 \newcommand*{\lateropt}[1]{\mathop{{\later}^{#1}}}
-\newcommand{\always}{\mathop{\Box}}
+\newcommand{\always}{\mathop{\boxempty}}
 \newcommand{\plainly}{\mathop{\blacksquare}}
+\newcommand{\pers}{\mathop{\boxdot}}
 
 %% Invariants and Ghost ownership
 % PDS: Was 0pt inner, 2pt outer.
@@ -293,7 +308,7 @@
       % Two masks
       \tensor*[^{#1}]{#2}{^{#3}}
     }%
-  \kern0.2ex}}%
+  }}%
 \NewDocumentCommand \vs {O{} O{}} {\vsGen[#1]{\Rrightarrow}[#2]}
 \NewDocumentCommand \bvs {O{} O{}} {\vsGen[#1]{\dispdot[0.02ex]{\Rrightarrow}}[#2]}
 \NewDocumentCommand \vsL {O{} O{}} {\vsGen[#1]{\Lleftarrow}[#2]}
@@ -304,33 +319,19 @@
 \newcommand\vsWand{{\displaystyle\equiv\kern-1.6ex-\kern-1.5ex\smash{\scalerel*{\vphantom-\ast}{\sum}}\kern-0.2ex}}
 \NewDocumentCommand \vsW {O{} O{}} {\vsGen[#1]{\vsWand}[#2]}
 
+\newcommand\vsWandStep{{\displaystyle\raisebox{0.106ex}{\scaleobj{0.82}{\later}}\kern-1.65ex\equiv\kern-1.6ex-\kern-1.5ex\smash{\scalerel*{\vphantom-\ast}{\sum}}\kern-0.2ex}}
+\NewDocumentCommand \vsWS {O{} O{}} {\vsGen[#1]{\vsWandStep}[#2]}
+
 % for now, the update modality looks like a pvs without masks.
 \NewDocumentCommand \upd {} {\mathop{\dispdot[-0.2ex]{\mid\kern-0.4ex\Rrightarrow\kern-0.25ex}}}
 
-\NewDocumentCommand\Acc{O{} O{} m m}{\langle #3 \vsE #4  \rangle_{#1}^{#2}}
+\NewDocumentCommand\Acc{O{} O{} m m}{#3 \mathrel{~\vsGen[#1]{\propto}[#2]~} #4}
 
 
 %% Hoare Triples
-\newcommand*{\hoaresizebox}[1]{%
-  \hbox{$\mathsurround=0pt{#1}\mathstrut$}}
-\newcommand*{\hoarescalebox}[2]{%
-  \hbox{\scalerel*[1ex]{#1}{#2}}}
-\newcommand{\triple}[5]{%
-  \setbox0=\hoaresizebox{{#3}{#5}}%
-  \setbox1=\hoarescalebox{#1}{\copy0}%
-  \setbox2=\hoarescalebox{#2}{\copy0}%
-  \copy1{#3}\copy2%
-  \; #4 \;%
-  \copy1{#5}\copy2}
 
-\newcommand{\bracket}[4][]{%
-  \setbox0=\hbox{$\mathsurround=0pt{#1}{#4}\mathstrut$}%
-  \scalerel*[1ex]{#2}{\copy0}%
-  {#4}%
-  \scalerel*[1ex]{#3}{\copy0}}
-% \curlybracket[other] x
-\newcommand{\curlybracket}[2][]{\bracket[{#1}]\{\}{#2}}
-\newcommand{\anglebracket}[2][]{\bracket[{#1}]\langle\rangle{#2}}
+% needs extra {...} for some weird reason
+\newcommand{\curlybracket}[1]{{\left\{#1\right\}}}
 
 \NewDocumentCommand \hoare {m m m O{}}{
 	\curlybracket{#1}\spac #2 \spac \curlybracket{#3}_{#4}%
@@ -341,32 +342,40 @@
 		{\begin{aligned}[#1]
 		&\curlybracket{#2} \\
 		&\quad{#3} \\
-		&{\curlybracket{#4}}_{#5}
+		&\curlybracket{#4}_{#5}
 		\end{aligned}}%
 }
 % \hoareHV[t] pre c post [mask]
 \NewDocumentCommand \hoareHV {O{c} m m m O{}}{
 	{\begin{aligned}[#1]
-	&\curlybracket{#2} \; {#3} \\
-	&{\curlybracket{#4}}_{#5}
+	&\curlybracket{#2} \spac {#3} \\
+	&\curlybracket{#4}_{#5}
+	\end{aligned}}%
+}
+% \hoareVH[t] pre c post [mask]
+\NewDocumentCommand \hoareVH {O{c} m m m O{}}{
+	{\begin{aligned}[#1]
+	&\curlybracket{#2} \\
+        & {#3}\spac \curlybracket{#4}_{#5}
 	\end{aligned}}%
 }
 
 
 %% Some commonly used identifiers
 \newcommand{\inhabited}[1]{\textlog{inhabited}(#1)}
+\newcommand{\infinite}{\textlog{infinite}}
 \newcommand{\timeless}[1]{\textlog{timeless}(#1)}
 \newcommand{\persistent}[1]{\textlog{persistent}(#1)}
-\newcommand{\infinite}{\textlog{infinite}}
 
 \newcommand\InvName{\textdom{InvName}}
 \newcommand\GName{\textdom{GName}}
 
-\newcommand{\Prop}{\textlog{iProp}}
-\newcommand{\Pred}{\textlog{Pred}}
+\newcommand{\Prop}{\textdom{iProp}}
+\newcommand{\Pred}{\textdom{Pred}}
 
 \newcommand{\TRUE}{\textlog{True}}
 \newcommand{\FALSE}{\textlog{False}}
+\newcommand{\EMP}{\textlog{emp}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GENERIC LANGUAGE SYNTAX AND SEMANTICS
@@ -375,10 +384,10 @@
 \newcommand{\val}{v}
 \newcommand{\valB}{w}
 \newcommand{\state}{\sigma}
-\newcommand{\step}[1][]{\xrightarrow{{#1}}_{\mathsf{t}}}
-\newcommand{\hstep}[1][]{\xrightarrow{{#1}}_{\mathsf{h}}}
-\newcommand{\tpstep}[1][]{\xrightarrow{{#1}}_{\mathsf{tp}}}
-\newcommand{\tpsteps}[1][]{\xrightarrow{{#1}}\mathrel{\vphantom{\to}^{*}_{\mathsf{tp}}}}
+\newcommand{\step}[1][]{\xrightarrow{{#1}}_{\textlog{t}}}
+\newcommand{\hstep}[1][]{\xrightarrow{{#1}}_{\textlog{h}}}
+\newcommand{\tpstep}[1][]{\xrightarrow{{#1}}_{\textlog{tp}}}
+\newcommand{\tpsteps}[1][]{\xrightarrow{{#1}}\mathrel{\vphantom{\to}^{*}_{\textlog{tp}}}}
 \newcommand{\lctx}{K}
 \newcommand{\Lctx}{\textdom{Ctx}}
 \newcommand{\obs}{\kappa}
@@ -391,11 +400,11 @@
 \newcommand{\Obs}{\textdom{Obs}}
 \newcommand{\ThreadPool}{\textdom{ThreadPool}}
 
-\newcommand{\toval}{\mathrm{expr\any to\any val}}
-\newcommand{\ofval}{\mathrm{val\any to\any expr}}
-\newcommand{\atomic}{\mathrm{atomic}}
-\newcommand{\stronglyAtomic}{\mathrm{strongly\any atomic}}
-\newcommand{\red}{\mathrm{red}}
+\newcommand{\toval}{\textlog{expr\any to\any val}}
+\newcommand{\ofval}{\textlog{val\any to\any expr}}
+\newcommand{\atomic}{\textlog{atomic}}
+\newcommand{\stronglyAtomic}{\textlog{strongly\any{}atomic}}
+\newcommand{\red}{\textlog{red}}
 \newcommand{\Lang}{\Lambda}
 
 \newcommand{\tpool}{T}
@@ -412,21 +421,22 @@
 \newcommand{\unit}{1}
 
 % Agreement
-\newcommand{\agm}{\ensuremath{\textmon{Ag}}}
+\newcommand{\agm}{\ensuremath{\textdom{Ag}}}
 \newcommand{\aginj}{\textlog{ag}}
 
 % Fraction
-\newcommand{\fracm}{\ensuremath{\textmon{Frac}}}
+\newcommand{\fracm}{\ensuremath{\textdom{Frac}}}
 \newcommand{\fracinj}{\textlog{frac}}
 
 % Exclusive
-\newcommand{\exm}{\ensuremath{\textmon{Ex}}}
+\newcommand{\exm}{\ensuremath{\textdom{Ex}}}
 \newcommand{\exinj}{\textlog{ex}}
 
 % Auth
-\newcommand{\authm}{\textmon{Auth}}
-\newcommand{\authfull}{\mathord{\bullet}\,}
-\newcommand{\authfrag}{\mathord{\circ}\,}
+\newcommand{\authm}{\textdom{Auth}}
+\newcommand{\authinj}{\textlog{auth}}
+\newcommand{\authfull}{\mathord{\bullet}}
+\newcommand{\authfrag}{\mathord{\circ}}
 
 \newcommand{\AuthInv}{\textsf{AuthInv}}
 \newcommand{\Auth}{\textsf{Auth}}
@@ -436,13 +446,9 @@
 \newcommand{\cinl}{\textsf{inl}}
 \newcommand{\cinr}{\textsf{inr}}
 
-% One-Shot
-\newcommand{\oneshotm}{\ensuremath{\textmon{OneShot}}}
-\newcommand{\ospending}{\textlog{pending}}
-\newcommand{\osshot}{\textlog{shot}}
-
 % STSs
 \newcommand{\STSCtx}{\textlog{StsCtx}}
+\newcommand{\STSInv}{\textlog{StsInv}}
 \newcommand{\STSSt}{\textlog{StsSt}}
 \newcommand{\STSclsd}{\textlog{closed}}
 \newcommand{\STSauth}{\textlog{auth}}
@@ -454,32 +460,32 @@
 \newcommand{\ststrans}{\ra^{*}}%	the relation relevant to the STS rules
 \newcommand{\stsfstep}[1]{\xrightarrow{#1}}
 \newcommand{\stsftrans}[1]{\stsfstep{#1}^{*}}
+\newcommand{\stsinterp}{\varphi}
 
-\tikzstyle{sts} = [->,every node/.style={rectangle, rounded corners, draw, minimum size=1.2cm, align=center}]
-\tikzstyle{sts_arrows} = [arrows={->[scale=1.5]},every node/.style={font=\sffamily\small}]
+\tikzstyle{sts_state} = [rectangle, rounded corners, draw, minimum size=1.2cm, align=center]
+\tikzstyle{sts_arrows} = [->,arrows={->[scale=1.5]},every node/.style={font=\sffamily\small}]
 
 %% Stored Propositions
 \newcommand{\mapstoprop}{\mathrel{\kern-0.5ex\tikz[baseline=(m)]{\node at (0,0) (m){}; \draw[line cap=round] (0,0.16) -- (0,-0.004);}\kern-1.5ex\Ra}}
 
 %% Cancellable invariants
 \newcommand\CInv[3]{\textlog{CInv}^{#1,#2}(#3)}
-\newcommand*\CInvTok[2]{{[}\textrm{CInv}:#1{]}_{#2}}
+\newcommand*\CInvTok[2]{{[}\textlog{CInv}:#1{]}_{#2}}
 
 %% Non-atomic invariants
 \newcommand*\pid{p}
 \newcommand\NaInv[3]{\textlog{NaInv}^{#1.#2}(#3)}
 
-\newcommand*\NaTok[1]{{[}\textrm{NaInv}:#1{]}}
-\newcommand*\NaTokE[2]{{[}\textrm{NaInv}:#1.#2{]}}
+\newcommand*\NaTok[1]{{[}\textlog{NaInv}:#1{]}}
+\newcommand*\NaTokE[2]{{[}\textlog{NaInv}:#1.#2{]}}
 
 %% Boxes
-\newcommand*\sname{i}
-\newcommand*\BoxState{\textlog{BoxState}}
+\newcommand*\sname{\iota}
+\newcommand*\BoxState{\textdom{BoxState}}
 \newcommand*\BoxFull{\textlog{full}}
 \newcommand*\BoxEmp{\textlog{empty}}
 \newcommand*\BoxSlice[3]{\textlog{BoxSlice}(#1, #2, #3)}
 \newcommand*\ABox[3]{\textlog{Box}(#1, #2, #3)}
-
 
 \endinput
 

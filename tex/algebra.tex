@@ -70,11 +70,11 @@ Moreover, if a propositions holds for some $n$, it also has to hold for all smal
 COFEs are \emph{complete OFEs}, which means that we can take limits of arbitrary chains.
 
 \begin{defn}[Chain]
-  Given some set $\cofe$ and an indexed family $({\nequiv{n}} \subseteq \cofe \times \cofe)_{n \in \nat}$ of equivalence relations, a \emph{chain} is a function $c : \nat \to \cofe$ such that $\All n, m. n \leq m \Ra c (m) \nequiv{n} c (n)$.
+  Given some set $\cofe$ and an indexed family $({\nequiv{n}} \subseteq \cofe \times \cofe)_{n \in \nat}$ of equivalence relations, a \emph{chain} $c \in \Chains(\cofe)$ is a function $c : \nat \to \cofe$ such that $\All n, m. n \leq m \Ra c (m) \nequiv{n} c (n)$.
 \end{defn}
 
 \begin{defn}
-  A \emph{complete ordered family of equivalences} (COFE) is a tuple $(\cofe : \OFEs,  \lim : \chain(\cofe) \to \cofe)$ satisfying
+  A \emph{complete ordered family of equivalences} (COFE) is a tuple $(\cofe : \OFEs,  \lim : \Chains(\cofe) \to \cofe)$ satisfying
   \begin{align*}
     \All n, c.& \lim(c) \nequiv{n} c(n) \tagH{cofe-compl}
   \end{align*}

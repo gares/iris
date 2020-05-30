@@ -219,7 +219,7 @@ This is useful in combination with \ruleref{sum-swap}, and also when used with p
 %TODO: These need syncing with Coq
 % \subsection{Finite Powerset Monoid}
 
-% Given an infinite set $X$, we define a monoid $\textmon{PowFin}$ with carrier $\mathcal{P}^{\textrm{fin}}(X)$ as follows:
+% Given an infinite set $X$, we define a monoid $\textdom{PowFin}$ with carrier $\mathcal{P}^{\textrm{fin}}(X)$ as follows:
 % \[
 % \melt \cdot \meltB \;\eqdef\; \melt \cup \meltB \quad \mbox{if } \melt \cap \meltB = \emptyset
 % \]
@@ -265,7 +265,6 @@ Let $\melt, \meltB \in M$.
 We write $\authfull \melt$ for full ownership $(\exinj(\melt), \munit)$ and $\authfrag \meltB$ for fragmental ownership $(\mnocore, \meltB)$ and $\authfull \melt , \authfrag \meltB$ for combined ownership $(\exinj(\melt), \meltB)$.
 
 The frame-preserving update involves the notion of a \emph{local update}:
-\newcommand\lupd{\stackrel{\mathrm l}{\mupd}}
 \begin{defn}
   It is possible to do a \emph{local update} from $\melt_1$ and $\meltB_1$ to $\melt_2$ and $\meltB_2$, written $(\melt_1, \meltB_1) \lupd (\melt_2, \meltB_2)$, if
   \[ \All n, \maybe{\melt_\f}. n \in \mval(\melt_1) \land \melt_1 \nequiv{n} \meltB_1 \mtimes \maybe{\melt_\f} \Ra n \in \mval(\melt_2) \land \melt_2 \nequiv{n} \meltB_2 \mtimes \maybe{\melt_\f} \]
@@ -326,9 +325,9 @@ In other words, the following does \emph{not} hold for the STS core as defined a
 
 To see why, consider the following STS:
 \newcommand\st{\textlog{s}}
-\newcommand\tok{\textmon{t}}
+\newcommand\tok{\textlog{t}}
 \begin{center}
-  \begin{tikzpicture}[sts]
+  \begin{tikzpicture}[every node/.style=sts_state]
     \node at (0,0)   (s1) {$\st_1$};
     \node at (3,0)  (s2) {$\st_2$};
     \node at (9,0) (s3) {$\st_3$};
