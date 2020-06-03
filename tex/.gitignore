@@ -10,5 +10,7 @@
 *.blg
 *.bcf
 *.run.xml
+*.fdb_latexmk
+*.fls
 _*_.tex
 auto/*.el
