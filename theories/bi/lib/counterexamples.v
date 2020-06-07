@@ -271,9 +271,8 @@ End linear1. End linear1.
 
 (** This proves that if we have linear impredicative invariants, we can still
 drop arbitrary resources (i.e., we can "defeat" linearity).
-Variant 2: maybe the strong invariant creation lemma (variant 1 above) is a bit
-too obvious, so here we just assume that the invariant can depend on the chosen
-[γ].  Moreover, we also have an accessor that gives back the invariant token
+We assume [cinv_alloc] without any bells or whistles.
+Moreover, we also have an accessor that gives back the invariant token
 immediately, not just after the invariant got closed again.
 
 The assumptions here match the proof rules in Iron, save for the side-condition
@@ -306,8 +305,8 @@ Module linear2. Section linear2.
   [cinv_own] but we do not need that. They would also have a name matching
   the [mask] type, but we do not need that either.) *)
   Context (gname : Type) (cinv : gname → PROP → PROP) (cinv_own : gname → PROP).
-  Hypothesis cinv_alloc : ∀ E,
-    ⊢ fupd E E (∃ γ, ∀ P, ▷ P -∗ fupd E E (cinv γ P ∗ cinv_own γ)).
+  Hypothesis cinv_alloc : ∀ E P,
+    ▷ P -∗ fupd E E (∃ γ, cinv γ P ∗ cinv_own γ).
   Hypothesis cinv_acc : ∀ P γ,
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
 
@@ -333,8 +332,7 @@ Module linear2. Section linear2.
   Lemma leak P : P -∗ fupd M1 M1 emp.
   Proof.
     iIntros "HP".
-    iMod cinv_alloc as (γ) "Hmkinv".
-    iMod ("Hmkinv" $! True%I with "[//]") as "[Hinv Htok]".
+    iMod ((cinv_alloc _ True%I) with "[//]") as (γ) "[Hinv Htok]".
     iMod (cinv_acc with "Hinv Htok") as "(Htrue & Htok & Hclose)".
     iApply "Hclose". done.
   Qed.
