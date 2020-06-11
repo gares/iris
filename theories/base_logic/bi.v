@@ -89,7 +89,7 @@ Canonical Structure uPredI (M : ucmraT) : bi :=
      bi_bi_mixin := uPred_bi_mixin M;
      bi_bi_later_mixin := uPred_bi_later_mixin M |}.
 
-Instance uPred_later_contractive {M} : Contractive (bi_later (PROP:=uPredI M)).
+Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
 Proof. apply later_contractive. Qed.
 
 Lemma uPred_internal_eq_mixin M : BiInternalEqMixin (uPredI M) (@uPred_internal_eq M).
