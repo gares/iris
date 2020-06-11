@@ -401,7 +401,7 @@ Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_i
 Proof. solve_proper. Qed.
 
 Global Instance monPred_later_contractive :
-  Contractive (bi_later (PROP:=PROP)) → Contractive (bi_later (PROP:=monPredI)).
+  BiLaterContractive PROP → BiLaterContractive monPredI.
 Proof. unseal=> ? n P Q HPQ. split=> i /=. f_contractive. apply HPQ. Qed.
 Global Instance monPred_bi_löb : BiLöb PROP → BiLöb monPredI.
 Proof. rewrite {2}/BiLöb; unseal=> ? P HP; split=> i /=. apply löb_weak, HP. Qed.

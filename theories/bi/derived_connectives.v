@@ -117,15 +117,18 @@ Arguments bi_wandM {_} !_%I _%I /.
 Notation "mP -∗? Q" := (bi_wandM mP Q)
   (at level 99, Q at level 200, right associativity) : bi_scope.
 
-(** This class is required for the [iLöb] tactic. For most logics this class
-should not be inhabited directly, but the instance [Contractive (▷) → BiLöb PROP]
-in [derived_laws_later] should be used. A direct instance of the class is useful
-when considering a BI logic with a discrete OFE, instead of a OFE that takes
+(** The class [BiLöb] is required for the [iLöb] tactic. However, for most BI
+logics [BiLaterContractive] should be used, which gives an instance of [BiLöb]
+automatically (see [derived_laws_later]). A direct instance of [BiLöb] is useful
+when considering a BI logic with a discrete OFE, instead of an OFE that takes
 step-indexing of the logic in account.
 
-The internal/"strong" version of Löb [(▷ P → P) ⊢ P] is derived. It is provided
-by the lemma [löb] in [derived_laws_later]. *)
+The internal/"strong" version of Löb [(▷ P → P) ⊢ P] is derivable from [BiLöb].
+It is provided by the lemma [löb] in [derived_laws_later]. *)
 Class BiLöb (PROP : bi) :=
   löb_weak (P : PROP) : (▷ P ⊢ P) → (True ⊢ P).
 Hint Mode BiLöb ! : typeclass_instances.
 Arguments löb_weak {_ _} _ _.
+
+Notation BiLaterContractive PROP :=
+  (Contractive (bi_later (PROP:=PROP))) (only parsing).

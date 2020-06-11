@@ -87,7 +87,7 @@ Proof. intros ?. by rewrite /Absorbing -later_absorbingly absorbing. Qed.
 (** * Alternatives to Löb induction *)
 (** We prove relations between the following statements:
 
-1. [Contractive (▷)]
+1. [Contractive (▷)], later is contractive as expressed by [BiLaterContractive].
 2. [(▷ P ⊢ P) → (True ⊢ P)], the external/"weak" of Löb as expressed by [BiLöb].
 3. [(▷ P → P) ⊢ P], the internal version/"strong" of Löb.
 4. [□ (□ ▷ P -∗ P) ⊢ P], an internal version of Löb with magic wand instead of
@@ -121,8 +121,7 @@ Proof. split; intros HLöb P. apply löb. by intros ->%entails_impl_True. Qed.
 
 (** Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
 Their [Ψ] is called [Q] in our proof. *)
-Global Instance later_contractive_bi_löb :
-  Contractive (bi_later (PROP:=PROP)) → BiLöb PROP.
+Global Instance later_contractive_bi_löb : BiLaterContractive PROP → BiLöb PROP.
 Proof.
   intros=> P.
   pose (flöb_pre (P Q : PROP) := (▷ Q → P)%I).
