@@ -88,8 +88,8 @@ Proof. intros ?. by rewrite /Absorbing -later_absorbingly absorbing. Qed.
 (** We prove relations between the following statements:
 
 1. [Contractive (▷)]
-2. [(▷ P → P) ⊢ P], the internal version of Löb as expressed by [BiLöb].
-3. [(▷ P ⊢ P) → (True ⊢ P)], the external/"weak" version of Löb induction.
+2. [(▷ P ⊢ P) → (True ⊢ P)], the external/"weak" of Löb as expressed by [BiLöb].
+3. [(▷ P → P) ⊢ P], the internal version/"strong" of Löb.
 4. [□ (□ ▷ P -∗ P) ⊢ P], an internal version of Löb with magic wand instead of
    implication.
 5. [□ (▷ P -∗ P) ⊢ P], a weaker version of the former statement, which does not
@@ -98,19 +98,17 @@ Proof. intros ?. by rewrite /Absorbing -later_absorbingly absorbing. Qed.
 We prove that:
 
 - (1) implies (2) in all BI logics (lemma [later_contractive_bi_löb]).
-- (2) and (3) are logically equivalent in all BI logics (lemma [löb_weak]).
+- (2) and (3) are logically equivalent in all BI logics (lemma [löb_alt_strong]).
 - (2) implies (4) and (5) in all BI logics (lemmas [löb_wand_intuitionistically]
   and [löb_wand]).
-- (5) and (2) are logically equivalent in affine BI logics (lemma [löb_alt]).
+- (5) and (2) are logically equivalent in affine BI logics (lemma [löb_alt_wand]).
 
 In particular, this gives that (2), (3), (4) and (5) are logically equivalent in
 affine BI logics such as Iris. *)
 
-Lemma löb_alt_weak : BiLöb PROP ↔ ∀ P, (▷ P ⊢ P) → (True ⊢ P).
+Lemma löb `{!BiLöb PROP} P : (▷ P → P) ⊢ P.
 Proof.
-  split; intros HLöb P.
-  { by intros ->%entails_impl_True. }
-  apply entails_impl_True, HLöb. apply impl_intro_r.
+  apply entails_impl_True, löb_weak. apply impl_intro_r.
   rewrite -{2}(idemp (∧) (▷ P → P))%I.
   rewrite {2}(later_intro (▷ P → P))%I.
   rewrite later_impl.
@@ -118,12 +116,15 @@ Proof.
   rewrite impl_elim_r. done.
 Qed.
 
+Lemma löb_alt_strong : BiLöb PROP ↔ ∀ P, (▷ P → P) ⊢ P.
+Proof. split; intros HLöb P. apply löb. by intros ->%entails_impl_True. Qed.
+
 (** Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
 Their [Ψ] is called [Q] in our proof. *)
 Global Instance later_contractive_bi_löb :
   Contractive (bi_later (PROP:=PROP)) → BiLöb PROP.
 Proof.
-  intros. apply löb_alt_weak=> P.
+  intros=> P.
   pose (flöb_pre (P Q : PROP) := (▷ Q → P)%I).
   assert (∀ P, Contractive (flöb_pre P)) by solve_contractive.
   set (Q := fixpoint (flöb_pre P)).
@@ -153,7 +154,8 @@ Qed.
 is unclear how to generalize the lemma or proof to support non-affine BIs. *)
 Lemma löb_alt_wand `{!BiAffine PROP} : BiLöb PROP ↔ ∀ P, □ (▷ P -∗ P) ⊢ P.
 Proof.
-  split; intros Hlöb P; [by apply löb_wand|].
+  split; intros Hlöb; [by apply löb_wand|].
+  apply löb_alt_strong=> P.
   rewrite bi.impl_alt. apply bi.exist_elim=> R. apply impl_elim_r'.
   rewrite -(Hlöb (R → P)%I) -intuitionistically_into_persistently.
   apply intuitionistically_intro', wand_intro_l, impl_intro_l.

@@ -121,8 +121,11 @@ Notation "mP -∗? Q" := (bi_wandM mP Q)
 should not be inhabited directly, but the instance [Contractive (▷) → BiLöb PROP]
 in [derived_laws_later] should be used. A direct instance of the class is useful
 when considering a BI logic with a discrete OFE, instead of a OFE that takes
-step-indexing of the logic in account.*)
+step-indexing of the logic in account.
+
+The internal/"strong" version of Löb [(▷ P → P) ⊢ P] is derived. It is provided
+by the lemma [löb] in [derived_laws_later]. *)
 Class BiLöb (PROP : bi) :=
-  löb (P : PROP) : (▷ P → P) ⊢ P.
+  löb_weak (P : PROP) : (▷ P ⊢ P) → (True ⊢ P).
 Hint Mode BiLöb ! : typeclass_instances.
-Arguments löb {_ _} _.
+Arguments löb_weak {_ _} _ _.
