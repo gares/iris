@@ -94,6 +94,18 @@ The command has indeed failed with message:
 Tactic failure: iElaborateSelPat: "HQ" not found.
 The command has indeed failed with message:
 Tactic failure: iElaborateSelPat: "HQ" not found.
+"test_iSpecialize_pure_error"
+     : string
+The command has indeed failed with message:
+Tactic failure: iSpecialize: P not pure.
+"test_iSpecialize_pure_error"
+     : string
+The command has indeed failed with message:
+Tactic failure: iSpecialize: cannot solve φ using done.
+"test_iSpecialize_done_error"
+     : string
+The command has indeed failed with message:
+Tactic failure: iSpecialize: cannot solve P using done.
 The command has indeed failed with message:
 Tactic failure: iSpecialize: Q not persistent.
 "test_iAssert_intuitionistic"
