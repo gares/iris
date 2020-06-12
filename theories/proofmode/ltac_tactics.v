@@ -845,9 +845,11 @@ Ltac iSpecializePat_go H1 pats :=
   let solve_done d :=
     lazymatch d with
     | true =>
-       done ||
-       let Q := match goal with |- envs_entails _ ?Q => Q end in
-       fail "iSpecialize: cannot solve" Q "using done"
+       first [ done
+             | let Q := match goal with |- envs_entails _ ?Q => Q end in
+               fail 1 "iSpecialize: cannot solve" Q "using done"
+             | let Q := match goal with |- ?Q => Q end in
+               fail 1 "iSpecialize: cannot solve" Q "using done" ]
     | false => idtac
     end in
   let Δ := iGetCtx in

@@ -184,6 +184,25 @@ Lemma test_iSpecialize_pure (φ : Prop) Q R :
   φ → (⌜φ⌝ -∗ Q) → ⊢ Q.
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
 
+Lemma test_iSpecialize_pure_done (φ: Prop) Q :
+  φ → (⌜φ⌝ -∗ Q) ⊢ Q.
+Proof. iIntros (HP) "HQ". iApply ("HQ" with "[% //]"). Qed.
+
+Check "test_iSpecialize_pure_error".
+Lemma test_iSpecialize_not_pure_error P Q :
+  (P -∗ Q) ⊢ Q.
+Proof. iIntros "HQ". Fail iSpecialize ("HQ" with "[%]"). Abort.
+
+Check "test_iSpecialize_pure_error".
+Lemma test_iSpecialize_pure_done_error (φ: Prop) Q :
+  (⌜φ⌝ -∗ Q) ⊢ Q.
+Proof. iIntros "HQ". Fail iSpecialize ("HQ" with "[% //]"). Abort.
+
+Check "test_iSpecialize_done_error".
+Lemma test_iSpecialize_done_error P Q :
+  (P -∗ Q) ⊢ Q.
+Proof. iIntros "HQ". Fail iSpecialize ("HQ" with "[//]"). Abort.
+
 Lemma test_iSpecialize_Coq_entailment P Q R :
   (⊢ P) → (P -∗ Q) → (⊢ Q).
 Proof. iIntros (HP HPQ). iDestruct (HPQ $! HP) as "?". done. Qed.
