@@ -1085,6 +1085,7 @@ Section nat.
   Proof. by intros ???? ?%Nat.add_cancel_l. Qed.
 End nat.
 
+(** ** Natural numbers with [max] as the operation. *)
 Definition mnat := nat.
 
 Section mnat.
@@ -1119,6 +1120,40 @@ Section mnat.
   Global Instance mnat_core_id (x : mnat) : CoreId x.
   Proof. by constructor. Qed.
 End mnat.
+
+(** ** Natural numbers with [min] as the operation. *)
+Record min_nat := MinNat { min_nat_car :> nat }.
+
+Canonical Structure min_natO := leibnizO min_nat.
+
+Section min_nat.
+  Instance min_nat_valid : Valid min_nat := λ x, True.
+  Instance min_nat_validN : ValidN min_nat := λ n x, True.
+  Instance min_nat_pcore : PCore min_nat := Some.
+  Instance min_nat_op : Op min_nat := λ n m, MinNat (n `min` m).
+  Definition min_nat_op_min x y : MinNat x ⋅ MinNat y = MinNat (x `min` y) := eq_refl.
+
+  Lemma min_nat_included (x y : min_nat) : x ≼ y ↔ (min_nat_car x) ≥ (min_nat_car y).
+  Proof.
+    split.
+    - intros [z ->]. simpl. lia.
+    - exists y. rewrite /op /min_nat_op. rewrite Nat.min_r; last lia. by destruct y.
+  Qed.
+  Lemma min_nat_ra_mixin : RAMixin min_nat.
+  Proof.
+    apply ra_total_mixin; apply _ || eauto.
+    - intros [x] [y] [z]. repeat rewrite min_nat_op_min. by rewrite Nat.min_assoc.
+    - intros [x] [y]. by rewrite min_nat_op_min Nat.min_comm.
+    - intros [x]. by rewrite min_nat_op_min Min.min_idempotent.
+  Qed.
+  Canonical Structure min_natR : cmraT := discreteR min_nat min_nat_ra_mixin.
+
+  Global Instance min_nat_cmra_discrete : CmraDiscrete min_natR.
+  Proof. apply discrete_cmra_discrete. Qed.
+
+  Global Instance min_nat_core_id (x : min_nat) : CoreId x.
+  Proof. by constructor. Qed.
+End min_nat.
 
 (** ** Positive integers. *)
 Section positive.
