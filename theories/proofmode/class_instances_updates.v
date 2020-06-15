@@ -109,7 +109,7 @@ Global Instance from_forall_step_fupd
   (* Some cases in which [E2 ⊆ E1] holds *)
   TCOr (TCEq E1 E2) (TCOr (TCEq E1 ⊤) (TCEq E2 ∅)) →
   FromForall P Φ → (∀ x, Plain (Φ x)) →
-  FromForall (|={E1,E2}▷=> P)%I (λ a, |={E1,E2}▷=> (Φ a))%I.
+  FromForall (|={E1}[E2]▷=> P)%I (λ a, |={E1}[E2]▷=> (Φ a))%I.
 Proof.
   rewrite /FromForall=> -[->|[->|->]] <- ?; rewrite step_fupd_plain_forall; set_solver.
 Qed.
