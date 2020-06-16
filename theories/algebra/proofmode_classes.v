@@ -1,4 +1,4 @@
-From iris.algebra Require Export cmra.
+From iris.algebra Require Export cmra numbers.
 From iris.proofmode Require Export classes.
 
 (* There are various versions of [IsOp] with different modes:
