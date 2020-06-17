@@ -36,6 +36,11 @@ Section nat.
     intros ??; apply local_update_unital_discrete=> z _.
     compute -[minus plus]; lia.
   Qed.
+
+  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
+     of an [⋅]. *)
+  Global Instance is_op_plus (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
+  Proof. done. Qed.
 End nat.
 
 (** ** Natural numbers with [max] as the operation. *)
@@ -130,11 +135,6 @@ Section min_nat.
 
   Global Instance : @IdemP min_nat (=) (⋅).
   Proof. intros [x]. rewrite min_nat_op_min. apply f_equal. lia. Qed.
-
-  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
-     of an [⋅]. *)
-  Global Instance is_op_plus (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
-  Proof. done. Qed.
 End min_nat.
 
 (** ** Positive integers with [Pos.add] as the operation. *)
