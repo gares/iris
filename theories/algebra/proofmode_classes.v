@@ -1,4 +1,4 @@
-From iris.algebra Require Export cmra numbers.
+From iris.algebra Require Export cmra.
 From iris.proofmode Require Export classes.
 
 (* There are various versions of [IsOp] with different modes:
@@ -48,7 +48,3 @@ Proof. constructor=> //=. by rewrite -core_id_dup. Qed.
 Global Instance is_op_Some {A : cmraT} (a : A) b1 b2 :
   IsOp a b1 b2 → IsOp' (Some a) (Some b1) (Some b2).
 Proof. by constructor. Qed.
-(* This one has a higher precendence than [is_op_op] so we get a [+] instead of
-an [⋅]. *)
-Global Instance is_op_plus (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
-Proof. done. Qed.

@@ -1,6 +1,6 @@
-From iris.algebra Require Export cmra.
+From iris.algebra Require Export cmra local_updates proofmode_classes.
 
-(** ** Natural numbers *)
+(** ** Natural numbers with [add] as the operation. *)
 Section nat.
   Instance nat_valid : Valid nat := λ x, True.
   Instance nat_validN : ValidN nat := λ n x, True.
@@ -29,6 +29,13 @@ Section nat.
 
   Global Instance nat_cancelable (x : nat) : Cancelable x.
   Proof. by intros ???? ?%Nat.add_cancel_l. Qed.
+
+  Lemma nat_local_update (x y x' y' : nat) :
+    x + y' = x' + y → (x,y) ~l~> (x',y').
+  Proof.
+    intros ??; apply local_update_unital_discrete=> z _.
+    compute -[minus plus]; lia.
+  Qed.
 End nat.
 
 (** ** Natural numbers with [max] as the operation. *)
@@ -43,6 +50,7 @@ Section max_nat.
   Instance max_nat_pcore : PCore max_nat := Some.
   Instance max_nat_op : Op max_nat := λ n m, MaxNat (max_nat_car n `max` max_nat_car m).
   Definition max_nat_op_max x y : MaxNat x ⋅ MaxNat y = MaxNat (x `max` y) := eq_refl.
+
   Lemma max_nat_included x y : x ≼ y ↔ max_nat_car x ≤ max_nat_car y.
   Proof.
     split.
@@ -67,6 +75,18 @@ Section max_nat.
 
   Global Instance max_nat_core_id (x : max_nat) : CoreId x.
   Proof. by constructor. Qed.
+
+  Lemma max_nat_local_update (x y x' : max_natUR) :
+    max_nat_car x ≤ max_nat_car x' → (x,y) ~l~> (x',x').
+  Proof.
+    move: x y x' => [x] [y] [y'] /= ??.
+    apply local_update_unital_discrete=> [[z]] _.
+    rewrite 2!max_nat_op_max. inversion 1.
+    split; first done. apply f_equal. lia.
+  Qed.
+
+  Global Instance : @IdemP max_nat (=) (⋅).
+  Proof. intros [x]. rewrite max_nat_op_max. apply f_equal. lia. Qed.
 End max_nat.
 
 (** ** Natural numbers with [min] as the operation. *)
@@ -107,9 +127,17 @@ Section min_nat.
 
   Global Instance : RightAbsorb (=) (MinNat 0) (⋅).
   Proof. intros [x]. by rewrite min_nat_op_min Min.min_0_r. Qed.
+
+  Global Instance : @IdemP min_nat (=) (⋅).
+  Proof. intros [x]. rewrite min_nat_op_min. apply f_equal. lia. Qed.
+
+  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
+     of an [⋅]. *)
+  Global Instance is_op_plus (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
+  Proof. done. Qed.
 End min_nat.
 
-(** ** Positive integers. *)
+(** ** Positive integers with [Pos.add] as the operation. *)
 Section positive.
   Instance pos_valid : Valid positive := λ x, True.
   Instance pos_validN : ValidN positive := λ n x, True.

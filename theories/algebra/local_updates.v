@@ -1,4 +1,4 @@
-From iris.algebra Require Export cmra numbers.
+From iris.algebra Require Export cmra.
 Set Default Proof Using "Type".
 
 (** * Local updates *)
@@ -188,21 +188,4 @@ Proof.
   destruct z as [z|]; last done. exfalso.
   move: Hy. rewrite Heq /= -Some_op=>Hy. eapply Hex.
   eapply cmra_validN_le. eapply Hy. lia.
-Qed.
-
-(** * Natural numbers  *)
-Lemma nat_local_update (x y x' y' : nat) :
-  x + y' = x' + y → (x,y) ~l~> (x',y').
-Proof.
-  intros ??; apply local_update_unital_discrete=> z _.
-  compute -[minus plus]; lia.
-Qed.
-
-Lemma max_nat_local_update (x y x' : max_natUR) :
-  max_nat_car x ≤ max_nat_car x' → (x,y) ~l~> (x',x').
-Proof.
-  move: x y x' => [x] [y] [y'] /= ??.
-  apply local_update_unital_discrete=> [[z]] _.
-  rewrite 2!max_nat_op_max. inversion 1.
-  split; first done. apply f_equal. lia.
 Qed.
