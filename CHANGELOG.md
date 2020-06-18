@@ -200,6 +200,11 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   exists `heap_lang.derived_laws`.
 * Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
   reverse dependencies if they want to `Open Scope Z_scope` or not.
+* Add `min_nat`, a RA for natural numbers with `min` as the operation.
+* Rename `mnat` to `max_nat` and "box" it by creating a separate type for it.
+* Move the RAs for `nat` and `positive` and the `mnat` RA into a separate
+  module. They must now be imported from `From iris.algebra Require Import
+  numbers`.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
@@ -221,6 +226,8 @@ s/\blist_singletonM_included\b/list_singleton_included/g
 s/\bauth_both_frac_op\b/auth_both_op/g
 # inv_sep
 s/\binv_sep\b/inv_split/g
+# mnat rename
+s/\bmnat\b/max_nat/g
 ' $(find theories -name "*.v")
 ```
 
