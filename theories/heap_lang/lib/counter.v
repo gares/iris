@@ -1,5 +1,5 @@
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import lib.frac_auth auth.
+From iris.algebra Require Import lib.frac_auth numbers auth.
 From iris.base_logic.lib Require Export invariants.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
@@ -13,8 +13,8 @@ Definition incr : val := rec: "incr" "l" :=
 Definition read : val := λ: "l", !"l".
 
 (** Monotone counter *)
-Class mcounterG Σ := MCounterG { mcounter_inG :> inG Σ (authR mnatUR) }.
-Definition mcounterΣ : gFunctors := #[GFunctor (authR mnatUR)].
+Class mcounterG Σ := MCounterG { mcounter_inG :> inG Σ (authR max_natUR) }.
+Definition mcounterΣ : gFunctors := #[GFunctor (authR max_natUR)].
 
 Instance subG_mcounterΣ {Σ} : subG mcounterΣ Σ → mcounterG Σ.
 Proof. solve_inG. Qed.
@@ -23,10 +23,10 @@ Section mono_proof.
   Context `{!heapG Σ, !mcounterG Σ} (N : namespace).
 
   Definition mcounter_inv (γ : gname) (l : loc) : iProp Σ :=
-    ∃ n, own γ (● (n : mnat)) ∗ l ↦ #n.
+    ∃ n, own γ (● (MaxNat n)) ∗ l ↦ #n.
 
   Definition mcounter (l : loc) (n : nat) : iProp Σ :=
-    ∃ γ, inv N (mcounter_inv γ l) ∧ own γ (◯ (n : mnat)).
+    ∃ γ, inv N (mcounter_inv γ l) ∧ own γ (◯ (MaxNat n)).
 
   (** The main proofs. *)
   Global Instance mcounter_persistent l n : Persistent (mcounter l n).
@@ -36,7 +36,7 @@ Section mono_proof.
     {{{ True }}} newcounter #() {{{ l, RET #l; mcounter l 0 }}}.
   Proof.
     iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
-    iMod (own_alloc (● (O:mnat) ⋅ ◯ (O:mnat))) as (γ) "[Hγ Hγ']";
+    iMod (own_alloc (● (MaxNat O) ⋅ ◯ (MaxNat O))) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid.
     iMod (inv_alloc N _ (mcounter_inv γ l) with "[Hl Hγ]").
     { iNext. iExists 0. by iFrame. }
@@ -54,15 +54,15 @@ Section mono_proof.
     iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iDestruct (own_valid_2 with "Hγ Hγf")
-        as %[?%mnat_included _]%auth_both_valid.
+        as %[?%max_nat_included _]%auth_both_valid.
       iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
-      { apply auth_update, (mnat_local_update _ _ (S c)); auto. }
+      { apply auth_update, (max_nat_local_update _ _ (MaxNat (S c))). simpl. auto. }
       wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. iApply "HΦ"; iExists γ; repeat iSplit; eauto.
       iApply (own_mono with "Hγf").
       (* FIXME: FIXME(Coq #6294): needs new unification *)
-      apply: auth_frag_mono. by apply mnat_included, le_n_S.
+      apply: auth_frag_mono. by apply max_nat_included, le_n_S.
     - wp_cmpxchg_fail; first (by intros [= ?%Nat2Z.inj]). iModIntro.
       iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. iApply ("IH" with "[Hγf] [HΦ]"); last by auto.
@@ -76,9 +76,9 @@ Section mono_proof.
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]".
     wp_load.
     iDestruct (own_valid_2 with "Hγ Hγf")
-      as %[?%mnat_included _]%auth_both_valid.
+      as %[?%max_nat_included _]%auth_both_valid.
     iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
-    { apply auth_update, (mnat_local_update _ _ c); auto. }
+    { apply auth_update, (max_nat_local_update _ _ (MaxNat c)); auto. }
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     iApply ("HΦ" with "[-]"). rewrite /mcounter; eauto 10.
   Qed.

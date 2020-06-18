@@ -189,18 +189,3 @@ Proof.
   move: Hy. rewrite Heq /= -Some_op=>Hy. eapply Hex.
   eapply cmra_validN_le. eapply Hy. lia.
 Qed.
-
-(** * Natural numbers  *)
-Lemma nat_local_update (x y x' y' : nat) :
-  x + y' = x' + y → (x,y) ~l~> (x',y').
-Proof.
-  intros ??; apply local_update_unital_discrete=> z _.
-  compute -[minus plus]; lia.
-Qed.
-
-Lemma mnat_local_update (x y x' : mnatUR) :
-  x ≤ x' → (x,y) ~l~> (x',x').
-Proof.
-  intros ??; apply local_update_unital_discrete=> z _.
-  compute -[max]; lia.
-Qed.
