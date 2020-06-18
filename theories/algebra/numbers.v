@@ -81,16 +81,16 @@ Section max_nat.
   Global Instance max_nat_core_id (x : max_nat) : CoreId x.
   Proof. by constructor. Qed.
 
-  Lemma max_nat_local_update (x y x' : max_natUR) :
+  Lemma max_nat_local_update (x y x' : max_nat) :
     max_nat_car x ≤ max_nat_car x' → (x,y) ~l~> (x',x').
   Proof.
-    move: x y x' => [x] [y] [y'] /= ??.
-    apply local_update_unital_discrete=> [[z]] _.
-    rewrite 2!max_nat_op_max. inversion 1.
+    move: x y x' => [x] [y] [y'] /= ?.
+    rewrite local_update_unital_discrete=> [[z]] _.
+    rewrite 2!max_nat_op_max. intros [= ?].
     split; first done. apply f_equal. lia.
   Qed.
 
-  Global Instance : @IdemP max_nat (=) (⋅).
+  Global Instance : IdemP (=@{max_nat}) (⋅).
   Proof. intros [x]. rewrite max_nat_op_max. apply f_equal. lia. Qed.
 End max_nat.
 
@@ -127,13 +127,22 @@ Section min_nat.
   Global Instance min_nat_core_id (x : min_nat) : CoreId x.
   Proof. by constructor. Qed.
 
+  Lemma min_nat_local_update (x y x' : min_nat) :
+    min_nat_car x' ≤ min_nat_car x → (x,y) ~l~> (x',x').
+  Proof.
+    move: x y x' => [x] [y] [x'] /= ?.
+    rewrite local_update_discrete. move=> [[z]|] _ /=; last done.
+    rewrite 2!min_nat_op_min. intros [= ?].
+    split; first done. apply f_equal. lia.
+  Qed.
+
   Global Instance : LeftAbsorb (=) (MinNat 0) (⋅).
   Proof. done. Qed.
 
   Global Instance : RightAbsorb (=) (MinNat 0) (⋅).
   Proof. intros [x]. by rewrite min_nat_op_min Min.min_0_r. Qed.
 
-  Global Instance : @IdemP min_nat (=) (⋅).
+  Global Instance : IdemP (=@{min_nat}) (⋅).
   Proof. intros [x]. rewrite min_nat_op_min. apply f_equal. lia. Qed.
 End min_nat.
 
