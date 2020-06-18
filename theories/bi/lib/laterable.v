@@ -84,6 +84,12 @@ Section instances.
     iExists P. iFrame. iIntros "!> HP". iApply "HQ". iApply "HQ1". done.
   Qed.
 
+  Lemma make_laterable_mono Q1 Q2 :
+    (Q1 ⊢ Q2) → (make_laterable Q1 ⊢ make_laterable Q2).
+  Proof.
+    intros HQ12. iApply make_laterable_wand. rewrite HQ12. by iIntros "!# ?".
+  Qed.
+
   Global Instance make_laterable_laterable Q :
     Laterable (make_laterable Q).
   Proof.
@@ -97,6 +103,8 @@ Section instances.
     iIntros "HQ". iDestruct "HQ" as (P) "[HP #HQ]". by iApply "HQ".
   Qed.
 
+  (** Written internally (as an entailment of wands) to reflect
+      that persistent assertions can be kept unchanged. *)
   Lemma make_laterable_intro P Q :
     Laterable P →
     □ (◇ P -∗ Q) -∗ P -∗ make_laterable Q.
