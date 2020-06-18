@@ -76,18 +76,23 @@ Section instances.
   Global Instance make_laterable_ne : NonExpansive make_laterable.
   Proof. solve_proper. Qed.
   Global Instance make_laterable_proper : Proper ((≡) ==> (≡)) make_laterable := ne_proper _.
+  Global Instance make_laterable_mono' : Proper ((⊢) ==> (⊢)) make_laterable.
+  Proof. solve_proper. Qed.
+  Global Instance make_laterable_flip_mono' :
+    Proper (flip (⊢) ==> flip (⊢)) make_laterable.
+  Proof. solve_proper. Qed.
 
+  Lemma make_laterable_mono Q1 Q2 :
+    (Q1 ⊢ Q2) → (make_laterable Q1 ⊢ make_laterable Q2).
+  Proof. by intros ->. Qed.
+
+  (** A stronger version of [make_laterable_mono] that lets us keep persistent
+  resources. *)
   Lemma make_laterable_wand Q1 Q2 :
     □ (Q1 -∗ Q2) -∗ (make_laterable Q1 -∗ make_laterable Q2).
   Proof.
     iIntros "#HQ HQ1". iDestruct "HQ1" as (P) "[HP #HQ1]".
     iExists P. iFrame. iIntros "!> HP". iApply "HQ". iApply "HQ1". done.
-  Qed.
-
-  Lemma make_laterable_mono Q1 Q2 :
-    (Q1 ⊢ Q2) → (make_laterable Q1 ⊢ make_laterable Q2).
-  Proof.
-    intros HQ12. iApply make_laterable_wand. rewrite HQ12. by iIntros "!# ?".
   Qed.
 
   Global Instance make_laterable_laterable Q :
