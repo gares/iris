@@ -309,7 +309,7 @@ Section gmap.
 
   Lemma big_opM_singleton f i x : ([^o map] k↦y ∈ {[i:=x]}, f k y) ≡ f i x.
   Proof.
-    rewrite -insert_empty big_opM_insert/=; last auto using lookup_empty.
+    rewrite -insert_empty big_opM_insert/=; last eauto using lookup_empty.
     by rewrite big_opM_empty right_id.
   Qed.
 

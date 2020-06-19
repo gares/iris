@@ -151,7 +151,7 @@ Section sep_list.
   Lemma big_sepL_elem_of (Φ : A → PROP) l x `{!Absorbing (Φ x)} :
     x ∈ l → ([∗ list] y ∈ l, Φ y) ⊢ Φ x.
   Proof.
-    intros [i ?]%elem_of_list_lookup; eauto using (big_sepL_lookup (λ _, Φ)).
+    intros [i ?]%elem_of_list_lookup. by eapply (big_sepL_lookup (λ _, Φ)).
   Qed.
 
   Lemma big_sepL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
@@ -657,7 +657,7 @@ Section and_list.
   Lemma big_andL_elem_of (Φ : A → PROP) l x :
     x ∈ l → ([∧ list] y ∈ l, Φ y) ⊢ Φ x.
   Proof.
-    intros [i ?]%elem_of_list_lookup; eauto using (big_andL_lookup (λ _, Φ)).
+    intros [i ?]%elem_of_list_lookup. by eapply (big_andL_lookup (λ _, Φ)).
   Qed.
 
   Lemma big_andL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :
@@ -756,7 +756,7 @@ Section or_list.
   Lemma big_orL_elem_of (Φ : A → PROP) l x :
     x ∈ l → Φ x ⊢ ([∨ list] y ∈ l, Φ y).
   Proof.
-    intros [i ?]%elem_of_list_lookup; eauto using (big_orL_lookup (λ _, Φ)).
+    intros [i ?]%elem_of_list_lookup; by eapply (big_orL_lookup (λ _, Φ)).
   Qed.
 
   Lemma big_orL_fmap {B} (f : A → B) (Φ : nat → B → PROP) l :

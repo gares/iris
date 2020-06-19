@@ -114,13 +114,13 @@ Section total_updates.
     x ~~>: P ↔ ∀ z, ✓ (x ⋅ z) → ∃ y, P y ∧ ✓ (y ⋅ z).
   Proof.
     rewrite cmra_total_updateP; setoid_rewrite <-cmra_discrete_valid_iff.
-    naive_solver eauto using 0.
+    naive_solver eauto using O.
   Qed.
   Lemma cmra_discrete_update (x y : A) :
     x ~~> y ↔ ∀ z, ✓ (x ⋅ z) → ✓ (y ⋅ z).
   Proof.
     rewrite cmra_total_update; setoid_rewrite <-cmra_discrete_valid_iff.
-    naive_solver eauto using 0.
+    naive_solver eauto using O.
   Qed.
 End total_updates.
 End updates.

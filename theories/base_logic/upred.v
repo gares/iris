@@ -241,7 +241,7 @@ Definition uPred_exist_eq: @uPred_exist = @uPred_exist_def := uPred_exist_aux.(s
 
 Program Definition uPred_internal_eq_def {M} {A : ofeT} (a1 a2 : A) : uPred M :=
   {| uPred_holds n x := a1 ≡{n}≡ a2 |}.
-Solve Obligations with naive_solver eauto 2 using (dist_le (A:=A)).
+Solve Obligations with naive_solver eauto 2 using dist_le.
 Definition uPred_internal_eq_aux : seal (@uPred_internal_eq_def). Proof. by eexists. Qed.
 Definition uPred_internal_eq {M A} := uPred_internal_eq_aux.(unseal) M A.
 Definition uPred_internal_eq_eq:
@@ -284,9 +284,7 @@ Definition uPred_plainly_eq :
 
 Program Definition uPred_persistently_def {M} (P : uPred M) : uPred M :=
   {| uPred_holds n x := P n (core x) |}.
-Next Obligation.
-  intros M; naive_solver eauto using uPred_mono, @cmra_core_monoN.
-Qed.
+Solve Obligations with naive_solver eauto using uPred_mono, cmra_core_monoN.
 Definition uPred_persistently_aux : seal (@uPred_persistently_def). Proof. by eexists. Qed.
 Definition uPred_persistently {M} := uPred_persistently_aux.(unseal) M.
 Definition uPred_persistently_eq :
@@ -472,13 +470,13 @@ Qed.
 Lemma plainly_ne : NonExpansive (@uPred_plainly M).
 Proof.
   intros n P1 P2 HP.
-  unseal; split=> n' x; split; apply HP; eauto using @ucmra_unit_validN.
+  unseal; split=> n' x; split; apply HP; eauto using ucmra_unit_validN.
 Qed.
 
 Lemma persistently_ne : NonExpansive (@uPred_persistently M).
 Proof.
   intros n P1 P2 HP.
-  unseal; split=> n' x; split; apply HP; eauto using @cmra_core_validN.
+  unseal; split=> n' x; split; apply HP; eauto using cmra_core_validN.
 Qed.
 
 Lemma ownM_ne : NonExpansive (@uPred_ownM M).
@@ -587,7 +585,7 @@ Proof. intros HP; unseal; split=> n x ? /=. by apply HP, cmra_core_validN. Qed.
 Lemma persistently_elim P : □ P ⊢ P.
 Proof.
   unseal; split=> n x ? /=.
-  eauto using uPred_mono, @cmra_included_core, cmra_included_includedN.
+  eauto using uPred_mono, cmra_included_core, cmra_included_includedN.
 Qed.
 Lemma persistently_idemp_2 P : □ P ⊢ □ □ P.
 Proof. unseal; split=> n x ?? /=. by rewrite cmra_core_idemp. Qed.
@@ -607,7 +605,7 @@ Qed.
 Lemma plainly_mono P Q : (P ⊢ Q) → ■ P ⊢ ■ Q.
 Proof. intros HP; unseal; split=> n x ? /=. apply HP, ucmra_unit_validN. Qed.
 Lemma plainly_elim_persistently P : ■ P ⊢ □ P.
-Proof. unseal; split; simpl; eauto using uPred_mono, @ucmra_unit_leastN. Qed.
+Proof. unseal; split; simpl; eauto using uPred_mono, ucmra_unit_leastN. Qed.
 Lemma plainly_idemp_2 P : ■ P ⊢ ■ ■ P.
 Proof. unseal; split=> n x ?? //. Qed.
 

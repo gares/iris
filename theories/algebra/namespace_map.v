@@ -156,7 +156,7 @@ Proof.
     + by rewrite -Hm.
     + intros i. by rewrite -(dist_None n) -Hm dist_None.
   - intros [m [E|]]; rewrite namespace_map_valid_eq namespace_map_validN_eq /=
-      ?cmra_valid_validN; naive_solver eauto using 0.
+      ?cmra_valid_validN; naive_solver eauto using O.
   - intros n [m [E|]]; rewrite namespace_map_validN_eq /=;
       naive_solver eauto using cmra_validN_S.
   - split; simpl; [by rewrite assoc|by rewrite assoc_L].
@@ -188,7 +188,7 @@ Global Instance namespace_map_cmra_discrete :
 Proof.
   split; first apply _.
   intros [m [E|]]; rewrite namespace_map_validN_eq namespace_map_valid_eq //=.
-  naive_solver eauto using (cmra_discrete_valid m).
+  by intros [?%cmra_discrete_valid ?].
 Qed.
 
 Instance namespace_map_empty : Unit (namespace_map A) := NamespaceMap ε ε.

@@ -182,7 +182,7 @@ Section language.
   Proof.
     rewrite /not_stuck -!not_eq_None_Some. intros [?|?].
     - auto using fill_not_val.
-    - destruct (decide (to_val e = None)); auto using reducible_fill_inv.
+    - destruct (decide (to_val e = None)); eauto using reducible_fill_inv.
   Qed.
 
   Lemma stuck_fill `{!@LanguageCtx Λ K} e σ :
