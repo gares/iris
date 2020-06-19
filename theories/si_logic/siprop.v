@@ -100,7 +100,7 @@ Definition siProp_exist_eq: @siProp_exist = @siProp_exist_def := seal_eq siProp_
 
 Program Definition siProp_internal_eq_def {A : ofeT} (a1 a2 : A) : siProp :=
   {| siProp_holds n := a1 ≡{n}≡ a2 |}.
-Solve Obligations with naive_solver eauto 2 using (dist_le (A:=A)).
+Solve Obligations with naive_solver eauto 2 using dist_le.
 Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). Proof. by eexists. Qed.
 Definition siProp_internal_eq {A} := unseal siProp_internal_eq_aux A.
 Definition siProp_internal_eq_eq:

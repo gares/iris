@@ -72,7 +72,7 @@ Section updates.
   Proof.
     rewrite /local_update /=. setoid_rewrite <-cmra_discrete_valid_iff.
     setoid_rewrite <-(λ n, discrete_iff n x).
-    setoid_rewrite <-(λ n, discrete_iff n x'). naive_solver eauto using 0.
+    setoid_rewrite <-(λ n, discrete_iff n x'). naive_solver eauto using O.
   Qed.
 
   Lemma local_update_valid0 x y x' y' :

@@ -644,8 +644,9 @@ Section ucmra.
 
   Global Instance cmra_unit_cmra_total : CmraTotal A.
   Proof.
-    intros x. destruct (cmra_pcore_mono' ε x ε) as (cx&->&?);
-      eauto using ucmra_unit_least, (core_id (ε:A)).
+    intros x. destruct (cmra_pcore_mono' ε x ε) as (cx&->&?); [..|by eauto].
+    - apply ucmra_unit_least.
+    - apply (core_id _).
   Qed.
   Global Instance empty_cancelable : Cancelable (ε:A).
   Proof. intros ???. by rewrite !left_id. Qed.
