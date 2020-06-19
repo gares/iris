@@ -55,10 +55,10 @@ build-coq.8.9.1:
 
 # Nightly job with a known-to-work Coq version
 # (so failures must be caused by std++)
-build-stdpp.dev-coq.8.11.1:
+build-stdpp.dev-coq.8.11.2:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.11.1   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
+    OPAM_PINS: "coq version 8.11.2   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
   except:
   only:
   - triggers
