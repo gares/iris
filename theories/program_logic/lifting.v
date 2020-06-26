@@ -20,7 +20,7 @@ Lemma wp_lift_step_fupd s E Φ e1 :
   to_val e1 = None →
   (∀ σ1 κ κs n, state_interp σ1 (κ ++ κs) n ={E,∅}=∗
     ⌜if s is NotStuck then reducible e1 σ1 else True⌝ ∗
-    ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝ ={∅,∅,E}▷=∗
+    ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝ ={∅}=∗ ▷ |={∅,E}=>
       state_interp σ2 κs (length efs + n) ∗
       WP e2 @ s; E {{ Φ }} ∗
       [∗ list] ef ∈ efs, WP ef @ s; ⊤ {{ fork_post }})
