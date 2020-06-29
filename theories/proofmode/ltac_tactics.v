@@ -3246,17 +3246,17 @@ below; see the discussion in !75 for further details. *)
 Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
   rewrite envs_entails_eq; apply internal_eq_refl : core.
 Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepL_nil' : core.
+  rewrite envs_entails_eq; apply (big_sepL_nil' _) : core.
 Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepL2_nil' : core.
+  rewrite envs_entails_eq; apply (big_sepL2_nil' _) : core.
 Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepM_empty' : core.
+  rewrite envs_entails_eq; apply (big_sepM_empty' _) : core.
 Hint Extern 0 (envs_entails _ (big_sepM2 _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepM2_empty' : core.
+  rewrite envs_entails_eq; apply (big_sepM2_empty' _) : core.
 Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepS_empty' : core.
+  rewrite envs_entails_eq; apply (big_sepS_empty' _) : core.
 Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>
-  rewrite envs_entails_eq; apply: big_sepMS_empty' : core.
+  rewrite envs_entails_eq; apply (big_sepMS_empty' _) : core.
 
 (* These introduce as much as possible at once, for better performance. *)
 Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros : core.
