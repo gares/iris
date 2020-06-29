@@ -134,8 +134,8 @@ Modalities
   and subjectively. The optional argument `mod` can be used to specify what
   modality to introduce in case of ambiguity, e.g. `⎡|==> P⎤`.
 - `iAlways` : a deprecated alias of `iModIntro`.
-- `iNext n` : an alias of `iModIntro (▷^n P)`.
-- `iNext` : an alias of `iModIntro (▷^1 P)`.
+- `iNext n` : an alias of `iModIntro (▷^n _)`.
+- `iNext` : an alias of `iModIntro (▷^_ _)`.
 - `iMod pm_trm as (x1 ... xn) "ipat"` : eliminate a modality `pm_trm` that is
   an instance of the `ElimModal` type class. Instances include: later, except 0,
   basic update and fancy update.
