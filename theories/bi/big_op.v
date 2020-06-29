@@ -205,6 +205,16 @@ Section sep_list.
       apply forall_intro=> k. by rewrite (forall_elim (S k)).
   Qed.
 
+  Lemma big_sepL_dupl `{BiAffine PROP} P l :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ list] k↦x ∈ l, P.
+  Proof.
+    apply wand_intro_l. induction l as [|x l IH].
+    { apply big_sepL_nil'. }
+    rewrite !big_sepL_cons //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Lemma big_sepL_delete Φ l i x :
     l !! i = Some x →
     ([∗ list] k↦y ∈ l, Φ k y)
@@ -996,6 +1006,16 @@ Section map.
       by rewrite pure_True // True_impl.
   Qed.
 
+  Lemma big_sepM_dupl `{BiAffine PROP} P m :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ map] k↦x ∈ m, P.
+  Proof.
+    apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
+    { apply big_sepM_empty'. }
+    rewrite !big_sepM_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Lemma big_sepM_later `{BiAffine PROP} Φ m :
     ▷ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∗ map] k↦x ∈ m, ▷ Φ k x).
   Proof. apply (big_opM_commute _). Qed.
@@ -1572,6 +1592,16 @@ Section gset.
     - rewrite comm -IH /=. apply sep_mono_l, affinely_mono, persistently_mono.
       apply forall_mono=> y. apply impl_intro_l, pure_elim_l=> ?.
       by rewrite pure_True ?True_impl; last set_solver.
+  Qed.
+
+  Lemma big_sepS_dupl `{BiAffine PROP} P X :
+    □(P -∗ P ∗ P) -∗ P -∗ [∗ set] x ∈ X, P.
+  Proof.
+    apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
+    { apply big_sepS_empty'. }
+    rewrite !big_sepS_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
   Lemma big_sepS_later `{BiAffine PROP} Φ X :
