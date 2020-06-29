@@ -93,7 +93,7 @@ Reserved Notation "P ={ E }=∗ Q"
   (at level 99, E at level 50, Q at level 200,
    format "'[' P  '/' ={ E }=∗  Q ']'").
 
-(** Step-taking updates *)
+(** Step-taking fancy updates *)
 Reserved Notation "|={ E1 } [ E2 ]▷=> Q"
   (at level 99, E1, E2 at level 50, Q at level 200,
    format "|={ E1 } [ E2 ]▷=>  Q").
@@ -107,7 +107,7 @@ Reserved Notation "P ={ E }▷=∗ Q"
   (at level 99, E at level 50, Q at level 200,
    format "'[' P  '/' ={ E }▷=∗  Q ']'").
 
-(** Multi-step-taking updates *)
+(** Multi-step-taking fancy updates *)
 Reserved Notation "|={ E1 } [ E2 ]▷=>^ n Q"
   (at level 99, E1, E2 at level 50, n at level 9, Q at level 200,
    format "|={ E1 } [ E2 ]▷=>^ n  Q").

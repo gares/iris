@@ -26,12 +26,12 @@ Notation "|={ E }=> Q" := (fupd E E Q) : bi_scope.
 Notation "P ={ E }=∗ Q" := (P -∗ |={E}=> Q)%I : bi_scope.
 Notation "P ={ E }=∗ Q" := (P -∗ |={E}=> Q) : stdpp_scope.
 
-(** * Fancy updates that take a step. *)
+(** * Step-taking fancy updates. *)
 (** These have two masks, but they are different than the two masks of a
-    mask-changing update: the first mask ("outer mask") holds at the beginning
-    and the end, the second mask ("inner mask") holds around each ▷. This is
-    also why we use a different notation than for the two masks of a
-    mask-changing updates. *)
+    mask-changing update: in [|={Eo}[Ei]▷=> Q], the first mask [Eo] ("outer
+    mask") holds at the beginning and the end; the second mask [Ei] ("inner
+    mask") holds around each ▷. This is also why we use a different notation
+    than for the two masks of a mask-changing updates. *)
 Notation "|={ Eo } [ Ei ]▷=> Q" := (|={Eo,Ei}=> ▷ |={Ei,Eo}=> Q)%I : bi_scope.
 Notation "P ={ Eo } [ Ei ]▷=∗ Q" := (P -∗ |={Eo}[Ei]▷=> Q)%I : bi_scope.
 Notation "P ={ Eo } [ Ei ]▷=∗ Q" := (P -∗ |={Eo}[Ei]▷=> Q) (only parsing) : stdpp_scope.
@@ -40,12 +40,11 @@ Notation "|={ E }▷=> Q" := (|={E}[E]▷=> Q)%I : bi_scope.
 Notation "P ={ E }▷=∗ Q" := (P ={E}[E]▷=∗ Q)%I : bi_scope.
 Notation "P ={ E }▷=∗ Q" := (P ={E}[E]▷=∗ Q) : stdpp_scope.
 
-(** For the iterated version, in principle there are 4 masks:
-    "outer" and "inner" of [|={Eo}[Ei]▷=>], as well as a potentially
-    different "begin" and "end" mask. The latter can be obtained from
-    this notation by adding normal mask-changing update modalities:
-    [ |={Ebegin,Eouter}=> |={Eouter}[Einner]▷=>^n |={Eouter,Eend}=> Q]
-*)
+(** For the iterated version, in principle there are 4 masks: "outer" and
+    "inner" of [|={Eo}[Ei]▷=>], as well as "begin" and "end" masks [E1] and [E2]
+    that could potentially differ from [Eo]. The latter can be obtained from
+    this notation by adding normal mask-changing update modalities: [
+    |={E1,Eo}=> |={Eo}[Ei]▷=>^n |={Eo,E2}=> Q] *)
 Notation "|={ Eo } [ Ei ]▷=>^ n Q" := (Nat.iter n (λ P, |={Eo}[Ei]▷=> P) Q)%I : bi_scope.
 Notation "P ={ Eo } [ Ei ]▷=∗^ n Q" := (P -∗ |={Eo}[Ei]▷=>^n Q)%I : bi_scope.
 Notation "P ={ Eo } [ Ei ]▷=∗^ n Q" := (P -∗ |={Eo}[Ei]▷=>^n Q) (only parsing) : stdpp_scope.
