@@ -79,8 +79,8 @@ Section sep_list.
 
   Lemma big_sepL_nil Φ : ([∗ list] k↦y ∈ nil, Φ k y) ⊣⊢ emp.
   Proof. done. Qed.
-  Lemma big_sepL_nil' `{BiAffine PROP} P Φ : P ⊢ [∗ list] k↦y ∈ nil, Φ k y.
-  Proof. apply (affine _). Qed.
+  Lemma big_sepL_nil' P `{!Affine P} Φ : P ⊢ [∗ list] k↦y ∈ nil, Φ k y.
+  Proof. apply: affine. Qed.
   Lemma big_sepL_cons Φ x l :
     ([∗ list] k↦y ∈ x :: l, Φ k y) ⊣⊢ Φ 0 x ∗ [∗ list] k↦y ∈ l, Φ (S k) y.
   Proof. by rewrite big_opL_cons. Qed.
@@ -205,6 +205,15 @@ Section sep_list.
       apply forall_intro=> k. by rewrite (forall_elim (S k)).
   Qed.
 
+  Lemma big_sepL_dup P `{!Affine P} l :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ list] k↦x ∈ l, P.
+  Proof.
+    apply wand_intro_l.
+    induction l as [|x l IH]=> /=; first by apply: affine.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Lemma big_sepL_delete Φ l i x :
     l !! i = Some x →
     ([∗ list] k↦y ∈ l, Φ k y)
@@ -314,8 +323,8 @@ Section sep_list2.
 
   Lemma big_sepL2_nil Φ : ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2) ⊣⊢ emp.
   Proof. done. Qed.
-  Lemma big_sepL2_nil' `{BiAffine PROP} P Φ : P ⊢ [∗ list] k↦y1;y2 ∈ [];[], Φ k y1 y2.
-  Proof. apply (affine _). Qed.
+  Lemma big_sepL2_nil' P `{!Affine P} Φ : P ⊢ [∗ list] k↦y1;y2 ∈ [];[], Φ k y1 y2.
+  Proof. apply: affine. Qed.
   Lemma big_sepL2_nil_inv_l Φ l2 :
     ([∗ list] k↦y1;y2 ∈ []; l2, Φ k y1 y2) -∗ ⌜l2 = []⌝.
   Proof. destruct l2; simpl; auto using False_elim, pure_intro. Qed.
@@ -842,7 +851,7 @@ Section map.
 
   Lemma big_sepM_empty Φ : ([∗ map] k↦x ∈ ∅, Φ k x) ⊣⊢ emp.
   Proof. by rewrite big_opM_empty. Qed.
-  Lemma big_sepM_empty' `{BiAffine PROP} P Φ : P ⊢ [∗ map] k↦x ∈ ∅, Φ k x.
+  Lemma big_sepM_empty' P `{!Affine P} Φ : P ⊢ [∗ map] k↦x ∈ ∅, Φ k x.
   Proof. rewrite big_sepM_empty. apply: affine. Qed.
 
   Lemma big_sepM_insert Φ m i x :
@@ -996,6 +1005,16 @@ Section map.
       by rewrite pure_True // True_impl.
   Qed.
 
+  Lemma big_sepM_dup P `{!Affine P} m :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ map] k↦x ∈ m, P.
+  Proof.
+    apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
+    { apply: big_sepM_empty'. }
+    rewrite !big_sepM_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Lemma big_sepM_later `{BiAffine PROP} Φ m :
     ▷ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∗ map] k↦x ∈ m, ▷ Φ k x).
   Proof. apply (big_opM_commute _). Qed.
@@ -1122,8 +1141,8 @@ Section map2.
     rewrite big_sepM2_eq /big_sepM2_def big_opM_eq pure_True ?left_id //.
     intros k. rewrite !lookup_empty; split; by inversion 1.
   Qed.
-  Lemma big_sepM2_empty' `{BiAffine PROP} P Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
-  Proof. rewrite big_sepM2_empty. apply (affine _). Qed.
+  Lemma big_sepM2_empty' P `{!Affine P} Φ : P ⊢ [∗ map] k↦y1;y2 ∈ ∅;∅, Φ k y1 y2.
+  Proof. rewrite big_sepM2_empty. apply: affine. Qed.
 
   Lemma big_sepM2_empty_l m1 Φ : ([∗ map] k↦y1;y2 ∈ m1; ∅, Φ k y1 y2) ⊢ ⌜m1 = ∅⌝.
   Proof.
@@ -1454,7 +1473,7 @@ Section gset.
 
   Lemma big_sepS_empty Φ : ([∗ set] x ∈ ∅, Φ x) ⊣⊢ emp.
   Proof. by rewrite big_opS_empty. Qed.
-  Lemma big_sepS_empty' `{!BiAffine PROP} P Φ : P ⊢ [∗ set] x ∈ ∅, Φ x.
+  Lemma big_sepS_empty' P `{!Affine P} Φ : P ⊢ [∗ set] x ∈ ∅, Φ x.
   Proof. rewrite big_sepS_empty. apply: affine. Qed.
 
   Lemma big_sepS_insert Φ X x :
@@ -1574,6 +1593,16 @@ Section gset.
       by rewrite pure_True ?True_impl; last set_solver.
   Qed.
 
+  Lemma big_sepS_dup P `{!Affine P} X :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ set] x ∈ X, P.
+  Proof.
+    apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
+    { apply: big_sepS_empty'. }
+    rewrite !big_sepS_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Lemma big_sepS_later `{BiAffine PROP} Φ X :
     ▷ ([∗ set] y ∈ X, Φ y) ⊣⊢ ([∗ set] y ∈ X, ▷ Φ y).
   Proof. apply (big_opS_commute _). Qed.
@@ -1646,7 +1675,7 @@ Section gmultiset.
 
   Lemma big_sepMS_empty Φ : ([∗ mset] x ∈ ∅, Φ x) ⊣⊢ emp.
   Proof. by rewrite big_opMS_empty. Qed.
-  Lemma big_sepMS_empty' `{!BiAffine PROP} P Φ : P ⊢ [∗ mset] x ∈ ∅, Φ x.
+  Lemma big_sepMS_empty' P `{!Affine P} Φ : P ⊢ [∗ mset] x ∈ ∅, Φ x.
   Proof. rewrite big_sepMS_empty. apply: affine. Qed.
 
   Lemma big_sepMS_disj_union Φ X Y :
