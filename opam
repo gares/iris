@@ -11,7 +11,7 @@ synopsis: "This is the Coq development of the Iris Project"
 
 depends: [
   "coq" { (>= "8.9.1" & < "8.13~") | (= "dev") }
-  "coq-stdpp" { (= "dev.2020-06-17.1.370c0cf4") | (= "dev") }
+  "coq-stdpp" { (= "dev.2020-06-29.0.376e5e05") | (= "dev") }
 ]
 
 build: [make "-j%{jobs}%"]
