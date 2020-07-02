@@ -26,17 +26,32 @@ Notation "|={ E }=> Q" := (fupd E E Q) : bi_scope.
 Notation "P ={ E }=∗ Q" := (P -∗ |={E}=> Q)%I : bi_scope.
 Notation "P ={ E }=∗ Q" := (P -∗ |={E}=> Q) : stdpp_scope.
 
-(** Fancy updates that take a step. *)
-Notation "|={ E1 , E2 , E3 }▷=> Q" := (|={E1,E2}=> (▷ |={E2,E3}=> Q))%I : bi_scope.
-Notation "P ={ E1 , E2 , E3 }▷=∗ Q" := (P -∗ |={ E1,E2,E3 }▷=> Q)%I : bi_scope.
-Notation "|={ E1 , E2 }▷=> Q" := (|={E1,E2,E1}▷=> Q)%I : bi_scope.
-Notation "P ={ E1 , E2 }▷=∗ Q" := (P ⊢ |={ E1 , E2, E1 }▷=> Q) (only parsing) : stdpp_scope.
-Notation "P ={ E1 , E2 }▷=∗ Q" := (P -∗ |={ E1 , E2, E1 }▷=> Q)%I : bi_scope.
-Notation "|={ E }▷=> Q" := (|={E,E}▷=> Q)%I : bi_scope.
-Notation "P ={ E }▷=∗ Q" := (P ={E,E}▷=∗ Q)%I : bi_scope.
-Notation "|={ E1 , E2 }▷=>^ n Q" := (Nat.iter n (λ P, |={E1,E2}▷=> P) Q)%I : bi_scope.
-Notation "P ={ E1 , E2 }▷=∗^ n Q" := (P ⊢ |={E1,E2}▷=>^n Q)%I (only parsing) : stdpp_scope.
-Notation "P ={ E1 , E2 }▷=∗^ n Q" := (P -∗ |={E1,E2}▷=>^n Q)%I : bi_scope.
+(** * Step-taking fancy updates. *)
+(** These have two masks, but they are different than the two masks of a
+    mask-changing update: in [|={Eo}[Ei]▷=> Q], the first mask [Eo] ("outer
+    mask") holds at the beginning and the end; the second mask [Ei] ("inner
+    mask") holds around each ▷. This is also why we use a different notation
+    than for the two masks of a mask-changing updates. *)
+Notation "|={ Eo } [ Ei ]▷=> Q" := (|={Eo,Ei}=> ▷ |={Ei,Eo}=> Q)%I : bi_scope.
+Notation "P ={ Eo } [ Ei ]▷=∗ Q" := (P -∗ |={Eo}[Ei]▷=> Q)%I : bi_scope.
+Notation "P ={ Eo } [ Ei ]▷=∗ Q" := (P -∗ |={Eo}[Ei]▷=> Q) (only parsing) : stdpp_scope.
+
+Notation "|={ E }▷=> Q" := (|={E}[E]▷=> Q)%I : bi_scope.
+Notation "P ={ E }▷=∗ Q" := (P ={E}[E]▷=∗ Q)%I : bi_scope.
+Notation "P ={ E }▷=∗ Q" := (P ={E}[E]▷=∗ Q) : stdpp_scope.
+
+(** For the iterated version, in principle there are 4 masks: "outer" and
+    "inner" of [|={Eo}[Ei]▷=>], as well as "begin" and "end" masks [E1] and [E2]
+    that could potentially differ from [Eo]. The latter can be obtained from
+    this notation by adding normal mask-changing update modalities: [
+    |={E1,Eo}=> |={Eo}[Ei]▷=>^n |={Eo,E2}=> Q] *)
+Notation "|={ Eo } [ Ei ]▷=>^ n Q" := (Nat.iter n (λ P, |={Eo}[Ei]▷=> P) Q)%I : bi_scope.
+Notation "P ={ Eo } [ Ei ]▷=∗^ n Q" := (P -∗ |={Eo}[Ei]▷=>^n Q)%I : bi_scope.
+Notation "P ={ Eo } [ Ei ]▷=∗^ n Q" := (P -∗ |={Eo}[Ei]▷=>^n Q) (only parsing) : stdpp_scope.
+
+Notation "|={ E }▷=>^ n Q" := (|={E}[E]▷=>^n Q)%I : bi_scope.
+Notation "P ={ E }▷=∗^ n Q" := (P ={E}[E]▷=∗^n Q)%I : bi_scope.
+Notation "P ={ E }▷=∗^ n Q" := (P ={E}[E]▷=∗^n Q) (only parsing) : stdpp_scope.
 
 (** Bundled versions  *)
 (* Mixins allow us to create instances easily without having to use Program *)
@@ -324,39 +339,39 @@ Section fupd_derived.
   Proof. by rewrite (big_opMS_commute _). Qed.
 
   (** Fancy updates that take a step derived rules. *)
-  Lemma step_fupd_wand E1 E2 E3 P Q : (|={E1,E2,E3}▷=> P) -∗ (P -∗ Q) -∗ |={E1,E2,E3}▷=> Q.
+  Lemma step_fupd_wand Eo Ei P Q : (|={Eo}[Ei]▷=> P) -∗ (P -∗ Q) -∗ |={Eo}[Ei]▷=> Q.
   Proof.
     apply wand_intro_l.
     by rewrite (later_intro (P -∗ Q)%I) fupd_frame_l -later_sep fupd_frame_l
                wand_elim_l.
   Qed.
 
-  Lemma step_fupd_mask_frame_r E1 E2 E3 Ef P :
-    E1 ## Ef → E2 ## Ef → (|={E1,E2,E3}▷=> P) ⊢ |={E1 ∪ Ef,E2 ∪ Ef,E3 ∪ Ef}▷=> P.
+  Lemma step_fupd_mask_frame_r Eo Ei Ef P :
+    Eo ## Ef → Ei ## Ef → (|={Eo}[Ei]▷=> P) ⊢ |={Eo ∪ Ef}[Ei ∪ Ef]▷=> P.
   Proof.
     intros. rewrite -fupd_mask_frame_r //. do 2 f_equiv. by apply fupd_mask_frame_r.
   Qed.
 
-  Lemma step_fupd_mask_mono E1 E2 F1 F2 P :
-    F1 ⊆ F2 → E1 ⊆ E2 → (|={E1,F2}▷=> P) ⊢ |={E2,F1}▷=> P.
+  Lemma step_fupd_mask_mono Eo1 Eo2 Ei1 Ei2 P :
+    Ei2 ⊆ Ei1 → Eo1 ⊆ Eo2 → (|={Eo1}[Ei1]▷=> P) ⊢ |={Eo2}[Ei2]▷=> P.
   Proof.
-    intros ??. rewrite -(emp_sep (|={E1,F2}▷=> P)%I).
-    rewrite (fupd_intro_mask E2 E1 emp%I) //.
-    rewrite fupd_frame_r -(fupd_trans E2 E1 F1). f_equiv.
-    rewrite fupd_frame_l -(fupd_trans E1 F2 F1). f_equiv.
-    rewrite (fupd_intro_mask F2 F1 (|={_,_}=> emp)%I) //.
+    intros ??. rewrite -(emp_sep (|={Eo1}[Ei1]▷=> P)%I).
+    rewrite (fupd_intro_mask Eo2 Eo1 emp%I) //.
+    rewrite fupd_frame_r -(fupd_trans Eo2 Eo1 Ei2). f_equiv.
+    rewrite fupd_frame_l -(fupd_trans Eo1 Ei1 Ei2). f_equiv.
+    rewrite (fupd_intro_mask Ei1 Ei2 (|={_,_}=> emp)%I) //.
     rewrite fupd_frame_r. f_equiv.
     rewrite [X in (X ∗ _)%I]later_intro -later_sep. f_equiv.
-    rewrite fupd_frame_r -(fupd_trans F1 F2 E2). f_equiv.
-    rewrite fupd_frame_l -(fupd_trans F2 E1 E2). f_equiv.
+    rewrite fupd_frame_r -(fupd_trans Ei2 Ei1 Eo2). f_equiv.
+    rewrite fupd_frame_l -(fupd_trans Ei1 Eo1 Eo2). f_equiv.
     by rewrite fupd_frame_r left_id.
   Qed.
 
-  Lemma step_fupd_intro E1 E2 P : E2 ⊆ E1 → ▷ P -∗ |={E1,E2}▷=> P.
-  Proof. intros. by rewrite -(step_fupd_mask_mono E2 _ _ E2) // -!fupd_intro. Qed.
+  Lemma step_fupd_intro Ei Eo P : Ei ⊆ Eo → ▷ P -∗ |={Eo}[Ei]▷=> P.
+  Proof. intros. by rewrite -(step_fupd_mask_mono Ei _ Ei _) // -!fupd_intro. Qed.
 
-  Lemma step_fupd_frame_l E1 E2 R Q :
-    (R ∗ |={E1, E2}▷=> Q) -∗ |={E1, E2}▷=> (R ∗ Q).
+  Lemma step_fupd_frame_l Eo Ei R Q :
+    (R ∗ |={Eo}[Ei]▷=> Q) -∗ |={Eo}[Ei]▷=> (R ∗ Q).
   Proof.
     rewrite fupd_frame_l.
     apply fupd_mono.
@@ -364,21 +379,21 @@ Section fupd_derived.
     by apply later_mono, fupd_mono.
   Qed.
 
-  Lemma step_fupd_fupd E E' P : (|={E,E'}▷=> P) ⊣⊢ (|={E,E'}▷=> |={E}=> P).
+  Lemma step_fupd_fupd Eo Ei P : (|={Eo}[Ei]▷=> P) ⊣⊢ (|={Eo}[Ei]▷=> |={Eo}=> P).
   Proof.
     apply (anti_symm (⊢)).
     - by rewrite -fupd_intro.
     - by rewrite fupd_trans.
   Qed.
 
-  Lemma step_fupdN_mono E1 E2 n P Q :
-    (P ⊢ Q) → (|={E1,E2}▷=>^n P) ⊢ (|={E1,E2}▷=>^n Q).
+  Lemma step_fupdN_mono Eo Ei n P Q :
+    (P ⊢ Q) → (|={Eo}[Ei]▷=>^n P) ⊢ (|={Eo}[Ei]▷=>^n Q).
   Proof.
     intros HPQ. induction n as [|n IH]=> //=. rewrite IH //.
   Qed.
 
-  Lemma step_fupdN_wand E1 E2 n P Q :
-    (|={E1,E2}▷=>^n P) -∗ (P -∗ Q) -∗ (|={E1,E2}▷=>^n Q).
+  Lemma step_fupdN_wand Eo Ei n P Q :
+    (|={Eo}[Ei]▷=>^n P) -∗ (P -∗ Q) -∗ (|={Eo}[Ei]▷=>^n Q).
   Proof.
     apply wand_intro_l. induction n as [|n IH]=> /=.
     { by rewrite wand_elim_l. }
@@ -387,14 +402,14 @@ Section fupd_derived.
   Qed.
 
   Lemma step_fupdN_S_fupd n E P:
-    (|={E, ∅}▷=>^(S n) P) ⊣⊢ (|={E, ∅}▷=>^(S n) |={E}=> P).
+    (|={E}[∅]▷=>^(S n) P) ⊣⊢ (|={E}[∅]▷=>^(S n) |={E}=> P).
   Proof.
     apply (anti_symm (⊢)); rewrite !Nat_iter_S_r; apply step_fupdN_mono;
       rewrite -step_fupd_fupd //.
   Qed.
 
-  Lemma step_fupdN_frame_l E1 E2 n R Q :
-    (R ∗ |={E1, E2}▷=>^n Q) -∗ |={E1, E2}▷=>^n (R ∗ Q).
+  Lemma step_fupdN_frame_l Eo Ei n R Q :
+    (R ∗ |={Eo}[Ei]▷=>^n Q) -∗ |={Eo}[Ei]▷=>^n (R ∗ Q).
   Proof.
     induction n as [|n IH]; simpl; [done|].
     rewrite step_fupd_frame_l IH //=.
@@ -465,13 +480,13 @@ Section fupd_derived.
       (|={E}=> ∀ x, Φ x) ⊣⊢ (∀ x, |={E}=> Φ x).
     Proof. by apply fupd_plain_forall. Qed.
 
-    Lemma step_fupd_plain E E' P `{!Plain P} : (|={E,E'}▷=> P) ={E}=∗ ▷ ◇ P.
+    Lemma step_fupd_plain Eo Ei P `{!Plain P} : (|={Eo}[Ei]▷=> P) ={Eo}=∗ ▷ ◇ P.
     Proof.
-      rewrite -(fupd_plain_mask _ E' (▷ ◇ P)%I).
+      rewrite -(fupd_plain_mask _ Ei (▷ ◇ P)%I).
       apply fupd_elim. by rewrite fupd_plain_mask -fupd_plain_later.
     Qed.
 
-    Lemma step_fupdN_plain E E' n P `{!Plain P} : (|={E,E'}▷=>^n P) ={E}=∗ ▷^n ◇ P.
+    Lemma step_fupdN_plain Eo Ei n P `{!Plain P} : (|={Eo}[Ei]▷=>^n P) ={Eo}=∗ ▷^n ◇ P.
     Proof.
       induction n as [|n IH].
       - by rewrite -fupd_intro -except_0_intro.
@@ -481,16 +496,16 @@ Section fupd_derived.
         * by rewrite except_0_later.
     Qed.
 
-    Lemma step_fupd_plain_forall E1 E2 {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
-      E2 ⊆ E1 →
-      (|={E1,E2}▷=> ∀ x, Φ x) ⊣⊢ (∀ x, |={E1,E2}▷=> Φ x).
+    Lemma step_fupd_plain_forall Eo Ei {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
+      Ei ⊆ Eo →
+      (|={Eo}[Ei]▷=> ∀ x, Φ x) ⊣⊢ (∀ x, |={Eo}[Ei]▷=> Φ x).
     Proof.
       intros. apply (anti_symm _).
       { apply forall_intro=> x. by rewrite (forall_elim x). }
-      trans (∀ x, |={E1}=> ▷ ◇ Φ x)%I.
+      trans (∀ x, |={Eo}=> ▷ ◇ Φ x)%I.
       { apply forall_mono=> x. by rewrite step_fupd_plain. }
       rewrite -fupd_plain_forall'. apply fupd_elim.
-      rewrite -(fupd_except_0 E2 E1) -step_fupd_intro //.
+      rewrite -(fupd_except_0 Ei Eo) -step_fupd_intro //.
       by rewrite -later_forall -except_0_forall.
     Qed.
   End fupd_plainly_derived.

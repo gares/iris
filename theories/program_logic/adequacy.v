@@ -18,7 +18,7 @@ Notation wptp s t := ([∗ list] ef ∈ t, WP ef @ s; ⊤ {{ fork_post }})%I.
 
 Lemma wp_step s e1 σ1 κ κs e2 σ2 efs m Φ :
   prim_step e1 σ1 κ e2 σ2 efs →
-  state_interp σ1 (κ ++ κs) m -∗ WP e1 @ s; ⊤ {{ Φ }} ={⊤,∅}▷=∗
+  state_interp σ1 (κ ++ κs) m -∗ WP e1 @ s; ⊤ {{ Φ }} ={⊤}[∅]▷=∗
   state_interp σ2 κs (length efs + m) ∗ WP e2 @ s; ⊤ {{ Φ }} ∗ wptp s efs.
 Proof.
   rewrite {1}wp_unfold /wp_pre. iIntros (?) "Hσ H".
@@ -32,7 +32,7 @@ Lemma wptp_step s e1 t1 t2 κ κs σ1 σ2 Φ :
   step (e1 :: t1,σ1) κ (t2, σ2) →
   state_interp σ1 (κ ++ κs) (length t1) -∗ WP e1 @ s; ⊤ {{ Φ }} -∗ wptp s t1 ==∗
   ∃ e2 t2', ⌜t2 = e2 :: t2'⌝ ∗
-  |={⊤,∅}▷=> state_interp σ2 κs (pred (length t2)) ∗ WP e2 @ s; ⊤ {{ Φ }} ∗ wptp s t2'.
+  |={⊤}[∅]▷=> state_interp σ2 κs (pred (length t2)) ∗ WP e2 @ s; ⊤ {{ Φ }} ∗ wptp s t2'.
 Proof.
   iIntros (Hstep) "Hσ He Ht".
   destruct Hstep as [e1' σ1' e2' σ2' efs [|? t1'] t2' ?? Hstep]; simplify_eq/=.
@@ -52,7 +52,7 @@ Qed.
 Lemma wptp_steps s n e1 t1 κs κs' t2 σ1 σ2 Φ :
   nsteps n (e1 :: t1, σ1) κs (t2, σ2) →
   state_interp σ1 (κs ++ κs') (length t1) -∗ WP e1 @ s; ⊤ {{ Φ }} -∗ wptp s t1
-  ={⊤,∅}▷=∗^n ∃ e2 t2',
+  ={⊤}[∅]▷=∗^n ∃ e2 t2',
     ⌜t2 = e2 :: t2'⌝ ∗
     state_interp σ2 κs' (pred (length t2)) ∗
     WP e2 @ s; ⊤ {{ Φ }} ∗ wptp s t2'.
@@ -80,7 +80,7 @@ Lemma wptp_strong_adequacy Φ κs' s n e1 t1 κs t2 σ1 σ2 :
   nsteps n (e1 :: t1, σ1) κs (t2, σ2) →
   state_interp σ1 (κs ++ κs') (length t1) -∗
   WP e1 @ s; ⊤ {{ Φ }} -∗
-  wptp s t1 ={⊤,∅}▷=∗^(S n) ∃ e2 t2',
+  wptp s t1 ={⊤}[∅]▷=∗^(S n) ∃ e2 t2',
     ⌜ t2 = e2 :: t2' ⌝ ∗
     ⌜ ∀ e2, s = NotStuck → e2 ∈ t2 → not_stuck e2 σ2 ⌝ ∗
     state_interp σ2 κs' (length t2') ∗

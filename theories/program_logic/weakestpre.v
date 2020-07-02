@@ -32,7 +32,7 @@ Definition wp_pre `{!irisG Λ Σ} (s : stuckness)
   | None => ∀ σ1 κ κs n,
      state_interp σ1 (κ ++ κs) n ={E,∅}=∗
        ⌜if s is NotStuck then reducible e1 σ1 else True⌝ ∗
-       ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝ ={∅,∅,E}▷=∗
+       ∀ e2 σ2 efs, ⌜prim_step e1 σ1 κ e2 σ2 efs⌝ ={∅}=∗ ▷ |={∅,E}=>
          state_interp σ2 κs (length efs + n) ∗
          wp E e2 Φ ∗
          [∗ list] i ↦ ef ∈ efs, wp ⊤ ef fork_post
@@ -141,7 +141,7 @@ Qed.
 
 Lemma wp_step_fupd s E1 E2 e P Φ :
   TCEq (to_val e) None → E2 ⊆ E1 →
-  (|={E1,E2}▷=> P) -∗ WP e @ s; E2 {{ v, P ={E1}=∗ Φ v }} -∗ WP e @ s; E1 {{ Φ }}.
+  (|={E1}[E2]▷=> P) -∗ WP e @ s; E2 {{ v, P ={E1}=∗ Φ v }} -∗ WP e @ s; E1 {{ Φ }}.
 Proof.
   rewrite !wp_unfold /wp_pre. iIntros (-> ?) "HR H".
   iIntros (σ1 κ κs n) "Hσ". iMod "HR". iMod ("H" with "[$]") as "[$ H]".
@@ -221,14 +221,14 @@ Proof. iIntros "[H ?]". iApply (wp_strong_mono with "H"); auto with iFrame. Qed.
 
 Lemma wp_frame_step_l s E1 E2 e Φ R :
   TCEq (to_val e) None → E2 ⊆ E1 →
-  (|={E1,E2}▷=> R) ∗ WP e @ s; E2 {{ Φ }} ⊢ WP e @ s; E1 {{ v, R ∗ Φ v }}.
+  (|={E1}[E2]▷=> R) ∗ WP e @ s; E2 {{ Φ }} ⊢ WP e @ s; E1 {{ v, R ∗ Φ v }}.
 Proof.
   iIntros (??) "[Hu Hwp]". iApply (wp_step_fupd with "Hu"); try done.
   iApply (wp_mono with "Hwp"). by iIntros (?) "$$".
 Qed.
 Lemma wp_frame_step_r s E1 E2 e Φ R :
   TCEq (to_val e) None → E2 ⊆ E1 →
-  WP e @ s; E2 {{ Φ }} ∗ (|={E1,E2}▷=> R) ⊢ WP e @ s; E1 {{ v, Φ v ∗ R }}.
+  WP e @ s; E2 {{ Φ }} ∗ (|={E1}[E2]▷=> R) ⊢ WP e @ s; E1 {{ v, Φ v ∗ R }}.
 Proof.
   rewrite [(WP _ @ _; _ {{ _ }} ∗ _)%I]comm; setoid_rewrite (comm _ _ R).
   apply wp_frame_step_l.
