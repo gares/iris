@@ -211,6 +211,10 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   As part of this, the lemmas about the 3-mask variant were changed to be about
   the 2-mask variant instead, and `step_fupd_mask_mono` now also has a more
   consistent argument order for its masks.
+* Slightly strengthen the lemmas `big_sepL_nil'`, `big_sepL2_nil'`,
+  `big_sepM_nil'` `big_sepM2_empty'`, `big_sepS_empty'`, and `big_sepMS_empty'`.
+  They now only require that the argument `P` is affine instead of the whole BI
+  being affine.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
