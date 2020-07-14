@@ -220,18 +220,17 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   `sts_op_auth_frag` → `sts_auth_frag_op`,
   `sts_op_auth_frag_up` → `sts_auth_frag_up_op`,
   `sts_op_frag` → `sts_frag_op`,
-  `list_op_length` → `list_length_op`.
-* Make list singleton lemmas consistent with gmap by dropping the `M` suffix of
-  `singleton`:
-  `elem_of_list_singletonM` → `elem_of_list_singleton`,
-  `list_lookup_singletonM` → `list_lookup_singleton`,
-  `list_lookup_singletonM_lt` → `list_lookup_singleton_lt`,
-  `list_lookup_singletonM_gt` → `list_lookup_singleton_gt`,
-  `list_lookup_singletonM_ne` → `list_lookup_singleton_ne`,
-  `list_singletonM_validN` → `list_singleton_validN`,
-  `list_singletonM_length` → `list_singleton_length`,
-  `list_alter_singletonM` → `list_alter_singleton`,
-  `list_singletonM_included` → `list_singleton_included`.
+  `list_op_length` → `list_length_op`,
+  `list_core_singletonM` → `list_singletonM_core`,
+  `list_op_singletonM` → `list_singletonM_op`.
+* All list "map singleton" lemmas consistently use `singletonM` in their name:
+  `list_singleton_valid` → `list_singletonM_valid`,
+  `list_singleton_core_id` → `list_singletonM_core_id`,
+  `list_singleton_snoc` → `list_singletonM_snoc`,
+  `list_singleton_updateP` → `list_singletonM_updateP`,
+  `list_singleton_updateP'` → `list_singletonM_updateP'`,
+  `list_singleton_update` → `list_singletonM_update`,
+  `list_alloc_singleton_local_update` → `list_alloc_singletonM_local_update`.
 * Add `list_singletonM_included` and `list_lookup_singletonM_{lt,gt}` lemmas
   about singletons in the list RA.
 * Add `list_core_id'`, a stronger version of `list_core_id` which only talks
@@ -260,15 +259,16 @@ s/\bsingleton_included_exclusive\b/singleton_included_exclusive_l/g
 # f_op/f_core renames
 s/\b(op|core)_singleton\b/singleton_\1/g
 s/\bdiscrete_fun_(op|core)_singleton\b/discrete_fun_singleton_\1/g
-s/\blist_(op|core)_singletonM\b/list_singleton_\1/g
 s/\bsts_op_(auth_frag|auth_frag_up|frag)\b/sts_\1_op/g
+s/\blist_(op|core)_singletonM\b/list_singletonM_\1/g
 s/\blist_op_length\b/list_length_op/g
-# list singleton renames
-s/\belem_of_list_singletonM\b/elem_of_list_singleton/g
-s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
-s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
-s/\blist_alter_singletonM\b/list_alter_singleton/g
-s/\blist_singletonM_included\b/list_singleton_included/g
+# list "singleton map" renames
+s/\blist_singleton_valid\b/list_singletonM_valid/g
+s/\blist_singleton_core_id\b/list_singletonM_core_id/g
+s/\blist_singleton_snoc\b/list_singletonM_snoc/g
+s/\blist_singleton_updateP\b/list_singletonM_updateP/g
+s/\blist_singleton_update\b/list_singletonM_update/g
+s/\blist_alloc_singleton_local_update\b/list_alloc_singletonM_local_update/g
 # inv renames
 s/\binv_sep(|_1|_2)\b/inv_split\1/g
 s/\binv_acc\b/inv_alter/g
