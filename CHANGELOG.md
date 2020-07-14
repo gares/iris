@@ -7,7 +7,7 @@ Coq development; every API-breaking change should be listed.
 Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 8.8 are no longer supported.
 
-**Changes in heap_lang:**
+**Changes in `heap_lang`:**
 
 * Add support for deallocation of locations via the `Free` operation.
 * Add a fraction to the heap_lang `array` assertion.
@@ -17,8 +17,20 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   "invariant locations" invariant.
 * Add lemma `is_lock_iff` and show that `is_lock` is contractive.
 * Remove namespace `N` from `is_lock`.
+* Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
+  exists `heap_lang.derived_laws`.
+* Make lemma names for `fill` more consistent
+  - Use the `_inv` suffix for the the backwards directions:
+   `reducible_fill` → `reducible_fill_inv`,
+   `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
+   `not_stuck_fill` → `not_stuck_fill_inv`.
+  - Use the non-`_inv` names (that freed up) for the forwards directions:
+   `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
+* Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
+  reverse dependencies if they want to `Open Scope Z_scope` or not.
+* Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
 
-**Changes in program_logic:**
+**Changes in `program_logic`:**
 
 * In the axiomatization of ectx languages, replace the axiom of positivity of
   context composition with an axiom that says if `fill K e` takes a head step,
@@ -27,7 +39,7 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
   invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
 
-**Changes in base_logic, proofmode, and algebra:**
+**Changes in the logic infrastructure (`base_logic`, `bi`, and `proofmode`):**
 
 * Redefine invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
@@ -41,9 +53,6 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   Coq goal `big star of context ⊢ proof mode goal`.
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
   Introduce `iProp` for the `Type` carrier of `iPropO`.
-* Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
-  `algebra/lib`.
-* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
 * Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
   `iAssumption`, see <https://gitlab.mpi-sws.org/iris/iris/merge_requests/329>.
   This has two consequences:
@@ -55,9 +64,6 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   explicitly (since TC search is performed less eagerly), and in few cases it is
   needed to unfold definitions explicitly (due to new unification algorithm
   behaving differently).
-* Remove `Core` type class for defining the total core; it is now always
-  defined in terms of the partial core. The only user of this type class was the
-  STS RA.
 * Add the type `siProp` of "plain" step-indexed propositions, together with
   basic proofmode support.
 * Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
@@ -72,72 +78,31 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   <https://gitlab.mpi-sws.org/iris/iris/merge_requests/341>.
 * Rename some accessor-style lemmas to consistently use the suffix `_acc`
   instead of `_open`:
-  `inv_open` -> `inv_acc`, `inv_open_strong` -> `inv_acc_strong`,
-  `inv_open_timeless` -> `inv_acc_timeless`, `na_inv_open` -> `na_inv_acc`,
-  `cinv_open` -> `cinv_acc`, `cinv_open_strong` -> `cinv_acc_strong`,
-  `auth_open` -> `auth_acc`, `sts_open` -> `sts_acc`.
-  To make this work, also rename `inv_acc` -> `inv_alter`.
+  `inv_open` → `inv_acc`, `inv_open_strong` → `inv_acc_strong`,
+  `inv_open_timeless` → `inv_acc_timeless`, `na_inv_open` → `na_inv_acc`,
+  `cinv_open` → `cinv_acc`, `cinv_open_strong` → `cinv_acc_strong`,
+  `auth_open` → `auth_acc`, `sts_open` → `sts_acc`.
+  To make this work, also rename `inv_acc` → `inv_alter`.
   (Most developments should be unaffected as the typical way to invoke these
   lemmas is through `iInv`, and that does not change.)
 * Add a construction `bi_rtc` to create reflexive transitive closures of
   PROP-level binary relations.
 * Add new introduction pattern `-# pat` that moves a hypothesis from the
   intuitionistic context to the spatial context.
-* Make lemma names for `fill` more consistent
-  - Use the `_inv` suffix for the the backwards directions:
-   `reducible_fill` → `reducible_fill_inv`,
-   `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
-   `not_stuck_fill` → `not_stuck_fill_inv`.
-  - Use the non-`_inv` names (that freed up) for the forwards directions:
-   `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
 * The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
-* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are isomorphic.
-* Make use of `ofe_iso` in the COFE solver.
-* The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
-  `{o,r,ur}Functor_apply` to better match their intent.
 * Change `inv_iff`, `cinv_iff` and `na_inv_iff` to make order of arguments
   consistent and more convenient for `iApply`. They are now of the form
   `inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q` and (similar for `na_inv_iff` and
   `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
-* Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
-  `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
-* Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
 * Add affine, absorbing, persistent and timeless instances for telescopes.
 * Better support for telescopes in the proof mode, i.e., all tactics should
   recognize and distribute telescopes now.
 * Make lemma `Excl_included` a bi-implication.
-* Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
-  and rename existing asymmetric lemmas (with a singleton on just the LHS):
-  + `singleton_includedN` → `singleton_includedN_l`.
-  + `singleton_included` → `singleton_included_l`.
-  + `singleton_included_exclusive` → `singleton_included_exclusive_l`
 * The proof mode now supports names for pure facts in intro patterns. Support
   requires implementing `string_to_ident`. Without this tactic such patterns
   will fail. We provide one implementation using Ltac2 which works with Coq 8.11
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
-* Make names of `f_op`/`f_core` rewrite lemmas more consistent by always making
-  `_core`/`_op` the suffix:
-  `op_singleton` -> `singleton_op`, `core_singleton` -> `singleton_core`,
-  `discrete_fun_op_singleton` -> `discrete_fun_singleton_op`,
-  `discrete_fun_core_singleton` -> `discrete_fun_singleton_core`,
-  `list_core_singletonM` -> `list_singleton_core`,
-  `list_op_singletonM` -> `list_singleton_op`,
-  `sts_op_auth_frag` -> `sts_auth_frag_op`,
-  `sts_op_auth_frag_up` -> `sts_auth_frag_up_op`,
-  `sts_op_frag` -> `sts_frag_op`,
-  `list_op_length` -> `list_length_op`.
-* Make list singleton lemmas consistent with gmap by dropping the `M` suffix of
-  `singleton`:
-  `elem_of_list_singletonM` -> `elem_of_list_singleton`,
-  `list_lookup_singletonM` -> `list_lookup_singleton`,
-  `list_lookup_singletonM_lt` -> `list_lookup_singleton_lt`,
-  `list_lookup_singletonM_gt` -> `list_lookup_singleton_gt`,
-  `list_lookup_singletonM_ne` -> `list_lookup_singleton_ne`,
-  `list_singletonM_validN` -> `list_singleton_validN`,
-  `list_singletonM_length` -> `list_singleton_length`,
-  `list_alter_singletonM` -> `list_alter_singleton`,
-  `list_singletonM_included` -> `list_singleton_included`.
 * New ASCII versions of Iris notations. These are marked parsing only and
   can be made available using `Require Import iris.bi.ascii`. The new
   notations are (notations marked [†] are disambiguated using notation scopes):
@@ -157,14 +122,12 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
     - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
-* Remove `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
 * Some improvements to the `bi/lib/core` construction:
   + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
   + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
     version `coreP_entails'` for `coreP P` with `P` affine.
   + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
     lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
-* Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
 * Flatten the BI hierarchy by merging the `bi` and `sbi` canonical structures.
   This gives significant performance benefits on developments that construct BIs
   from BIs (e.g., use `monPred`). For, example it gives a performance gain of 37%
@@ -194,15 +157,6 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
   `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
 * Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
-* Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
-  exists `heap_lang.derived_laws`.
-* Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
-  reverse dependencies if they want to `Open Scope Z_scope` or not.
-* Add `min_nat`, a RA for natural numbers with `min` as the operation.
-* Rename `mnat` to `max_nat` and "box" it by creating a separate type for it.
-* Move the RAs for `nat` and `positive` and the `mnat` RA into a separate
-  module. They must now be imported from `From iris.algebra Require Import
-  numbers`.
 * Remove notation for 3-mask step-taking updates, and made 2-mask notation less
   confusing by distinguishing it better from mask-changing updates.
   Old: `|={Eo,Ei}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
@@ -215,6 +169,55 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   `big_sepM_nil'` `big_sepM2_empty'`, `big_sepS_empty'`, and `big_sepMS_empty'`.
   They now only require that the argument `P` is affine instead of the whole BI
   being affine.
+
+**Changes in `algebra`:**
+
+* Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
+  `algebra/lib`.
+* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
+* Remove `Core` type class for defining the total core; it is now always
+  defined in terms of the partial core. The only user of this type class was the
+  STS RA.
+* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are isomorphic.
+* Make use of `ofe_iso` in the COFE solver.
+* The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
+  `{o,r,ur}Functor_apply` to better match their intent.
+* Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
+  `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
+* Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
+* Add `min_nat`, a RA for natural numbers with `min` as the operation.
+* Rename `mnat` to `max_nat` and "box" it by creating a separate type for it.
+* Move the RAs for `nat` and `positive` and the `mnat` RA into a separate
+  module. They must now be imported from `From iris.algebra Require Import
+  numbers`.
+* Make names of `f_op`/`f_core` rewrite lemmas more consistent by always making
+  `_core`/`_op` the suffix:
+  `op_singleton` → `singleton_op`, `core_singleton` → `singleton_core`,
+  `discrete_fun_op_singleton` → `discrete_fun_singleton_op`,
+  `discrete_fun_core_singleton` → `discrete_fun_singleton_core`,
+  `list_core_singletonM` → `list_singleton_core`,
+  `list_op_singletonM` → `list_singleton_op`,
+  `sts_op_auth_frag` → `sts_auth_frag_op`,
+  `sts_op_auth_frag_up` → `sts_auth_frag_up_op`,
+  `sts_op_frag` → `sts_frag_op`,
+  `list_op_length` → `list_length_op`.
+* Make list singleton lemmas consistent with gmap by dropping the `M` suffix of
+  `singleton`:
+  `elem_of_list_singletonM` → `elem_of_list_singleton`,
+  `list_lookup_singletonM` → `list_lookup_singleton`,
+  `list_lookup_singletonM_lt` → `list_lookup_singleton_lt`,
+  `list_lookup_singletonM_gt` → `list_lookup_singleton_gt`,
+  `list_lookup_singletonM_ne` → `list_lookup_singleton_ne`,
+  `list_singletonM_validN` → `list_singleton_validN`,
+  `list_singletonM_length` → `list_singleton_length`,
+  `list_alter_singletonM` → `list_alter_singleton`,
+  `list_singletonM_included` → `list_singleton_included`.
+* Remove `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
+* Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
+  and rename existing asymmetric lemmas (with a singleton on just the LHS):
+  + `singleton_includedN` → `singleton_includedN_l`.
+  + `singleton_included` → `singleton_included_l`.
+  + `singleton_included_exclusive` → `singleton_included_exclusive_l`
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
@@ -367,7 +370,7 @@ Chajed. Thanks a lot to everyone involved!
   updates) when Coq has to line-wrap the output.  This goes hand-in-hand with an
   improved test suite that also tests pretty-printing.
 * Added a `gmultiset` RA.
-* Rename `timelessP` -> `timeless` (projection of the `Timeless` class)
+* Rename `timelessP` → `timeless` (projection of the `Timeless` class)
 * The CMRA axiom `cmra_extend` is now stated in `Type`, using `sigT` instead of
   in `Prop` using `exists`. This makes it possible to define the function space
   CMRA even for an infinite domain.
