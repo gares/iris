@@ -207,7 +207,9 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   numbers`.
 * Remove notation for 3-mask step-taking updates, and made 2-mask notation less
   confusing by distinguishing it better from mask-changing updates.
-  Old: `|={E1,E2}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
+  Old: `|={Eo,Ei}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
+  Here, `Eo` is the "outer mask" (used at the beginning and end) and `Ei` the
+  "inner mask" (used around the ▷ in the middle).
   As part of this, the lemmas about the 3-mask variant were changed to be about
   the 2-mask variant instead, and `step_fupd_mask_mono` now also has a more
   consistent argument order for its masks.
