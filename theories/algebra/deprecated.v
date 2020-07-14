@@ -1,9 +1,12 @@
 From iris.algebra Require Import ofe cmra.
 Set Default Proof Using "Type".
 
+Local Set Warnings "-deprecated".
+
 (* Old notation for backwards compatibility. *)
 
 (* Deprecated 2016-11-22. Use ofeT instead. *)
+#[deprecated(note = "Use ofeT instead.")]
 Notation cofeT := ofeT (only parsing).
 
 (* Deprecated 2016-12-09. Use agree instead. *)
@@ -14,13 +17,15 @@ Local Arguments op _ _ _ !_ /.
 Local Arguments pcore _ _ !_ /.
 
 (* This is isomorphic to option, but has a very different RA structure. *)
-Inductive dec_agree (A : Type) : Type :=
-  | DecAgree : A → dec_agree A
-  | DecAgreeBot : dec_agree A.
+Inductive dec_agree_ (A : Type) : Type :=
+  | DecAgree : A → dec_agree_ A
+  | DecAgreeBot : dec_agree_ A.
 Arguments DecAgree {_} _.
 Arguments DecAgreeBot {_}.
 Instance maybe_DecAgree {A} : Maybe (@DecAgree A) := λ x,
   match x with DecAgree a => Some a | _ => None end.
+#[deprecated(note = "Use agree instead.")]
+Notation dec_agree := dec_agree_.
 
 Section dec_agree.
 Context `{EqDecision A}.
@@ -38,6 +43,7 @@ Instance dec_agree_op : Op (dec_agree A) := λ x y,
   end.
 Instance dec_agree_pcore : PCore (dec_agree A) := Some.
 
+#[deprecated(note = "Use agree instead.")]
 Definition dec_agree_ra_mixin : RAMixin (dec_agree A).
 Proof.
   apply ra_total_mixin; apply _ || eauto.
@@ -47,6 +53,7 @@ Proof.
   - by intros [?|] [?|] ?.
 Qed.
 
+#[deprecated(note = "Use agree instead.")]
 Canonical Structure dec_agreeR : cmraT :=
   discreteR (dec_agree A) dec_agree_ra_mixin.
 
@@ -59,15 +66,19 @@ Proof. intros x. by exists x. Qed.
 Global Instance dec_agree_core_id (x : dec_agreeR) : CoreId x.
 Proof. by constructor. Qed.
 
+#[deprecated(note = "Use agree instead.")]
 Lemma dec_agree_ne a b : a ≠ b → DecAgree a ⋅ DecAgree b = DecAgreeBot.
 Proof. intros. by rewrite /= decide_False. Qed.
 
+#[deprecated(note = "Use agree instead.")]
 Lemma dec_agree_idemp (x : dec_agree A) : x ⋅ x = x.
 Proof. destruct x; by rewrite /= ?decide_True. Qed.
 
+#[deprecated(note = "Use agree instead.")]
 Lemma dec_agree_op_inv (x1 x2 : dec_agree A) : ✓ (x1 ⋅ x2) → x1 = x2.
 Proof. destruct x1, x2; by repeat (simplify_eq/= || case_match). Qed.
 
+#[deprecated(note = "Use agree instead.")]
 Lemma DecAgree_included a b : DecAgree a ≼ DecAgree b ↔ a = b.
 Proof.
   split. intros [[c|] [=]%leibniz_equiv]. by simplify_option_eq. by intros ->.
