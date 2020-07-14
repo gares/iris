@@ -61,8 +61,10 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
   `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
 * Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
-* Update the strong variant of the opening lemma for cancellable invariants
-  to match that of regular invariants, where you can pick the mask at a later time.
+* Update the strong variant of the accessor lemma for cancellable invariants to
+  match that of regular invariants, where you can pick the mask at a later time.
+  (The other part that makes it strong is that you get back the token for the
+  invariant immediately, not just when the invariant is closed again.)
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
   Introduce `iProp` for the `Type` carrier of `iPropO`.
 * Flatten the BI hierarchy by merging the `bi` and `sbi` canonical structures.
@@ -231,9 +233,9 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   element.
 * Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
   and rename existing asymmetric lemmas (with a singleton on just the LHS):
-  + `singleton_includedN` → `singleton_includedN_l`.
-  + `singleton_included` → `singleton_included_l`.
-  + `singleton_included_exclusive` → `singleton_included_exclusive_l`
+  `singleton_includedN` → `singleton_includedN_l`,
+  `singleton_included` → `singleton_included_l`,
+  `singleton_included_exclusive` → `singleton_included_exclusive_l`.
 * Add many missing `Proper`/non-expansiveness lemmas for maps and lists.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
