@@ -34,6 +34,8 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
 * Add lemma `is_lock_iff` and show that `is_lock` is contractive.
 * Remove namespace `N` from `is_lock`.
+* Fix all binary operators performing pointer arithmetic (instead of just the
+  dedicated `OffsetOp` operator doing that).
 
 **Changes in `program_logic`:**
 
@@ -43,6 +45,9 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 
 **Changes in the logic (`base_logic`, `bi`):**
 
+* Add a counterexample showing that sufficiently powerful cancellable invariants
+  with a linear token subvert the linearity guarantee (see
+  `bi.lib.counterexmples` for details).
 * Redefine invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
 * Rename some accessor-style lemmas to consistently use the suffix `_acc`
@@ -143,6 +148,7 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Add `big_*_insert_delete` lemmas to split a `<[i:=x]> m` map into `i` and the rest.
 * Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
   to prevent undesired simplification.
+* Fix `big_sepM2_fmap*` only working for `nat` keys.
 * Add the type `siProp` of "plain" step-indexed propositions, together with
   basic proofmode support.
 
@@ -179,6 +185,7 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   will fail. We provide one implementation using Ltac2 which works with Coq 8.11
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
+* Add `auto` hint for `∗-∗`.
 
 **Changes in `algebra`:**
 
@@ -188,7 +195,8 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Add notion `ofe_iso A B` that states that OFEs `A` and `B` are
   isomorphic. This is used in the COFE solver.
 * The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
-  `{o,r,ur}Functor_apply` to better match their intent.
+  `{o,r,ur}Functor_apply` to better match their intent. This fixes "ambiguous
+  coercion path" warnings.
 * Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
   `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
 * Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
@@ -238,10 +246,17 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   `singleton_included_exclusive` → `singleton_included_exclusive_l`.
 * Add many missing `Proper`/non-expansiveness lemmas for maps and lists.
 
-The following `sed` script should perform most of the renaming (FIXME: incomplete)
-(on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
+The following `sed` script helps adjust your code to the renaming (on macOS,
+replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
+Note that the script is not idempotent, do not run it twice.
 ```
 sed -i -E '
+# functor renames
+s/\b(o|r|ur)Functor_(ne|id|compose|contractive)\b/\1Functor_map_\2/g
+# singleton_included renames
+s/\bsingleton_includedN\b/singleton_includedN_l/g
+s/\bsingleton_included\b/singleton_included_l/g
+s/\bsingleton_included_exclusive\b/singleton_included_exclusive_l/g
 # f_op/f_core renames
 s/\b(op|core)_singleton\b/singleton_\1/g
 s/\bdiscrete_fun_(op|core)_singleton\b/discrete_fun_singleton_\1/g
@@ -254,12 +269,16 @@ s/\blist_lookup_singletonM(|_lt|_gt|_ne)\b/list_lookup_singleton\1/g
 s/\blist_singletonM_(validN|length)\b/list_singleton_\1/g
 s/\blist_alter_singletonM\b/list_alter_singleton/g
 s/\blist_singletonM_included\b/list_singleton_included/g
-# auth_both_frac_op rename
+# inv renames
+s/\binv_sep(|_1|_2)\b/inv_split\1/g
+s/\binv_acc\b/inv_alter/g
+s/\binv_open(|_strong|_timeless)\b/inv_acc\1/g
+s/\bcinv_open(|_strong)\b/cinv_acc\1/g
+s/\b(na_inv|auth|sts)_open\b/\1_acc/g
+# miscellaneous
 s/\bauth_both_frac_op\b/auth_both_op/g
-# inv_sep
-s/\binv_sep\b/inv_split/g
-# mnat rename
 s/\bmnat\b/max_nat/g
+s/\bcoreP_wand\b/coreP_entails/g
 ' $(find theories -name "*.v")
 ```
 
