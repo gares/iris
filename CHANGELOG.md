@@ -7,22 +7,6 @@ Coq development; every API-breaking change should be listed.
 Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 8.8 are no longer supported.
 
-**Changes in the theory of Iris itself:**
-
-* [#] Redefine invariants as "semantic invariants" so that they support
-  splitting and other forms of weakening.
-* Update the strong variant of the opening lemma for cancellable invariants
-  to match that of regular invariants, where you can pick the mask at a later time.
-
-**Changes in program_logic:**
-
-* In the axiomatization of ectx languages, replace the axiom of positivity of
-  context composition with an axiom that says if `fill K e` takes a head step,
-  then either `K` is the empty evaluation context or `e` is a value.
-* Add a library for "invariant locations": heap locations that will not be
-  deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
-  invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
-
 **Changes in heap_lang:**
 
 * Add support for deallocation of locations via the `Free` operation.
@@ -34,8 +18,21 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Add lemma `is_lock_iff` and show that `is_lock` is contractive.
 * Remove namespace `N` from `is_lock`.
 
+**Changes in program_logic:**
+
+* In the axiomatization of ectx languages, replace the axiom of positivity of
+  context composition with an axiom that says if `fill K e` takes a head step,
+  then either `K` is the empty evaluation context or `e` is a value.
+* Add a library for "invariant locations": heap locations that will not be
+  deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
+  invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
+
 **Changes in base_logic, proofmode, and algebra:**
 
+* Redefine invariants as "semantic invariants" so that they support
+  splitting and other forms of weakening.
+* Update the strong variant of the opening lemma for cancellable invariants
+  to match that of regular invariants, where you can pick the mask at a later time.
 * Remove coercion from `iProp` (and other MoSeL propositions) to `Prop`.
   Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
   type cannot be inferred. This also means that `%I` should not be necessary any
