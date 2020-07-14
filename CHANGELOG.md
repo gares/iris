@@ -1,43 +1,46 @@
 In this changelog, we document "large-ish" changes to Iris that affect even the
 way the logic is used on paper.  We also mention some significant changes in the
-Coq development, but not every API-breaking change is listed.  Changes marked
-`[#]` still need to be ported to the Iris Documentation LaTeX file(s).
+Coq development; every API-breaking change should be listed.
 
 ## Iris master
 
+Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
+8.8 are no longer supported.
+
 **Changes in the theory of Iris itself:**
 
-* [#] Redefined invariants as "semantic invariants" so that they support
+* [#] Redefine invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
-* Updated the strong variant of the opening lemma for cancellable invariants
+* Update the strong variant of the opening lemma for cancellable invariants
   to match that of regular invariants, where you can pick the mask at a later time.
 
-**Changes in program logic:**
+**Changes in program_logic:**
 
-* In the axiomatization of ectx languages we replaced the axiom of positivity of
+* In the axiomatization of ectx languages, replace the axiom of positivity of
   context composition with an axiom that says if `fill K e` takes a head step,
   then either `K` is the empty evaluation context or `e` is a value.
-* Added a library for "invariant locations": heap locations that will not be
+* Add a library for "invariant locations": heap locations that will not be
   deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
   invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
 
 **Changes in heap_lang:**
 
-* Added support for deallocation of locations via the `Free` operation.
-* Added a fraction to the heap_lang `array` assertion.
-* Added `lib.array` module for deallocating, copying and cloning arrays.
-* Added the ghost state for "invariant locations" to `heapG`.  This affects the
+* Add support for deallocation of locations via the `Free` operation.
+* Add a fraction to the heap_lang `array` assertion.
+* Add `lib.array` module for deallocating, copying and cloning arrays.
+* Add the ghost state for "invariant locations" to `heapG`.  This affects the
   statement of `heap_adequacy`, which is now responsible for initializing the
   "invariant locations" invariant.
+* Add lemma `is_lock_iff` and show that `is_lock` is contractive.
+* Remove namespace `N` from `is_lock`.
 
-**Changes in Coq:**
+**Changes in base_logic, proofmode, and algebra:**
 
-* Added support for Coq 8.10 and Coq 8.11; dropped support for Coq 8.7 and Coq 8.8.
-* Removed coercion from `iProp` (and other MoSeL propositions) to `Prop`.
+* Remove coercion from `iProp` (and other MoSeL propositions) to `Prop`.
   Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
   type cannot be inferred. This also means that `%I` should not be necessary any
   more when stating lemmas, as `P` above is automatically parsed in scope `%I`.
-* A new tactic `iStopProof` to turn the proof mode entailment into an ordinary
+* Add new tactic `iStopProof` to turn the proof mode entailment into an ordinary
   Coq goal `big star of context ⊢ proof mode goal`.
 * Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
   Introduce `iProp` for the `Type` carrier of `iPropO`.
@@ -45,45 +48,45 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   `algebra/lib`.
 * Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
 * Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
-  `iAssumption`, see https://gitlab.mpi-sws.org/iris/iris/merge_requests/329
+  `iAssumption`, see <https://gitlab.mpi-sws.org/iris/iris/merge_requests/329>.
   This has two consequences:
   1. Coq's "new" unification algorithm (the one in `refine`, not the "old" one
      in `apply`) is used more often by the proof mode tactics.
   2. Due to the use of `notypeclasses refine`, TC constraints are solved less
-     eagerly, see https://github.com/coq/coq/issues/6583.
+     eagerly, see <https://github.com/coq/coq/issues/6583>.
   In order to port your development, it is often needed to instantiate evars
   explicitly (since TC search is performed less eagerly), and in few cases it is
   needed to unfold definitions explicitly (due to new unification algorithm
   behaving differently).
-* Removed `Core` type class for defining the total core; it is now always
+* Remove `Core` type class for defining the total core; it is now always
   defined in terms of the partial core. The only user of this type class was the
   STS RA.
-* Added the type `siProp` of "plain" step-indexed propositions, together with
+* Add the type `siProp` of "plain" step-indexed propositions, together with
   basic proofmode support.
-* Sealed the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
+* Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
   to prevent undesired simplification.
-* The tactics `iDestruct`, `iPoseProof`, and `iAssert` have become stronger:
+* Strengthen the tactics `iDestruct`, `iPoseProof`, and `iAssert`:
   - They succeed in certain cases where they used to fail.
   - They keep certain hypotheses in the intuitionistic context, where they were
     moved to the spatial context before.
   The latter can lead to stronger proof mode contexts, and therefore to
   backwards incompatibility. This can usually be fixed by manually clearing some
   hypotheses. A more detailed description of the changes can be found in
-  https://gitlab.mpi-sws.org/iris/iris/merge_requests/341.
-* Renamed some accessor-style lemmas to consistently use the suffix `_acc`
+  <https://gitlab.mpi-sws.org/iris/iris/merge_requests/341>.
+* Rename some accessor-style lemmas to consistently use the suffix `_acc`
   instead of `_open`:
   `inv_open` -> `inv_acc`, `inv_open_strong` -> `inv_acc_strong`,
   `inv_open_timeless` -> `inv_acc_timeless`, `na_inv_open` -> `na_inv_acc`,
   `cinv_open` -> `cinv_acc`, `cinv_open_strong` -> `cinv_acc_strong`,
   `auth_open` -> `auth_acc`, `sts_open` -> `sts_acc`.
-  To make this work we also had to rename `inv_acc` -> `inv_alter`.
+  To make this work, also rename `inv_acc` -> `inv_alter`.
   (Most developments should be unaffected as the typical way to invoke these
   lemmas is through `iInv`, and that does not change.)
-* Added a construction `bi_rtc` to create reflexive transitive closures of
+* Add a construction `bi_rtc` to create reflexive transitive closures of
   PROP-level binary relations.
 * Add new introduction pattern `-# pat` that moves a hypothesis from the
   intuitionistic context to the spatial context.
-* Made lemma names for `fill` more consistent
+* Make lemma names for `fill` more consistent
   - Use the `_inv` suffix for the the backwards directions:
    `reducible_fill` → `reducible_fill_inv`,
    `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
@@ -99,14 +102,12 @@ Coq development, but not every API-breaking change is listed.  Changes marked
   consistent and more convenient for `iApply`. They are now of the form
   `inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q` and (similar for `na_inv_iff` and
   `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
-* Add lemma `is_lock_iff` and show that `is_lock` is contractive.
 * Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
   `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
 * Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
-* Affine, absorbing, persistent and timeless instances for telescopes.
+* Add affine, absorbing, persistent and timeless instances for telescopes.
 * Better support for telescopes in the proof mode, i.e., all tactics should
   recognize and distribute telescopes now.
-* Remove namespace `N` from `is_lock`.
 * Make lemma `Excl_included` a bi-implication.
 * Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
   and rename existing asymmetric lemmas (with a singleton on just the LHS):
@@ -159,7 +160,7 @@ Coq development, but not every API-breaking change is listed.  Changes marked
     - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
-* Removed `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
+* Remove `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
 * Some improvements to the `bi/lib/core` construction:
   + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
   + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
