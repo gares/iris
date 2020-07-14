@@ -186,6 +186,8 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 * Add `auto` hint for `∗-∗`.
+* Remove the long-deprecated `cofeT` alias (for `ofeT`) and `dec_agree` RA (use
+  `agree` instead).
 
 **Changes in `algebra`:**
 
