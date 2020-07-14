@@ -1,6 +1,7 @@
 In this changelog, we document "large-ish" changes to Iris that affect even the
-way the logic is used on paper.  We also mention some significant changes in the
-Coq development; every API-breaking change should be listed.
+way the logic is used on paper.  We also document changes in the Coq
+development; every API-breaking change should be listed, but not every new
+lemma.
 
 ## Iris master
 
@@ -12,11 +13,13 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Add support for deallocation of locations via the `Free` operation.
 * Add a fraction to the heap_lang `array` assertion.
 * Add `lib.array` module for deallocating, copying and cloning arrays.
+* Add TWP (total weakest-pre) lemmas for arrays.
+* Add a library for "invariant locations": heap locations that will not be
+  deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
+  invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
 * Add the ghost state for "invariant locations" to `heapG`.  This affects the
   statement of `heap_adequacy`, which is now responsible for initializing the
   "invariant locations" invariant.
-* Add lemma `is_lock_iff` and show that `is_lock` is contractive.
-* Remove namespace `N` from `is_lock`.
 * Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
   exists `heap_lang.derived_laws`.
 * Make lemma names for `fill` more consistent
@@ -29,53 +32,19 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
 * Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
   reverse dependencies if they want to `Open Scope Z_scope` or not.
 * Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
+* Add lemma `is_lock_iff` and show that `is_lock` is contractive.
+* Remove namespace `N` from `is_lock`.
 
 **Changes in `program_logic`:**
 
 * In the axiomatization of ectx languages, replace the axiom of positivity of
   context composition with an axiom that says if `fill K e` takes a head step,
   then either `K` is the empty evaluation context or `e` is a value.
-* Add a library for "invariant locations": heap locations that will not be
-  deallocated (i.e., they are GC-managed) and satisfy some pure, Coq-level
-  invariant.  See `iris.base_logic.lib.gen_inv_heap` for details.
 
-**Changes in the logic infrastructure (`base_logic`, `bi`, and `proofmode`):**
+**Changes in the logic (`base_logic`, `bi`):**
 
 * Redefine invariants as "semantic invariants" so that they support
   splitting and other forms of weakening.
-* Update the strong variant of the opening lemma for cancellable invariants
-  to match that of regular invariants, where you can pick the mask at a later time.
-* Remove coercion from `iProp` (and other MoSeL propositions) to `Prop`.
-  Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
-  type cannot be inferred. This also means that `%I` should not be necessary any
-  more when stating lemmas, as `P` above is automatically parsed in scope `%I`.
-* Add new tactic `iStopProof` to turn the proof mode entailment into an ordinary
-  Coq goal `big star of context ⊢ proof mode goal`.
-* Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
-  Introduce `iProp` for the `Type` carrier of `iPropO`.
-* Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
-  `iAssumption`, see <https://gitlab.mpi-sws.org/iris/iris/merge_requests/329>.
-  This has two consequences:
-  1. Coq's "new" unification algorithm (the one in `refine`, not the "old" one
-     in `apply`) is used more often by the proof mode tactics.
-  2. Due to the use of `notypeclasses refine`, TC constraints are solved less
-     eagerly, see <https://github.com/coq/coq/issues/6583>.
-  In order to port your development, it is often needed to instantiate evars
-  explicitly (since TC search is performed less eagerly), and in few cases it is
-  needed to unfold definitions explicitly (due to new unification algorithm
-  behaving differently).
-* Add the type `siProp` of "plain" step-indexed propositions, together with
-  basic proofmode support.
-* Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
-  to prevent undesired simplification.
-* Strengthen the tactics `iDestruct`, `iPoseProof`, and `iAssert`:
-  - They succeed in certain cases where they used to fail.
-  - They keep certain hypotheses in the intuitionistic context, where they were
-    moved to the spatial context before.
-  The latter can lead to stronger proof mode contexts, and therefore to
-  backwards incompatibility. This can usually be fixed by manually clearing some
-  hypotheses. A more detailed description of the changes can be found in
-  <https://gitlab.mpi-sws.org/iris/iris/merge_requests/341>.
 * Rename some accessor-style lemmas to consistently use the suffix `_acc`
   instead of `_open`:
   `inv_open` → `inv_acc`, `inv_open_strong` → `inv_acc_strong`,
@@ -85,49 +54,17 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   To make this work, also rename `inv_acc` → `inv_alter`.
   (Most developments should be unaffected as the typical way to invoke these
   lemmas is through `iInv`, and that does not change.)
-* Add a construction `bi_rtc` to create reflexive transitive closures of
-  PROP-level binary relations.
-* Add new introduction pattern `-# pat` that moves a hypothesis from the
-  intuitionistic context to the spatial context.
-* The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
 * Change `inv_iff`, `cinv_iff` and `na_inv_iff` to make order of arguments
   consistent and more convenient for `iApply`. They are now of the form
   `inv N P -∗ ▷ □ (P ↔ Q) -∗ inv N Q` and (similar for `na_inv_iff` and
   `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
-* Add affine, absorbing, persistent and timeless instances for telescopes.
-* Better support for telescopes in the proof mode, i.e., all tactics should
-  recognize and distribute telescopes now.
-* Make lemma `Excl_included` a bi-implication.
-* The proof mode now supports names for pure facts in intro patterns. Support
-  requires implementing `string_to_ident`. Without this tactic such patterns
-  will fail. We provide one implementation using Ltac2 which works with Coq 8.11
-  and can be installed with opam; see
-  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
-* New ASCII versions of Iris notations. These are marked parsing only and
-  can be made available using `Require Import iris.bi.ascii`. The new
-  notations are (notations marked [†] are disambiguated using notation scopes):
-  - entailment: `|-` for `⊢` and `-|-` for `⊣⊢`
-  - logic[†]: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
-  - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
-  - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`
-  - step indexing: `|>` for `▷`
-  - modalities: `<#>` for `□` and `<except_0>` for `◇`
-  - most derived notations can be computed from previous notations using the
-    substitutions above, e.g. replace `∗` with `*` and `▷` with `|>`. Examples
-    include the following:
-    - `|={E1,E2}=* P` for `|={E1,E2}=∗`
-    - `P ={E}=* Q` for `P ={E}=∗ Q`
-    - `P ={E1,E2}=* Q` for `P ={E1,E2}=∗ Q`
-    - `|={E1,E2,E3}|>=> Q` for `|={E1,E2,E3}▷=> Q`
-    - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
-    The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
-    where the ASCII notations are defined in terms of the unicode notations.
-* Some improvements to the `bi/lib/core` construction:
-  + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
-  + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
-    version `coreP_entails'` for `coreP P` with `P` affine.
-  + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
-    lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
+* Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
+  `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
+* Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
+* Update the strong variant of the opening lemma for cancellable invariants
+  to match that of regular invariants, where you can pick the mask at a later time.
+* Rename `iProp`/`iPreProp` to `iPropO`/`iPrePropO` since they are `ofeT`s.
+  Introduce `iProp` for the `Type` carrier of `iPropO`.
 * Flatten the BI hierarchy by merging the `bi` and `sbi` canonical structures.
   This gives significant performance benefits on developments that construct BIs
   from BIs (e.g., use `monPred`). For, example it gives a performance gain of 37%
@@ -154,9 +91,38 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
     instead of `■ ⎡P⎤ ⊢ ⎡■ P⎤`) as it has been generalized to BIs without a
     internal equality. In the past, the left-to-right direction was obtained for
     "free" using the rules of internal equality.
-* Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
-  `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
-* Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
+* Remove coercion from `iProp` (and other MoSeL propositions) to `Prop`.
+  Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
+  type cannot be inferred. This also means that `%I` should not be necessary any
+  more when stating lemmas, as `P` above is automatically parsed in scope `%I`.
+* New ASCII versions of Iris notations. These are marked parsing only and
+  can be made available using `Require Import iris.bi.ascii`. The new
+  notations are (notations marked [†] are disambiguated using notation scopes):
+  - entailment: `|-` for `⊢` and `-|-` for `⊣⊢`
+  - logic[†]: `->` for `→`, `/\\` for `∧`, `\\/` for `∨`, and `<->` for `↔`
+  - quantifiers[†]: `forall` for `∀` and `exists` for `∃`
+  - separation logic: `**` for `∗`, `-*` for `-∗`, and `*-*` for `∗-∗`
+  - step indexing: `|>` for `▷`
+  - modalities: `<#>` for `□` and `<except_0>` for `◇`
+  - most derived notations can be computed from previous notations using the
+    substitutions above, e.g. replace `∗` with `*` and `▷` with `|>`. Examples
+    include the following:
+    - `|={E1,E2}=* P` for `|={E1,E2}=∗`
+    - `P ={E}=* Q` for `P ={E}=∗ Q`
+    - `P ={E1,E2}=* Q` for `P ={E1,E2}=∗ Q`
+    - `|={E1,E2,E3}|>=> Q` for `|={E1,E2,E3}▷=> Q`
+    - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
+    The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
+    where the ASCII notations are defined in terms of the unicode notations.
+* Add affine, absorbing, persistent and timeless instances for telescopes.
+* Some improvements to the `bi/lib/core` construction:
+  + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
+  + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
+    version `coreP_entails'` for `coreP P` with `P` affine.
+  + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
+    lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
+* Add a construction `bi_rtc` to create reflexive transitive closures of
+  PROP-level binary relations.
 * Remove notation for 3-mask step-taking updates, and made 2-mask notation less
   confusing by distinguishing it better from mask-changing updates.
   Old: `|={Eo,Ei}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
@@ -169,22 +135,66 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   `big_sepM_nil'` `big_sepM2_empty'`, `big_sepS_empty'`, and `big_sepMS_empty'`.
   They now only require that the argument `P` is affine instead of the whole BI
   being affine.
+* Add `big_sepL_insert_acc`, a variant of `big_sepL_lookup_acc` which allows
+  updating the value.
+* Add many missing `Proper`/non-expansiveness lemmas for big-ops.
+* Add `big_*_insert_delete` lemmas to split a `<[i:=x]> m` map into `i` and the rest.
+* Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
+  to prevent undesired simplification.
+* Add the type `siProp` of "plain" step-indexed propositions, together with
+  basic proofmode support.
+
+**Changes in `proofmode`:**
+
+* Add new tactic `iStopProof` to turn the proof mode entailment into an ordinary
+  Coq goal `big star of context ⊢ proof mode goal`.
+* Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
+  `iAssumption`, see <https://gitlab.mpi-sws.org/iris/iris/merge_requests/329>.
+  This has two consequences:
+  1. Coq's "new" unification algorithm (the one in `refine`, not the "old" one
+     in `apply`) is used more often by the proof mode tactics.
+  2. Due to the use of `notypeclasses refine`, TC constraints are solved less
+     eagerly, see <https://github.com/coq/coq/issues/6583>.
+  In order to port your development, it is often needed to instantiate evars
+  explicitly (since TC search is performed less eagerly), and in few cases it is
+  needed to unfold definitions explicitly (due to new unification algorithm
+  behaving differently).
+* Strengthen the tactics `iDestruct`, `iPoseProof`, and `iAssert`:
+  - They succeed in certain cases where they used to fail.
+  - They keep certain hypotheses in the intuitionistic context, where they were
+    moved to the spatial context before.
+  The latter can lead to stronger proof mode contexts, and therefore to
+  backwards incompatibility. This can usually be fixed by manually clearing some
+  hypotheses. A more detailed description of the changes can be found in
+  <https://gitlab.mpi-sws.org/iris/iris/merge_requests/341>.
+* Add new introduction pattern `-# pat` that moves a hypothesis from the
+  intuitionistic context to the spatial context.
+* The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
+* Better support for telescopes in the proof mode, i.e., all tactics should
+  recognize and distribute telescopes now.
+* The proof mode now supports names for pure facts in intro patterns. Support
+  requires implementing `string_to_ident`. Without this tactic such patterns
+  will fail. We provide one implementation using Ltac2 which works with Coq 8.11
+  and can be installed with opam; see
+  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 
 **Changes in `algebra`:**
 
-* Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
-  `algebra/lib`.
-* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
 * Remove `Core` type class for defining the total core; it is now always
   defined in terms of the partial core. The only user of this type class was the
   STS RA.
-* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are isomorphic.
-* Make use of `ofe_iso` in the COFE solver.
+* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are
+  isomorphic. This is used in the COFE solver.
 * The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
   `{o,r,ur}Functor_apply` to better match their intent.
 * Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
   `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
 * Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
+* Add `pair_op_1` and `pair_op_2` to split a pair where one component is the unit.
+* Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
+  `algebra/lib`.
+* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
+* Make lemma `Excl_included` a bi-implication.
 * Add `min_nat`, a RA for natural numbers with `min` as the operation.
 * Rename `mnat` to `max_nat` and "box" it by creating a separate type for it.
 * Move the RAs for `nat` and `positive` and the `mnat` RA into a separate
@@ -212,12 +222,19 @@ Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   `list_singletonM_length` → `list_singleton_length`,
   `list_alter_singletonM` → `list_alter_singleton`,
   `list_singletonM_included` → `list_singleton_included`.
-* Remove `auth_both_op` and renamed `auth_both_frac_op` into `auth_both_op`.
+* Add `list_singletonM_included` and `list_lookup_singletonM_{lt,gt}` lemmas
+  about singletons in the list RA.
+* Add `list_core_id'`, a stronger version of `list_core_id` which only talks
+  about elements that are actually in the list.
+* Remove `auth_both_op` and rename `auth_both_frac_op` into `auth_both_op`.
+* Make `auth_update_core_id` work with any fraction of the authoritative
+  element.
 * Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
   and rename existing asymmetric lemmas (with a singleton on just the LHS):
   + `singleton_includedN` → `singleton_includedN_l`.
   + `singleton_included` → `singleton_included_l`.
   + `singleton_included_exclusive` → `singleton_included_exclusive_l`
+* Add many missing `Proper`/non-expansiveness lemmas for maps and lists.
 
 The following `sed` script should perform most of the renaming (FIXME: incomplete)
 (on macOS, replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`):
