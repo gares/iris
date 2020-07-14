@@ -40,7 +40,7 @@ We can now define the proposition $W$ (\emph{world satisfaction}) which ensures 
 
 \paragraph{Invariants.}
 The following proposition states that an invariant with name $\iname$ exists and maintains proposition $\prop$:
-\[ \knowInv\iname\prop \eqdef \ownGhost{\gname_{\textdom{Inv}}}
+\[ \invM\iname\prop \eqdef \ownGhost{\gname_{\textdom{Inv}}}
   {\authfrag \mapsingleton \iname {\aginj(\latertinj(\wIso(\prop)))}} \]
 
 \paragraph{Fancy Updates and View Shifts.}
@@ -80,16 +80,6 @@ Fancy updates satisfy the following basic proof rules:
 \infer[fup-timeless]
 {\timeless\prop}
 {\later\prop \proves \pvs[\mask] \prop}
-%
-% \inferH{fup-allocI}
-% {\text{$\mask$ is infinite}}
-% {\later\prop \proves \pvs[\mask] \Exists \iname \in \mask. \knowInv\iname\prop}
-%gov
-% \inferH{fup-openI}
-% {}{\knowInv\iname\prop \proves \pvs[\set\iname][\emptyset] \later\prop}
-%
-% \inferH{fup-closeI}
-% {}{\knowInv\iname\prop \land \later\prop \proves \pvs[\emptyset][\set\iname] \TRUE}
 \end{mathparpagebreakable}
 (There are no rules related to invariants here. Those rules will be discussed later, in \Sref{sec:namespaces}.)
 
@@ -125,17 +115,7 @@ Still, just to give an idea of what view shifts ``are'', here are some proof rul
 \inferH{vs-timeless}
   {\timeless{\prop}}
   {\later \prop \vs[\emptyset] \prop}
-
-% \inferH{vs-allocI}
-%   {\infinite(\mask)}
-%   {\later{\prop} \vs[\mask] \exists \iname\in\mask.\; \knowInv{\iname}{\prop}}
-% \and
-% \axiomH{vs-openI}
-%   {\knowInv{\iname}{\prop} \proves \TRUE \vs[\{ \iname \} ][\emptyset] \later \prop}
-% \and
-% \axiomH{vs-closeI}
-%   {\knowInv{\iname}{\prop} \proves \later \prop \vs[\emptyset][\{ \iname \} ] \TRUE }
-%
+\and
 \inferHB{vs-disj}
   {\prop \vs[\mask_1][\mask_2] \propC \and \propB \vs[\mask_1][\mask_2] \propC}
   {\prop \lor \propB \vs[\mask_1][\mask_2] \propC}
@@ -390,24 +370,12 @@ We only give some of the proof rules for Hoare triples here, since we usually do
 \inferHB{Ht-box}
   {\always\propB \proves \hoare{\prop}{\expr}{\Ret\val.\propC}[\mask]}
   {\hoare{\prop \land \always{\propB}}{\expr}{\Ret\val.\propC}[\mask]}
-% \and
-% \inferH{Ht-inv}
-%   {\hoare{\later\propC*\prop}{\expr}{\Ret\val.\later\propC*\propB}[\mask] \and
-%    \physatomic{\expr}
-%   }
-%   {\knowInv\iname\propC \proves \hoare{\prop}{\expr}{\Ret\val.\propB}[\mask \uplus \set\iname]}
-% \and
-% \inferH{Ht-inv-timeless}
-%   {\hoare{\propC*\prop}{\expr}{\Ret\val.\propC*\propB}[\mask] \and
-%    \physatomic{\expr} \and \timeless\propC
-%   }
-%   {\knowInv\iname\propC \proves \hoare{\prop}{\expr}{\Ret\val.\propB}[\mask \uplus \set\iname]}
 \end{mathparpagebreakable}
 
 \subsection{Invariant Namespaces}
 \label{sec:namespaces}
 
-In \Sref{sec:invariants}, we defined a proposition $\knowInv\iname\prop$ expressing knowledge (\ie the proposition is persistent) that $\prop$ is maintained as invariant with name $\iname$.
+In \Sref{sec:invariants}, we defined a proposition $\invM\iname\prop$ expressing knowledge (\ie the proposition is persistent) that $\prop$ is maintained as invariant with name $\iname$.
 The concrete name $\iname$ is picked when the invariant is allocated, so it cannot possibly be statically known -- it will always be a variable that's threaded through everything.
 However, we hardly care about the actual, concrete name.
 All we need to know is that this name is \emph{different} from the names of other invariants that we want to open at the same time.
@@ -434,20 +402,20 @@ Any injective mapping $\textlog{namesp\_inj}$ will do; and such a mapping has to
 Whenever needed, we (usually implicitly) coerce $\namesp$ to its encoded suffix-closure, \ie to the set of encoded structured invariant names contained in the namespace: \[\namecl\namesp \eqdef \setComp{\iname}{\Exists \namesp'. \iname = \textlog{namesp\_inj}(\namesp' \dplus \namesp)}\]
 
 We will overload the notation for invariant propositions for using namespaces instead of names:
-\[ \knowInv\namesp\prop \eqdef \Exists \iname \in \namecl\namesp. \knowInv\iname{\prop} \]
+\[ \invM\namesp\prop \eqdef \Exists \iname \in \namecl\namesp. \invM\iname{\prop} \]
 We can now derive the following rules (this involves unfolding the definition of fancy updates):
 \begin{mathpar}
-  \axiomH{inv-persist}{\knowInv\namesp\prop \proves \always\knowInv\namesp\prop}
+  \axiomH{inv-persist}{\invM\namesp\prop \proves \always\invM\namesp\prop}
 
-  \axiomH{inv-alloc}{\later\prop \proves \pvs[\emptyset] \knowInv\namesp\prop}
+  \axiomH{inv-alloc}{\later\prop \proves \pvs[\emptyset] \invM\namesp\prop}
 
   \inferH{inv-open}
   {\namesp \subseteq \mask}
-  {\knowInv\namesp\prop \vs[\mask][\mask\setminus\namesp] \later\prop * (\later\prop \vsW[\mask\setminus\namesp][\mask] \TRUE)}
+  {\invM\namesp\prop \vs[\mask][\mask\setminus\namesp] \later\prop * (\later\prop \vsW[\mask\setminus\namesp][\mask] \TRUE)}
 
   \inferH{inv-open-timeless}
   {\namesp \subseteq \mask \and \timeless\prop}
-  {\knowInv\namesp\prop \vs[\mask][\mask\setminus\namesp] \prop * (\prop \vsW[\mask\setminus\namesp][\mask] \TRUE)}
+  {\invM\namesp\prop \vs[\mask][\mask\setminus\namesp] \prop * (\prop \vsW[\mask\setminus\namesp][\mask] \TRUE)}
 \end{mathpar}
 
 \subsection{Accessors}
@@ -487,6 +455,26 @@ Furthermore, as we construct more sophisticated and more interesting things that
 For the symmetric case where $\prop = \propC$ and $\propB = \propB'$, we use the following notation that avoids repetition:
 \[ \Acc[\mask_1][\mask_2]\prop{\Ret x. \propB} \eqdef \prop \vs[\mask_1][\mask_2] \Exists\var. \propB * (\propB \vsW[\mask_2][\mask_1] \prop)  \]
 This accessor is ``idempotent'' in the sense that it does not actually change the state.  After applying it, we get our $\prop$ back so we end up where we started.
+
+\paragraph{Accessor-style invariants.}
+In fact, the user-visible notion of invariants $\knowInv\namesp\prop$ is defined via \ruleref{inv-open}:
+\begin{align*}
+  \knowInv\namesp\prop \eqdef \always\All\mask. \pvs[\mask][\mask\setminus\namesp] \later\prop * (\later\prop \vsW[\mask\setminus\namesp][\mask] \TRUE)
+\end{align*}
+All the invariant laws shown above for $\invM\namesp\prop$ also hold for $\knowInv\namesp\prop$, but we can also show some additional laws that would otherwise not hold:
+\begin{mathpar}
+  \inferH{inv-combine}
+  {\namesp_1 \disj \namesp_2 \and \namesp_1 \cup \namesp_2 \subseteq \namesp}
+  {\knowInv{\namesp_1}{\prop_1} * \knowInv{\namesp_2}{\prop_2} \vdash \knowInv{\namesp}{\prop_1 * \prop_2}}
+
+  \inferH{inv-split}
+  {}
+  {\knowInv{\namesp}{\prop_1 * \prop_2} \vdash \knowInv{\namesp}{\prop_1} * \knowInv{\namesp}{\prop_2}}
+
+  \inferH{inv-alter}
+  {}
+  {\later\always(\prop \wand \propB * (\propB \wand \prop)) \vdash \knowInv\namesp\prop \wand \knowInv\namesp\propB}
+\end{mathpar}
 
 %%% Local Variables:
 %%% mode: latex
