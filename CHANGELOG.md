@@ -29,7 +29,8 @@ number of improvements all over the board.  For instance:
 * Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   8.8 are no longer supported.
 
-Further details are given in the changelog below.
+Further details are given in the changelog below. We always first list the
+potentially breaking changes, then (some of) the additions.
 
 This release of Iris received contributions by Abel Nieto, Amin Timany, Dan
 Frumin, Derek Dreyer, Dmitry Khalanskiy, Gregory Malecha, Jacques-Henri Jourdan,
@@ -38,6 +39,21 @@ Paolo G. Giarrusso, Ralf Jung, Robbert Krebbers, Simon Friis Vindum, Simon
 Spies, and Tej Chajed.  Thanks a lot to everyone involved!
 
 **Changes in `heap_lang`:**
+
+* Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
+  reverse dependencies if they want to `Open Scope Z_scope` or not.
+* Fix all binary operators performing pointer arithmetic (instead of just the
+  dedicated `OffsetOp` operator doing that).
+* Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
+  exists `heap_lang.derived_laws`.
+* Make lemma names for `fill` more consistent
+  - Use the `_inv` suffix for the the backwards directions:
+   `reducible_fill` → `reducible_fill_inv`,
+   `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
+   `not_stuck_fill` → `not_stuck_fill_inv`.
+  - Use the non-`_inv` names (that freed up) for the forwards directions:
+   `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
+* Remove namespace `N` from `is_lock`.
 
 * Add support for deallocation of locations via the `Free` operation.
 * Add a fraction to the heap_lang `array` assertion.
@@ -49,22 +65,8 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
 * Add the ghost state for "invariant locations" to `heapG`.  This affects the
   statement of `heap_adequacy`, which is now responsible for initializing the
   "invariant locations" invariant.
-* Rename `heap_lang.lifting` to `heap_lang.primitive_laws`. There now also
-  exists `heap_lang.derived_laws`.
-* Make lemma names for `fill` more consistent
-  - Use the `_inv` suffix for the the backwards directions:
-   `reducible_fill` → `reducible_fill_inv`,
-   `reducible_no_obs_fill` → `reducible_no_obs_fill_inv`,
-   `not_stuck_fill` → `not_stuck_fill_inv`.
-  - Use the non-`_inv` names (that freed up) for the forwards directions:
-   `reducible_fill`, `reducible_no_obs_fill`, `irreducible_fill_inv`.
-* Remove global `Open Scope Z_scope` from `heap_lang.lang`, and leave it up to
-  reverse dependencies if they want to `Open Scope Z_scope` or not.
 * Add lemma `mapsto_mapsto_ne : ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝`.
 * Add lemma `is_lock_iff` and show that `is_lock` is contractive.
-* Remove namespace `N` from `is_lock`.
-* Fix all binary operators performing pointer arithmetic (instead of just the
-  dedicated `OffsetOp` operator doing that).
 
 **Changes in `program_logic`:**
 
@@ -74,11 +76,6 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
 
 **Changes in the logic (`base_logic`, `bi`):**
 
-* Add a counterexample showing that sufficiently powerful cancellable invariants
-  with a linear token subvert the linearity guarantee (see
-  `bi.lib.counterexmples` for details).
-* Redefine invariants as "semantic invariants" so that they support
-  splitting and other forms of weakening.
 * Rename some accessor-style lemmas to consistently use the suffix `_acc`
   instead of `_open`:
   `inv_open` → `inv_acc`, `inv_open_strong` → `inv_acc_strong`,
@@ -94,7 +91,6 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
   `cinv_iff`), following e.g., `inv_alter` and `wp_wand`.
 * Rename `inv_sep_1` → `inv_split_1`, `inv_sep_2` → `inv_split_2`, and
   `inv_sep` → `inv_split` to be consistent with the naming convention in boxes.
-* Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
 * Update the strong variant of the accessor lemma for cancellable invariants to
   match that of regular invariants, where you can pick the mask at a later time.
   (The other part that makes it strong is that you get back the token for the
@@ -131,6 +127,29 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
   Instead, use the new unary notation `⊢ P`, or `⊢@{PROP} P` if the proposition
   type cannot be inferred. This also means that `%I` should not be necessary any
   more when stating lemmas, as `P` above is automatically parsed in scope `%I`.
+* Some improvements to the `bi/lib/core` construction:
+  + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
+  + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
+    version `coreP_entails'` for `coreP P` with `P` affine.
+  + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
+    lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
+* Remove notation for 3-mask step-taking updates, and made 2-mask notation less
+  confusing by distinguishing it better from mask-changing updates.
+  Old: `|={Eo,Ei}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
+  Here, `Eo` is the "outer mask" (used at the beginning and end) and `Ei` the
+  "inner mask" (used around the ▷ in the middle).
+  As part of this, the lemmas about the 3-mask variant were changed to be about
+  the 2-mask variant instead, and `step_fupd_mask_mono` now also has a more
+  consistent argument order for its masks.
+
+* Add a counterexample showing that sufficiently powerful cancellable invariants
+  with a linear token subvert the linearity guarantee (see
+  `bi.lib.counterexmples` for details).
+* Redefine invariants as "semantic invariants" so that they support
+  splitting and other forms of weakening.
+* Add lemmas `inv_combine` and `inv_combine_dup_l` for combining invariants.
+* Add the type `siProp` of "plain" step-indexed propositions, together with
+  basic proofmode support.
 * New ASCII versions of Iris notations. These are marked parsing only and
   can be made available using `Require Import iris.bi.ascii`. The new
   notations are (notations marked [†] are disambiguated using notation scopes):
@@ -146,27 +165,12 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
     - `|={E1,E2}=* P` for `|={E1,E2}=∗`
     - `P ={E}=* Q` for `P ={E}=∗ Q`
     - `P ={E1,E2}=* Q` for `P ={E1,E2}=∗ Q`
-    - `|={E1,E2,E3}|>=> Q` for `|={E1,E2,E3}▷=> Q`
-    - `|={E1,E2}|>=>^n Q` for `|={E1,E2}▷=>^n Q`
+    - `|={E1}[E2]|>=> Q` for `|={E1}[E2]▷=> Q`
     The full list can be found in [theories/bi/ascii.v](theories/bi/ascii.v),
     where the ASCII notations are defined in terms of the unicode notations.
 * Add affine, absorbing, persistent and timeless instances for telescopes.
-* Some improvements to the `bi/lib/core` construction:
-  + Rename `coreP_wand` into `coreP_entails` since it does not involve wands.
-  + Generalize `coreP_entails` to non-affine BIs, and prove more convenient
-    version `coreP_entails'` for `coreP P` with `P` affine.
-  + Add instance `coreP_affine P : Affine P → Affine (coreP P)` and
-    lemma `coreP_wand P Q : <affine> ■ (P -∗ Q) -∗ coreP P -∗ coreP Q`.
 * Add a construction `bi_rtc` to create reflexive transitive closures of
   PROP-level binary relations.
-* Remove notation for 3-mask step-taking updates, and made 2-mask notation less
-  confusing by distinguishing it better from mask-changing updates.
-  Old: `|={Eo,Ei}▷=> P`. New: `|={Eo}[Ei]▷=> P`.
-  Here, `Eo` is the "outer mask" (used at the beginning and end) and `Ei` the
-  "inner mask" (used around the ▷ in the middle).
-  As part of this, the lemmas about the 3-mask variant were changed to be about
-  the 2-mask variant instead, and `step_fupd_mask_mono` now also has a more
-  consistent argument order for its masks.
 * Slightly strengthen the lemmas `big_sepL_nil'`, `big_sepL2_nil'`,
   `big_sepM_nil'` `big_sepM2_empty'`, `big_sepS_empty'`, and `big_sepMS_empty'`.
   They now only require that the argument `P` is affine instead of the whole BI
@@ -178,13 +182,9 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
 * Seal the definitions of `big_opS`, `big_opMS`, `big_opM` and `big_sepM2`
   to prevent undesired simplification.
 * Fix `big_sepM2_fmap*` only working for `nat` keys.
-* Add the type `siProp` of "plain" step-indexed propositions, together with
-  basic proofmode support.
 
 **Changes in `proofmode`:**
 
-* Add new tactic `iStopProof` to turn the proof mode entailment into an ordinary
-  Coq goal `big star of context ⊢ proof mode goal`.
 * Make use of `notypeclasses refine` in the implementation of `iPoseProof` and
   `iAssumption`, see <https://gitlab.mpi-sws.org/iris/iris/merge_requests/329>.
   This has two consequences:
@@ -204,6 +204,12 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
   backwards incompatibility. This can usually be fixed by manually clearing some
   hypotheses. A more detailed description of the changes can be found in
   <https://gitlab.mpi-sws.org/iris/iris/merge_requests/341>.
+* Remove the long-deprecated `cofeT` alias (for `ofeT`) and `dec_agree` RA (use
+  `agree` instead).
+
+* Add `auto` hint for `∗-∗`.
+* Add new tactic `iStopProof` to turn the proof mode entailment into an ordinary
+  Coq goal `big star of context ⊢ proof mode goal`.
 * Add new introduction pattern `-# pat` that moves a hypothesis from the
   intuitionistic context to the spatial context.
 * The tactic `iAssumption` also recognizes assumptions `⊢ P` in the Coq context.
@@ -214,29 +220,19 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
   will fail. We provide one implementation using Ltac2 which works with Coq 8.11
   and can be installed with opam; see
   [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
-* Add `auto` hint for `∗-∗`.
-* Remove the long-deprecated `cofeT` alias (for `ofeT`) and `dec_agree` RA (use
-  `agree` instead).
 
 **Changes in `algebra`:**
 
 * Remove `Core` type class for defining the total core; it is now always
   defined in terms of the partial core. The only user of this type class was the
   STS RA.
-* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are
-  isomorphic. This is used in the COFE solver.
 * The functions `{o,r,ur}Functor_diag` are no longer coercions, and renamed into
   `{o,r,ur}Functor_apply` to better match their intent. This fixes "ambiguous
   coercion path" warnings.
 * Rename `{o,r,ur}Functor_{ne,id,compose,contractive}` into
   `{o,r,ur}Functor_map_{ne,id,compose,contractive}`.
-* Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
-* Add `pair_op_1` and `pair_op_2` to split a pair where one component is the unit.
 * Move derived camera constructions (`frac_auth` and `ufrac_auth`) to the folder
   `algebra/lib`.
-* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
-* Make lemma `Excl_included` a bi-implication.
-* Add `min_nat`, a RA for natural numbers with `min` as the operation.
 * Rename `mnat` to `max_nat` and "box" it by creating a separate type for it.
 * Move the RAs for `nat` and `positive` and the `mnat` RA into a separate
   module. They must now be imported from `From iris.algebra Require Import
@@ -262,19 +258,27 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
   `list_singleton_updateP'` → `list_singletonM_updateP'`,
   `list_singleton_update` → `list_singletonM_update`,
   `list_alloc_singleton_local_update` → `list_alloc_singletonM_local_update`.
-* Add `list_singletonM_included` and `list_lookup_singletonM_{lt,gt}` lemmas
-  about singletons in the list RA.
-* Add `list_core_id'`, a stronger version of `list_core_id` which only talks
-  about elements that are actually in the list.
 * Remove `auth_both_op` and rename `auth_both_frac_op` into `auth_both_op`.
-* Make `auth_update_core_id` work with any fraction of the authoritative
-  element.
 * Add lemma `singleton_included : {[ i := x ]} ≼ ({[ i := y ]} ↔ x ≡ y ∨ x ≼ y`,
   and rename existing asymmetric lemmas (with a singleton on just the LHS):
   `singleton_includedN` → `singleton_includedN_l`,
   `singleton_included` → `singleton_included_l`,
   `singleton_included_exclusive` → `singleton_included_exclusive_l`.
+
+* Add notion `ofe_iso A B` that states that OFEs `A` and `B` are
+  isomorphic. This is used in the COFE solver.
+* Add `{o,r,ur}Functor_oFunctor_compose` for composition of functors.
+* Add `pair_op_1` and `pair_op_2` to split a pair where one component is the unit.
+* Add derived camera construction `excl_auth A` for `auth (option (excl A))`.
+* Make lemma `Excl_included` a bi-implication.
+* Make `auth_update_core_id` work with any fraction of the authoritative
+  element.
+* Add `min_nat`, a RA for natural numbers with `min` as the operation.
 * Add many missing `Proper`/non-expansiveness lemmas for maps and lists.
+* Add `list_singletonM_included` and `list_lookup_singletonM_{lt,gt}` lemmas
+  about singletons in the list RA.
+* Add `list_core_id'`, a stronger version of `list_core_id` which only talks
+  about elements that are actually in the list.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
