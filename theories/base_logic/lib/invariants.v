@@ -137,7 +137,7 @@ Section inv.
     ↑N1 ∪ ↑N2 ⊆@{coPset} ↑N →
     inv N1 P -∗ inv N2 Q -∗ inv N (P ∗ Q).
   Proof.
-    rewrite inv_eq. iIntros (??) "#HinvP #HinvQ !#"; iIntros (E ?).
+    rewrite inv_eq. iIntros (??) "#HinvP #HinvQ !>"; iIntros (E ?).
     iMod ("HinvP" with "[%]") as "[$ HcloseP]"; first set_solver.
     iMod ("HinvQ" with "[%]") as "[$ HcloseQ]"; first set_solver.
     iMod (fupd_intro_mask' _ (E ∖ ↑N)) as "Hclose"; first set_solver.
@@ -149,7 +149,7 @@ Section inv.
     □ (P -∗ P ∗ P) -∗
     inv N P -∗ inv N Q -∗ inv N (P ∗ Q).
   Proof.
-    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !#" (E ?).
+    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !>" (E ?).
     iMod ("HinvP" with "[//]") as "[HP HcloseP]".
     iDestruct ("HPdup" with "HP") as "[$ HP]".
     iMod ("HcloseP" with "HP") as %_.

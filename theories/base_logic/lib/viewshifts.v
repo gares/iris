@@ -82,10 +82,10 @@ Lemma vs_inv_acc N E P :
   ⊢ inv N P ={E,E∖↑N}=> ▷ P ∗ ∃ R, R ∗ (R ∗ ▷ P ={E∖↑N,E}=> True).
 Proof.
   (* FIXME: scope printing is weird, there are [%stdpp]. *)
-  iIntros (?) "!# #Hinv".
+  iIntros (?) "!> #Hinv".
   iMod (inv_acc with "Hinv") as "[$ Hclose]"; first done.
   iModIntro. iExists (▷ P ={E ∖ ↑N,E}=∗ True)%I. iFrame.
-  iIntros "!# [Hclose HP]". iMod ("Hclose" with "HP"). done.
+  iIntros "!> [Hclose HP]". iMod ("Hclose" with "HP"). done.
 Qed.
 
 Lemma vs_alloc N P : ⊢ ▷ P ={↑N}=> inv N P.
