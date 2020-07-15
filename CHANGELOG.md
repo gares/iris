@@ -3,7 +3,7 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
-## Iris master
+## Iris 3.3.0 (released 2020-07-15)
 
 This release does not have any outstanding highlights, but contains a large
 number of improvements all over the board.  For instance:
