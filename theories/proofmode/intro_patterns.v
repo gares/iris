@@ -44,9 +44,9 @@ Fixpoint close_list (k : stack)
   | StList :: k => Some (StPat (IList (ps :: pss)) :: k)
   | StPat pat :: k => close_list k (pat :: ps) pss
   | StIntuitionistic :: k =>
-     ''(p,ps) ← maybe2 (::) ps; close_list k (IIntuitionistic p :: ps) pss
+     '(p,ps) ← maybe2 (::) ps; close_list k (IIntuitionistic p :: ps) pss
   | StModalElim :: k =>
-     ''(p,ps) ← maybe2 (::) ps; close_list k (IModalElim p :: ps) pss
+     '(p,ps) ← maybe2 (::) ps; close_list k (IModalElim p :: ps) pss
   | StBar :: k => close_list k [] (ps :: pss)
   | _ => None
   end.
@@ -121,9 +121,9 @@ Fixpoint close (k : stack) (ps : list intro_pat) : option (list intro_pat) :=
   match k with
   | [] => Some ps
   | StPat pat :: k => close k (pat :: ps)
-  | StIntuitionistic :: k => ''(p,ps) ← maybe2 (::) ps; close k (IIntuitionistic p :: ps)
-  | StSpatial :: k => ''(p,ps) ← maybe2 (::) ps; close k (ISpatial p :: ps)
-  | StModalElim :: k => ''(p,ps) ← maybe2 (::) ps; close k (IModalElim p :: ps)
+  | StIntuitionistic :: k => '(p,ps) ← maybe2 (::) ps; close k (IIntuitionistic p :: ps)
+  | StSpatial :: k => '(p,ps) ← maybe2 (::) ps; close k (ISpatial p :: ps)
+  | StModalElim :: k => '(p,ps) ← maybe2 (::) ps; close k (IModalElim p :: ps)
   | _ => None
   end.
 
