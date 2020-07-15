@@ -501,7 +501,7 @@ Proof. iIntros "#HPQ HQ !>". iNext. by iRewrite "HPQ" in "HQ". Qed.
 
 Lemma test_iAlways P Q R :
   □ P -∗ <pers> Q → R -∗ <pers> <affine> <affine> P ∗ □ Q.
-Proof. iIntros "#HP #HQ HR". iSplitL. iAlways. done. iAlways. done. Qed.
+Proof. iIntros "#HP #HQ HR". iSplitL. iModIntro. done. iModIntro. done. Qed.
 
 (* A bunch of test cases from #127 to establish that tactics behave the same on
 `⌜ φ ⌝ → P` and `∀ _ : φ, P` *)
@@ -975,7 +975,7 @@ Proof. Fail iStopProof. Abort.
 Check "iAlways_spatial_non_empty".
 Lemma iAlways_spatial_non_empty P :
   P -∗ □ emp.
-Proof. iIntros "HP". Fail iAlways. Abort.
+Proof. iIntros "HP". Fail iModIntro. Abort.
 
 Check "iDestruct_bad_name".
 Lemma iDestruct_bad_name P :

@@ -71,23 +71,23 @@ Section tests.
   Qed.
 
   Lemma test_objectively P Q : <obj> emp -∗ <obj> P -∗ <obj> Q -∗ <obj> (P ∗ Q).
-  Proof. iIntros "#? HP HQ". iAlways. by iSplitL "HP". Qed.
+  Proof. iIntros "#? HP HQ". iModIntro. by iSplitL "HP". Qed.
 
   Lemma test_objectively_absorbing P Q R `{!Absorbing P} :
     <obj> emp -∗ <obj> P -∗ <obj> Q -∗ R -∗ <obj> (P ∗ Q).
-  Proof. iIntros "#? HP HQ HR". iAlways. by iSplitL "HP". Qed.
+  Proof. iIntros "#? HP HQ HR". iModIntro. by iSplitL "HP". Qed.
 
   Lemma test_objectively_affine P Q R `{!Affine R} :
     <obj> emp -∗ <obj> P -∗ <obj> Q -∗ R -∗ <obj> (P ∗ Q).
-  Proof. iIntros "#? HP HQ HR". iAlways. by iSplitL "HP". Qed.
+  Proof. iIntros "#? HP HQ HR". iModIntro. by iSplitL "HP". Qed.
 
   Lemma test_iModIntro_embed P `{!Affine Q} 𝓟 𝓠 :
     □ P -∗ Q -∗ ⎡𝓟⎤ -∗ ⎡𝓠⎤ -∗ ⎡ 𝓟 ∗ 𝓠 ⎤.
-  Proof. iIntros "#H1 _ H2 H3". iAlways. iFrame. Qed.
+  Proof. iIntros "#H1 _ H2 H3". iModIntro. iFrame. Qed.
 
   Lemma test_iModIntro_embed_objective P `{!Objective Q} 𝓟 𝓠 :
     □ P -∗ Q -∗ ⎡𝓟⎤ -∗ ⎡𝓠⎤ -∗ ⎡ ∀ i, 𝓟 ∗ 𝓠 ∗ Q i ⎤.
-  Proof. iIntros "#H1 H2 H3 H4". iAlways. Show. iFrame. Qed.
+  Proof. iIntros "#H1 H2 H3 H4". iModIntro. Show. iFrame. Qed.
 
   Lemma test_iModIntro_embed_nested P 𝓟 𝓠 :
     □ P -∗ ⎡◇ 𝓟⎤ -∗ ⎡◇ 𝓠⎤ -∗ ⎡ ◇ (𝓟 ∗ 𝓠) ⎤.
