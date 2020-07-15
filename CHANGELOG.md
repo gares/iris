@@ -6,26 +6,26 @@ lemma.
 ## Iris master
 
 This release does not have any outstanding highlights, but contains a large
-amount of improvements all over the board.  For instance:
+number of improvements all over the board.  For instance:
 
 * `heap_lang` now supports deallocation as well as better reasoning about
-  "invariant locations" that are not deallocated and whose value satisfies some
-  Coq-level invariant.
+  "invariant locations" (locations that perpetually satisfy some Coq-level
+  invariant).
 * Invariants (`inv N P`) are more flexible, now also supporting splitting
   and merging of invariants with respect to separating conjunction.
 * Performance of the proofmode for BIs constructed on top of other BIs (e.g.,
   `monPred`) was greatly improved, leading to up to 70% speedup in individual
   files. As part of this refactoring, the proofmode can now also be instantiated
-  with entirely "logical" notion of BIs that do not have a metric structure, and
-  still support reasoning about ▷.
+  with entirely "logical" notion of BIs that do not have a (non-trivial) metric
+  structure, and still support reasoning about ▷.
+* The proof mode now provides experimental support for naming pure facts in
+  intro patterns.  See
+  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 * Iris now provides official ASCII notation. We still recommend using the
   Unicode notation for better consistency and interoperability with other Iris
   libraries, but provide ASCII notation for when Unicode is not an option.
 * We removed several coercions, fixing "ambiguous coercion path" warnings and
   solving some readability issues.
-* The proof mode now provides experimental support for naming pure facts in
-  intro patterns.  See
-  [iris/string-ident](https://gitlab.mpi-sws.org/iris/string-ident) for details.
 * Coq 8.10, 8.11, and 8.12 are newly supported by this release, and Coq 8.7 and
   8.8 are no longer supported.
 
