@@ -365,79 +365,79 @@ Section properties.
   Global Instance list_singletonM_proper i :
     Proper ((≡) ==> (≡)) (list_singletonM i) := ne_proper _.
 
-  Lemma elem_of_list_singleton i z x : z ∈ ({[i := x]} : list A) → z = ε ∨ z = x.
+  Lemma elem_of_list_singletonM i z x : z ∈ ({[i := x]} : list A) → z = ε ∨ z = x.
   Proof.
     rewrite elem_of_app elem_of_list_singleton elem_of_replicate. naive_solver.
   Qed.
-  Lemma list_lookup_singleton i x : ({[ i := x ]} : list A) !! i = Some x.
+  Lemma list_lookup_singletonM i x : ({[ i := x ]} : list A) !! i = Some x.
   Proof. induction i; by f_equal/=. Qed.
-  Lemma list_lookup_singleton_lt i i' x:
+  Lemma list_lookup_singletonM_lt i i' x:
     (i' < i)%nat → ({[ i := x ]} : list A) !! i' = Some ε.
   Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
-  Lemma list_lookup_singleton_gt i i' x:
+  Lemma list_lookup_singletonM_gt i i' x:
     (i < i')%nat → ({[ i := x ]} : list A) !! i' = None.
   Proof. move: i'. induction i; intros [|i']; naive_solver auto with lia. Qed.
-  Lemma list_lookup_singleton_ne i j x :
+  Lemma list_lookup_singletonM_ne i j x :
     i ≠ j →
     ({[ i := x ]} : list A) !! j = None ∨ ({[ i := x ]} : list A) !! j = Some ε.
   Proof. revert j; induction i; intros [|j]; naive_solver auto with lia. Qed.
-  Lemma list_singleton_validN n i x : ✓{n} ({[ i := x ]} : list A) ↔ ✓{n} x.
+  Lemma list_singletonM_validN n i x : ✓{n} ({[ i := x ]} : list A) ↔ ✓{n} x.
   Proof.
     rewrite list_lookup_validN. split.
-    { move=> /(_ i). by rewrite list_lookup_singleton. }
+    { move=> /(_ i). by rewrite list_lookup_singletonM. }
     intros Hx j; destruct (decide (i = j)); subst.
-    - by rewrite list_lookup_singleton.
-    - destruct (list_lookup_singleton_ne i j x) as [Hi|Hi]; first done;
+    - by rewrite list_lookup_singletonM.
+    - destruct (list_lookup_singletonM_ne i j x) as [Hi|Hi]; first done;
         rewrite Hi; by try apply (ucmra_unit_validN (A:=A)).
   Qed.
-  Lemma list_singleton_valid  i x : ✓ ({[ i := x ]} : list A) ↔ ✓ x.
+  Lemma list_singletonM_valid  i x : ✓ ({[ i := x ]} : list A) ↔ ✓ x.
   Proof.
-    rewrite !cmra_valid_validN. by setoid_rewrite list_singleton_validN.
+    rewrite !cmra_valid_validN. by setoid_rewrite list_singletonM_validN.
   Qed.
-  Lemma list_singleton_length i x : length {[ i := x ]} = S i.
+  Lemma list_singletonM_length i x : length {[ i := x ]} = S i.
   Proof.
     rewrite /singletonM /list_singletonM app_length replicate_length /=; lia.
   Qed.
 
-  Lemma list_singleton_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
+  Lemma list_singletonM_core i (x : A) : core {[ i := x ]} ≡@{list A} {[ i := core x ]}.
   Proof.
     rewrite /singletonM /list_singletonM.
     by rewrite {1}/core /= fmap_app fmap_replicate (core_id_core ∅).
   Qed.
-  Lemma list_singleton_op i (x y : A) :
+  Lemma list_singletonM_op i (x y : A) :
     {[ i := x ]} ⋅ {[ i := y ]} ≡@{list A} {[ i := x ⋅ y ]}.
   Proof.
     rewrite /singletonM /list_singletonM /=.
     induction i; constructor; rewrite ?left_id; auto.
   Qed.
-  Lemma list_alter_singleton f i x :
+  Lemma list_alter_singletonM f i x :
     alter f i ({[i := x]} : list A) = {[i := f x]}.
   Proof.
     rewrite /singletonM /list_singletonM /=. induction i; f_equal/=; auto.
   Qed.
-  Global Instance list_singleton_core_id i (x : A) :
+  Global Instance list_singletonM_core_id i (x : A) :
     CoreId x → CoreId {[ i := x ]}.
-  Proof. by rewrite !core_id_total list_singleton_core=> ->. Qed.
-  Lemma list_singleton_snoc l x:
+  Proof. by rewrite !core_id_total list_singletonM_core=> ->. Qed.
+  Lemma list_singletonM_snoc l x:
     {[length l := x]} ⋅ l ≡ l ++ [x].
   Proof. elim: l => //= ?? <-. by rewrite left_id. Qed.
-  Lemma list_singleton_included i x l:
+  Lemma list_singletonM_included i x l:
     {[i := x]} ≼ l ↔ (∃ x', l !! i = Some x' ∧ x ≼ x').
   Proof.
     rewrite list_lookup_included. split.
-    { move /(_ i). rewrite list_lookup_singleton option_included_total.
+    { move /(_ i). rewrite list_lookup_singletonM option_included_total.
       naive_solver. }
     intros (y&Hi&?) j. destruct (Nat.lt_total j i) as [?|[->|?]].
-    - rewrite list_lookup_singleton_lt //.
+    - rewrite list_lookup_singletonM_lt //.
       destruct (lookup_lt_is_Some_2 l j) as [z Hz].
       { trans i; eauto using lookup_lt_Some. }
       rewrite Hz. by apply Some_included_2, ucmra_unit_least.
-    - rewrite list_lookup_singleton Hi. by apply Some_included_2.
-    - rewrite list_lookup_singleton_gt //. apply: ucmra_unit_least.
+    - rewrite list_lookup_singletonM Hi. by apply Some_included_2.
+    - rewrite list_lookup_singletonM_gt //. apply: ucmra_unit_least.
   Qed.
 
   (* Update *)
-  Lemma list_singleton_updateP (P : A → Prop) (Q : list A → Prop) x :
+  Lemma list_singletonM_updateP (P : A → Prop) (Q : list A → Prop) x :
     x ~~>: P → (∀ y, P y → Q [y]) → [x] ~~>: Q.
   Proof.
     rewrite !cmra_total_updateP=> Hup HQ n lf /list_lookup_validN Hv.
@@ -447,12 +447,12 @@ Section properties.
     apply list_lookup_validN=> i.
     move: (Hv i) Hv'. by destruct i, lf; rewrite /= ?right_id.
   Qed.
-  Lemma list_singleton_updateP' (P : A → Prop) x :
+  Lemma list_singletonM_updateP' (P : A → Prop) x :
     x ~~>: P → [x] ~~>: λ k, ∃ y, k = [y] ∧ P y.
-  Proof. eauto using list_singleton_updateP. Qed.
-  Lemma list_singleton_update x y : x ~~> y → [x] ~~> [y].
+  Proof. eauto using list_singletonM_updateP. Qed.
+  Lemma list_singletonM_update x y : x ~~> y → [x] ~~> [y].
   Proof.
-    rewrite !cmra_update_updateP; eauto using list_singleton_updateP with subst.
+    rewrite !cmra_update_updateP; eauto using list_singletonM_updateP with subst.
   Qed.
 
   Lemma app_updateP (P1 P2 Q : list A → Prop) l1 l2 :
@@ -476,7 +476,7 @@ Section properties.
     x ~~>: P1 → l ~~>: P2 → (∀ y k, P1 y → P2 k → Q (y :: k)) → x :: l ~~>: Q.
   Proof.
     intros. eapply (app_updateP _ _ _ [x]);
-      naive_solver eauto using list_singleton_updateP'.
+      naive_solver eauto using list_singletonM_updateP'.
   Qed.
   Lemma cons_updateP' (P1 : A → Prop) (P2 : list A → Prop) x l :
     x ~~>: P1 → l ~~>: P2 → x :: l ~~>: λ k, ∃ y k', k = y :: k' ∧ P1 y ∧ P2 k'.
@@ -523,13 +523,13 @@ Section properties.
   Proof. intros; apply list_middle_local_update. by rewrite replicate_length. Qed.
 *)
 
-  Lemma list_alloc_singleton_local_update x l :
+  Lemma list_alloc_singletonM_local_update x l :
     ✓ x → (l, ε) ~l~> (l ++ [x], {[length l := x]}).
   Proof.
     move => ?.
     have -> : ({[length l := x]} ≡ {[length l := x]} ⋅ ε) by rewrite right_id.
-    rewrite -list_singleton_snoc. apply op_local_update => ??.
-    rewrite list_singleton_snoc app_validN cons_validN. split_and? => //; [| constructor].
+    rewrite -list_singletonM_snoc. apply op_local_update => ??.
+    rewrite list_singletonM_snoc app_validN cons_validN. split_and? => //; [| constructor].
     by apply cmra_valid_validN.
   Qed.
 
