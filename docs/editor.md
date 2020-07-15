@@ -8,7 +8,9 @@ is missing.)  The easiest way to learn the ASCII syntax is to
 [read this file](https://gitlab.mpi-sws.org/iris/iris/-/blob/master/theories/bi/ascii.v).
 Note however that this will make your code harder to read and work on for Iris
 developers that are used to our default unicode notation---generally, our
-recommendation is to use the unicode syntax whenever possible.
+recommendation is to use the unicode syntax whenever possible. In particular,
+Unicode syntax is required for MRs to Iris itself and other Iris-managed
+repositories.
 
 ## General: Unicode Fonts
 
