@@ -1368,6 +1368,7 @@ Tactic Notation "iModIntro" uconstr(sel) :=
 Tactic Notation "iModIntro" := iModIntro _.
 
 (** DEPRECATED *)
+#[deprecated(note = "Use iModIntro instead")]
 Tactic Notation "iAlways" := iModIntro.
 
 (** * Later *)
