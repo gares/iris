@@ -22,7 +22,7 @@ Fixpoint env_lookup {A} (i : ident) (Γ : env A) : option A :=
 Module env_notations.
   Notation "y ≫= f" := (pm_option_bind f y).
   Notation "x ← y ; z" := (y ≫= λ x, z).
-  Notation "' x1 .. xn ← y ; z" := (y ≫= (λ x1, .. (λ xn, z) .. )).
+  Notation "' x1 ← y ; z" := (y ≫= (λ x1, z)).
   Notation "Γ !! j" := (env_lookup j Γ).
 End env_notations.
 Import env_notations.
@@ -71,7 +71,7 @@ Fixpoint env_lookup_delete {A} (i : ident) (Γ : env A) : option (A * env A) :=
   | Enil => None
   | Esnoc Γ j x =>
      if ident_beq i j then Some (x,Γ)
-     else ''(y,Γ') ← env_lookup_delete i Γ; Some (y, Esnoc Γ' j x)
+     else '(y,Γ') ← env_lookup_delete i Γ; Some (y, Esnoc Γ' j x)
   end.
 
 Inductive env_Forall2 {A B} (P : A → B → Prop) : env A → env B → Prop :=
@@ -296,7 +296,7 @@ Definition envs_lookup_delete {PROP} (remove_intuitionistic : bool)
   let (Γp,Γs,n) := Δ in
   match env_lookup_delete i Γp with
   | Some (P,Γp') => Some (true, P, Envs (if remove_intuitionistic then Γp' else Γp) Γs n)
-  | None => ''(P,Γs') ← env_lookup_delete i Γs; Some (false, P, Envs Γp Γs' n)
+  | None => '(P,Γs') ← env_lookup_delete i Γs; Some (false, P, Envs Γp Γs' n)
   end.
 
 Fixpoint envs_lookup_delete_list {PROP} (remove_intuitionistic : bool)
@@ -304,8 +304,8 @@ Fixpoint envs_lookup_delete_list {PROP} (remove_intuitionistic : bool)
   match js with
   | [] => Some (true, [], Δ)
   | j :: js =>
-     ''(p,P,Δ') ← envs_lookup_delete remove_intuitionistic j Δ;
-     ''(q,Ps,Δ'') ← envs_lookup_delete_list remove_intuitionistic js Δ';
+     '(p,P,Δ') ← envs_lookup_delete remove_intuitionistic j Δ;
+     '(q,Ps,Δ'') ← envs_lookup_delete_list remove_intuitionistic js Δ';
      Some ((p:bool) &&& q, P :: Ps, Δ'')
   end.
 
@@ -352,7 +352,7 @@ Fixpoint envs_split_go {PROP}
   match js with
   | [] => Some (Δ1, Δ2)
   | j :: js =>
-     ''(p,P,Δ1') ← envs_lookup_delete true j Δ1;
+     '(p,P,Δ1') ← envs_lookup_delete true j Δ1;
      if p : bool then envs_split_go js Δ1 Δ2 else
      envs_split_go js Δ1' (envs_snoc Δ2 false j P)
   end.
@@ -360,7 +360,7 @@ Fixpoint envs_split_go {PROP}
    if [d = Left] then [result = (hyps named js, remaining hyps)] *)
 Definition envs_split {PROP} (d : direction)
     (js : list ident) (Δ : envs PROP) : option (envs PROP * envs PROP) :=
-  ''(Δ1,Δ2) ← envs_split_go js Δ (envs_clear_spatial Δ);
+  '(Δ1,Δ2) ← envs_split_go js Δ (envs_clear_spatial Δ);
   if d is Right then Some (Δ1,Δ2) else Some (Δ2,Δ1).
 
 Fixpoint env_to_prop_go {PROP : bi} (acc : PROP) (Γ : env PROP) : PROP :=
@@ -688,7 +688,7 @@ Proof. intros. by rewrite envs_lookup_sound// envs_replace_singleton_sound'//. Q
 
 Lemma envs_lookup_envs_clear_spatial Δ j :
   envs_lookup j (envs_clear_spatial Δ)
-  = ''(p,P) ← envs_lookup j Δ; if p : bool then Some (p,P) else None.
+  = '(p,P) ← envs_lookup j Δ; if p : bool then Some (p,P) else None.
 Proof.
   rewrite /envs_lookup /envs_clear_spatial.
   destruct Δ as [Γp Γs]; simpl; destruct (Γp !! j) eqn:?; simplify_eq/=; auto.

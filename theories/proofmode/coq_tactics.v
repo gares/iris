@@ -322,8 +322,8 @@ Lemma tac_specialize_assert Δ j (q am neg : bool) js R P1 P2 P1' Q :
   IntoWand q false R P1 P2 →
   (if am then AddModal P1' P1 Q else TCEq P1' P1) →
   match
-    ''(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
-                           js (envs_delete true j q Δ);
+    '(Δ1,Δ2) ← envs_split (if neg is true then Right else Left)
+                          js (envs_delete true j q Δ);
     Δ2' ← envs_app (negb am &&& q &&& env_spatial_is_nil Δ1) (Esnoc Enil j P2) Δ2;
     Some (Δ1,Δ2') (* does not preserve position of [j] *)
   with
