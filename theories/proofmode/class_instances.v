@@ -874,29 +874,31 @@ Proof.
 Qed.
 
 (** FromForall *)
-Global Instance from_forall_forall {A} (Φ : A → PROP) :
-  FromForall (∀ x, Φ x) Φ.
+Global Instance from_forall_forall {A} (Φ : A → PROP) name :
+  AsIdentName Φ name → FromForall (bi_forall Φ) Φ name.
 Proof. by rewrite /FromForall. Qed.
-Global Instance from_forall_tforall {TT : tele} (Φ : TT → PROP) :
-  FromForall (∀.. x, Φ x) Φ.
+Global Instance from_forall_tforall {TT : tele} (Φ : TT → PROP) name :
+  AsIdentName Φ name → FromForall (bi_tforall Φ) Φ name.
 Proof. by rewrite /FromForall bi_tforall_forall. Qed.
-Global Instance from_forall_pure {A} (φ : A → Prop) :
-  @FromForall PROP A ⌜∀ a : A, φ a⌝ (λ a, ⌜ φ a ⌝)%I.
+Global Instance from_forall_pure {A} (φ : A → Prop) name :
+  AsIdentName φ name → @FromForall PROP A ⌜∀ a : A, φ a⌝ (λ a, ⌜ φ a ⌝)%I name.
 Proof. by rewrite /FromForall pure_forall. Qed.
-Global Instance from_tforall_pure {TT : tele} (φ : TT → Prop) :
-  @FromForall PROP TT ⌜∀.. x : TT, φ x⌝ (λ x, ⌜ φ x ⌝)%I.
+Global Instance from_tforall_pure {TT : tele} (φ : TT → Prop) name :
+  AsIdentName φ name → @FromForall PROP TT ⌜tforall φ⌝ (λ x, ⌜ φ x ⌝)%I name.
 Proof. by rewrite /FromForall tforall_forall pure_forall. Qed.
+
+(* [H] is the default name for the [φ] hypothesis, in the following three instances *)
 Global Instance from_forall_pure_not (φ : Prop) :
-  @FromForall PROP φ ⌜¬ φ⌝ (λ a : φ, False)%I.
+  @FromForall PROP φ ⌜¬ φ⌝ (λ _ : φ, False)%I (to_ident_name H).
 Proof. by rewrite /FromForall pure_forall. Qed.
 Global Instance from_forall_impl_pure P Q φ :
-  IntoPureT P φ → FromForall (P → Q) (λ _ : φ, Q).
+  IntoPureT P φ → FromForall (P → Q) (λ _ : φ, Q) (to_ident_name H).
 Proof.
   intros (φ'&->&?). by rewrite /FromForall -pure_impl_forall (into_pure P).
 Qed.
 Global Instance from_forall_wand_pure P Q φ :
   IntoPureT P φ → TCOr (Affine P) (Absorbing Q) →
-  FromForall (P -∗ Q) (λ _ : φ, Q)%I.
+  FromForall (P -∗ Q) (λ _ : φ, Q)%I (to_ident_name H).
 Proof.
   intros (φ'&->&?) [|]; rewrite /FromForall; apply wand_intro_r.
   - rewrite -(affine_affinely P) (into_pure P) -persistent_and_affinely_sep_r.
@@ -904,14 +906,14 @@ Proof.
   - by rewrite (into_pure P) -pure_wand_forall wand_elim_l.
 Qed.
 
-Global Instance from_forall_intuitionistically `{BiAffine PROP} {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (□ P) (λ a, □ (Φ a))%I.
+Global Instance from_forall_intuitionistically `{BiAffine PROP} {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall (□ P) (λ a, □ (Φ a))%I name.
 Proof.
   rewrite /FromForall=> <-. setoid_rewrite intuitionistically_into_persistently.
   by rewrite persistently_forall.
 Qed.
-Global Instance from_forall_persistently {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (<pers> P) (λ a, <pers> (Φ a))%I.
+Global Instance from_forall_persistently {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall (<pers> P) (λ a, <pers> (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite persistently_forall. Qed.
 
 (** ElimModal *)

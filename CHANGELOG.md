@@ -14,6 +14,11 @@ lemma.
   yourself, since the typeclass now forwards names. If your instance transforms
   one `IntoExist` into another, you can generally just forward the name from the
   premise.
+* The proofmode also preserves user-supplied names in `iIntros`, for example
+  with `iIntros (?)` and `iIntros "%"`, as described for destructing
+  existentials above. As part of this change, it now uses a base name of `H` for
+  pure facts rather than the previous default of `a`. This also requires some
+  changes if you were implementing `FromForall`, in order to forward names.
 
 ## Iris 3.3.0 (released 2020-07-15)
 

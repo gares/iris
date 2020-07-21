@@ -474,7 +474,12 @@ Local Tactic Notation "iIntro" "(" simple_intropattern(x) ")" :=
         [iSolveTC ||
          let P := match goal with |- FromForall ?P _ => P end in
          fail "iIntro: cannot turn" P "into a universal quantifier"
-        |pm_prettify; intros x
+        |let name := lazymatch goal with
+                     | |- let _ := (λ name, _) in _ => name
+                     end in
+         pm_prettify;
+         let y := fresh name in
+         intros y; revert y; intros x
          (* subgoal *)]
     end).
 
