@@ -659,14 +659,14 @@ Tactic failure: iLöb: no 'BiLöb' instance found.
 1 subgoal
   
   PROP : bi
-  P1 : PROP
-  P2, P3 : Prop
-  Himpl : P2 → P3
-  HP2 : P2
+  P : PROP
+  φ1, φ2 : Prop
+  Himpl : φ1 → φ2
+  HP2 : φ1
   ============================
-  "HP" : P1
+  "HP" : P
   --------------------------------------∗
-  P1 ∗ ⌜P3⌝
+  P ∗ ⌜φ2⌝
   
 "test_not_fresh"
      : string

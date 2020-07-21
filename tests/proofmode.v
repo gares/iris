@@ -1245,8 +1245,8 @@ Ltac ltac_tactics.string_to_ident_hook ::=
                                         end).
 
 Check "test_pure_name".
-Lemma test_pure_name P1 (P2 P3: Prop) (Himpl: P2 -> P3) :
-  P1 ∗ ⌜P2⌝ -∗ P1 ∗ ⌜P3⌝.
+Lemma test_pure_name P (φ1 φ2 : Prop) (Himpl : φ1 → φ2) :
+  P ∗ ⌜φ1⌝ -∗ P ∗ ⌜φ2⌝.
 Proof.
   iIntros "[HP %HP2]".
   Show.
@@ -1260,8 +1260,8 @@ Lemma test_iIntros_forall_pure_named (Ψ: nat → PROP) :
 Proof. iIntros "HP". iIntros "%y". iApply ("HP" $! y). Qed.
 
 Check "test_not_fresh".
-Lemma test_not_fresh P1 (P2: Prop) (H:P2) :
-  P1 ∗ ⌜P2⌝ -∗ P1 ∗ ⌜P2⌝.
+Lemma test_not_fresh P (φ : Prop) (H : φ) :
+  P ∗ ⌜ φ ⌝ -∗ P ∗ ⌜ φ ⌝.
 Proof.
   Fail iIntros "[H %H]".
 Abort.
