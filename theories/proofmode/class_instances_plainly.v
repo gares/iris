@@ -75,8 +75,8 @@ Global Instance from_exist_plainly {A} P (Φ : A → PROP) :
   FromExist P Φ → FromExist (■ P) (λ a, ■ (Φ a))%I.
 Proof. rewrite /FromExist=> <-. by rewrite -plainly_exist_2. Qed.
 
-Global Instance into_exist_plainly `{!BiPlainlyExist PROP} {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (■ P) (λ a, ■ (Φ a))%I.
+Global Instance into_exist_plainly `{!BiPlainlyExist PROP} {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist (■ P) (λ a, ■ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP plainly_exist. Qed.
 
 Global Instance into_forall_plainly {A} P (Φ : A → PROP) :

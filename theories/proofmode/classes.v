@@ -1,7 +1,7 @@
 From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
 From iris.proofmode Require Import base.
-From iris.proofmode Require Export modalities.
+From iris.proofmode Require Export ident_name modalities.
 Set Default Proof Using "Type".
 Import bi.
 
@@ -204,11 +204,11 @@ Arguments FromExist {_ _} _%I _%I : simpl never.
 Arguments from_exist {_ _} _%I _%I {_}.
 Hint Mode FromExist + - ! - : typeclass_instances.
 
-Class IntoExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
+Class IntoExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :=
   into_exist : P ⊢ ∃ x, Φ x.
-Arguments IntoExist {_ _} _%I _%I : simpl never.
-Arguments into_exist {_ _} _%I _%I {_}.
-Hint Mode IntoExist + - ! - : typeclass_instances.
+Arguments IntoExist {_ _} _%I _%I _ : simpl never.
+Arguments into_exist {_ _} _%I _%I _ {_}.
+Hint Mode IntoExist + - ! - - : typeclass_instances.
 
 Class IntoForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
   into_forall : P ⊢ ∀ x, Φ x.
@@ -617,8 +617,8 @@ Instance into_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   IntoOr P Q1 Q2 → IntoOr (tc_opaque P) Q1 Q2 := id.
 Instance from_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   FromExist P Φ → FromExist (tc_opaque P) Φ := id.
-Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (tc_opaque P) Φ := id.
+Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :
+  IntoExist P Φ name → IntoExist (tc_opaque P) Φ name := id.
 Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   FromForall P Φ → FromForall (tc_opaque P) Φ := id.
 Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :

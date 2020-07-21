@@ -726,13 +726,17 @@ Proof.
   rewrite -(from_exist P). eauto using exist_intro'.
 Qed.
 
-Lemma tac_exist_destruct {A} Δ i p j P (Φ : A → PROP) Q :
-  envs_lookup i Δ = Some (p, P) → IntoExist P Φ →
-  (∀ a,
-    match envs_simple_replace i p (Esnoc Enil j (Φ a)) Δ with
-    | Some Δ' => envs_entails Δ' Q
-    | None => False
-    end) →
+Lemma tac_exist_destruct {A} Δ i p j P (Φ : A → PROP) (name: ident_name) Q :
+  envs_lookup i Δ = Some (p, P) → IntoExist P Φ name →
+  ( (* this let binding makes it easy for the tactic [iExistDestruct] to use
+       [name] (from resolving [IntoExist] in an earlier subgoal) within this
+       goal *)
+    let _ := name in
+    ∀ a,
+     match envs_simple_replace i p (Esnoc Enil j (Φ a)) Δ with
+     | Some Δ' => envs_entails Δ' Q
+     | None => False
+     end) →
   envs_entails Δ Q.
 Proof.
   rewrite envs_entails_eq => ?? HΦ. rewrite envs_lookup_sound //.
