@@ -77,6 +77,23 @@
   --------------------------------------∗
   Q
   
+"test_iDestruct_exists_not_exists"
+     : string
+The command has indeed failed with message:
+Tactic failure: iExistDestruct: cannot destruct P.
+"test_iDestruct_exists_intuitionistic"
+     : string
+1 subgoal
+  
+  PROP : bi
+  P : PROP
+  Φ : nat → PROP
+  y : nat
+  ============================
+  "H" : Φ y ∧ P
+  --------------------------------------□
+  P
+  
 "test_iIntros_forall_pure"
      : string
 1 subgoal

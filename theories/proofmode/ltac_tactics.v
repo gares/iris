@@ -1327,14 +1327,18 @@ Tactic Notation "iExists" uconstr(x1) "," uconstr(x2) "," uconstr(x3) ","
 
 Local Tactic Notation "iExistDestruct" constr(H)
     "as" simple_intropattern(x) constr(Hx) :=
-  eapply tac_exist_destruct with H _ Hx _ _; (* (i:=H) (j:=Hx) *)
+  eapply tac_exist_destruct with H _ Hx _ _ _; (* (i:=H) (j:=Hx) *)
     [pm_reflexivity ||
      let H := pretty_ident H in
      fail "iExistDestruct:" H "not found"
     |iSolveTC ||
-     let P := match goal with |- IntoExist ?P _ => P end in
+     let P := match goal with |- IntoExist ?P _ _ => P end in
      fail "iExistDestruct: cannot destruct" P|];
-    let y := fresh in
+    let name := lazymatch goal with
+                | |- let _ := (λ name, _) in _ => name
+                end in
+    intros _;
+    let y := fresh name in
     intros y; pm_reduce;
     match goal with
     | |- False =>

@@ -161,14 +161,14 @@ Global Instance from_exist_except_0 {A} P (Φ : A → PROP) :
 Proof. rewrite /FromExist=> <-. by rewrite except_0_exist_2. Qed.
 
 (** IntoExist *)
-Global Instance into_exist_later {A} P (Φ : A → PROP) :
-  IntoExist P Φ → Inhabited A → IntoExist (▷ P) (λ a, ▷ (Φ a))%I.
+Global Instance into_exist_later {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → Inhabited A → IntoExist (▷ P) (λ a, ▷ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP ?. by rewrite HP later_exist. Qed.
-Global Instance into_exist_laterN {A} n P (Φ : A → PROP) :
-  IntoExist P Φ → Inhabited A → IntoExist (▷^n P) (λ a, ▷^n (Φ a))%I.
+Global Instance into_exist_laterN {A} n P (Φ : A → PROP) name :
+  IntoExist P Φ name → Inhabited A → IntoExist (▷^n P) (λ a, ▷^n (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP ?. by rewrite HP laterN_exist. Qed.
-Global Instance into_exist_except_0 {A} P (Φ : A → PROP) :
-  IntoExist P Φ → Inhabited A → IntoExist (◇ P) (λ a, ◇ (Φ a))%I.
+Global Instance into_exist_except_0 {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → Inhabited A → IntoExist (◇ P) (λ a, ◇ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP ?. by rewrite HP except_0_exist. Qed.
 
 (** IntoForall *)

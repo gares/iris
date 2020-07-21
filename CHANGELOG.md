@@ -3,6 +3,18 @@ way the logic is used on paper.  We also document changes in the Coq
 development; every API-breaking change should be listed, but not every new
 lemma.
 
+## Iris master
+
+**Changes in `proofmode`:**
+
+* The proofmode now preserves user-supplied names for existentials when using
+  `iDestruct ... as (?) "..."`. This is backwards-incompatible if you were
+  relying on the previous automatic names (which were always "H", possibly
+  freshened). It also requires some changes if you were implementing `IntoExist`
+  yourself, since the typeclass now forwards names. If your instance transforms
+  one `IntoExist` into another, you can generally just forward the name from the
+  premise.
+
 ## Iris 3.3.0 (released 2020-07-15)
 
 This release does not have any outstanding highlights, but contains a large

@@ -784,38 +784,49 @@ Global Instance from_exist_persistently {A} P (Φ : A → PROP) :
 Proof. rewrite /FromExist=> <-. by rewrite persistently_exist. Qed.
 
 (** IntoExist *)
-Global Instance into_exist_exist {A} (Φ : A → PROP) : IntoExist (∃ a, Φ a) Φ.
+
+(* These three instances [into_exist_exist], [into_exist_pure], and
+   [into_exist_texist] need to be written without notations, for example
+   [bi_exist Φ] and not [∃ a, Φ a], so that [AsIdentName] is always passed the
+   entire body of the exists with the binder. *)
+Global Instance into_exist_exist {A} (Φ : A → PROP) name :
+  AsIdentName Φ name → IntoExist (bi_exist Φ) Φ name.
 Proof. by rewrite /IntoExist. Qed.
-Global Instance into_exist_texist {TT : tele} (Φ : TT → PROP) :
-  IntoExist (∃.. a, Φ a) Φ | 10.
-Proof. by rewrite /IntoExist bi_texist_exist. Qed.
-Global Instance into_exist_pure {A} (φ : A → Prop) :
-  @IntoExist PROP A ⌜∃ x, φ x⌝ (λ a, ⌜φ a⌝)%I.
+Global Instance into_exist_pure {A} (φ : A → Prop) name :
+  AsIdentName φ name →
+  @IntoExist PROP A ⌜ex φ⌝ (λ a, ⌜φ a⌝)%I name.
 Proof. by rewrite /IntoExist pure_exist. Qed.
-Global Instance into_exist_affinely {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (<affine> P) (λ a, <affine> (Φ a))%I.
+Global Instance into_exist_texist {TT : tele} (Φ : TT → PROP) name :
+  AsIdentName Φ name → IntoExist (bi_texist Φ) Φ name | 10.
+Proof. by rewrite /IntoExist bi_texist_exist. Qed.
+Global Instance into_exist_affinely {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist (<affine> P) (λ a, <affine> (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP affinely_exist. Qed.
-Global Instance into_exist_intuitionistically {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (□ P) (λ a, □ (Φ a))%I.
+Global Instance into_exist_intuitionistically {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist (□ P) (λ a, □ (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP intuitionistically_exist. Qed.
+(* [to_ident_name H] makes the default name [H] when [P] is introduced with [?] *)
 Global Instance into_exist_and_pure P Q φ :
-  IntoPureT P φ → IntoExist (P ∧ Q) (λ _ : φ, Q).
+  IntoPureT P φ → IntoExist (P ∧ Q) (λ _ : φ, Q) (to_ident_name H).
 Proof.
   intros (φ'&->&?). rewrite /IntoExist (into_pure P).
   apply pure_elim_l=> Hφ. by rewrite -(exist_intro Hφ).
 Qed.
+(* [to_ident_name H] makes the default name [H] when [P] is introduced with [?] *)
 Global Instance into_exist_sep_pure P Q φ :
-  IntoPureT P φ → TCOr (Affine P) (Absorbing Q) → IntoExist (P ∗ Q) (λ _ : φ, Q).
+  IntoPureT P φ →
+  TCOr (Affine P) (Absorbing Q) →
+  IntoExist (P ∗ Q) (λ _ : φ, Q) (to_ident_name H).
 Proof.
   intros (φ'&->&?) ?. rewrite /IntoExist.
   eapply (pure_elim φ'); [by rewrite (into_pure P); apply sep_elim_l, _|]=>?.
   rewrite -exist_intro //. apply sep_elim_r, _.
 Qed.
-Global Instance into_exist_absorbingly {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (<absorb> P) (λ a, <absorb> (Φ a))%I.
+Global Instance into_exist_absorbingly {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist (<absorb> P) (λ a, <absorb> (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP absorbingly_exist. Qed.
-Global Instance into_exist_persistently {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist (<pers> P) (λ a, <pers> (Φ a))%I.
+Global Instance into_exist_persistently {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist (<pers> P) (λ a, <pers> (Φ a))%I name.
 Proof. rewrite /IntoExist=> HP. by rewrite HP persistently_exist. Qed.
 
 (** IntoForall *)

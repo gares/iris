@@ -121,8 +121,8 @@ Global Instance from_exist_embed {A} P (Φ : A → PROP) :
   FromExist P Φ → FromExist ⎡P⎤ (λ a, ⎡Φ a⎤%I).
 Proof. by rewrite /FromExist -embed_exist => <-. Qed.
 
-Global Instance into_exist_embed {A} P (Φ : A → PROP) :
-  IntoExist P Φ → IntoExist ⎡P⎤ (λ a, ⎡Φ a⎤%I).
+Global Instance into_exist_embed {A} P (Φ : A → PROP) name :
+  IntoExist P Φ name → IntoExist ⎡P⎤ (λ a, ⎡Φ a⎤%I) name.
 Proof. by rewrite /IntoExist -embed_exist => <-. Qed.
 
 Global Instance into_forall_embed {A} P (Φ : A → PROP) :

@@ -313,8 +313,8 @@ Proof.
   rewrite /FromExist /MakeMonPredAt=><- H. setoid_rewrite <- H.
   by rewrite monPred_at_exist.
 Qed.
-Global Instance into_exist_monPred_at {A} P (Φ : A → monPred) (Ψ : A → PROP) i :
-  IntoExist P Φ → (∀ a, MakeMonPredAt i (Φ a) (Ψ a)) → IntoExist (P i) Ψ.
+Global Instance into_exist_monPred_at {A} P (Φ : A → monPred) name (Ψ : A → PROP) i :
+  IntoExist P Φ name → (∀ a, MakeMonPredAt i (Φ a) (Ψ a)) → IntoExist (P i) Ψ name.
 Proof.
   rewrite /IntoExist /MakeMonPredAt=>-> H. setoid_rewrite <- H.
   by rewrite monPred_at_exist.
@@ -336,8 +336,11 @@ Global Instance from_exist_monPred_at_ex P (Φ : I → PROP) i :
 Proof.
   rewrite /FromExist /MakeMonPredAt monPred_at_subjectively=>H. by setoid_rewrite <- H.
 Qed.
+(* TODO: this implementation uses [idx] as the automatic name for the index. In
+theory a monPred could define an appropriate metavariable for indices with an
+[ident_name] argument to [MakeMonPredAt], but this is not implemented. *)
 Global Instance into_exist_monPred_at_ex P (Φ : I → PROP) i :
-  (∀ i, MakeMonPredAt i P (Φ i)) → IntoExist ((<subj> P) i) Φ.
+  (∀ i, MakeMonPredAt i P (Φ i)) → IntoExist ((<subj> P) i) Φ (to_ident_name idx).
 Proof.
   rewrite /IntoExist /MakeMonPredAt monPred_at_subjectively=>H. by setoid_rewrite <- H.
 Qed.

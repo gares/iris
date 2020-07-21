@@ -21,6 +21,9 @@ Section basic_tests.
   Lemma test_iAssumption_tforall {TT : tele} (Φ : TT → PROP) :
     (∀.. x, Φ x) -∗ ∀.. x, Φ x.
   Proof. iIntros "H" (x). iAssumption. Qed.
+  Lemma test_exist_texist_auto_name {TT : tele} (Φ : TT → PROP) :
+    (∃.. y, Φ y) -∗ ∃.. x, Φ x.
+  Proof. iDestruct 1 as (?) "H". by iExists y. Qed.
   Lemma test_pure_texist {TT : tele} (φ : TT → Prop) :
     (∃.. x, ⌜ φ x ⌝) -∗ ∃.. x, ⌜ φ x ⌝ : PROP.
   Proof. iIntros (H) "!%". done. Qed.

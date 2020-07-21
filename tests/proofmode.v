@@ -112,6 +112,85 @@ Qed.
 Lemma test_iDestruct_spatial_noop Q : Q -∗ Q.
 Proof. iIntros "-#HQ". done. Qed.
 
+Lemma test_iDestruct_exists (Φ: nat → PROP) :
+  (∃ y, Φ y) -∗ ∃ n, Φ n.
+Proof. iIntros "H". iDestruct "H" as (y) "H". by iExists y. Qed.
+
+Lemma test_iDestruct_exists_automatic (Φ: nat → PROP) :
+  (∃ y, Φ y) -∗ ∃ n, Φ n.
+Proof.
+  iIntros "H".
+  iDestruct "H" as (?) "H".
+  (* the automatic name should by [y] *)
+  by iExists y.
+Qed.
+
+Lemma test_iDestruct_exists_automatic_multiple (Φ: nat → PROP) :
+  (∃ y n baz, Φ (y+n+baz)) -∗ ∃ n, Φ n.
+Proof. iDestruct 1 as (???) "H". by iExists (y+n+baz). Qed.
+
+Lemma test_iDestruct_exists_freshen (y:nat) (Φ: nat → PROP) :
+  (∃ y, Φ y) -∗ ∃ n, Φ n.
+Proof.
+  iIntros "H".
+  iDestruct "H" as (?) "H".
+  (* the automatic name is the freshened form of [y] *)
+  by iExists y0.
+Qed.
+
+Check "test_iDestruct_exists_not_exists".
+Lemma test_iDestruct_exists_not_exists P :
+  P -∗ P.
+Proof. Fail iDestruct 1 as (?) "H". Abort.
+
+Lemma test_iDestruct_exists_explicit_name (Φ: nat → PROP) :
+  (∃ y, Φ y) -∗ ∃ n, Φ n.
+Proof.
+  (* give an explicit name that isn't the binder name *)
+  iDestruct 1 as (foo) "?".
+  by iExists foo.
+Qed.
+
+Lemma test_iDestruct_exists_pure (Φ: nat → Prop) :
+  ⌜∃ y, Φ y⌝ ⊢@{PROP} ∃ n, ⌜Φ n⌝.
+Proof.
+  iDestruct 1 as (?) "H".
+  by iExists y.
+Qed.
+
+Lemma test_iDestruct_exists_and_pure (H: True) P :
+  ⌜False⌝ ∧ P -∗ False.
+Proof.
+  (* this automatic name uses [fresh H] as a sensible default (it's a hypothesis
+  in [Prop] and the user cannot supply a name in their code) *)
+  iDestruct 1 as (?) "H".
+  contradict H0.
+Qed.
+
+Check "test_iDestruct_exists_intuitionistic".
+Lemma test_iDestruct_exists_intuitionistic P (Φ: nat → PROP) :
+  □ (∃ y, Φ y ∧ P) -∗ P.
+Proof.
+  iDestruct 1 as (?) "#H". Show.
+  iDestruct "H" as "[_ $]".
+Qed.
+
+Lemma test_iDestruct_exists_freshen_local_name (Φ: nat → PROP) :
+  let y := 0 in
+  □ (∃ y, Φ y) -∗ ∃ n, Φ (y+n).
+Proof.
+  iIntros (y) "#H".
+  iDestruct "H" as (?) "H".
+  iExists y0; auto.
+Qed.
+
+Definition an_exists P : PROP := (∃ (an_exists_name:nat), ▷^an_exists_name P)%I.
+
+(* should use the name from within [an_exists] *)
+Lemma test_iDestruct_exists_automatic_def P :
+  an_exists P -∗ ∃ k, ▷^k P.
+Proof. iDestruct 1 as (?) "H". by iExists an_exists_name. Qed.
+
 Lemma test_iIntros_pure (ψ φ : Prop) P : ψ → ⊢ ⌜ φ ⌝ → P → ⌜ φ ∧ ψ ⌝ ∧ P.
 Proof. iIntros (??) "H". auto. Qed.
 
