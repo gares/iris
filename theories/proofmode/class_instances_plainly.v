@@ -83,8 +83,8 @@ Global Instance into_forall_plainly {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (■ P) (λ a, ■ (Φ a))%I.
 Proof. rewrite /IntoForall=> HP. by rewrite HP plainly_forall. Qed.
 
-Global Instance from_forall_plainly {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (■ P)%I (λ a, ■ (Φ a))%I.
+Global Instance from_forall_plainly {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall (■ P)%I (λ a, ■ (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite plainly_forall. Qed.
 
 Global Instance from_modal_plainly P :

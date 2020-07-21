@@ -219,6 +219,32 @@ Lemma test_very_fast_iIntros P :
   ∀ x y : nat, ⊢ ⌜ x = y ⌝ → P -∗ P.
 Proof. by iIntros. Qed.
 
+Lemma test_iIntros_automatic_name (Φ: nat → PROP) :
+  ∀ y, Φ y -∗ ∃ x, Φ x.
+Proof. iIntros (?) "H". by iExists y. Qed.
+
+Lemma test_iIntros_automatic_name_proofmode_intro (Φ: nat → PROP) :
+  ∀ y, Φ y -∗ ∃ x, Φ x.
+Proof. iIntros "% H". by iExists y. Qed.
+
+(* even an object-level forall should get the right name *)
+Lemma test_iIntros_object_forall P :
+  P -∗ ∀ (y:unit), P.
+Proof. iIntros "H". iIntros (?). destruct y. iAssumption. Qed.
+
+Lemma test_iIntros_object_proofmode_intro (Φ: nat → PROP) :
+  ⊢ ∀ y, Φ y -∗ ∃ x, Φ x.
+Proof. iIntros "% H". by iExists y. Qed.
+
+Check "test_iIntros_pure_names".
+Lemma test_iIntros_pure_names (H:True) P :
+  ∀ x y : nat, ⊢ ⌜ x = y ⌝ → P -∗ P.
+Proof.
+  iIntros (???).
+  (* the pure hypothesis should get a sensible [H0] as its name *)
+  Show. auto.
+Qed.
+
 Definition tc_opaque_test : PROP := tc_opaque (∀ x : nat, ⌜ x = x ⌝)%I.
 Lemma test_iIntros_tc_opaque : ⊢ tc_opaque_test.
 Proof. by iIntros (x). Qed.

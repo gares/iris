@@ -693,9 +693,11 @@ Proof.
 Qed.
 
 (** * Forall *)
-Lemma tac_forall_intro {A} Δ (Φ : A → PROP) Q :
-  FromForall Q Φ →
-  (∀ a, envs_entails Δ (Φ a)) →
+Lemma tac_forall_intro {A} Δ (Φ : A → PROP) Q name :
+  FromForall Q Φ name →
+  ( (* see [tac_exist_destruct] for an explanation of this let binding *)
+   let _ := name in
+   ∀ a, envs_entails Δ (Φ a)) →
   envs_entails Δ Q.
 Proof. rewrite envs_entails_eq /FromForall=> <-. apply forall_intro. Qed.
 

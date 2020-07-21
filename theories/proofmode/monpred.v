@@ -254,14 +254,14 @@ Proof. done. Qed.
 
 Global Instance from_forall_monPred_at_wand P Q (Φ Ψ : I → PROP) i :
   (∀ j, MakeMonPredAt j P (Φ j)) → (∀ j, MakeMonPredAt j Q (Ψ j)) →
-  FromForall ((P -∗ Q) i)%I (λ j, ⌜i ⊑ j⌝ → Φ j -∗ Ψ j)%I.
+  FromForall ((P -∗ Q) i)%I (λ j, ⌜i ⊑ j⌝ → Φ j -∗ Ψ j)%I (to_ident_name idx).
 Proof.
   rewrite /FromForall /MakeMonPredAt monPred_at_wand=> H1 H2. do 2 f_equiv.
   by rewrite H1 H2.
 Qed.
 Global Instance from_forall_monPred_at_impl P Q (Φ Ψ : I → PROP) i :
   (∀ j, MakeMonPredAt j P (Φ j)) → (∀ j, MakeMonPredAt j Q (Ψ j)) →
-  FromForall ((P → Q) i)%I (λ j, ⌜i ⊑ j⌝ → Φ j → Ψ j)%I.
+  FromForall ((P → Q) i)%I (λ j, ⌜i ⊑ j⌝ → Φ j → Ψ j)%I (to_ident_name idx).
 Proof.
   rewrite /FromForall /MakeMonPredAt monPred_at_impl=> H1 H2. do 2 f_equiv.
   by rewrite H1 H2 bi.pure_impl_forall.
@@ -321,7 +321,7 @@ Proof.
 Qed.
 
 Global Instance from_forall_monPred_at_objectively P (Φ : I → PROP) i :
-  (∀ i, MakeMonPredAt i P (Φ i)) → FromForall ((<obj> P) i)%I Φ.
+  (∀ i, MakeMonPredAt i P (Φ i)) → FromForall ((<obj> P) i)%I Φ (to_ident_name idx).
 Proof.
   rewrite /FromForall /MakeMonPredAt monPred_at_objectively=>H. by setoid_rewrite <- H.
 Qed.
@@ -345,8 +345,8 @@ Proof.
   rewrite /IntoExist /MakeMonPredAt monPred_at_subjectively=>H. by setoid_rewrite <- H.
 Qed.
 
-Global Instance from_forall_monPred_at {A} P (Φ : A → monPred) (Ψ : A → PROP) i :
-  FromForall P Φ → (∀ a, MakeMonPredAt i (Φ a) (Ψ a)) → FromForall (P i) Ψ.
+Global Instance from_forall_monPred_at {A} P (Φ : A → monPred) name (Ψ : A → PROP) i :
+  FromForall P Φ name → (∀ a, MakeMonPredAt i (Φ a) (Ψ a)) → FromForall (P i) Ψ name.
 Proof.
   rewrite /FromForall /MakeMonPredAt=><- H. setoid_rewrite <- H.
   by rewrite monPred_at_forall.
@@ -460,7 +460,7 @@ Proof. by rewrite /AddModal !monPred_at_bupd. Qed.
 
 Global Instance from_forall_monPred_at_plainly `{BiPlainly PROP} i P Φ :
   (∀ i, MakeMonPredAt i P (Φ i)) →
-  FromForall ((■ P) i) (λ j, ■ (Φ j))%I.
+  FromForall ((■ P) i) (λ j, ■ (Φ j))%I (to_ident_name idx).
 Proof.
   rewrite /FromForall /MakeMonPredAt=>HPΦ. rewrite monPred_at_plainly.
   by setoid_rewrite HPΦ.

@@ -129,8 +129,8 @@ Global Instance into_forall_embed {A} P (Φ : A → PROP) :
   IntoForall P Φ → IntoForall ⎡P⎤ (λ a, ⎡Φ a⎤%I).
 Proof. by rewrite /IntoForall -embed_forall => <-. Qed.
 
-Global Instance from_forall_embed {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall ⎡P⎤ (λ a, ⎡Φ a⎤%I).
+Global Instance from_forall_embed {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall ⎡P⎤ (λ a, ⎡Φ a⎤%I) name.
 Proof. by rewrite /FromForall -embed_forall => <-. Qed.
 
 Global Instance into_inv_embed P N : IntoInv P N → IntoInv ⎡P⎤ N := {}.

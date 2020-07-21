@@ -185,16 +185,16 @@ Global Instance into_forall_except_0 {A} P (Φ : A → PROP) :
 Proof. rewrite /IntoForall=> HP. by rewrite HP except_0_forall. Qed.
 
 (** FromForall *)
-Global Instance from_forall_later {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (▷ P)%I (λ a, ▷ (Φ a))%I.
+Global Instance from_forall_later {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall (▷ P)%I (λ a, ▷ (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite later_forall. Qed.
 
-Global Instance from_forall_laterN {A} P (Φ : A → PROP) n :
-      FromForall P Φ → FromForall (▷^n P)%I (λ a, ▷^n (Φ a))%I.
+Global Instance from_forall_laterN {A} P (Φ : A → PROP) n name :
+      FromForall P Φ name → FromForall (▷^n P)%I (λ a, ▷^n (Φ a))%I name.
 Proof. rewrite /FromForall => <-. by rewrite laterN_forall. Qed.
 
-Global Instance from_forall_except_0 {A} P (Φ : A → PROP) :
-  FromForall P Φ → FromForall (◇ P)%I (λ a, ◇ (Φ a))%I.
+Global Instance from_forall_except_0 {A} P (Φ : A → PROP) name :
+  FromForall P Φ name → FromForall (◇ P)%I (λ a, ◇ (Φ a))%I name.
 Proof. rewrite /FromForall=> <-. by rewrite except_0_forall. Qed.
 
 (** IsExcept0 *)

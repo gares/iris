@@ -100,10 +100,23 @@ Tactic failure: iExistDestruct: cannot destruct P.
   
   PROP : bi
   Ψ : nat → PROP
-  a : nat
+  x : nat
   ============================
   --------------------------------------∗
-  Ψ a → Ψ a
+  Ψ x → Ψ x
+  
+"test_iIntros_pure_names"
+     : string
+1 subgoal
+  
+  PROP : bi
+  H : True
+  P : PROP
+  x, y : nat
+  H0 : x = y
+  ============================
+  --------------------------------------∗
+  P -∗ P
   
 The command has indeed failed with message:
 No applicable tactic.

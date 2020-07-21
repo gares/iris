@@ -96,20 +96,20 @@ Proof.
 Qed.
 
 Global Instance from_forall_fupd
-    `{!BiFUpd PROP, !BiPlainly PROP, !BiFUpdPlainly PROP} E1 E2 {A} P (Φ : A → PROP) :
+    `{!BiFUpd PROP, !BiPlainly PROP, !BiFUpdPlainly PROP} E1 E2 {A} P (Φ : A → PROP) name :
   (* Some cases in which [E2 ⊆ E1] holds *)
   TCOr (TCEq E1 E2) (TCOr (TCEq E1 ⊤) (TCEq E2 ∅)) →
-  FromForall P Φ → (∀ x, Plain (Φ x)) →
-  FromForall (|={E1,E2}=> P)%I (λ a, |={E1,E2}=> (Φ a))%I.
+  FromForall P Φ name → (∀ x, Plain (Φ x)) →
+  FromForall (|={E1,E2}=> P)%I (λ a, |={E1,E2}=> (Φ a))%I name.
 Proof.
   rewrite /FromForall=> -[->|[->|->]] <- ?; rewrite fupd_plain_forall; set_solver.
 Qed.
 Global Instance from_forall_step_fupd
-    `{!BiFUpd PROP, !BiPlainly PROP, !BiFUpdPlainly PROP} E1 E2 {A} P (Φ : A → PROP) :
+    `{!BiFUpd PROP, !BiPlainly PROP, !BiFUpdPlainly PROP} E1 E2 {A} P (Φ : A → PROP) name :
   (* Some cases in which [E2 ⊆ E1] holds *)
   TCOr (TCEq E1 E2) (TCOr (TCEq E1 ⊤) (TCEq E2 ∅)) →
-  FromForall P Φ → (∀ x, Plain (Φ x)) →
-  FromForall (|={E1}[E2]▷=> P)%I (λ a, |={E1}[E2]▷=> (Φ a))%I.
+  FromForall P Φ name → (∀ x, Plain (Φ x)) →
+  FromForall (|={E1}[E2]▷=> P)%I (λ a, |={E1}[E2]▷=> (Φ a))%I name.
 Proof.
   rewrite /FromForall=> -[->|[->|->]] <- ?; rewrite step_fupd_plain_forall; set_solver.
 Qed.

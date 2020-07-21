@@ -216,11 +216,11 @@ Arguments IntoForall {_ _} _%I _%I : simpl never.
 Arguments into_forall {_ _} _%I _%I {_}.
 Hint Mode IntoForall + - ! - : typeclass_instances.
 
-Class FromForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
+Class FromForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :=
   from_forall : (∀ x, Φ x) ⊢ P.
-Arguments FromForall {_ _} _%I _%I : simpl never.
-Arguments from_forall {_ _} _%I _%I {_}.
-Hint Mode FromForall + - ! - : typeclass_instances.
+Arguments FromForall {_ _} _%I _%I _ : simpl never.
+Arguments from_forall {_ _} _%I _%I _ {_}.
+Hint Mode FromForall + - ! - - : typeclass_instances.
 
 Class IsExcept0 {PROP : bi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
 Arguments IsExcept0 {_} _%I : simpl never.
@@ -619,8 +619,8 @@ Instance from_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   FromExist P Φ → FromExist (tc_opaque P) Φ := id.
 Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :
   IntoExist P Φ name → IntoExist (tc_opaque P) Φ name := id.
-Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
-  FromForall P Φ → FromForall (tc_opaque P) Φ := id.
+Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :
+  FromForall P Φ name → FromForall (tc_opaque P) Φ name := id.
 Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (tc_opaque P) Φ := id.
 Instance from_modal_tc_opaque {PROP1 PROP2 : bi} {A}
