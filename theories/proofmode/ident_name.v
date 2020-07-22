@@ -27,8 +27,11 @@ Arguments as_ident_name {A B f} name : assert.
 
 Ltac solve_as_ident_name :=
   lazymatch goal with
-  | |- AsIdentName (λ x, _) _ =>
-    let name := to_ident_name x in
+  (* The [H] here becomes the default name if the binder is anonymous. We use
+     [H] with the idea that an unnamed and unused binder is likely to be a
+     proposition. *)
+  | |- AsIdentName (λ H, _) _ =>
+    let name := to_ident_name H in
     notypeclasses refine (as_ident_name name)
   | _ => notypeclasses refine (to_ident_name __unknown)
   end.
