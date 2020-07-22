@@ -184,6 +184,18 @@ Proof.
   iExists y0; auto.
 Qed.
 
+(* regression test for #337 *)
+Check "test_iDestruct_exists_anonymous".
+Lemma test_iDestruct_exists_anonymous P Φ :
+  (∃ _:nat, P) ∗ (∃ x:nat, Φ x) -∗ P ∗ ∃ x, Φ x.
+Proof.
+  iIntros "[HP HΦ]".
+  (* this should not use [x] as the default name for the unnamed binder *)
+  iDestruct "HP" as (?) "$". Show.
+  iDestruct "HΦ" as (x) "HΦ".
+  by iExists x.
+Qed.
+
 Definition an_exists P : PROP := (∃ (an_exists_name:nat), ▷^an_exists_name P)%I.
 
 (* should use the name from within [an_exists] *)

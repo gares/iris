@@ -94,6 +94,19 @@ Tactic failure: iExistDestruct: cannot destruct P.
   --------------------------------------□
   P
   
+"test_iDestruct_exists_anonymous"
+     : string
+1 subgoal
+  
+  PROP : bi
+  P : PROP
+  Φ : nat → PROP
+  H : nat
+  ============================
+  "HΦ" : ∃ x : nat, Φ x
+  --------------------------------------∗
+  ∃ x : nat, Φ x
+  
 "test_iIntros_forall_pure"
      : string
 1 subgoal
