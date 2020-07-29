@@ -214,17 +214,18 @@ The purpose of the adequacy statement is to show that our notion of weakest prec
 The most general form of the adequacy statement is about proving properties of an arbitrary program execution.
 
 \begin{thm}[Adequacy]
-  Assume we are given some $\expr_1$, $\state_1$, $\vec\obs$, $\tpool_2$, $\state_2$ such that $([\expr_1], \state_1) \tpsteps[\vec\obs] (\tpool_2, \state_2)$, and we are also given a \emph{meta-level} property $\metaprop$ that we want to show.
+  Assume we are given some $\vec\expr_1$, $\state_1$, $\vec\obs$, $\tpool_2$, $\state_2$ such that $(\vec\expr_1, \state_1) \tpsteps[\vec\obs] (\tpool_2, \state_2)$, and we are also given a \emph{meta-level} property $\metaprop$ that we want to show.
   To verify that $\metaprop$ holds, it is sufficient to show the following Iris entailment:
 \begin{align*}
- &\TRUE \proves \pvs[\top] \Exists \stuckness, \stateinterp, \pred, \pred_F. \stateinterp(\state_1,\vec\obs,0) * \wpre[\stateinterp;\pred_F]{\expr_1}[\stuckness;\top]{x.\; \pred(x)} * \left(\consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2) \vs[\top][\emptyset] \hat{\metaprop}\right)
+ &\TRUE \proves \pvs[\top] \Exists \stuckness, \stateinterp, \vec\pred, \pred_F. \stateinterp(\state_1,\vec\obs,0) * \left(\Sep_{\expr,\pred \in \vec\expr_1,\vec\pred} \wpre[\stateinterp;\pred_F]{\expr}[\stuckness;\top]{x.\; \pred(x)}\right) * \left(\consstate^{\stateinterp;\vec\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2) \vs[\top][\emptyset] \hat{\metaprop}\right)
 \end{align*}
 where $\consstate$ describes states that are consistent with the state interpretation and postconditions:
 \begin{align*}
- \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2) \eqdef{}&\Exists \expr_2, \tpool_2'. \tpool_2 = [\expr_2] \dplus \tpool_2' * {}\\
+ \consstate^{\stateinterp;\vec\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2) \eqdef{}&\Exists \vec\expr_2, \tpool_2'. \tpool_2 = \vec\expr_2 \dplus \tpool_2' * {}\\
+ &\quad |\vec\expr_1| = |\vec\expr_2| *{}\\
  &\quad (s = \NotStuck \Ra \All \expr \in \tpool_2. \toval(\expr) \neq \bot \lor \red(\expr, \state_2) ) *{}\\
  &\quad \stateinterp(\state_2, (), |\tpool_2'|) *{}\\
- &\quad (\toval(\expr_2) \ne \bot \wand \pred(\toval(\expr_2))) *{}\\
+ &\quad \left(\Sep_{\expr,\pred \in \vec\expr_2,\vec\pred} \toval(\expr) \ne \bot \wand \pred(\toval(\expr))\right) *{}\\
  &\quad \left(\Sep_{\expr \in \tpool_2'} \toval(\expr) \ne \bot \wand \pred_F(\toval(\expr))\right)
 \end{align*}
 The $\hat\metaprop$ here arises because we need a way to talk about $\metaprop$ inside Iris.
@@ -238,7 +239,7 @@ Furthermore, we assume that the \emph{interpretation} $\Sem{\hat{\metaprop}}$ of
 The signature can of course state arbitrary additional properties of $\hat{\metaprop}$, as long as they are proven sound.
 \end{thm}
 
-In other words, to show that $\metaprop$ holds, we have to prove an entailment in Iris that, starting from the empty context, chooses some state interpretation, postcondition, forked-thread postcondition and stuckness and then proves:
+In other words, to show that $\metaprop$ holds, we have to prove an entailment in Iris that, starting from the empty context, chooses some state interpretation, postconditions for the initial threads, forked-thread postcondition and stuckness and then proves:
 \begin{itemize}
   \item the initial state interpretation,
   \item a weakest-precondition,
@@ -247,12 +248,12 @@ In other words, to show that $\metaprop$ holds, we have to prove an entailment i
 Notice that the state interpretation and the postconditions are chosen \emph{after} doing a fancy update, which allows them to depend on the names of ghost variables that are picked in that initial fancy update.
 This gives us a chance to allocate some ``global'' ghost state that state interpretation and postcondition can refer to.
 
-$\consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2)$ says that:
+$\consstate^{\stateinterp;\vec\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2)$ says that:
 \begin{itemize}
-\item The final thread-pool $\tpool_2$ contains the final state of the main thread $\expr_2$, and any number of additional forked threads in $\tpool_2'$.
+\item The final thread-pool $\tpool_2$ contains the final state of the initial threads $\vec\expr_2$, and any number of additional forked threads in $\tpool_2'$.
 \item If this is a stuck-free weakest precondition, then all threads in the final thread-pool are either values or are reducible in the final state $\state_2$.
 \item The state interpretation $\stateinterp$ holds for the final state.
-\item If the main thread reduced to a value, the post-condition $\pred$ of the weakest precondition holds for that value.
+\item If one of the initial threads reduced to a value, the corresponding post-condition $\pred \in \vec\pred$ holds for that value.
 \item If any other thread reduced to a value, the forked-thread post-condition $\pred_F$ holds for that value.
 \end{itemize}
 
@@ -271,7 +272,7 @@ As an example for how to use this adequacy theorem, let us say we wanted to prov
 \end{cor}
 To prove the conclusion of this corollary, we assume some $\state_1, \vec\obs, \tpool_2, \state_2$ and $([\expr_1], \state_1) \tpsteps[\vec\obs] (\tpool_2, \state_2)$, and we instantiate the main theorem with this execution and $\metaprop \eqdef \All \expr \in \tpool_2. \toval(\expr) \neq \bot \lor \red(\expr, \state_2)$.
 We can then show the premise of adequacy using the Iris entailment that we assumed in the corollary and:
-\[ \TRUE \proves \consstate^{\stateinterp;\pred;\pred_F}_{\NotStuck}(\tpool_2, \state_2) \vs[\top][\emptyset] \metaprop \]
+\[ \TRUE \proves \consstate^{\stateinterp;[\pred];\pred_F}_{\NotStuck}(\tpool_2, \state_2) \vs[\top][\emptyset] \metaprop \]
 This proof, just like the following, also exploits that we can freely swap between meta-level universal quantification ($\All x. \TRUE \proves \prop$) and quantification in Iris ($\TRUE \proves \All x. \prop$).
 
 ~\par
@@ -289,7 +290,7 @@ Similarly we could show that the postcondition makes adequate statements about t
 \end{cor}
 To show this, we assume some $\state_1, \vec\obs, \val_2, \tpool_2, \state_2$ such that $([\expr_1], \state_1) \tpsteps[\vec\obs] ([\ofval(\val_2)] \dplus \tpool_2, \state_2)$, and we instantiate adequacy with this execution and $\metaprop \eqdef \val_2 \in \Val$.
 Then we only have to show:
-$$\TRUE \proves \consstate^{\stateinterp;(\Lam \val. \val \in \Val);\pred_F}_{\stuckness}([\ofval(\val_2)] \dplus \tpool_2, \state_2) \vs[\top][\emptyset] \val_2 \in \Val $$
+$$\TRUE \proves \consstate^{\stateinterp;[(\Lam \val. \val \in \Val)];\pred_F}_{\stuckness}([\ofval(\val_2)] \dplus \tpool_2, \state_2) \vs[\top][\emptyset] \val_2 \in \Val $$
 
 ~\par
 
@@ -307,7 +308,7 @@ As a final example, we could use adequacy to show that the state $\state$ of the
 To show this, we assume some $\state_1, \vec\obs, \tpool_2, \state_2$ such that $([\expr_1], \state_1) \tpsteps[\vec\obs] (\tpool_2, \state_2)$, and we instantiate adequacy with this execution and $\metaprop \eqdef \state_2 \in \Sigma$.
 Then we have to show:
 \[
-(\All \state_2, m. \stateinterp(\state_2,(),m) \!\vs[\top][\emptyset] \state_2 \in \Sigma) \proves \consstate^{\stateinterp;\pred;\pred_F}_{\stuckness}(\tpool_2, \state_2) \vs[\top][\emptyset] \state_2 \in \Sigma
+(\All \state_2, m. \stateinterp(\state_2,(),m) \!\vs[\top][\emptyset] \state_2 \in \Sigma) \proves \consstate^{\stateinterp;[\pred];\pred_F}_{\stuckness}(\tpool_2, \state_2) \vs[\top][\emptyset] \state_2 \in \Sigma
 \]
 
 \paragraph{Hoare triples.}
@@ -331,7 +332,7 @@ We only give some of the proof rules for Hoare triples here, since we usually do
 \and
 \inferH{Ht-csq}
   {\prop \vs \prop' \\
-    \hoare{\prop'}{\expr}{\Ret\val.\propB'}[\mask] \\   
+    \hoare{\prop'}{\expr}{\Ret\val.\propB'}[\mask] \\
    \All \val. \propB' \vs \propB}
   {\hoare{\prop}{\expr}{\Ret\val.\propB}[\mask]}
 \and
@@ -349,7 +350,7 @@ We only give some of the proof rules for Hoare triples here, since we usually do
 % \and
 \inferH{Ht-atomic}
   {\prop \vs[\mask \uplus \mask'][\mask] \prop' \\
-    \hoare{\prop'}{\expr}{\Ret\val.\propB'}[\mask] \\   
+    \hoare{\prop'}{\expr}{\Ret\val.\propB'}[\mask] \\
    \All\val. \propB' \vs[\mask][\mask \uplus \mask'] \propB \\
    \atomic(\expr)
   }
