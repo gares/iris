@@ -11,7 +11,7 @@ synopsis: "Iris is a Higher-Order Concurrent Separation Logic Framework with sup
 
 depends: [
   "coq" { (>= "8.9.1" & < "8.13~") | (= "dev") }
-  "coq-stdpp" { (= "dev.2020-07-17.0.ee76981d") | (= "dev") }
+  "coq-stdpp" { (= "dev.2020-08-07.0.67db2f24") | (= "dev") }
 ]
 
 build: [make "-j%{jobs}%"]
