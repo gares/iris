@@ -2,6 +2,10 @@ From iris.algebra Require Export auth excl updates.
 From iris.algebra Require Import local_updates.
 From iris.base_logic Require Import base_logic.
 
+(** Authoritative CMRA where the fragment is exclusively owned.
+This is effectively a single "ghost variable" with two views, the frament [◯E a]
+and the authority [●E a]. *)
+
 Definition excl_authR (A : ofeT) : cmraT :=
   authR (optionUR (exclR A)).
 Definition excl_authUR (A : ofeT) : ucmraT :=
