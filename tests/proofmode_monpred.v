@@ -1,6 +1,6 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic.lib Require Import invariants.
-Unset Printing Use Implicit Types. (* FIXME: remove once all supported Coq versions ship with <https://github.com/coq/coq/pull/11261>. *)
+Unset Printing Use Implicit Types. (* FIXME: remove once we drop support for Coq <=8.11. *)
 
 Section tests.
   Context {I : biIndex} {PROP : bi}.

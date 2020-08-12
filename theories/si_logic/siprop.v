@@ -10,6 +10,8 @@ Record siProp := SiProp {
 }.
 Arguments siProp_holds : simpl never.
 Add Printing Constructor siProp.
+
+Declare Scope siProp_scope.
 Delimit Scope siProp_scope with SI.
 Bind Scope siProp_scope with siProp.
 

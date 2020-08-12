@@ -234,7 +234,7 @@ an efficient way. Concretely, we made sure that [envs_entails (Envs Γp Γs c) Q
 and [envs_entails (Envs Γp Γs c') Q] are convertible for any [c] and [c']. This
 way, [iFresh] can simply be implemented by changing the goal from
 [envs_entails (Envs Γp Γs c) Q] into [envs_entails (Envs Γp Γs (Pos_succ c)) Q]
-using the tactic [convert_concl_no_check]. This way, the generated proof term
+using the tactic [change_no_check]. This way, the generated proof term
 contains no additional steps for changing the counter.
 
 For all definitions below, we first define a version that take the two contexts

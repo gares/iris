@@ -704,6 +704,7 @@ Record oFunctor := OFunctor {
 Existing Instance oFunctor_map_ne.
 Instance: Params (@oFunctor_map) 9 := {}.
 
+Declare Scope oFunctor_scope.
 Delimit Scope oFunctor_scope with OF.
 Bind Scope oFunctor_scope with oFunctor.
 

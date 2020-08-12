@@ -22,9 +22,9 @@ Declare Reduction pm_eval := cbv [
 Ltac pm_eval t :=
   eval pm_eval in t.
 Ltac pm_reduce :=
-  (* Use [convert_concl_no_check] instead of [change] to avoid performing the
+  (* Use [change_no_check] instead of [change] to avoid performing the
   conversion check twice. *)
-  match goal with |- ?u => let v := pm_eval u in convert_concl_no_check v end.
+  match goal with |- ?u => let v := pm_eval u in change_no_check v end.
 Ltac pm_reflexivity := pm_reduce; exact eq_refl.
 
 (** Called by many tactics for redexes that are created by instantiation.
@@ -38,6 +38,6 @@ Declare Reduction pm_prettify := cbn [
   bi_tforall bi_texist
 ].
 Ltac pm_prettify :=
-  (* Use [convert_concl_no_check] instead of [change] to avoid performing the
+  (* Use [change_no_check] instead of [change] to avoid performing the
   conversion check twice. *)
-  match goal with |- ?u => let v := eval pm_prettify in u in convert_concl_no_check v end.
+  match goal with |- ?u => let v := eval pm_prettify in u in change_no_check v end.

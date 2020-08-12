@@ -5,7 +5,7 @@ From iris.base_logic.lib Require Import invariants cancelable_invariants na_inva
 From iris.bi Require Import ascii.
 
 Set Default Proof Using "Type".
-Unset Printing Use Implicit Types. (* FIXME: remove once all supported Coq versions ship with <https://github.com/coq/coq/pull/11261>. *)
+Unset Printing Use Implicit Types. (* FIXME: remove once we drop support for Coq <=8.11. *)
 
 Section base_logic_tests.
   Context {M : ucmraT}.

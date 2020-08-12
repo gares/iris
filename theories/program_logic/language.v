@@ -27,9 +27,13 @@ Structure language := Language {
   prim_step : expr → state → list observation → expr → state → list expr → Prop;
   language_mixin : LanguageMixin of_val to_val prim_step
 }.
+
+Declare Scope expr_scope.
 Delimit Scope expr_scope with E.
-Delimit Scope val_scope with V.
 Bind Scope expr_scope with expr.
+
+Declare Scope val_scope.
+Delimit Scope val_scope with V.
 Bind Scope val_scope with val.
 
 Arguments Language {_ _ _ _ _ _ _} _.

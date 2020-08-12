@@ -179,4 +179,5 @@ Reserved Notation "'[∗' 'mset]' x ∈ X , P"
    format "[∗  mset]  x  ∈  X ,  P").
 
 (** Define the scope *)
+Declare Scope bi_scope.
 Delimit Scope bi_scope with I.

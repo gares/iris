@@ -123,7 +123,7 @@ Ltac iFresh :=
     lazymatch goal with
     | |- envs_entails (Envs ?Δp ?Δs _) ?Q =>
       let c' := eval vm_compute in (Pos.succ c) in
-      convert_concl_no_check (envs_entails (Envs Δp Δs c') Q)
+      change_no_check (envs_entails (Envs Δp Δs c') Q)
     end in
   constr:(IAnon c).
 
