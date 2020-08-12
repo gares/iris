@@ -3,7 +3,7 @@ From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import auth gmap frac agree namespace_map.
 From iris.base_logic.lib Require Export own.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 (** This file provides a generic mechanism for a point-to connective [l ↦{q} v]

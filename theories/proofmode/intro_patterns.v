@@ -1,6 +1,6 @@
 From stdpp Require Export strings.
 From iris.proofmode Require Import base tokens sel_patterns.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Inductive gallina_ident :=
   | IGallinaNamed : string → gallina_ident

@@ -1,5 +1,5 @@
 From iris.algebra Require Export base.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Set Primitive Projections.
 
 (** This files defines (a shallow embedding of) the category of OFEs:

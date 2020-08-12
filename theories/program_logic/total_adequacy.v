@@ -2,7 +2,7 @@ From iris.bi Require Import big_op fixpoint.
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import gmap auth agree gset coPset list.
 From iris.program_logic Require Export total_weakestpre adequacy.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 Section adequacy.

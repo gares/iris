@@ -1,7 +1,7 @@
 From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export viewshifts.
 From iris.program_logic Require Export weakestpre.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Definition ht `{!irisG Λ Σ} (s : stuckness) (E : coPset) (P : iProp Σ)
     (e : expr Λ) (Φ : val Λ → iProp Σ) : iProp Σ :=

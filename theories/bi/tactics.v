@@ -1,6 +1,6 @@
 From stdpp Require Import gmap.
 From iris.bi Require Export bi.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 Module bi_reflection. Section bi_reflection.

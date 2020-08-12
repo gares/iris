@@ -1,5 +1,5 @@
 From iris.proofmode Require Import base.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Inductive token :=
   | TName : string → token

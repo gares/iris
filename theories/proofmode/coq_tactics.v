@@ -1,7 +1,7 @@
 From iris.bi Require Export bi telescopes.
 From iris.bi Require Import tactics.
 From iris.proofmode Require Export base environments classes modality_instances.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 Import env_notations.
 

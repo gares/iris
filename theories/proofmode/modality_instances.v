@@ -1,6 +1,6 @@
 From iris.bi Require Import bi.
 From iris.proofmode Require Export classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 Section modalities.

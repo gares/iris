@@ -1,7 +1,7 @@
 From stdpp Require Export vector.
 From iris.algebra Require Export ofe.
 From iris.algebra Require Import list.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section ofe.
   Context {A : ofeT}.

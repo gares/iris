@@ -1,7 +1,7 @@
 From stdpp Require Import nat_cancel.
 From iris.bi Require Import bi tactics telescopes.
 From iris.proofmode Require Import classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 (** This file defines the instances that make up the framing machinery. *)

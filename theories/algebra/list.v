@@ -2,7 +2,7 @@ From stdpp Require Export list.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates.
 From iris.base_logic Require Import base_logic.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section cofe.
 Context {A : ofeT}.

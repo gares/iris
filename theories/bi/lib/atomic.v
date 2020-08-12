@@ -2,7 +2,7 @@ From stdpp Require Import coPset namespaces.
 From iris.bi Require Export bi updates laterable.
 From iris.bi.lib Require Import fixpoint.
 From iris.proofmode Require Import coq_tactics tactics reduction.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** Conveniently split a conjunction on both assumption and conclusion. *)
 Local Tactic Notation "iSplitWith" constr(H) :=

@@ -3,7 +3,7 @@ elements are in the interval (0,..) instead of (0,1]. *)
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import proofmode_classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** Since the standard (0,1] fractional camera [frac] is used more often, we
 define [ufrac] through a [Definition] instead of a [Notation]. That way, Coq

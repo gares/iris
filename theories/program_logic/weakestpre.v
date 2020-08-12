@@ -4,7 +4,7 @@ From iris.program_logic Require Export language.
 (* FIXME: If we import iris.bi.weakestpre earlier texan triples do not
    get pretty-printed correctly. *)
 From iris.bi Require Export weakestpre.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 Class irisG (Λ : language) (Σ : gFunctors) := IrisG {

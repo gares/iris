@@ -6,7 +6,7 @@ validity of the unbounded fractional camera [ufrac]. *)
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import proofmode_classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** Since the standard (0,1] fractional camera is used more often, we define
 [frac] through a [Notation] instead of a [Definition]. That way, Coq infers the

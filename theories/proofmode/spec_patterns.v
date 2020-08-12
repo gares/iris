@@ -1,6 +1,6 @@
 From stdpp Require Export strings.
 From iris.proofmode Require Import base tokens.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Inductive goal_kind := GSpatial | GModal | GIntuitionistic.
 

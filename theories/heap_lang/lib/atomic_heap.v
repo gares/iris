@@ -3,7 +3,7 @@ From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export atomic.
 From iris.heap_lang Require Export derived_laws.
 From iris.heap_lang Require Import notation proofmode.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** A general logically atomic interface for a heap. *)
 Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {

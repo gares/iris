@@ -1,7 +1,7 @@
 From stdpp Require Export sets gmap mapset.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (* The union CMRA *)
 Section gset.

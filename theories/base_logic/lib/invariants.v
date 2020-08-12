@@ -3,7 +3,7 @@ From iris.proofmode Require Import tactics.
 From iris.algebra Require Import gmap.
 From iris.base_logic.lib Require Export fancy_updates.
 From iris.base_logic.lib Require Import wsat.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 (** Semantic Invariants *)

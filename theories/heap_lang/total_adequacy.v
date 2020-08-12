@@ -2,7 +2,7 @@ From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export total_adequacy.
 From iris.heap_lang Require Export adequacy.
 From iris.heap_lang Require Import proofmode notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Definition heap_total Σ `{!heapPreG Σ} s e σ φ :
   (∀ `{!heapG Σ}, ⊢ inv_heap_inv -∗ WP e @ s; ⊤ [{ v, ⌜φ v⌝ }]) →

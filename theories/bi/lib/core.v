@@ -1,6 +1,6 @@
 From iris.bi Require Export bi plainly.
 From iris.proofmode Require Import tactics.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 (** The "core" of an assertion is its maximal persistent part,

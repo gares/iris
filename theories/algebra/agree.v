@@ -1,6 +1,7 @@
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import list.
 From iris.base_logic Require Import base_logic.
+From iris Require Import options.
 Local Arguments validN _ _ _ !_ /.
 Local Arguments valid _ _  !_ /.
 Local Arguments op _ _ _ !_ /.
@@ -50,7 +51,6 @@ Proof.
 Qed.
 
 Section agree.
-Local Set Default Proof Using "Type".
 Context {A : ofeT}.
 Implicit Types a b : A.
 Implicit Types x y : agree A.
@@ -276,7 +276,7 @@ Section agree_map.
   Context {A B : ofeT} (f : A → B) {Hf: NonExpansive f}.
 
   Instance agree_map_ne : NonExpansive (agree_map f).
-  Proof.
+  Proof using Type*.
     intros n x y [H H']; split=> b /=; setoid_rewrite elem_of_list_fmap.
     - intros (a&->&?). destruct (H a) as (a'&?&?); auto. naive_solver.
     - intros (a&->&?). destruct (H' a) as (a'&?&?); auto. naive_solver.

@@ -3,7 +3,7 @@ From iris.bi Require Export bi telescopes.
 From iris.proofmode Require Import base intro_patterns spec_patterns
                                    sel_patterns coq_tactics reduction.
 From iris.proofmode Require Export classes notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Export ident.
 
 (** For most of the tactics, we want to have tight control over the order and

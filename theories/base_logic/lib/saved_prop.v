@@ -2,7 +2,7 @@ From stdpp Require Import gmap.
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import agree.
 From iris.base_logic Require Export own.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 (* "Saved anything" -- this can give you saved propositions, saved predicates,

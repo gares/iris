@@ -1,7 +1,7 @@
 (** Some derived lemmas for ectx-based languages *)
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export ectx_language weakestpre lifting.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section wp.
 Context {Λ : ectxLanguage} `{!irisG Λ Σ} {Hinh : Inhabited (state Λ)}.

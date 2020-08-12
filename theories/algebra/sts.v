@@ -1,7 +1,7 @@
 From stdpp Require Export propset.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import dra.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Local Arguments valid _ _ !_ /.
 Local Arguments op _ _ !_ !_ /.
 Local Arguments core _ _ !_ /.

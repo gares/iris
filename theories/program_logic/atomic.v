@@ -4,7 +4,7 @@ From iris.bi.lib Require Export atomic.
 From iris.proofmode Require Import tactics classes.
 From iris.program_logic Require Export weakestpre.
 From iris.base_logic Require Import invariants.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (* This hard-codes the inner mask to be empty, because we have yet to find an
 example where we want it to be anything else. *)

@@ -1,6 +1,6 @@
 From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 (** The `iModIntro` tactic is not tied the Iris modalities, but can be

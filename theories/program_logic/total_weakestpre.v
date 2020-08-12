@@ -1,7 +1,7 @@
 From iris.bi Require Import fixpoint big_op.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 (** The definition of total weakest preconditions is very similar to the

@@ -3,7 +3,7 @@ From iris.proofmode Require Export tactics.
 From iris.program_logic Require Import atomic.
 From iris.heap_lang Require Export tactics derived_laws.
 From iris.heap_lang Require Import notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 Lemma tac_wp_expr_eval `{!heapG Σ} Δ s E Φ e e' :

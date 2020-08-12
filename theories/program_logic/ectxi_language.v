@@ -2,7 +2,7 @@
     a proof that these are instances of general ectx-based languages. *)
 From iris.algebra Require Export base.
 From iris.program_logic Require Import language ectx_language.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** TAKE CARE: When you define an [ectxiLanguage] canonical structure for your
 language, you need to also define a corresponding [language] and [ectxLanguage]

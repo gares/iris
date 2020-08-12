@@ -10,7 +10,7 @@ From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.program_logic Require Import ectx_lifting total_ectx_lifting.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import tactics notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Class heapG Σ := HeapG {
   heapG_invG : invG Σ;

@@ -1,5 +1,5 @@
 From iris.algebra Require Export cmra.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** * Frame preserving updates *)
 (* This quantifies over [option A] for the frame.  That is necessary to

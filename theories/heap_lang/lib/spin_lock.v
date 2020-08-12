@@ -4,7 +4,7 @@ From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import proofmode notation.
 From iris.heap_lang.lib Require Import lock.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Definition newlock : val := λ: <>, ref #false.
 Definition try_acquire : val := λ: "l", CAS "l" #false #true.
