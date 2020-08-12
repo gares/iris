@@ -5,6 +5,7 @@
 # (https://github.com/coq/coq/issues/6294).
 -arg -w -arg -redundant-canonical-projection
 
+theories/options.v
 theories/algebra/monoid.v
 theories/algebra/cmra.v
 theories/algebra/big_op.v
