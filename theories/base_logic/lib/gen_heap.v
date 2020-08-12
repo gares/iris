@@ -121,9 +121,10 @@ Section definitions.
     ∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
           own γm (namespace_map_data N (to_agree (encode x))).
   Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
-  Definition meta {A dA cA} := meta_aux.(unseal) A dA cA.
+  Definition meta := meta_aux.(unseal).
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.
+Arguments meta {_ _ _ _ Σ _ _ _ _} l N x.
 
 Local Notation "l ↦{ q } v" := (mapsto l q v)
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.

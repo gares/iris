@@ -257,6 +257,8 @@ Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
 Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
+(* FIXME this is not at all our usual sealing pattern.
+The [def] is missing and the [eq] doesn't even match the definition in [aux]! *)
 Definition envs_entails_aux :
   seal (λ (PROP : bi) (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
 Proof. by eexists. Qed.

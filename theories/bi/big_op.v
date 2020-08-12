@@ -57,7 +57,7 @@ Definition big_sepM2_def {PROP : bi} `{Countable K} {A B}
 Definition big_sepM2_aux : seal (@big_sepM2_def). Proof. by eexists. Qed.
 Definition big_sepM2 := big_sepM2_aux.(unseal).
 Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
-Definition big_sepM2_eq : @big_sepM2 = @big_sepM2_def := big_sepM2_aux.(seal_eq).
+Definition big_sepM2_eq : @big_sepM2 = _ := big_sepM2_aux.(seal_eq).
 Instance: Params (@big_sepM2) 6 := {}.
 Notation "'[∗' 'map]' k ↦ x1 ; x2 ∈ m1 ; m2 , P" :=
   (big_sepM2 (λ k x1 x2, P) m1 m2) : bi_scope.
