@@ -10,6 +10,9 @@ From iris Require Import options.
 * [array_copy_to], a function which copies to an array in-place.
 * Using [array_copy_to] we also implement [array_clone], which allocates a fresh
 array and copies to it.
+* [array_init], to create and initialize an array with a given
+function. Specifically, [array_init n f] creates a new array of size
+[n] in which the [i]th element is initialized with [f #i]
 
 *)
 
@@ -31,13 +34,15 @@ Definition array_clone : val :=
     array_copy_to "dst" "src" "n";;
     "dst".
 
-Definition array_init_loop : val :=
+(* [array_init_loop src i n f] initializes elements
+   [i], [i+1], ..., [n] of the array [src] to
+   [f #i], [f #(i+1)], ..., [f #n] *)
+Local Definition array_init_loop : val :=
   rec: "loop" "src" "i" "n" "f" :=
     if: "i" = "n" then #()
     else "src" +ₗ "i" <- "f" "i";;
          "loop" "src" ("i" + #1) "n" "f".
 
-(* similar to [Array.init] in OCaml's stdlib *)
 Definition array_init : val :=
   λ: "n" "f",
     let: "src" := AllocN "n" #() in
@@ -121,11 +126,11 @@ Section proof.
   Qed.
 
   (* TODO: move to std++? *)
-  Lemma insert_0_replicate {A : Type} (x y : A) n :
+  Local Lemma insert_0_replicate {A : Type} (x y : A) n :
     <[0:=y]>(replicate (S n) x) = y :: replicate n x.
   Proof. by induction n; eauto. Qed.
 
-  Lemma wp_array_init_loop {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
+  Local Lemma wp_array_init_loop {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
           (xs : list A) i n l (f : val) stk E :
     (0 < n) →
     length xs = i →
@@ -177,7 +182,7 @@ Section proof.
     (0 < n)%Z →
     {{{ (□ ∀ i : nat, WP f #i @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }}) }}}
       array_init #n f @ stk; E
-    {{{ l xs, RET #l; l ↦∗ (g<$>xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }}}.
+    {{{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }}}.
   Proof.
     intros Hn. iIntros (Φ) "#Hf HΦ".
     wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
@@ -192,6 +197,7 @@ Section proof.
     iFrame "Hl HQs". iPureIntro. lia.
   Qed.
 
+  (* Version of [wp_array_init] with the auxiliary type [A] set to [val]. *)
   Lemma wp_array_init' (Q : nat → val → iProp Σ) n (f : val) stk E :
     (0 < n)%Z →
     {{{ (□ ∀ i : nat, WP f #i @ stk; E {{ v, Q i v }}) }}}
