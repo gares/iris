@@ -1,9 +1,9 @@
 -Q theories iris
-# We sometimes want to locally override notation (e.g. in proofmode/base.v, bi/embedding.v), and there
-# is no good way to do that with scopes.
+# We sometimes want to locally override notation (e.g. in proofmode/base.v,
+# bi/embedding.v), and there is no good way to do that with scopes.
 -arg -w -arg -notation-overridden
 # Cannot use non-canonical projections as it causes massive unification failures
-# (https://github.com/coq/coq/issues/6294)
+# (https://github.com/coq/coq/issues/6294).
 -arg -w -arg -redundant-canonical-projection
 
 theories/algebra/monoid.v
