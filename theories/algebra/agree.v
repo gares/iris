@@ -1,7 +1,6 @@
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import list.
 From iris.base_logic Require Import base_logic.
-Import stdpp.list. (* Make sure we use those names. FIXME: remove when we drop Coq 8.9 support. *)
 Local Arguments validN _ _ _ !_ /.
 Local Arguments valid _ _  !_ /.
 Local Arguments op _ _ _ !_ /.

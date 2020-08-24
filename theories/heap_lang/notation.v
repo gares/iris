@@ -2,9 +2,6 @@ From iris.program_logic Require Import language.
 From iris.heap_lang Require Export lang.
 Set Default Proof Using "Type".
 
-Delimit Scope expr_scope with E.
-Delimit Scope val_scope with V.
-
 (** Coercions to make programs easier to type. *)
 Coercion LitInt : Z >-> base_lit.
 Coercion LitBool : bool >-> base_lit.

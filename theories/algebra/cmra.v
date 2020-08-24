@@ -794,6 +794,7 @@ Record rFunctor := RFunctor {
 Existing Instances rFunctor_map_ne rFunctor_mor.
 Instance: Params (@rFunctor_map) 9 := {}.
 
+Declare Scope rFunctor_scope.
 Delimit Scope rFunctor_scope with RF.
 Bind Scope rFunctor_scope with rFunctor.
 
@@ -866,6 +867,7 @@ Record urFunctor := URFunctor {
 Existing Instances urFunctor_map_ne urFunctor_mor.
 Instance: Params (@urFunctor_map) 9 := {}.
 
+Declare Scope urFunctor_scope.
 Delimit Scope urFunctor_scope with URF.
 Bind Scope urFunctor_scope with urFunctor.
 

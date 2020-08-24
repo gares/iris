@@ -52,11 +52,6 @@ build-coq.8.10.2:
   variables:
     OPAM_PINS: "coq version 8.10.2"
 
-build-coq.8.9.1:
-  <<: *template
-  variables:
-    OPAM_PINS: "coq version 8.9.1"
-
 # Nightly job with a known-to-work Coq version
 # (so failures must be caused by std++)
 build-stdpp.dev-coq.8.11.2:

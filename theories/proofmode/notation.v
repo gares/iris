@@ -2,6 +2,7 @@ From stdpp Require Export strings.
 From iris.proofmode Require Import coq_tactics environments.
 Set Default Proof Using "Type".
 
+Declare Scope proof_scope.
 Delimit Scope proof_scope with env.
 Arguments Envs _ _%proof_scope _%proof_scope _.
 Arguments Enil {_}.
