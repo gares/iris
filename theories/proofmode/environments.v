@@ -257,16 +257,18 @@ Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
 Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
-(* FIXME this is not at all our usual sealing pattern.
-The [def] is missing and the [eq] doesn't even match the definition in [aux]! *)
-Definition envs_entails_aux :
-  seal (λ (PROP : bi) (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
-Proof. by eexists. Qed.
+Definition pre_envs_entails_def {PROP : bi} (Γp Γs : env PROP) (Q : PROP) :=
+  of_envs' Γp Γs ⊢ Q.
+Definition pre_envs_entails_aux : seal (@pre_envs_entails_def). Proof. by eexists. Qed.
+Definition pre_envs_entails := pre_envs_entails_aux.(unseal).
+Definition pre_envs_entails_eq : @pre_envs_entails = @pre_envs_entails_def :=
+  pre_envs_entails_aux.(seal_eq).
+
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
-  envs_entails_aux.(unseal) PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
+  pre_envs_entails  PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
 Definition envs_entails_eq :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
-Proof. by rewrite /envs_entails envs_entails_aux.(seal_eq). Qed.
+Proof. by rewrite /envs_entails pre_envs_entails_eq. Qed.
 Arguments envs_entails {PROP} Δ Q%I : rename.
 Instance: Params (@envs_entails) 1 := {}.
 
