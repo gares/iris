@@ -316,7 +316,7 @@ Program Definition fixpoint_def `{Cofe A, Inhabited A} (f : A → A)
   `{!Contractive f} : A := compl (fixpoint_chain f).
 Definition fixpoint_aux : seal (@fixpoint_def). Proof. by eexists. Qed.
 Definition fixpoint := fixpoint_aux.(unseal).
-Arguments fixpoint {A AC AiH} f {Hf} : rename.
+Arguments fixpoint {A _ _} f {_}.
 Definition fixpoint_eq : @fixpoint = @fixpoint_def := fixpoint_aux.(seal_eq).
 
 Section fixpoint.

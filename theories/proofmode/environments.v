@@ -269,7 +269,7 @@ Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
 Definition envs_entails_eq :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
 Proof. by rewrite /envs_entails pre_envs_entails_eq. Qed.
-Arguments envs_entails {PROP} Δ Q%I : rename.
+Arguments envs_entails {PROP} Δ Q%I.
 Instance: Params (@envs_entails) 1 := {}.
 
 Record envs_Forall2 {PROP : bi} (R : relation PROP) (Δ1 Δ2 : envs PROP) := {

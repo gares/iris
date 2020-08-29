@@ -124,7 +124,7 @@ Section definitions.
   Definition meta := meta_aux.(unseal).
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.
-Arguments meta {_ _ _ _ Σ _ _ _ _} l N x.
+Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
 Local Notation "l ↦{ q } v" := (mapsto l q v)
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
