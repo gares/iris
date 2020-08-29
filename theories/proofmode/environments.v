@@ -237,9 +237,9 @@ way, [iFresh] can simply be implemented by changing the goal from
 using the tactic [convert_concl_no_check]. This way, the generated proof term
 contains no additional steps for changing the counter.
 
-For all definitions below, we first define a version that take the two contexts
-[env_intuitionistic] and [env_spatial] as its arguments, and then lift these
-definitions that take the whole proof mode context [Δ : envs PROP]. This is
+We first define a version [pre_envs_entails] that takes the two contexts
+[env_intuitionistic] and [env_spatial] as its arguments. We seal this definition
+and then lift it to take the whole proof mode context [Δ : envs PROP]. This is
 crucial to make sure that the counter [env_counter] is not part of the seal. *)
 Record envs_wf' {PROP : bi} (Γp Γs : env PROP) := {
   env_intuitionistic_valid : env_wf Γp;
