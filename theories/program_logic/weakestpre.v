@@ -48,7 +48,7 @@ Definition wp_def `{!irisG Λ Σ} : Wp Λ (iProp Σ) stuckness :=
   λ s : stuckness, fixpoint (wp_pre s).
 Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).
-Arguments wp' {_ _ _}.
+Arguments wp' {Λ Σ _}.
 Existing Instance wp'.
 Definition wp_eq `{!irisG Λ Σ} : wp = @wp_def Λ Σ _.
 Proof. rewrite -wp_aux.(seal_eq) //. Qed.

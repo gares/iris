@@ -75,8 +75,8 @@ Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
-Arguments gen_heap_name {_ _ _ _ _} _ : assert.
-Arguments gen_meta_name {_ _ _ _ _} _ : assert.
+Arguments gen_heap_name {L V Σ _ _} _ : assert.
+Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V));
