@@ -125,16 +125,11 @@ Section proof.
     iApply (twp_array_clone with "H"); [auto..|]; iIntros (l') "H HΦ". by iApply "HΦ".
   Qed.
 
-  (* TODO: move to std++? *)
-  Local Lemma insert_0_replicate {A : Type} (x y : A) n :
-    <[0:=y]>(replicate (S n) x) = y :: replicate n x.
-  Proof. by induction n; eauto. Qed.
-
   Local Lemma wp_array_init_loop {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
           (xs : list A) i n l (f : val) stk E :
-    (0 < n) →
+    0 < n →
     length xs = i →
-    (i ≤ n) →
+    i ≤ n →
     ([∗ list] k↦x∈xs, Q k x) -∗
     (□ ∀ i : nat, WP f #i @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }}) -∗
     l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
@@ -166,7 +161,7 @@ Section proof.
         rewrite app_assoc_reverse /=.
         assert (length xs ≠ n) by naive_solver.
         assert ((n - length xs) = S (n - (length xs + 1))) as -> by lia.
-        by rewrite insert_0_replicate. }
+        done. }
       { by rewrite app_length. }
       { assert (length xs ≠ n) by naive_solver. lia. }
       iApply (wp_wand with "IH").
