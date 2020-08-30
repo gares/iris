@@ -50,7 +50,7 @@ Definition wp_aux : seal (@wp_def). Proof. by eexists. Qed.
 Definition wp' := wp_aux.(unseal).
 Arguments wp' {Λ Σ _}.
 Existing Instance wp'.
-Definition wp_eq `{!irisG Λ Σ} : wp = @wp_def Λ Σ _.
+Lemma wp_eq `{!irisG Λ Σ} : wp = @wp_def Λ Σ _.
 Proof. rewrite -wp_aux.(seal_eq) //. Qed.
 
 Section wp.

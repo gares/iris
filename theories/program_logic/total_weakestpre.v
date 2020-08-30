@@ -63,7 +63,7 @@ Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
 Definition twp' := twp_aux.(unseal).
 Arguments twp' {Λ Σ _}.
 Existing Instance twp'.
-Definition twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _.
+Lemma twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _.
 Proof. rewrite -twp_aux.(seal_eq) //. Qed.
 
 Section twp.

@@ -746,7 +746,7 @@ Next Obligation. solve_proper. Qed.
 Definition monPred_bupd_aux : seal (@monPred_bupd_def). Proof. by eexists. Qed.
 Definition monPred_bupd := monPred_bupd_aux.(unseal).
 Arguments monPred_bupd {_}.
-Definition monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = monPred_bupd_def.
+Lemma monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = monPred_bupd_def.
 Proof. rewrite -monPred_bupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_bupd_mixin `{BiBUpd PROP} : BiBUpdMixin monPredI monPred_bupd.
@@ -812,7 +812,7 @@ Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
 Proof. by eexists. Qed.
 Definition monPred_internal_eq := monPred_internal_eq_aux.(unseal).
 Arguments monPred_internal_eq {_}.
-Definition monPred_internal_eq_eq `{!BiInternalEq PROP} :
+Lemma monPred_internal_eq_eq `{!BiInternalEq PROP} :
   @internal_eq _ (@monPred_internal_eq _) = monPred_internal_eq_def.
 Proof. rewrite -monPred_internal_eq_aux.(seal_eq) //. Qed.
 
@@ -867,7 +867,7 @@ Next Obligation. solve_proper. Qed.
 Definition monPred_fupd_aux : seal (@monPred_fupd_def). Proof. by eexists. Qed.
 Definition monPred_fupd := monPred_fupd_aux.(unseal).
 Arguments monPred_fupd {_}.
-Definition monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = monPred_fupd_def.
+Lemma monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = monPred_fupd_def.
 Proof. rewrite -monPred_fupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_fupd_mixin `{BiFUpd PROP} : BiFUpdMixin monPredI monPred_fupd.
@@ -905,7 +905,7 @@ Definition monPred_plainly_def `{BiPlainly PROP} P : monPred :=
 Definition monPred_plainly_aux : seal (@monPred_plainly_def). Proof. by eexists. Qed.
 Definition monPred_plainly := monPred_plainly_aux.(unseal).
 Arguments monPred_plainly {_}.
-Definition monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = monPred_plainly_def.
+Lemma monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = monPred_plainly_def.
 Proof. rewrite -monPred_plainly_aux.(seal_eq) //. Qed.
 
 Lemma monPred_plainly_mixin `{BiPlainly PROP} : BiPlainlyMixin monPredI monPred_plainly.
