@@ -1,5 +1,6 @@
 From stdpp Require Import coPset.
 From iris.bi Require Import bi.
+Set Default Proof Using "Type".
 
 (** Definitions. *)
 Structure biIndex :=
@@ -126,9 +127,9 @@ Program Definition monPred_upclosed (Φ : I → PROP) : monPred :=
   MonPred (λ i, (∀ j, ⌜i ⊑ j⌝ → Φ j)%I) _.
 Next Obligation. solve_proper. Qed.
 
-Definition monPred_embed_def (P : PROP) : monPred := MonPred (λ _, P) _.
+Definition monPred_embed_def : Embed PROP monPred := λ (P : PROP), MonPred (λ _, P) _.
 Definition monPred_embed_aux : seal (@monPred_embed_def). Proof. by eexists. Qed.
-Definition monPred_embed : Embed PROP monPred := monPred_embed_aux.(unseal).
+Definition monPred_embed := monPred_embed_aux.(unseal).
 Definition monPred_embed_eq : @embed _ _ monPred_embed = _ := monPred_embed_aux.(seal_eq).
 
 Definition monPred_emp_def : monPred := MonPred (λ _, emp)%I _.
@@ -743,10 +744,11 @@ Proof. intros ??. rewrite !monPred_at_big_sepMS. do 2 f_equiv. by apply objectiv
 Program Definition monPred_bupd_def `{BiBUpd PROP} (P : monPred) : monPred :=
   MonPred (λ i, |==> P i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_bupd_aux `{BiBUpd PROP} : seal monPred_bupd_def. Proof. by eexists. Qed.
-Definition monPred_bupd `{BiBUpd PROP} : BUpd _ := monPred_bupd_aux.(unseal).
-Definition monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = _ :=
-  monPred_bupd_aux.(seal_eq).
+Definition monPred_bupd_aux : seal (@monPred_bupd_def). Proof. by eexists. Qed.
+Definition monPred_bupd := monPred_bupd_aux.(unseal).
+Arguments monPred_bupd {_}.
+Lemma monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = monPred_bupd_def.
+Proof. rewrite -monPred_bupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_bupd_mixin `{BiBUpd PROP} : BiBUpdMixin monPredI monPred_bupd.
 Proof.
@@ -807,11 +809,13 @@ Proof. rewrite /bi_except_0. apply _. Qed.
 (** Internal equality *)
 Definition monPred_internal_eq_def `{!BiInternalEq PROP} (A : ofeT) (a b : A) : monPred :=
   MonPred (λ _, a ≡ b)%I _.
-Definition monPred_internal_eq_aux `{!BiInternalEq PROP} : seal (@monPred_internal_eq_def _).
+Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
 Proof. by eexists. Qed.
-Definition monPred_internal_eq `{!BiInternalEq PROP} := monPred_internal_eq_aux.(unseal).
-Definition monPred_internal_eq_eq `{!BiInternalEq PROP} :
-  @internal_eq _ (@monPred_internal_eq _) = _ := monPred_internal_eq_aux.(seal_eq).
+Definition monPred_internal_eq := monPred_internal_eq_aux.(unseal).
+Arguments monPred_internal_eq {_}.
+Lemma monPred_internal_eq_eq `{!BiInternalEq PROP} :
+  @internal_eq _ (@monPred_internal_eq _) = monPred_internal_eq_def.
+Proof. rewrite -monPred_internal_eq_aux.(seal_eq) //. Qed.
 
 Lemma monPred_internal_eq_mixin `{!BiInternalEq PROP} :
   BiInternalEqMixin monPredI (@monPred_internal_eq _).
@@ -861,10 +865,11 @@ Program Definition monPred_fupd_def `{BiFUpd PROP} (E1 E2 : coPset)
         (P : monPred) : monPred :=
   MonPred (λ i, |={E1,E2}=> P i)%I _.
 Next Obligation. solve_proper. Qed.
-Definition monPred_fupd_aux `{BiFUpd PROP} : seal monPred_fupd_def. Proof. by eexists. Qed.
-Definition monPred_fupd `{BiFUpd PROP} : FUpd _ := monPred_fupd_aux.(unseal).
-Definition monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = _ :=
-  monPred_fupd_aux.(seal_eq).
+Definition monPred_fupd_aux : seal (@monPred_fupd_def). Proof. by eexists. Qed.
+Definition monPred_fupd := monPred_fupd_aux.(unseal).
+Arguments monPred_fupd {_}.
+Lemma monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = monPred_fupd_def.
+Proof. rewrite -monPred_fupd_aux.(seal_eq) //. Qed.
 
 Lemma monPred_fupd_mixin `{BiFUpd PROP} : BiFUpdMixin monPredI monPred_fupd.
 Proof.
@@ -898,9 +903,11 @@ Proof. intros ??. by rewrite !monPred_at_fupd objective_at. Qed.
 (** Plainly *)
 Definition monPred_plainly_def `{BiPlainly PROP} P : monPred :=
   MonPred (λ _, ∀ i, ■ (P i))%I _.
-Definition monPred_plainly_aux `{BiPlainly PROP} : seal monPred_plainly_def. Proof. by eexists. Qed.
-Definition monPred_plainly `{BiPlainly PROP} : Plainly _ := monPred_plainly_aux.(unseal).
-Definition monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = _ := monPred_plainly_aux.(seal_eq).
+Definition monPred_plainly_aux : seal (@monPred_plainly_def). Proof. by eexists. Qed.
+Definition monPred_plainly := monPred_plainly_aux.(unseal).
+Arguments monPred_plainly {_}.
+Lemma monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = monPred_plainly_def.
+Proof. rewrite -monPred_plainly_aux.(seal_eq) //. Qed.
 
 Lemma monPred_plainly_mixin `{BiPlainly PROP} : BiPlainlyMixin monPredI monPred_plainly.
 Proof.

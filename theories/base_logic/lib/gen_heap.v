@@ -75,8 +75,8 @@ Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
-Arguments gen_heap_name {_ _ _ _ _} _ : assert.
-Arguments gen_meta_name {_ _ _ _ _} _ : assert.
+Arguments gen_heap_name {L V Σ _ _} _ : assert.
+Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V));
@@ -121,9 +121,10 @@ Section definitions.
     ∃ γm, own (gen_meta_name hG) (◯ {[ l := to_agree γm ]}) ∗
           own γm (namespace_map_data N (to_agree (encode x))).
   Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
-  Definition meta {A dA cA} := meta_aux.(unseal) A dA cA.
+  Definition meta := meta_aux.(unseal).
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.
+Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
 Local Notation "l ↦{ q } v" := (mapsto l q v)
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.

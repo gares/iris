@@ -9,10 +9,11 @@ Import uPred.
 
 Definition uPred_fupd_def `{!invG Σ} (E1 E2 : coPset) (P : iProp Σ) : iProp Σ :=
   wsat ∗ ownE E1 ==∗ ◇ (wsat ∗ ownE E2 ∗ P).
-Definition uPred_fupd_aux `{!invG Σ} : seal uPred_fupd_def. Proof. by eexists. Qed.
-Definition uPred_fupd `{!invG Σ} : FUpd (iProp Σ):= uPred_fupd_aux.(unseal).
-Definition uPred_fupd_eq `{!invG Σ} : @fupd _ uPred_fupd = uPred_fupd_def :=
-  uPred_fupd_aux.(seal_eq).
+Definition uPred_fupd_aux : seal (@uPred_fupd_def). Proof. by eexists. Qed.
+Definition uPred_fupd := uPred_fupd_aux.(unseal).
+Arguments uPred_fupd {Σ _}.
+Lemma uPred_fupd_eq `{!invG Σ} : @fupd _ uPred_fupd = uPred_fupd_def.
+Proof. rewrite -uPred_fupd_aux.(seal_eq) //. Qed.
 
 Lemma uPred_fupd_mixin `{!invG Σ} : BiFUpdMixin (uPredI (iResUR Σ)) uPred_fupd.
 Proof.

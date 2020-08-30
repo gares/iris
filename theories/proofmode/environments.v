@@ -237,9 +237,9 @@ way, [iFresh] can simply be implemented by changing the goal from
 using the tactic [change_no_check]. This way, the generated proof term
 contains no additional steps for changing the counter.
 
-For all definitions below, we first define a version that take the two contexts
-[env_intuitionistic] and [env_spatial] as its arguments, and then lift these
-definitions that take the whole proof mode context [Δ : envs PROP]. This is
+We first define a version [pre_envs_entails] that takes the two contexts
+[env_intuitionistic] and [env_spatial] as its arguments. We seal this definition
+and then lift it to take the whole proof mode context [Δ : envs PROP]. This is
 crucial to make sure that the counter [env_counter] is not part of the seal. *)
 Record envs_wf' {PROP : bi} (Γp Γs : env PROP) := {
   env_intuitionistic_valid : env_wf Γp;
@@ -257,15 +257,19 @@ Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
 Instance: Params (@of_envs) 1 := {}.
 Arguments of_envs : simpl never.
 
-Definition envs_entails_aux :
-  seal (λ (PROP : bi) (Γp Γs : env PROP) (Q : PROP), of_envs' Γp Γs ⊢ Q).
-Proof. by eexists. Qed.
+Definition pre_envs_entails_def {PROP : bi} (Γp Γs : env PROP) (Q : PROP) :=
+  of_envs' Γp Γs ⊢ Q.
+Definition pre_envs_entails_aux : seal (@pre_envs_entails_def). Proof. by eexists. Qed.
+Definition pre_envs_entails := pre_envs_entails_aux.(unseal).
+Definition pre_envs_entails_eq : @pre_envs_entails = @pre_envs_entails_def :=
+  pre_envs_entails_aux.(seal_eq).
+
 Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
-  envs_entails_aux.(unseal) PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
+  pre_envs_entails  PROP (env_intuitionistic Δ) (env_spatial Δ) Q.
 Definition envs_entails_eq :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
-Proof. by rewrite /envs_entails envs_entails_aux.(seal_eq). Qed.
-Arguments envs_entails {PROP} Δ Q%I : rename.
+Proof. by rewrite /envs_entails pre_envs_entails_eq. Qed.
+Arguments envs_entails {PROP} Δ Q%I.
 Instance: Params (@envs_entails) 1 := {}.
 
 Record envs_Forall2 {PROP : bi} (R : relation PROP) (Δ1 Δ2 : envs PROP) := {
