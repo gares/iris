@@ -38,9 +38,9 @@ Tactic Notation "ofe_subst" :=
   end.
 
 Record OfeMixin A `{Equiv A, Dist A} := {
-  mixin_equiv_dist x y : x ≡ y ↔ ∀ n, x ≡{n}≡ y;
-  mixin_dist_equivalence n : Equivalence (dist n);
-  mixin_dist_S n x y : x ≡{S n}≡ y → x ≡{n}≡ y
+  mixin_equiv_dist (x y : A) : x ≡ y ↔ ∀ n, x ≡{n}≡ y;
+  mixin_dist_equivalence n : Equivalence (@dist A _ n);
+  mixin_dist_S n (x y : A) : x ≡{S n}≡ y → x ≡{n}≡ y
 }.
 
 (** Bundled version *)
