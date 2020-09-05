@@ -778,9 +778,6 @@ Check "test_iSimpl_in4".
 Lemma test_iSimpl_in4 x y : ⌜ (3 + x)%nat = y ⌝ -∗ ⌜ S (S (S x)) = y ⌝ : PROP.
 Proof. iIntros "H". Fail iSimpl in "%". by iSimpl in "H". Qed.
 
-Lemma test_iIntros_pure_neg : ⊢@{PROP} ⌜ ¬False ⌝.
-Proof. by iIntros (?). Qed.
-
 Lemma test_iPureIntro_absorbing (φ : Prop) :
   φ → ⊢@{PROP} <absorb> ⌜φ⌝.
 Proof. intros ?. iPureIntro. done. Qed.
