@@ -547,6 +547,13 @@ Proof.
   - apply exist_elim=> x. eauto using pure_mono.
 Qed.
 
+Lemma bi_pure_forall_em : (∀ φ : Prop, φ ∨ ¬φ) → BiPureForall PROP.
+Proof.
+  intros Hem A φ. destruct (Hem (∃ a, ¬φ a)) as [[a Hφ]|Hφ].
+  { rewrite (forall_elim a). by apply pure_elim'. }
+  apply pure_intro=> a. destruct (Hem (φ a)); naive_solver.
+Qed.
+
 Lemma pure_impl_forall φ P : (⌜φ⌝ → P) ⊣⊢ (∀ _ : φ, P).
 Proof.
   apply (anti_symm _).
