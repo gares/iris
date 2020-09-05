@@ -244,6 +244,7 @@ Notation "(∧)" := bi_and (only parsing) : bi_scope.
 Infix "∨" := bi_or : bi_scope.
 Notation "(∨)" := bi_or (only parsing) : bi_scope.
 Infix "→" := bi_impl : bi_scope.
+Notation "¬ P" := (P → False)%I : bi_scope.
 Infix "∗" := bi_sep : bi_scope.
 Notation "(∗)" := bi_sep (only parsing) : bi_scope.
 Notation "P -∗ Q" := (bi_wand P Q) : bi_scope.
