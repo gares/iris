@@ -107,6 +107,19 @@ Global Instance Cinl_discrete a : Discrete a → Discrete (Cinl a).
 Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
 Global Instance Cinr_discrete b : Discrete b → Discrete (Cinr b).
 Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
+
+(** Internalized properties *)
+Lemma csum_equivI {M} (x y : csum A B) :
+  x ≡ y ⊣⊢@{uPredI M} match x, y with
+                      | Cinl a, Cinl a' => a ≡ a'
+                      | Cinr b, Cinr b' => b ≡ b'
+                      | CsumBot, CsumBot => True
+                      | _, _ => False
+                      end.
+Proof.
+  uPred.unseal; do 2 split; first by destruct 1.
+  by destruct x, y; try destruct 1; try constructor.
+Qed.
 End cofe.
 
 Arguments csumO : clear implicits.
@@ -287,17 +300,6 @@ Global Instance Cinr_id_free b : IdFree b → IdFree (Cinr b).
 Proof. intros ? [] ? EQ; inversion_clear EQ. by eapply id_free0_r. Qed.
 
 (** Internalized properties *)
-Lemma csum_equivI {M} (x y : csum A B) :
-  x ≡ y ⊣⊢@{uPredI M} match x, y with
-                      | Cinl a, Cinl a' => a ≡ a'
-                      | Cinr b, Cinr b' => b ≡ b'
-                      | CsumBot, CsumBot => True
-                      | _, _ => False
-                      end.
-Proof.
-  uPred.unseal; do 2 split; first by destruct 1.
-  by destruct x, y; try destruct 1; try constructor.
-Qed.
 Lemma csum_validI {M} (x : csum A B) :
   ✓ x ⊣⊢@{uPredI M} match x with
                     | Cinl a => ✓ a

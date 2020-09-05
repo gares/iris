@@ -93,6 +93,10 @@ Global Instance nil_discrete : Discrete (@nil A).
 Proof. inversion_clear 1; constructor. Qed.
 Global Instance cons_discrete x l : Discrete x → Discrete l → Discrete (x :: l).
 Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
+
+(** Internalized properties *)
+Lemma list_equivI {M} l1 l2 : l1 ≡ l2 ⊣⊢@{uPredI M} ∀ i, l1 !! i ≡ l2 !! i.
+Proof. uPred.unseal; constructor=> n x ?. apply list_dist_lookup. Qed.
 End cofe.
 
 Arguments listO : clear implicits.
@@ -311,8 +315,6 @@ Section cmra.
   Proof. intros Hyp; by apply list_core_id'. Qed.
 
   (** Internalized properties *)
-  Lemma list_equivI {M} l1 l2 : l1 ≡ l2 ⊣⊢@{uPredI M} ∀ i, l1 !! i ≡ l2 !! i.
-  Proof. uPred.unseal; constructor=> n x ?. apply list_dist_lookup. Qed.
   Lemma list_validI {M} l : ✓ l ⊣⊢@{uPredI M} ∀ i, ✓ (l !! i).
   Proof. uPred.unseal; constructor=> n x ?. apply list_lookup_validN. Qed.
 End cmra.
