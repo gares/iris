@@ -1,4 +1,4 @@
-From iris.proofmode Require Import tactics .
+From iris.proofmode Require Import tactics.
 From iris.si_logic Require Import bi.
 
 Section si_logic_tests.
