@@ -69,6 +69,11 @@ Global Instance Auth_discrete a b :
 Proof. by intros ?? [??] [??]; split; apply: discrete. Qed.
 Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete authO.
 Proof. intros ? [??]; apply _. Qed.
+
+(** Internalized properties *)
+Lemma auth_equivI {M} x y :
+  x ≡ y ⊣⊢@{uPredI M} auth_auth_proj x ≡ auth_auth_proj y ∧ auth_frag_proj x ≡ auth_frag_proj y.
+Proof. by uPred.unseal. Qed.
 End ofe.
 
 Arguments authO : clear implicits.
@@ -329,9 +334,6 @@ Lemma auth_auth_frac_op_invL `{!LeibnizEquiv A} q a p b :
 Proof. by intros ?%auth_auth_frac_op_inv%leibniz_equiv. Qed.
 
 (** Internalized properties *)
-Lemma auth_equivI {M} x y :
-  x ≡ y ⊣⊢@{uPredI M} auth_auth_proj x ≡ auth_auth_proj y ∧ auth_frag_proj x ≡ auth_frag_proj y.
-Proof. by uPred.unseal. Qed.
 Lemma auth_validI {M} x :
   ✓ x ⊣⊢@{uPredI M} match auth_auth_proj x with
                     | Some (q, ag) => ✓ q ∧

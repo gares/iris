@@ -94,6 +94,10 @@ Global Instance gmap_singleton_discrete i x :
 Lemma insert_idN n m i x :
   m !! i ≡{n}≡ Some x → <[i:=x]>m ≡{n}≡ m.
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
+
+(** Internalized properties *)
+Lemma gmap_equivI {M} m1 m2 : m1 ≡ m2 ⊣⊢@{uPredI M} ∀ i, m1 !! i ≡ m2 !! i.
+Proof. by uPred.unseal. Qed.
 End cofe.
 
 Arguments gmapO _ {_ _} _.
@@ -232,8 +236,6 @@ Qed.
 Canonical Structure gmapUR := UcmraT (gmap K A) gmap_ucmra_mixin.
 
 (** Internalized properties *)
-Lemma gmap_equivI {M} m1 m2 : m1 ≡ m2 ⊣⊢@{uPredI M} ∀ i, m1 !! i ≡ m2 !! i.
-Proof. by uPred.unseal. Qed.
 Lemma gmap_validI {M} m : ✓ m ⊣⊢@{uPredI M} ∀ i, ✓ (m !! i).
 Proof. by uPred.unseal. Qed.
 End cmra.
