@@ -133,3 +133,8 @@ Arguments löb_weak {_ _} _ _.
 
 Notation BiLaterContractive PROP :=
   (Contractive (bi_later (PROP:=PROP))) (only parsing).
+
+(* An instance of [BiPureForall] is derivable if we assume excluded middle in
+Coq, see the lemma [bi_pure_forall_em] in [derived_laws]. *)
+Class BiPureForall (PROP : bi) :=
+  pure_forall_2 : ∀ {A} (φ : A → Prop), (∀ a, ⌜ φ a ⌝) ⊢@{PROP} ⌜ ∀ a, φ a ⌝.

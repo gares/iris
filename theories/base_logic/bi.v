@@ -30,7 +30,6 @@ Proof.
   - exact: persistently_ne.
   - exact: pure_intro.
   - exact: pure_elim'.
-  - exact: @pure_forall_2.
   - exact: and_elim_l.
   - exact: and_elim_r.
   - exact: and_intro.
@@ -89,6 +88,9 @@ Canonical Structure uPredI (M : ucmraT) : bi :=
   {| bi_ofe_mixin := ofe_mixin_of (uPred M);
      bi_bi_mixin := uPred_bi_mixin M;
      bi_bi_later_mixin := uPred_bi_later_mixin M |}.
+
+Instance uPred_pure_forall M : BiPureForall (uPredI M).
+Proof. exact: @pure_forall_2. Qed.
 
 Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
 Proof. apply later_contractive. Qed.

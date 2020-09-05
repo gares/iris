@@ -259,7 +259,6 @@ Proof.
     + intros [[] []]. split=>i. by apply bi.equiv_spec.
   - intros P φ ?. split=> i. by apply bi.pure_intro.
   - intros φ P HP. split=> i. apply bi.pure_elim'=> ?. by apply HP.
-  - intros A φ. split=> i. by apply bi.pure_forall_2.
   - intros P Q. split=> i. by apply bi.and_elim_l.
   - intros P Q. split=> i. by apply bi.and_elim_r.
   - intros P Q R [?] [?]. split=> i. by apply bi.and_intro.
@@ -401,6 +400,9 @@ Global Instance monPred_in_mono : Proper (flip (⊑) ==> (⊢)) (@monPred_in I P
 Proof. unseal. split. solve_proper. Qed.
 Global Instance monPred_in_flip_mono : Proper ((⊑) ==> flip (⊢)) (@monPred_in I PROP).
 Proof. solve_proper. Qed.
+
+Global Instance monPred_pure_forall : BiPureForall PROP → BiPureForall monPredI.
+Proof. intros ? A φ. split=> /= i. unseal. by apply pure_forall_2. Qed.
 
 Global Instance monPred_later_contractive :
   BiLaterContractive PROP → BiLaterContractive monPredI.

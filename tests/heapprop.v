@@ -149,8 +149,6 @@ Section mixins.
       unseal=> φ P ?; by split.
     - (* [(φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P] *)
       unseal=> φ P HP; split=> σ ?. by apply HP.
-    - (* [(∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝] *)
-      unseal=> A φ; by split.
     - (* [P ∧ Q ⊢ P] *)
       unseal=> P Q; split=> σ [??]; done.
     - (* [P ∧ Q ⊢ Q] *)
@@ -221,6 +219,9 @@ End mixins.
 Canonical Structure heapPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of heapProp;
      bi_bi_mixin := heapProp_bi_mixin; bi_bi_later_mixin := heapProp_bi_later_mixin |}.
+
+Instance heapProp_pure_forall : BiPureForall heapPropI.
+Proof. intros A φ. rewrite /bi_forall /bi_pure /=. unseal. by split. Qed.
 
 Lemma heapProp_proofmode_test {A} (P Q R : heapProp) (Φ Ψ : A → heapProp) :
   P ∗ Q -∗
