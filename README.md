@@ -98,6 +98,8 @@ followed by `make build-dep`.
 * The folder [tests](theories/tests) contains modules we use to test our
   infrastructure. Users of the Iris Coq library should *not* depend on these
   modules; they may change or disappear without any notice.
+* The folder [si_logic](theories/si_logic) defines a "plain" step-indexed logic
+  and shows that it is an instance of the BI interface.
 
 ## Case Studies
 
