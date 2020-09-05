@@ -1,6 +1,10 @@
 From iris.bi Require Import derived_laws_later big_op internal_eq.
 From iris.algebra Require Import monoid.
+From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
+
+(* The sections add [BiAffine] and the like, which is only picked up with "Type"*. *)
+Set Default Proof Using "Type*".
 
 Class Plainly (A : Type) := plainly : A → A.
 Arguments plainly {A}%type_scope {_} _%I.

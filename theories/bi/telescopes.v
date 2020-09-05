@@ -1,6 +1,6 @@
 From stdpp Require Export telescopes.
 From iris.bi Require Export bi.
-Set Default Proof Using "Type*".
+From iris Require Import options.
 Import bi.
 
 (* This cannot import the proofmode because it is imported by the proofmode! *)

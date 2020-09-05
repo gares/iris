@@ -1,6 +1,7 @@
 From iris.algebra Require Export auth excl updates.
 From iris.algebra Require Import local_updates.
 From iris.base_logic Require Import base_logic.
+From iris Require Import options.
 
 (** Authoritative CMRA where the fragment is exclusively owned.
 This is effectively a single "ghost variable" with two views, the frament [◯E a]

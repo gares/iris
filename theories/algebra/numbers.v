@@ -1,4 +1,5 @@
 From iris.algebra Require Export cmra local_updates proofmode_classes.
+From iris Require Import options.
 
 (** ** Natural numbers with [add] as the operation. *)
 Section nat.

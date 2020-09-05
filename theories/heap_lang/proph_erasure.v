@@ -1,5 +1,6 @@
 From iris.program_logic Require Export adequacy.
 From iris.heap_lang Require Export lang notation tactics.
+From iris Require Import options.
 
 (** This file contains the proof that prophecies can be safely erased
 from programs. We erase a program by replacing prophecy identifiers

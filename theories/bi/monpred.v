@@ -1,6 +1,6 @@
 From stdpp Require Import coPset.
 From iris.bi Require Import bi.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** Definitions. *)
 Structure biIndex :=

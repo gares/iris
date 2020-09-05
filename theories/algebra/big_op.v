@@ -1,6 +1,6 @@
 From stdpp Require Export functions gmap gmultiset.
 From iris.algebra Require Export monoid.
-Set Default Proof Using "Type*".
+From iris Require Import options.
 Local Existing Instances monoid_ne monoid_assoc monoid_comm
   monoid_left_id monoid_right_id monoid_proper
   monoid_homomorphism_rel_po monoid_homomorphism_rel_proper
@@ -619,36 +619,36 @@ Section homomorphisms.
   Lemma big_opL_commute_L {A} (h : M1 → M2)
       `{!MonoidHomomorphism o1 o2 (≡) h} (f : nat → A → M1) l :
     h ([^o1 list] k↦x ∈ l, f k x) = ([^o2 list] k↦x ∈ l, h (f k x)).
-  Proof. unfold_leibniz. by apply big_opL_commute. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opL_commute. Qed.
   Lemma big_opL_commute1_L {A} (h : M1 → M2)
       `{!WeakMonoidHomomorphism o1 o2 (≡) h} (f : nat → A → M1) l :
     l ≠ [] → h ([^o1 list] k↦x ∈ l, f k x) = ([^o2 list] k↦x ∈ l, h (f k x)).
-  Proof. unfold_leibniz. by apply big_opL_commute1. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opL_commute1. Qed.
 
   Lemma big_opM_commute_L `{Countable K} {A} (h : M1 → M2)
       `{!MonoidHomomorphism o1 o2 (≡) h} (f : K → A → M1) m :
     h ([^o1 map] k↦x ∈ m, f k x) = ([^o2 map] k↦x ∈ m, h (f k x)).
-  Proof. unfold_leibniz. by apply big_opM_commute. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opM_commute. Qed.
   Lemma big_opM_commute1_L `{Countable K} {A} (h : M1 → M2)
       `{!WeakMonoidHomomorphism o1 o2 (≡) h} (f : K → A → M1) m :
     m ≠ ∅ → h ([^o1 map] k↦x ∈ m, f k x) = ([^o2 map] k↦x ∈ m, h (f k x)).
-  Proof. unfold_leibniz. by apply big_opM_commute1. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opM_commute1. Qed.
 
   Lemma big_opS_commute_L `{Countable A} (h : M1 → M2)
       `{!MonoidHomomorphism o1 o2 (≡) h} (f : A → M1) X :
     h ([^o1 set] x ∈ X, f x) = ([^o2 set] x ∈ X, h (f x)).
-  Proof. unfold_leibniz. by apply big_opS_commute. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opS_commute. Qed.
   Lemma big_opS_commute1_L `{ Countable A} (h : M1 → M2)
       `{!WeakMonoidHomomorphism o1 o2 (≡) h} (f : A → M1) X :
     X ≠ ∅ → h ([^o1 set] x ∈ X, f x) = ([^o2 set] x ∈ X, h (f x)).
-  Proof. intros. rewrite <-leibniz_equiv_iff. by apply big_opS_commute1. Qed.
+  Proof using Type*. intros. rewrite <-leibniz_equiv_iff. by apply big_opS_commute1. Qed.
 
   Lemma big_opMS_commute_L `{Countable A} (h : M1 → M2)
       `{!MonoidHomomorphism o1 o2 (≡) h} (f : A → M1) X :
     h ([^o1 mset] x ∈ X, f x) = ([^o2 mset] x ∈ X, h (f x)).
-  Proof. unfold_leibniz. by apply big_opMS_commute. Qed.
+  Proof using Type*. unfold_leibniz. by apply big_opMS_commute. Qed.
   Lemma big_opMS_commute1_L `{Countable A} (h : M1 → M2)
       `{!WeakMonoidHomomorphism o1 o2 (≡) h} (f : A → M1) X :
     X ≠ ∅ → h ([^o1 mset] x ∈ X, f x) = ([^o2 mset] x ∈ X, h (f x)).
-  Proof. intros. rewrite <-leibniz_equiv_iff. by apply big_opMS_commute1. Qed.
+  Proof using Type*. intros. rewrite <-leibniz_equiv_iff. by apply big_opMS_commute1. Qed.
 End homomorphisms.

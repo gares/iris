@@ -2,6 +2,10 @@
 its reflexive transitive closure. *)
 From iris.bi.lib Require Export fixpoint.
 From iris.proofmode Require Import tactics.
+From iris Require Import options.
+
+(* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
+Set Default Proof Using "Type*".
 
 Definition bi_rtc_pre `{!BiInternalEq PROP}
     {A : ofeT} (R : A → A → PROP)

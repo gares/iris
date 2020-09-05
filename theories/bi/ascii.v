@@ -1,5 +1,6 @@
 From iris.bi Require Import interface derived_connectives updates.
 From iris.algebra Require Export ofe.
+From iris Require Import options.
 
 Notation "P |- Q" := (P ⊢ Q)
   (at level 99, Q at level 200, right associativity, only parsing) : stdpp_scope.

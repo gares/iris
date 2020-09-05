@@ -1,4 +1,5 @@
 From stdpp Require Import base.
+From iris Require Import options.
 
 (** [ident_name] is a way to remember an identifier within the binder of a
 (trivial) function, which can be constructed and retrieved with Ltac but is easy

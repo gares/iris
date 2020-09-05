@@ -1,4 +1,5 @@
 From iris.bi Require Import derived_laws_later big_op.
+From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 (** This file defines a type class for BIs with a notion of internal equality.

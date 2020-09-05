@@ -1,5 +1,6 @@
 From iris.algebra Require Export ofe.
 From iris.bi Require Import notation.
+From iris Require Import options.
 
 (** The type [siProp] defines "plain" step-indexed propositions, on which we
 define the usual connectives of higher-order logic, and prove that these satisfy

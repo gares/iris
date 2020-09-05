@@ -1,6 +1,6 @@
 From iris.bi Require Export bi.
 From iris.proofmode Require Import tactics.
-Set Default Proof Using "Type*".
+From iris Require Import options.
 Import bi.
 
 (** Least and greatest fixpoint of a monotone function, defined entirely inside
@@ -35,7 +35,7 @@ Section least.
   Context {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
   Lemma least_fixpoint_unfold_2 x : F (bi_least_fixpoint F) x ⊢ bi_least_fixpoint F x.
-  Proof.
+  Proof using Type*.
     rewrite /bi_least_fixpoint /=. iIntros "HF" (Φ) "#Hincl".
     iApply "Hincl". iApply (bi_mono_pred _ Φ with "[#]"); last done.
     iIntros "!>" (y) "Hy". iApply ("Hy" with "[# //]").
@@ -43,7 +43,7 @@ Section least.
 
   Lemma least_fixpoint_unfold_1 x :
     bi_least_fixpoint F x ⊢ F (bi_least_fixpoint F) x.
-  Proof.
+  Proof using Type*.
     iIntros "HF". iApply ("HF" $! (OfeMor (F (bi_least_fixpoint F))) with "[#]").
     iIntros "!>" (y) "Hy /=". iApply (bi_mono_pred with "[#]"); last done.
     iIntros "!>" (z) "?". by iApply least_fixpoint_unfold_2.
@@ -51,7 +51,7 @@ Section least.
 
   Corollary least_fixpoint_unfold x :
     bi_least_fixpoint F x ≡ F (bi_least_fixpoint F) x.
-  Proof.
+  Proof using Type*.
     apply (anti_symm _); auto using least_fixpoint_unfold_1, least_fixpoint_unfold_2.
   Qed.
 
@@ -64,7 +64,7 @@ Section least.
   Lemma least_fixpoint_strong_ind (Φ : A → PROP) `{!NonExpansive Φ} :
     □ (∀ y, F (λ x, Φ x ∧ bi_least_fixpoint F x) y -∗ Φ y) -∗
     ∀ x, bi_least_fixpoint F x -∗ Φ x.
-  Proof.
+  Proof using Type*.
     trans (∀ x, bi_least_fixpoint F x -∗ Φ x ∧ bi_least_fixpoint F x)%I.
     { iIntros "#HΦ". iApply (least_fixpoint_ind with "[]"); first solve_proper.
       iIntros "!>" (y) "H". iSplit; first by iApply "HΦ".
@@ -97,7 +97,7 @@ Section greatest.
 
   Lemma greatest_fixpoint_unfold_1 x :
     bi_greatest_fixpoint F x ⊢ F (bi_greatest_fixpoint F) x.
-  Proof.
+  Proof using Type*.
     iDestruct 1 as (Φ) "[#Hincl HΦ]".
     iApply (bi_mono_pred Φ (bi_greatest_fixpoint F) with "[#]").
     - iIntros "!>" (y) "Hy". iExists Φ. auto.
@@ -106,7 +106,7 @@ Section greatest.
 
   Lemma greatest_fixpoint_unfold_2 x :
     F (bi_greatest_fixpoint F) x ⊢ bi_greatest_fixpoint F x.
-  Proof.
+  Proof using Type*.
     iIntros "HF". iExists (OfeMor (F (bi_greatest_fixpoint F))).
     iSplit; last done. iIntros "!>" (y) "Hy /=". iApply (bi_mono_pred with "[#] Hy").
     iIntros "!>" (z) "?". by iApply greatest_fixpoint_unfold_1.
@@ -114,7 +114,7 @@ Section greatest.
 
   Corollary greatest_fixpoint_unfold x :
     bi_greatest_fixpoint F x ≡ F (bi_greatest_fixpoint F) x.
-  Proof.
+  Proof using Type*.
     apply (anti_symm _); auto using greatest_fixpoint_unfold_1, greatest_fixpoint_unfold_2.
   Qed.
 
