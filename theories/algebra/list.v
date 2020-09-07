@@ -573,4 +573,4 @@ Proof.
 Qed.
 
 Definition listRF (F : urFunctor) : rFunctor :=
-  urFunctor_to_rFunctor $ listURF F.
+  urFunctor_to_rFunctor (listURF F).

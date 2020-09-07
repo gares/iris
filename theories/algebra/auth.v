@@ -470,28 +470,6 @@ Lemma authO_map_ne A B : NonExpansive (@authO_map A B).
 Proof. intros n f f' Hf [[[]|] ]; repeat constructor; try naive_solver;
   apply agreeO_map_ne; auto. Qed.
 
-Program Definition authRF (F : urFunctor) : rFunctor := {|
-  rFunctor_car A _ B _ := authR (urFunctor_car F A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authO_map (urFunctor_map F fg)
-|}.
-Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_map_ne.
-Qed.
-Next Obligation.
-  intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
-  apply (auth_map_ext _ _)=>y; apply urFunctor_map_id.
-Qed.
-Next Obligation.
-  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -auth_map_compose.
-  apply (auth_map_ext _ _)=>y; apply urFunctor_map_compose.
-Qed.
-
-Instance authRF_contractive F :
-  urFunctorContractive F → rFunctorContractive (authRF F).
-Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_map_contractive.
-Qed.
-
 Program Definition authURF (F : urFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := authUR (urFunctor_car F A B);
   urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authO_map (urFunctor_map F fg)
@@ -513,3 +491,6 @@ Instance authURF_contractive F :
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_map_contractive.
 Qed.
+
+Definition authRF (F : urFunctor) :=
+  urFunctor_to_rFunctor (authURF F).
