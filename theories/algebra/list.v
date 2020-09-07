@@ -186,7 +186,7 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, oFunctor_map_contractive.
 Qed.
 
-(* CMRA *)
+(* CMRA. Only works if [A] has a unit! *)
 Section cmra.
   Context {A : ucmraT}.
   Implicit Types l : list A.
@@ -571,3 +571,6 @@ Instance listURF_contractive F :
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, urFunctor_map_contractive.
 Qed.
+
+Definition listRF (F : urFunctor) : rFunctor :=
+  urFunctor_to_rFunctor $ listURF F.
