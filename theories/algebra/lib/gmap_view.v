@@ -1,9 +1,7 @@
 From Coq.QArith Require Import Qcanon.
-From iris.proofmode Require Import tactics.
 From iris.algebra Require Import view updates dfrac.
 From iris.algebra Require Export gmap dfrac.
 From iris.algebra Require Import local_updates proofmode_classes.
-From iris.base_logic Require Import base_logic.
 From iris Require Import options.
 
 (** * CMRA for a "view of a gmap".
@@ -316,25 +314,6 @@ Section lemmas.
     IsOp dq dq1 dq2 →
     IsOp' (gmap_view_frag k dq v) (gmap_view_frag k dq1 v) (gmap_view_frag k dq2 v).
   Proof. rewrite /IsOp' /IsOp => ->. apply gmap_view_frag_op. Qed.
-
-  (** Internalized properties *)
-  Lemma gmap_view_both_validI M m k dq v :
-    ✓ (gmap_view_auth m ⋅ gmap_view_frag k dq v) ⊢@{uPredI M}
-    ✓ dq ∧ m !! k ≡ Some v.
-  Proof.
-    rewrite /gmap_view_auth /gmap_view_frag. apply view_both_validI_1.
-    intros n a. uPred.unseal. apply gmap_view_rel_lookup.
-  Qed.
-
-  Lemma gmap_view_frag_op_validI M k dq1 dq2 v1 v2 :
-    ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊢@{uPredI M}
-      ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
-  Proof.
-    rewrite /gmap_view_frag -view_frag_op view_frag_validI.
-    rewrite singleton_op singleton_validI -pair_op uPred.prod_validI /=.
-    apply bi.and_mono; first done.
-    rewrite agree_validI agree_equivI. done.
-  Qed.
 
 End lemmas.
 

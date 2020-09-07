@@ -1,6 +1,5 @@
 From iris.algebra Require Export view.
-From iris.algebra Require Import proofmode_classes.
-From iris.base_logic Require Import base_logic.
+From iris.algebra Require Import proofmode_classes big_op.
 From iris Require Import options.
 
 (** The authoritative camera with fractional authoritative elements *)
@@ -238,29 +237,6 @@ Section auth.
   Lemma auth_both_included a1 a2 b1 b2 :
     ● a1 ⋅ ◯ b1 ≼ ● a2 ⋅ ◯ b2 ↔ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof. apply view_both_included. Qed.
-
-  (** Internalized properties *)
-  Lemma auth_auth_frac_validI {M} q a : ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
-  Proof.
-    apply view_auth_frac_validI=> n. uPred.unseal; split; [|by intros [??]].
-    split; [|done]. apply ucmra_unit_leastN.
-  Qed.
-  Lemma auth_auth_validI {M} a : ✓ (● a) ⊣⊢@{uPredI M} ✓ a.
-  Proof.
-    by rewrite auth_auth_frac_validI uPred.discrete_valid bi.pure_True // left_id.
-  Qed.
-
-  Lemma auth_frag_validI {M} a : ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
-  Proof. apply view_frag_validI. Qed.
-
-  Lemma auth_both_frac_validI {M} q a b :
-    ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
-  Proof. apply view_both_frac_validI=> n. by uPred.unseal. Qed.
-  Lemma auth_both_validI {M} a b :
-    ✓ (● a ⋅ ◯ b) ⊣⊢@{uPredI M} (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
-  Proof.
-    by rewrite auth_both_frac_validI uPred.discrete_valid bi.pure_True // left_id.
-  Qed.
 
   (** Updates *)
   Lemma auth_update a b a' b' :

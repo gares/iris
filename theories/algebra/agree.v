@@ -1,7 +1,6 @@
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import list.
-From iris.base_logic Require Import base_logic.
 From iris Require Import options.
+
 Local Arguments validN _ _ _ !_ /.
 Local Arguments valid _ _  !_ /.
 Local Arguments op _ _ _ !_ /.
@@ -257,18 +256,6 @@ Qed.
 Lemma to_agree_op_valid_L `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) ↔ a = b.
 Proof. rewrite to_agree_op_valid. by fold_leibniz. Qed.
 
-(** Internalized properties *)
-Lemma agree_equivI {M} a b : to_agree a ≡ to_agree b ⊣⊢@{uPredI M} (a ≡ b).
-Proof.
-  uPred.unseal. do 2 split.
-  - intros Hx. exact: (inj to_agree).
-  - intros Hx. exact: to_agree_ne.
-Qed.
-Lemma agree_validI {M} x y : ✓ (x ⋅ y) ⊢@{uPredI M} x ≡ y.
-Proof. uPred.unseal; split=> r n _ ?; by apply: agree_op_invN. Qed.
-
-Lemma to_agree_uninjI {M} x : ✓ x ⊢@{uPredI M} ∃ a, to_agree a ≡ x.
-Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 End agree.
 
 Instance: Params (@to_agree) 1 := {}.
