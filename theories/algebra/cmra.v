@@ -805,6 +805,18 @@ Class rFunctorContractive (F : rFunctor) :=
 Definition rFunctor_apply (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
   rFunctor_car F A A.
 
+Program Definition rFunctor_to_oFunctor (F: rFunctor) : oFunctor := {|
+  oFunctor_car A _ B _ := rFunctor_car F A B;
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := rFunctor_map F fg
+|}.
+Next Obligation.
+  intros F A ? B ? x. simpl in *. apply rFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. simpl in *.
+  apply rFunctor_map_compose.
+Qed.
+
 Program Definition rFunctor_oFunctor_compose (F1 : rFunctor) (F2 : oFunctor)
   `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : rFunctor := {|
   rFunctor_car A _ B _ := rFunctor_car F1 (oFunctor_car F2 B A) (oFunctor_car F2 A B);
@@ -877,6 +889,18 @@ Class urFunctorContractive (F : urFunctor) :=
 
 Definition urFunctor_apply (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
   urFunctor_car F A A.
+
+Program Definition urFunctor_to_rFunctor (F: urFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := urFunctor_car F A B;
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := urFunctor_map F fg
+|}.
+Next Obligation.
+  intros F A ? B ? x. simpl in *. apply urFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. simpl in *.
+  apply urFunctor_map_compose.
+Qed.
 
 Program Definition urFunctor_oFunctor_compose (F1 : urFunctor) (F2 : oFunctor)
   `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : urFunctor := {|
