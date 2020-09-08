@@ -3,7 +3,7 @@ From iris.bi Require Import plainly updates internal_eq.
 From iris.algebra Require Import monoid.
 From iris Require Import options.
 
-(* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
+(* The sections add extra BI assumptions, which is only picked up with [Type*]. *)
 Set Default Proof Using "Type*".
 
 Class Embed (A B : Type) := embed : A → B.

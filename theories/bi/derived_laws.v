@@ -2,7 +2,7 @@ From iris.bi Require Export derived_connectives.
 From iris.algebra Require Import monoid.
 From iris Require Import options.
 
-(* The sections add [BiAffine] and the like, which is only picked up with "Type"*. *)
+(* The sections add [BiAffine] and the like, which is only picked up with [Type*]. *)
 Set Default Proof Using "Type*".
 
 (** Naming schema for lemmas about modalities:
