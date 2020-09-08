@@ -2,15 +2,15 @@
 real-all: $(if $(NO_TEST),,test)
 
 # the test suite
-TESTFILES=$(wildcard tests/*.v)
-NORMALIZER=test-normalizer.sed
+TESTFILES:=$(wildcard tests/*.v)
+NORMALIZER:=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
 .PHONY: test
 
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
-COQ_OLD=$(shell echo "$(COQ_VERSION)" | egrep "^8\.(7|8|9)\b" -q && echo 1)
-COQ_MINOR_VERSION=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+\b' -o)
+COQ_OLD:=$(shell echo "$(COQ_VERSION)" | egrep "^8\.(7|8|9)\b" -q && echo 1)
+COQ_MINOR_VERSION:=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+\b' -o)
 
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
