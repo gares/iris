@@ -46,6 +46,8 @@ Some test cases have per-Coq-version `.ref` files (e.g., `atomic.8.8.ref` is a
 Coq-8.8-specific `.ref` file).  If you change one of these, remember to update
 *all* the `.ref` files.
 
+If you want to compile without tests run `make NO_TEST=1`.
+
 ## How to measure the timing effect on a reverse dependency
 
 So say you did a change in Iris, and want to know how it affects [lambda-rust]
