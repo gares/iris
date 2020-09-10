@@ -805,6 +805,24 @@ Class rFunctorContractive (F : rFunctor) :=
 Definition rFunctor_apply (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
   rFunctor_car F A A.
 
+Program Definition rFunctor_to_oFunctor (F: rFunctor) : oFunctor := {|
+  oFunctor_car A _ B _ := rFunctor_car F A B;
+  oFunctor_map A1 _ A2 _ B1 _ B2 _ fg := rFunctor_map F fg
+|}.
+Next Obligation.
+  intros F A ? B ? x. simpl in *. apply rFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. simpl in *.
+  apply rFunctor_map_compose.
+Qed.
+
+Global Instance rFunctor_to_oFunctor_contractive F :
+  rFunctorContractive F → oFunctorContractive (rFunctor_to_oFunctor F).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg. apply rFunctor_map_contractive. done.
+Qed.
+
 Program Definition rFunctor_oFunctor_compose (F1 : rFunctor) (F2 : oFunctor)
   `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : rFunctor := {|
   rFunctor_car A _ B _ := rFunctor_car F1 (oFunctor_car F2 B A) (oFunctor_car F2 A B);
@@ -877,6 +895,24 @@ Class urFunctorContractive (F : urFunctor) :=
 
 Definition urFunctor_apply (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
   urFunctor_car F A A.
+
+Program Definition urFunctor_to_rFunctor (F: urFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := urFunctor_car F A B;
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := urFunctor_map F fg
+|}.
+Next Obligation.
+  intros F A ? B ? x. simpl in *. apply urFunctor_map_id.
+Qed.
+Next Obligation.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. simpl in *.
+  apply urFunctor_map_compose.
+Qed.
+
+Global Instance urFunctor_to_rFunctor_contractive F :
+  urFunctorContractive F → rFunctorContractive (urFunctor_to_rFunctor F).
+Proof.
+  intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg. apply urFunctor_map_contractive. done.
+Qed.
 
 Program Definition urFunctor_oFunctor_compose (F1 : urFunctor) (F2 : oFunctor)
   `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} : urFunctor := {|
@@ -1502,28 +1538,6 @@ Proof.
   - move=> [a|] [b|] //=. by rewrite (cmra_morphism_op f).
 Qed.
 
-Program Definition optionRF (F : rFunctor) : rFunctor := {|
-  rFunctor_car A _ B _ := optionR (rFunctor_car F A B);
-  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionO_map (rFunctor_map F fg)
-|}.
-Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_map_ne.
-Qed.
-Next Obligation.
-  intros F A ? B ? x. rewrite /= -{2}(option_fmap_id x).
-  apply option_fmap_equiv_ext=>y; apply rFunctor_map_id.
-Qed.
-Next Obligation.
-  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -option_fmap_compose.
-  apply option_fmap_equiv_ext=>y; apply rFunctor_map_compose.
-Qed.
-
-Instance optionRF_contractive F :
-  rFunctorContractive F → rFunctorContractive (optionRF F).
-Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_map_contractive.
-Qed.
-
 Program Definition optionURF (F : rFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := optionUR (rFunctor_car F A B);
   urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionO_map (rFunctor_map F fg)
@@ -1545,6 +1559,9 @@ Instance optionURF_contractive F :
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_map_contractive.
 Qed.
+
+Definition optionRF (F : rFunctor) : rFunctor :=
+  urFunctor_to_rFunctor (optionURF F).
 
 (* Dependently-typed functions over a discrete domain *)
 Section discrete_fun_cmra.

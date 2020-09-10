@@ -675,8 +675,11 @@ Next Obligation.
   intros K ?? F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -map_fmap_compose.
   apply map_fmap_equiv_ext=>y ??; apply rFunctor_map_compose.
 Qed.
-Instance gmapRF_contractive K `{Countable K} F :
+Instance gmapURF_contractive K `{Countable K} F :
   rFunctorContractive F → urFunctorContractive (gmapURF K F).
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_map_contractive.
 Qed.
+
+Definition gmapRF K `{Countable K} (F : rFunctor) : rFunctor :=
+  urFunctor_to_rFunctor (gmapURF K F).
