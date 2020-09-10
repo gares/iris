@@ -1,6 +1,6 @@
 From stdpp Require Import finite.
 From iris.algebra Require Export ofe monoid.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Class PCore (A : Type) := pcore : A → option A.
 Hint Mode PCore ! : typeclass_instances.

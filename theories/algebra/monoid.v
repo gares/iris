@@ -1,5 +1,5 @@
 From iris.algebra Require Export ofe.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** The Monoid class that is used for generic big operators in the file
 [algebra/big_op]. The operation is an argument because we want to have multiple

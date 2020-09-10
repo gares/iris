@@ -1,5 +1,6 @@
 From stdpp Require Import countable numbers gmap.
 From iris.algebra Require Import base.
+From iris Require Import options.
 
 Record loc := { loc_car : Z }.
 

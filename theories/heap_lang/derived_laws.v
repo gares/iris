@@ -9,7 +9,7 @@ From iris.bi Require Import lib.fractional.
 From iris.proofmode Require Import tactics.
 From iris.heap_lang Require Export primitive_laws.
 From iris.heap_lang Require Import tactics notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** The [array] connective is a version of [mapsto] that works
 with lists of values. *)

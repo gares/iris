@@ -1,6 +1,6 @@
 From iris.bi Require Export bi.
 From iris.proofmode Require Import tactics.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** The class of laterable assertions *)
 Class Laterable {PROP : bi} (P : PROP) := laterable :

@@ -1,7 +1,7 @@
 From stdpp Require Export sets gmultiset countable.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (* The multiset union CMRA *)
 Section gmultiset.

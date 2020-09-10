@@ -3,7 +3,7 @@ From iris.algebra Require Import lib.excl_auth.
 From iris.program_logic Require Export weakestpre.
 From iris.program_logic Require Import lifting adequacy.
 From iris.program_logic Require ectx_language.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (**
 This module provides an interface to handling ownership of the global state that

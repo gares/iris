@@ -1,7 +1,7 @@
 From stdpp Require Export sets coPset.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates.
-Set Default Proof Using "Type".
+From iris Require Import options.
 (** This is pretty much the same as algebra/gset, but I was not able to
 generalize the construction without breaking canonical structures. *)
 

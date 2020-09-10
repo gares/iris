@@ -4,7 +4,7 @@ From iris.base_logic.lib Require Export invariants.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import proofmode notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Definition newcounter : val := λ: <>, ref #0.
 Definition incr : val := rec: "incr" "l" :=

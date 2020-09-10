@@ -1,5 +1,5 @@
 From iris.algebra Require Export ofe.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section language_mixin.
   Context {expr val state observation : Type}.

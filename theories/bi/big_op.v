@@ -1,7 +1,7 @@
 From stdpp Require Import countable fin_sets functions.
 From iris.bi Require Import derived_laws_later.
 From iris.algebra Require Export big_op.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
 (** Notations for unary variants *)

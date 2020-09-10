@@ -2,7 +2,7 @@ From stdpp Require Export coPset.
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import gmap auth agree gset coPset.
 From iris.base_logic.lib Require Export own.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** All definitions in this file are internal to [fancy_updates] with the
 exception of what's in the [invG] module. The module [invG] is thus exported in

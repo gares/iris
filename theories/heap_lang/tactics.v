@@ -1,5 +1,5 @@
 From iris.heap_lang Require Export lang.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import heap_lang.
 
 (** The tactic [reshape_expr e tac] decomposes the expression [e] into an

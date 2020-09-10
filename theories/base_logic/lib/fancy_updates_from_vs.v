@@ -4,6 +4,9 @@ laws of the view shift. *)
 From stdpp Require Export coPset.
 From iris.proofmode Require Import tactics.
 From iris.base_logic Require Export base_logic.
+From iris Require Import options.
+
+(* The sections add extra BI assumptions, which is only picked up with [Type*]. *)
 Set Default Proof Using "Type*".
 
 Section fupd.

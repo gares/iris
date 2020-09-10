@@ -1,5 +1,5 @@
 From iris.algebra Require Export base.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Set Primitive Projections.
 
 (** This files defines (a shallow embedding of) the category of OFEs:
@@ -442,13 +442,11 @@ End fixpointK.
 
 (** Mutual fixpoints *)
 Section fixpointAB.
-  Local Unset Default Proof Using.
-
   Context `{Cofe A, Cofe B, !Inhabited A, !Inhabited B}.
   Context (fA : A → B → A).
   Context (fB : A → B → B).
-  Context `{∀ n, Proper (dist_later n ==> dist n ==> dist n) fA}.
-  Context `{∀ n, Proper (dist_later n ==> dist_later n ==> dist n) fB}.
+  Context {fA_contractive : ∀ n, Proper (dist_later n ==> dist n ==> dist n) fA}.
+  Context {fB_contractive : ∀ n, Proper (dist_later n ==> dist_later n ==> dist n) fB}.
 
   Local Definition fixpoint_AB (x : A) : B := fixpoint (fB x).
   Local Instance fixpoint_AB_contractive : Contractive fixpoint_AB.
@@ -459,7 +457,7 @@ Section fixpointAB.
 
   Local Definition fixpoint_AA (x : A) : A := fA x (fixpoint_AB x).
   Local Instance fixpoint_AA_contractive : Contractive fixpoint_AA.
-  Proof. solve_contractive. Qed.
+  Proof using fA_contractive. solve_contractive. Qed.
 
   Definition fixpoint_A : A := fixpoint fixpoint_AA.
   Definition fixpoint_B : B := fixpoint_AB fixpoint_A.
@@ -470,11 +468,11 @@ Section fixpointAB.
   Proof. by rewrite {2}/fixpoint_B /fixpoint_AB (fixpoint_unfold _). Qed.
 
   Instance: Proper ((≡) ==> (≡) ==> (≡)) fA.
-  Proof.
+  Proof using fA_contractive.
     apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
   Qed.
   Instance: Proper ((≡) ==> (≡) ==> (≡)) fB.
-  Proof.
+  Proof using fB_contractive.
     apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
   Qed.
 

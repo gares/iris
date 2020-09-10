@@ -1,5 +1,6 @@
 From iris.algebra Require Export frac auth updates local_updates.
 From iris.algebra Require Import proofmode_classes.
+From iris Require Import options.
 
 (** Authoritative CMRA where the NON-authoritative parts can be fractional.
   This CMRA allows the original non-authoritative element [◯ a] to be split into

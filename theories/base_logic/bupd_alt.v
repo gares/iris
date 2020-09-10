@@ -1,5 +1,9 @@
 From iris.proofmode Require Import tactics.
 From iris.base_logic Require Export base_logic.
+From iris Require Import options.
+
+(* The sections add extra BI assumptions, which is only picked up with [Type*]. *)
+Set Default Proof Using "Type*".
 
 (** This file contains an alternative version of basic updates, that is
 expression in terms of just the plain modality [■]. *)

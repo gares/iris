@@ -1,6 +1,6 @@
 From iris.algebra Require Import functions gmap proofmode_classes.
 From iris.base_logic.lib Require Export iprop.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 (** The class [inG Σ A] expresses that the CMRA [A] is in the list of functors

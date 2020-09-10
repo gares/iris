@@ -1,6 +1,10 @@
 From stdpp Require Import coPset.
 From iris.bi Require Import interface derived_laws_later big_op plainly.
+From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
+
+(* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
+Set Default Proof Using "Type*".
 
 (* We first define operational type classes for the notations, and then later
 bundle these operational type classes with the laws. *)

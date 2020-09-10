@@ -2,7 +2,7 @@ From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import proofmode notation.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** A library defining binary [minimum] and [maximum] functions, together with
 their expected specs. These operations come up often when working manipulating

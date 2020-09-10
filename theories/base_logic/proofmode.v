@@ -1,5 +1,6 @@
 From iris.algebra Require Import proofmode_classes.
 From iris.base_logic Require Export derived.
+From iris Require Import options.
 
 Import base_logic.bi.uPred.
 

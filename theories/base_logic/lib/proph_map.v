@@ -1,7 +1,7 @@
 From iris.proofmode Require Import tactics.
 From iris.algebra Require Import auth excl list gmap.
 From iris.base_logic.lib Require Export own.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import uPred.
 
 Local Notation proph_map P V := (gmap P (list V)).

@@ -1,6 +1,7 @@
 From iris.base_logic Require Export invariants.
 From iris.program_logic Require Export weakestpre.
 From iris.heap_lang Require Export lang proofmode notation.
+From iris Require Import options.
 
 Definition nondet_bool : val :=
   λ: <>, let: "l" := ref #true in Fork ("l" <- #false);; !"l".

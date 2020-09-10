@@ -1,6 +1,6 @@
 From iris.bi Require Import bi.
 From iris.proofmode Require Import modality_instances classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 (** We add a useless hypothesis [BiEmbed PROP PROP'] in order to make sure this

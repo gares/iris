@@ -2,7 +2,7 @@ From stdpp Require Import nat_cancel.
 From iris.bi Require Import bi telescopes.
 From iris.proofmode Require Import base modality_instances classes.
 From iris.proofmode Require Import ltac_tactics.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 (* FIXME(Coq #6294): needs new unification *)

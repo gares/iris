@@ -1,6 +1,6 @@
 From iris.bi Require Export bi.
 From iris.proofmode Require Import classes class_instances.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
   fractional p q : Φ (p + q)%Qp ⊣⊢ Φ p ∗ Φ q.

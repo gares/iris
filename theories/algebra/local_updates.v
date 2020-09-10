@@ -1,5 +1,5 @@
 From iris.algebra Require Export cmra.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** * Local updates *)
 Definition local_update {A : cmraT} (x y : A * A) := ∀ n mz,

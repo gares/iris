@@ -3,7 +3,7 @@ From stdpp Require Import gmap.
 From iris.algebra Require Export ofe.
 From iris.program_logic Require Export language ectx_language ectxi_language.
 From iris.heap_lang Require Export locations.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** heap_lang.  A fairly simple language used for common Iris examples.
 

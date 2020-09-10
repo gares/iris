@@ -1,5 +1,8 @@
 From iris.bi Require Export bi.
 From iris.proofmode Require Import tactics.
+From iris Require Import options.
+
+(* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
 (** This proves that we need the ▷ in a "Saved Proposition" construction with

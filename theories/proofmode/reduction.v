@@ -1,5 +1,6 @@
 From iris.bi Require Import bi telescopes.
 From iris.proofmode Require Import base environments.
+From iris Require Import options.
 
 (** Called by all tactics to perform computation to lookup items in the
     context.  We avoid reducing anything user-visible here to make sure we

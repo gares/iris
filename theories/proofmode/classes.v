@@ -2,7 +2,7 @@ From stdpp Require Import namespaces.
 From iris.bi Require Export bi.
 From iris.proofmode Require Import base.
 From iris.proofmode Require Export ident_name modalities.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=

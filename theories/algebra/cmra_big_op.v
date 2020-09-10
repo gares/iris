@@ -1,6 +1,6 @@
 From stdpp Require Import gmap gmultiset.
 From iris.algebra Require Export big_op cmra.
-Set Default Proof Using "Type*".
+From iris Require Import options.
 
 (** Option *)
 Lemma big_opL_None {M : cmraT} {A} (f : nat → A → option M) l :

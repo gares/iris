@@ -2,7 +2,7 @@ From stdpp Require Export list gmap.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates local_updates proofmode_classes.
 From iris.base_logic Require Import base_logic.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section cofe.
 Context `{Countable K} {A : ofeT}.

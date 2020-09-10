@@ -1,7 +1,7 @@
 From iris.bi Require Export big_op.
 From iris.proofmode Require Import tactics.
 From iris.program_logic Require Export total_weakestpre.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 Section lifting.
 Context `{!irisG Λ Σ}.

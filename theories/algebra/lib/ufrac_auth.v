@@ -19,6 +19,7 @@ difference:
 From Coq Require Import QArith Qcanon.
 From iris.algebra Require Export auth frac updates local_updates.
 From iris.algebra Require Import ufrac proofmode_classes.
+From iris Require Import options.
 
 Definition ufrac_authR (A : cmraT) : cmraT :=
   authR (optionUR (prodR ufracR A)).

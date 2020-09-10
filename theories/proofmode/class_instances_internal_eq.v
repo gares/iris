@@ -1,7 +1,7 @@
 From stdpp Require Import nat_cancel.
 From iris.bi Require Import bi.
 From iris.proofmode Require Import modality_instances classes.
-Set Default Proof Using "Type".
+From iris Require Import options.
 Import bi.
 
 Section class_instances_internal_eq.

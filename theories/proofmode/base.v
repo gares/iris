@@ -1,7 +1,7 @@
 From Coq Require Export Ascii.
 From stdpp Require Export strings.
 From iris.algebra Require Export base.
-Set Default Proof Using "Type".
+From iris Require Import options.
 
 (** * Utility definitions used by the proofmode *)
 
