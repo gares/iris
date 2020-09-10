@@ -1157,15 +1157,12 @@ premises [n], the tactic will have the following behavior:
 0 if we should proceed to the [n > 0] case, and with level 1 if there is an
 actual error. *)
 Local Ltac iApplyHypExact H :=
-  first
-    [eapply tac_assumption with H _ _; (* (i:=H) *)
-       [pm_reflexivity || fail 1
-       |iSolveTC || fail 1
-       |pm_reduce; iSolveTC]
-    |lazymatch iTypeOf H with
-     | Some (_,?Q) =>
-        fail 2 "iApply: remaining hypotheses not affine and the goal not absorbing"
-     end].
+  eapply tac_assumption with H _ _; (* (i:=H) *)
+    [pm_reflexivity
+    |iSolveTC
+    |pm_reduce; iSolveTC ||
+     fail 1 "iApply: remaining hypotheses not affine and the goal not absorbing"].
+
 Local Ltac iApplyHypLoop H :=
   first
     [eapply tac_apply with H _ _ _;
