@@ -722,6 +722,14 @@ Proof.
   unseal=> ?. split=> n x ?. by apply (discrete_iff n).
 Qed.
 
+(* This is really just a special case of an entailment
+between two [siProp], but we do not have the infrastructure
+to express the more general case. This temporary proof rule will
+be replaced by the proper one eventually. *)
+Lemma internal_eq_entails {A B : ofeT} (a1 a2 : A) (b1 b2 : B) :
+  (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
+Proof. unseal=>Hsi. split=>n x ?. apply Hsi. Qed.
+
 (** Basic update modality *)
 Lemma bupd_intro P : P ⊢ |==> P.
 Proof.

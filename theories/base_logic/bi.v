@@ -180,7 +180,7 @@ Global Instance ownM_ne : NonExpansive (@uPred_ownM M) := uPred_primitive.ownM_n
 Global Instance cmra_valid_ne {A : cmraT} : NonExpansive (@uPred_cmra_valid M A)
   := uPred_primitive.cmra_valid_ne.
 
-(** Re-exporting primitive Own and valid lemmas *)
+(** Re-exporting primitive lemmas that are not in any interface *)
 Lemma ownM_op (a1 a2 : M) :
   uPred_ownM (a1 ⋅ a2) ⊣⊢ uPred_ownM a1 ∗ uPred_ownM a2.
 Proof. exact: uPred_primitive.ownM_op. Qed.
@@ -193,6 +193,14 @@ Proof. exact: uPred_primitive.later_ownM. Qed.
 Lemma bupd_ownM_updateP x (Φ : M → Prop) :
   x ~~>: Φ → uPred_ownM x ⊢ |==> ∃ y, ⌜Φ y⌝ ∧ uPred_ownM y.
 Proof. exact: uPred_primitive.bupd_ownM_updateP. Qed.
+
+(* This is really just a special case of an entailment
+between two [siProp], but we do not have the infrastructure
+to express the more general case. This temporary proof rule will
+be replaced by the proper one eventually. *)
+Lemma internal_eq_entails {A B : ofeT} (a1 a2 : A) (b1 b2 : B) :
+  (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
+Proof. exact: uPred_primitive.internal_eq_entails. Qed.
 
 Lemma ownM_valid (a : M) : uPred_ownM a ⊢ ✓ a.
 Proof. exact: uPred_primitive.ownM_valid. Qed.
