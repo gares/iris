@@ -13,7 +13,7 @@ NORMALIZER:=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
 # Make sure everything imports the options.
-	$(HIDE)for FILE in $(filter-out theories/options.v,$(VFILES)); do \
+	$(HIDE)for FILE in $(VFILES); do \
 	  if ! fgrep -q 'From iris Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; exit 1; fi \
 	done
 .PHONY: test
