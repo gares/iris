@@ -175,7 +175,8 @@ Class CmraTotal (A : cmraT) := cmra_total (x : A) : is_Some (pcore x).
 Hint Mode CmraTotal ! : typeclass_instances.
 
 (** The function [core] returns a dummy when used on CMRAs without total
-core. *)
+core. We only ever use this for [CmraTotal] CMRAs, but it is more convenient
+to not require that proof to be able to call this function. *)
 Definition core `{PCore A} (x : A) : A := default x (pcore x).
 Instance: Params (@core) 2 := {}.
 
