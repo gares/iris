@@ -1165,10 +1165,14 @@ Section prod.
   Proof. done. Qed.
   Lemma pair_valid (a : A) (b : B) : ✓ (a, b) ↔ ✓ a ∧ ✓ b.
   Proof. done. Qed.
+  Lemma pair_validN n (a : A) (b : B) : ✓{n} (a, b) ↔ ✓{n} a ∧ ✓{n} b.
+  Proof. done. Qed.
   Lemma pair_included (a a' : A) (b b' : B) :
     (a, b) ≼ (a', b') ↔ a ≼ a' ∧ b ≼ b'.
   Proof. apply prod_included. Qed.
-
+  Lemma pair_pcore (a : A) (b : B) :
+    pcore (a, b) = c1 ← pcore a; c2 ← pcore b; Some (c1, c2).
+  Proof. done. Qed.
   Lemma pair_core `{!CmraTotal A, !CmraTotal B} (a : A) (b : B) :
     core (a, b) = (core a, core b).
   Proof.
