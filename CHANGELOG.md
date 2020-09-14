@@ -7,7 +7,8 @@ lemma.
 
 **Changes in `algebra`:**
 
-* Rename `agree_op_{inv,invL}'` to `to_agree_op_{inv,inv_L}`, and add
+* Rename `agree_op_inv'` to `to_agree_op_inv`,
+  `agree_op_invL'` to `to_agree_op_inv_L`, and add
   `to_agree_op_invN`.
 * Rename `auth_auth_frac_op_invL` to `auth_auth_frac_op_inv_L`,
   `excl_auth_agreeL` to `excl_auth_agree_L`,
@@ -28,6 +29,19 @@ lemma.
   existentials above. As part of this change, it now uses a base name of `H` for
   pure facts rather than the previous default of `a`. This also requires some
   changes if you were implementing `FromForall`, in order to forward names.
+
+The following `sed` script helps adjust your code to the renaming (on macOS,
+replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
+Note that the script is not idempotent, do not run it twice.
+```
+sed -i -E -f- $(find theories -name "*.v") <<EOF
+# agree and L suffix renames
+s/\bagree_op_inv'\b/to_agree_op_inv/g
+s/\bagree_op_invL'\b/to_agree_op_inv_L/g
+s/\bauth_auth_frac_op_invL\b/auth_auth_frac_op_inv_L/g
+s/\b(excl|frac|ufrac)_auth_agreeL/\1_auth_agree_L/g
+EOF
+```
 
 ## Iris 3.3.0 (released 2020-07-15)
 
