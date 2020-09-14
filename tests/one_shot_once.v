@@ -99,7 +99,7 @@ Proof.
     + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]".
       { by iDestruct (own_valid_2 with "Hγ Hγ'") as %?. }
       wp_load. Show.
-      iDestruct (own_valid_2 with "Hγ Hγ'") as %?%agree_op_invL'; subst.
+      iDestruct (own_valid_2 with "Hγ Hγ'") as %?%to_agree_op_inv_L; subst.
       iModIntro. iSplitL "Hl Hγ"; first by eauto with iFrame.
       wp_pures. iApply wp_assert. wp_op. by case_bool_decide.
 Qed.

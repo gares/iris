@@ -60,7 +60,7 @@ Section frac_auth.
   Proof.
     intros. apply equiv_dist=> n. by apply frac_auth_agreeN, cmra_valid_validN.
   Qed.
-  Lemma frac_auth_agreeL `{!LeibnizEquiv A} a b : ✓ (●F a ⋅ ◯F b) → a = b.
+  Lemma frac_auth_agree_L `{!LeibnizEquiv A} a b : ✓ (●F a ⋅ ◯F b) → a = b.
   Proof. intros. by apply leibniz_equiv, frac_auth_agree. Qed.
 
   Lemma frac_auth_includedN n q a b : ✓{n} (●F a ⋅ ◯F{q} b) → Some b ≼{n} Some a.

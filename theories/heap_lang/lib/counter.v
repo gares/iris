@@ -159,7 +159,7 @@ Section contrib_spec.
   Proof.
     iIntros (Φ) "[#? Hγf] HΦ".
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]". wp_load.
-    iDestruct (own_valid_2 with "Hγ Hγf") as % <-%frac_auth_agreeL.
+    iDestruct (own_valid_2 with "Hγ Hγf") as % <-%frac_auth_agree_L.
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     by iApply "HΦ".
   Qed.
