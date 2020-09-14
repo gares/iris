@@ -5,6 +5,11 @@ lemma.
 
 ## Iris master
 
+**Changes in `algebra`:**
+
+* Rename `agree_op_{inv,invL}'` to `to_agree_op_{inv,invL}`, and add
+  `to_agree_op_invN`.
+
 **Changes in `proofmode`:**
 
 * The proofmode now preserves user-supplied names for existentials when using
