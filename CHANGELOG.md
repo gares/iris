@@ -16,7 +16,7 @@ With this release, we dropped support for Coq 8.9.
   `excl_auth_agreeL` to `excl_auth_agree_L`,
   `frac_auth_agreeL` to `frac_auth_agree_L`, and
   `ufrac_auth_agreeL` to `ufrac_auth_agree_L`.
-- Constructions to define a camera through restriction of the validity predicate
+* Constructions to define a camera through restriction of the validity predicate
   (`iso_cmra_mixin_restrict`) and through an isomophism (`iso_cmra_mixin`).
 
 **Changes in `proofmode`:**
