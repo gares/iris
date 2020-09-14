@@ -17,7 +17,7 @@ of a location [l], this mechanism allows one to attach "meta" or "ghost" data to
 locations. This is done as follows:
 
 - When one allocates a location, in addition to the point-to connective [l ↦ v],
-  one also obtains the token [meta_token ⊤ l]. This token is an exclusive
+  one also obtains the token [meta_token l ⊤]. This token is an exclusive
   resource that denotes that no meta data has been associated with the
   namespaces in the mask [⊤] for the location [l].
 - Meta data tokens can be split w.r.t. namespace masks, i.e.
