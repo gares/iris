@@ -80,7 +80,7 @@ Section ufrac_auth.
   Proof.
     intros. apply equiv_dist=> n. by eapply ufrac_auth_agreeN, cmra_valid_validN.
   Qed.
-  Lemma ufrac_auth_agreeL `{!LeibnizEquiv A} p a b : ✓ (●U{p} a ⋅ ◯U{p} b) → a = b.
+  Lemma ufrac_auth_agree_L `{!LeibnizEquiv A} p a b : ✓ (●U{p} a ⋅ ◯U{p} b) → a = b.
   Proof. intros. by eapply leibniz_equiv, ufrac_auth_agree. Qed.
 
   Lemma ufrac_auth_includedN n p q a b : ✓{n} (●U{p} a ⋅ ◯U{q} b) → Some b ≼{n} Some a.

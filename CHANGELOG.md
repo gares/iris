@@ -7,8 +7,12 @@ lemma.
 
 **Changes in `algebra`:**
 
-* Rename `agree_op_{inv,invL}'` to `to_agree_op_{inv,invL}`, and add
+* Rename `agree_op_{inv,invL}'` to `to_agree_op_{inv,inv_L}`, and add
   `to_agree_op_invN`.
+* Rename `auth_auth_frac_op_invL` to `auth_auth_frac_op_inv_L`,
+  `excl_auth_agreeL` to `excl_auth_agree_L`,
+  `frac_auth_agreeL` to `frac_auth_agree_L`, and
+  `ufrac_auth_agreeL` to `ufrac_auth_agree_L`.
 
 **Changes in `proofmode`:**
 

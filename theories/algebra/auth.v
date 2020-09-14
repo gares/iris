@@ -329,7 +329,7 @@ Proof.
   intros ?. apply equiv_dist. intros n.
   by eapply auth_auth_frac_op_invN, cmra_valid_validN.
 Qed.
-Lemma auth_auth_frac_op_invL `{!LeibnizEquiv A} q a p b :
+Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
   ✓ (●{p} a ⋅ ●{q} b) → a = b.
 Proof. by intros ?%auth_auth_frac_op_inv%leibniz_equiv. Qed.
 

@@ -241,7 +241,7 @@ Lemma to_agree_op_invN a b n : ✓{n} (to_agree a ⋅ to_agree b) → a ≡{n}�
 Proof. by intros ?%agree_op_invN%(inj to_agree). Qed.
 Lemma to_agree_op_inv a b : ✓ (to_agree a ⋅ to_agree b) → a ≡ b.
 Proof. by intros ?%agree_op_inv%(inj to_agree). Qed.
-Lemma to_agree_op_invL `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) → a = b.
+Lemma to_agree_op_inv_L `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) → a = b.
 Proof. by intros ?%to_agree_op_inv%leibniz_equiv. Qed.
 
 (** Internalized properties *)
