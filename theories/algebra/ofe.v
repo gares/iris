@@ -1292,7 +1292,7 @@ Proof.
 Qed.
 
 (** * Constructing isomorphic OFEs *)
-Lemma iso_ofe_mixin {A : ofeT} `{Equiv B, Dist B} (g : B → A)
+Lemma iso_ofe_mixin {A : ofeT} {B : Type} `{!Equiv B, !Dist B} (g : B → A)
   (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2)
   (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2) : OfeMixin B.
 Proof.

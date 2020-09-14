@@ -104,14 +104,12 @@ Instance auth_valid : Valid (auth A) := λ x,
       ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a)
   | None => ✓ auth_frag_proj x
   end.
-Global Arguments auth_valid !_ /.
 Instance auth_validN : ValidN (auth A) := λ n x,
   match auth_auth_proj x with
   | Some (q, ag) =>
       ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a
   | None => ✓{n} auth_frag_proj x
   end.
-Global Arguments auth_validN _ !_ /.
 Instance auth_pcore : PCore (auth A) := λ x,
   Some (Auth (core (auth_auth_proj x)) (core (auth_frag_proj x))).
 Instance auth_op : Op (auth A) := λ x y,
@@ -229,37 +227,26 @@ Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
 
 Lemma auth_cmra_mixin : CmraMixin (auth A).
 Proof.
-  apply cmra_total_mixin.
-  - eauto.
-  - by intros n x y1 y2 [Hy Hy']; split; simpl; rewrite ?Hy ?Hy'.
-  - by intros n y1 y2 [Hy Hy']; split; simpl; rewrite ?Hy ?Hy'.
-  - intros n [x a] [y b] [Hx Ha]; simpl in *. rewrite !auth_validN_eq.
-    destruct Hx as [x y Hx|]; first destruct Hx as [? Hx];
-      [destruct x,y|]; intros VI; ofe_subst; auto.
-  - intros [[[]|] ]; rewrite /= ?auth_valid_eq ?auth_validN_eq /=
-      ?cmra_valid_validN; naive_solver.
-  - intros n [[[]|] ]; rewrite !auth_validN_eq /=;
+  apply (iso_cmra_mixin_restrict (λ x : option (frac * agree A) * A, Auth x.1 x.2)
+    (λ x, (auth_auth_proj x, auth_frag_proj x))); try done.
+  - intros [x b]. by rewrite /= pair_pcore !cmra_pcore_core.
+  - intros n [[[q aa]|] b]; rewrite /= auth_validN_eq /=; last done.
+    intros (?&a&->&?&?). split; simpl; by eauto using cmra_validN_includedN.
+  - rewrite auth_validN_eq.
+    intros n [x1 b1] [x2 b2] [Hx ?]; simpl in *;
+      destruct Hx as [[q1 aa1] [q2 aa2] [??]|]; intros ?; by ofe_subst.
+  - rewrite auth_valid_eq auth_validN_eq.
+    intros [[[q aa]|] b]; rewrite /= cmra_valid_validN; naive_solver.
+  - rewrite auth_validN_eq. intros n [[[q aa]|] b];
       naive_solver eauto using dist_S, cmra_includedN_S, cmra_validN_S.
-  - by split; simpl; rewrite assoc.
-  - by split; simpl; rewrite comm.
-  - by split; simpl; rewrite ?cmra_core_l.
-  - by split; simpl; rewrite ?cmra_core_idemp.
-  - intros ??; rewrite! auth_included; intros [??].
-    by split; simpl; apply: cmra_core_mono. (* FIXME: FIXME(Coq #6294): needs new unification *)
   - assert (∀ n (a b1 b2 : A), b1 ⋅ b2 ≼{n} a → b1 ≼{n} a).
     { intros n a b1 b2 <-; apply cmra_includedN_l. }
-    intros n [[[q1 a1]|] b1] [[[q2 a2]|] b2]; rewrite auth_validN_eq /=;
-      try naive_solver eauto using cmra_validN_op_l, cmra_validN_includedN.
-    intros [? [a [Eq [? Valid]]]].
-    assert (Eq': a1 ≡{n}≡ a2). { by apply agree_op_invN; rewrite Eq. }
+    rewrite auth_validN_eq. intros n [[[q1 a1]|] b1] [[[q2 a2]|] b2]; simpl;
+      [|naive_solver eauto using cmra_validN_op_l, cmra_validN_includedN..].
+    intros [? [a [Ha12a [? Valid]]]].
+    assert (a1 ≡{n}≡ a2) as Ha12 by (apply agree_op_invN; by rewrite Ha12a).
     split; [naive_solver eauto using cmra_validN_op_l|].
-    exists a. rewrite -Eq -Eq' agree_idemp. naive_solver.
-  - intros n x y1 y2 ? [??]; simpl in *.
-    destruct (cmra_extend n (auth_auth_proj x) (auth_auth_proj y1)
-      (auth_auth_proj y2)) as (ea1&ea2&?&?&?); auto using auth_auth_proj_validN.
-    destruct (cmra_extend n (auth_frag_proj x) (auth_frag_proj y1) (auth_frag_proj y2))
-      as (b1&b2&?&?&?); auto using auth_frag_proj_validN.
-    by exists (Auth ea1 b1), (Auth ea2 b2).
+    exists a. rewrite -Ha12a -Ha12 agree_idemp. naive_solver.
 Qed.
 Canonical Structure authR := CmraT (auth A) auth_cmra_mixin.
 
@@ -390,11 +377,11 @@ Lemma auth_update_core_id q a b `{!CoreId b} :
   b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
 Proof.
   intros Ha%(core_id_extract _ _). apply cmra_total_update.
-  move=> n [[[q' ag]|] bf1] [Hq [a0 [Haa0 [Hbf1 Ha0]]]]; do 2 red; simpl in *.
-  + split; [done|]. exists a0. split_and!; [done| |done].
+  move=> n [[[q' ag]|] bf1] [Hq [a0 [Haa0 [Hbf1 Ha0]]]]; simpl in *.
+  + split; simpl; [done|]. exists a0. split_and!; [done| |done].
     assert (a ≡{n}≡ a0) as Haa0' by (apply to_agree_includedN; by exists ag).
     rewrite -Haa0' Ha Haa0' -assoc (comm _ b) assoc. by apply cmra_monoN_r.
-  + split; [done|]. exists a0. split_and!; [done| |done].
+  + split; simpl; [done|]. exists a0. split_and!; [done| |done].
     apply (inj to_agree) in Haa0.
     rewrite -Haa0 Ha Haa0 -assoc (comm _ b) assoc. by apply cmra_monoN_r.
 Qed.

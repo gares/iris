@@ -1668,3 +1668,86 @@ Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n ?? g.
   by apply discrete_funO_map_ne=>c; apply urFunctor_map_contractive.
 Qed.
+
+(** * Constructing a camera [B] through a bijection with [A] that
+is mostly an isomorphism but restricts validity. *)
+Lemma iso_cmra_mixin_restrict {A : cmraT} {B : Type}
+  `{!Dist B, !Equiv B, !PCore B, !Op B, !Valid B, !ValidN B}
+  (f : A → B) (g : B → A)
+  (* [g] is proper/non-expansive and injective w.r.t. setoid and OFE equality *)
+  (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2)
+  (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2)
+  (* [g] is surjective (and [f] its inverse) *)
+  (gf : ∀ x, g (f x) ≡ x)
+  (* [g] commutes with [pcore] and [op] *)
+  (g_pcore : ∀ y, pcore (g y) ≡ g <$> pcore y)
+  (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
+  (* The validity predicate on [B] restricts the one on [A] *)
+  (g_validN : ∀ n y, ✓{n} y → ✓{n} (g y))
+  (* The validity predicate on [B] satisfies the laws of validity *)
+  (valid_validN_ne : ∀ n, Proper (dist n ==> impl) (validN (A:=B) n))
+  (valid_rvalidN : ∀ y : B, ✓ y ↔ ∀ n, ✓{n} y)
+  (validN_S : ∀ n (y : B), ✓{S n} y → ✓{n} y)
+  (validN_op_l : ∀ n (y1 y2 : B), ✓{n} (y1 ⋅ y2) → ✓{n} y1) :
+  CmraMixin B.
+Proof.
+  split.
+  - intros y n z1 z2 Hz%g_dist. apply g_dist. by rewrite !g_op Hz.
+  - intros n y1 y2 cy Hy%g_dist Hy1.
+    assert (g <$> pcore y2 ≡{n}≡ Some (g cy))
+      as (cx&(cy'&->&->)%fmap_Some_1&?%g_dist)%dist_Some_inv_r'; [|by eauto].
+    by rewrite -g_pcore -Hy g_pcore Hy1.
+  - done.
+  - done.
+  - done.
+  - intros y1 y2 y3. apply g_equiv. by rewrite !g_op assoc.
+  - intros y1 y2. apply g_equiv. by rewrite !g_op comm.
+  - intros y cy Hy. apply g_equiv. rewrite g_op. apply cmra_pcore_l'.
+    by rewrite g_pcore Hy.
+  - intros y cy Hy.
+    assert (g <$> pcore cy ≡ Some (g cy)) as (cy'&->&?)%fmap_Some_equiv.
+    { rewrite -g_pcore.
+      apply cmra_pcore_idemp' with (g y). by rewrite g_pcore Hy. }
+    constructor. by apply g_equiv.
+  - intros y1 y2 cy [z Hy2] Hy1.
+    destruct (cmra_pcore_mono' (g y1) (g y2) (g cy)) as (cx&Hcgy2&[x Hcx]).
+    { exists (g z). rewrite -g_op. by apply g_equiv. }
+    { by rewrite g_pcore Hy1. }
+    assert (g <$> pcore y2 ≡ Some cx) as (cy'&->&?)%fmap_Some_equiv.
+    { by rewrite -g_pcore Hcgy2. }
+    exists cy'; split; [done|].
+    exists (f x). apply g_equiv. by rewrite g_op gf -Hcx.
+  - done.
+  - intros n y z1 z2 ?%g_validN ?.
+    destruct (cmra_extend n (g y) (g z1) (g z2)) as (x1&x2&Hgy&?&?).
+    { done. }
+    { rewrite -g_op. by apply g_dist. }
+    exists (f x1), (f x2). split_and!.
+    + apply g_equiv. by rewrite Hgy g_op !gf.
+    + apply g_dist. by rewrite gf.
+    + apply g_dist. by rewrite gf.
+Qed.
+
+(** * Constructing a camera through an isomorphism *)
+Lemma iso_cmra_mixin {A : cmraT} {B : Type}
+  `{!Dist B, !Equiv B, !PCore B, !Op B, !Valid B, !ValidN B}
+  (f : A → B) (g : B → A)
+  (* [g] is proper/non-expansive and injective w.r.t. setoid and OFE equality *)
+  (g_equiv : ∀ y1 y2, y1 ≡ y2 ↔ g y1 ≡ g y2)
+  (g_dist : ∀ n y1 y2, y1 ≡{n}≡ y2 ↔ g y1 ≡{n}≡ g y2)
+  (* [g] is surjective (and [f] its inverse) *)
+  (gf : ∀ x, g (f x) ≡ x)
+  (* [g] commutes with [pcore], [op], [valid], and [validN] *)
+  (g_pcore : ∀ y, pcore (g y) ≡ g <$> pcore y)
+  (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
+  (g_valid : ∀ y, ✓ (g y) ↔ ✓ y)
+  (g_validN : ∀ n y, ✓{n} (g y) ↔ ✓{n} y) :
+  CmraMixin B.
+Proof.
+  apply (iso_cmra_mixin_restrict f g); auto.
+  - by intros n y ?%g_validN.
+  - intros n y1 y2 Hy%g_dist Hy1. by rewrite -g_validN -Hy g_validN.
+  - intros y. rewrite -g_valid cmra_valid_validN. naive_solver.
+  - intros n y. rewrite -!g_validN. apply cmra_validN_S.
+  - intros n y1 y2. rewrite -!g_validN g_op. apply cmra_validN_op_l.
+Qed.
