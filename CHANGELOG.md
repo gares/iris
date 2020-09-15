@@ -18,6 +18,8 @@ With this release, we dropped support for Coq 8.9.
   `ufrac_auth_agreeL` to `ufrac_auth_agree_L`.
 * Add constructions to define a camera through restriction of the validity predicate
   (`iso_cmra_mixin_restrict`) and through an isomophism (`iso_cmra_mixin`).
+* Add a `frac_agree` library which encapsulates `frac * agree A` for some OFE
+  `A`, and provides some useful lemmas.
 
 **Changes in `proofmode`:**
 
@@ -33,6 +35,11 @@ With this release, we dropped support for Coq 8.9.
   existentials above. As part of this change, it now uses a base name of `H` for
   pure facts rather than the previous default of `a`. This also requires some
   changes if you were implementing `FromForall`, in order to forward names.
+
+**Changes in `base_logic`:**
+
+* Add a `ghost_var` library that provides (fractional) ownership of a ghost
+  variable of arbitrary `Type`.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
