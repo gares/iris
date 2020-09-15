@@ -631,9 +631,7 @@ Proof. by unseal. Qed.
 
 Lemma prop_ext_2 P Q : ■ ((P -∗ Q) ∧ (Q -∗ P)) ⊢ P ≡ Q.
 Proof.
-  unseal; split=> n x ? /= HPQ. split=> n' x' ??.
-    move: HPQ=> [] /(_ n' x'); rewrite !left_id=> ?.
-    move=> /(_ n' x'); rewrite !left_id=> ?. naive_solver.
+  unseal; split=> n x ? /=. setoid_rewrite (left_id ε op). split; naive_solver.
 Qed.
 
 (* The following two laws are very similar, and indeed they hold not just for □
