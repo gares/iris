@@ -40,8 +40,8 @@ Note that the script is not idempotent, do not run it twice.
 ```
 sed -i -E -f- $(find theories -name "*.v") <<EOF
 # agree and L suffix renames
-s/\bagree_op_inv'\b/to_agree_op_inv/g
-s/\bagree_op_invL'\b/to_agree_op_inv_L/g
+s/\bagree_op_inv'/to_agree_op_inv/g
+s/\bagree_op_invL'/to_agree_op_inv_L/g
 s/\bauth_auth_frac_op_invL\b/auth_auth_frac_op_inv_L/g
 s/\b(excl|frac|ufrac)_auth_agreeL/\1_auth_agree_L/g
 EOF
