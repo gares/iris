@@ -150,7 +150,7 @@ Qed.
 Lemma own_alloc_strong_dep (f : gname → A) (P : gname → Prop) :
   pred_infinite P →
   (∀ γ, P γ → ✓ (f γ)) →
-  ⊢ |==> ∃ γ, ⌜P γ⌝ ∧ own γ (f γ).
+  ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ own γ (f γ).
 Proof.
   intros HP Ha.
   rewrite -(bupd_mono (∃ m, ⌜∃ γ, P γ ∧ m = iRes_singleton γ (f γ)⌝ ∧ uPred_ownM m)%I).
@@ -163,7 +163,7 @@ Proof.
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
 Qed.
 Lemma own_alloc_cofinite_dep (f : gname → A) (G : gset gname) :
-  (∀ γ, γ ∉ G → ✓ (f γ)) → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ (f γ).
+  (∀ γ, γ ∉ G → ✓ (f γ)) → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∗ own γ (f γ).
 Proof.
   intros Ha.
   apply (own_alloc_strong_dep f (λ γ, γ ∉ G))=> //.
@@ -175,21 +175,21 @@ Lemma own_alloc_dep (f : gname → A) :
   (∀ γ, ✓ (f γ)) → ⊢ |==> ∃ γ, own γ (f γ).
 Proof.
   intros Ha. rewrite /bi_emp_valid (own_alloc_cofinite_dep f ∅) //; [].
-  apply bupd_mono, exist_mono=>?. eauto using and_elim_r.
+  apply bupd_mono, exist_mono=>?. apply: sep_elim_r.
 Qed.
 
 Lemma own_alloc_strong a (P : gname → Prop) :
   pred_infinite P →
-  ✓ a → ⊢ |==> ∃ γ, ⌜P γ⌝ ∧ own γ a.
+  ✓ a → ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ own γ a.
 Proof. intros HP Ha. eapply own_alloc_strong_dep with (f := λ _, a); eauto. Qed.
 Lemma own_alloc_cofinite a (G : gset gname) :
-  ✓ a → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ own γ a.
+  ✓ a → ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∗ own γ a.
 Proof. intros Ha. eapply own_alloc_cofinite_dep with (f := λ _, a); eauto. Qed.
 Lemma own_alloc a : ✓ a → ⊢ |==> ∃ γ, own γ a.
 Proof. intros Ha. eapply own_alloc_dep with (f := λ _, a); eauto. Qed.
 
 (** ** Frame preserving updates *)
-Lemma own_updateP P γ a : a ~~>: P → own γ a ==∗ ∃ a', ⌜P a'⌝ ∧ own γ a'.
+Lemma own_updateP P γ a : a ~~>: P → own γ a ==∗ ∃ a', ⌜P a'⌝ ∗ own γ a'.
 Proof.
   intros Ha. rewrite !own_eq.
   rewrite -(bupd_mono (∃ m, ⌜∃ a', m = iRes_singleton γ a' ∧ P a'⌝ ∧ uPred_ownM m)%I).
@@ -197,13 +197,14 @@ Proof.
       first by (eapply singleton_updateP', cmra_transport_updateP', Ha).
     naive_solver.
   - apply exist_elim=>m; apply pure_elim_l=>-[a' [-> HP]].
-    rewrite -(exist_intro a'). by apply and_intro; [apply pure_intro|].
+    rewrite -(exist_intro a'). rewrite -persistent_and_sep.
+      by apply and_intro; [apply pure_intro|].
 Qed.
 
 Lemma own_update γ a a' : a ~~> a' → own γ a ==∗ own γ a'.
 Proof.
   intros; rewrite (own_updateP (a' =.)); last by apply cmra_update_updateP.
-  by apply bupd_mono, exist_elim=> a''; apply pure_elim_l=> ->.
+  apply bupd_mono, exist_elim=> a''. rewrite sep_and. apply pure_elim_l=> -> //.
 Qed.
 Lemma own_update_2 γ a1 a2 a' :
   a1 ⋅ a2 ~~> a' → own γ a1 -∗ own γ a2 ==∗ own γ a'.

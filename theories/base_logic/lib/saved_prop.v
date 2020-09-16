@@ -41,11 +41,11 @@ Section saved_anything.
 
   Lemma saved_anything_alloc_strong x (I : gname → Prop) :
     pred_infinite I →
-    ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_anything_own γ x.
+    ⊢ |==> ∃ γ, ⌜I γ⌝ ∗ saved_anything_own γ x.
   Proof. intros ?. by apply own_alloc_strong. Qed.
 
   Lemma saved_anything_alloc_cofinite x (G : gset gname) :
-    ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_anything_own γ x.
+    ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∗ saved_anything_own γ x.
   Proof. by apply own_alloc_cofinite. Qed.
 
   Lemma saved_anything_alloc x : ⊢ |==> ∃ γ, saved_anything_own γ x.
@@ -81,11 +81,11 @@ Proof. solve_contractive. Qed.
 
 Lemma saved_prop_alloc_strong `{!savedPropG Σ} (I : gname → Prop) (P: iProp Σ) :
   pred_infinite I →
-  ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_prop_own γ P.
+  ⊢ |==> ∃ γ, ⌜I γ⌝ ∗ saved_prop_own γ P.
 Proof. iIntros (?). by iApply saved_anything_alloc_strong. Qed.
 
 Lemma saved_prop_alloc_cofinite `{!savedPropG Σ} (G : gset gname) (P: iProp Σ) :
-  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_prop_own γ P.
+  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∗ saved_prop_own γ P.
 Proof. iApply saved_anything_alloc_cofinite. Qed.
 
 Lemma saved_prop_alloc `{!savedPropG Σ} (P: iProp Σ) :
@@ -114,11 +114,11 @@ Qed.
 
 Lemma saved_pred_alloc_strong `{!savedPredG Σ A} (I : gname → Prop) (Φ : A → iProp Σ) :
   pred_infinite I →
-  ⊢ |==> ∃ γ, ⌜I γ⌝ ∧ saved_pred_own γ Φ.
+  ⊢ |==> ∃ γ, ⌜I γ⌝ ∗ saved_pred_own γ Φ.
 Proof. iIntros (?). by iApply saved_anything_alloc_strong. Qed.
 
 Lemma saved_pred_alloc_cofinite `{!savedPredG Σ A} (G : gset gname) (Φ : A → iProp Σ) :
-  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∧ saved_pred_own γ Φ.
+  ⊢ |==> ∃ γ, ⌜γ ∉ G⌝ ∗ saved_pred_own γ Φ.
 Proof. iApply saved_anything_alloc_cofinite. Qed.
 
 Lemma saved_pred_alloc `{!savedPredG Σ A} (Φ : A → iProp Σ) :
