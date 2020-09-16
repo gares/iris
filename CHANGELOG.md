@@ -40,6 +40,14 @@ With this release, we dropped support for Coq 8.9.
 
 * Add a `ghost_var` library that provides (fractional) ownership of a ghost
   variable of arbitrary `Type`.
+* Change type of some ghost state lemmas (mostly about allocation) to use `∗`
+  instead of `∧` (consistent with our usual style).  This affects the following
+  lemmas: `own_alloc_strong_dep`, `own_alloc_cofinite_dep`, `own_alloc_strong`,
+  `own_alloc_cofinite`, `own_updateP`, `saved_anything_alloc_strong`,
+  `saved_anything_alloc_cofinite`, `saved_prop_alloc_strong`,
+  `saved_prop_alloc_cofinite`, `saved_pred_alloc_strong`,
+  `saved_pred_alloc_cofinite`, `auth_alloc_strong`, `auth_alloc_cofinite`,
+  `auth_alloc`.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
