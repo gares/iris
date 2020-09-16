@@ -40,7 +40,8 @@ Section lemmas.
     ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ ghost_var γ 1 a.
   Proof.
     iIntros (?). rewrite /ghost_var.
-    iMod (own_alloc_strong _ P) as (γ ?) "Hown"; by eauto.
+    iMod (own_alloc_strong (to_frac_agree (A:=leibnizO A) 1 a) P)
+      as (γ ?) "Hown"; by eauto.
   Qed.
   Lemma ghost_var_alloc a :
     ⊢ |==> ∃ γ, ghost_var γ 1 a.
