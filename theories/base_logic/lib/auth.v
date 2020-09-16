@@ -147,7 +147,7 @@ Section auth.
 
   Lemma auth_alloc_strong N E t (I : gname → Prop) :
     pred_infinite I →
-    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜I γ⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
+    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜I γ⌝ ∗ auth_ctx γ N f φ ∗ auth_own γ (f t).
   Proof.
     iIntros (??) "Hφ". rewrite /auth_own /auth_ctx.
     iMod (own_alloc_strong (● f t ⋅ ◯ f t) I) as (γ) "[% [Hγ Hγ']]";
@@ -158,7 +158,7 @@ Section auth.
   Qed.
 
   Lemma auth_alloc_cofinite N E t (G : gset gname) :
-    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜γ ∉ G⌝ ∧ auth_ctx γ N f φ ∧ auth_own γ (f t).
+    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, ⌜γ ∉ G⌝ ∗ auth_ctx γ N f φ ∗ auth_own γ (f t).
   Proof.
     intros ?. apply auth_alloc_strong=>//.
     apply (pred_infinite_set (C:=gset gname)) => E'.
@@ -166,7 +166,7 @@ Section auth.
   Qed.
 
   Lemma auth_alloc N E t :
-    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, auth_ctx γ N f φ ∧ auth_own γ (f t).
+    ✓ (f t) → ▷ φ t ={E}=∗ ∃ γ, auth_ctx γ N f φ ∗ auth_own γ (f t).
   Proof.
     iIntros (?) "Hφ".
     iMod (auth_alloc_cofinite N E t ∅ with "Hφ") as (γ) "[_ ?]"; eauto.

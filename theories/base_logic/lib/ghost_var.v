@@ -38,14 +38,10 @@ Section lemmas.
   Lemma ghost_var_alloc_strong a (P : gname → Prop) :
     pred_infinite P →
     ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ ghost_var γ 1 a.
-  Proof.
-    iIntros (?). rewrite /ghost_var.
-    iMod (own_alloc_strong (to_frac_agree (A:=leibnizO A) 1 a) P)
-      as (γ ?) "Hown"; by eauto.
-  Qed.
+  Proof. intros. iApply own_alloc_strong; done. Qed.
   Lemma ghost_var_alloc a :
     ⊢ |==> ∃ γ, ghost_var γ 1 a.
-  Proof. rewrite /ghost_var. iApply own_alloc. done. Qed.
+  Proof. iApply own_alloc. done. Qed.
 
   Lemma ghost_var_op_valid γ a1 q1 a2 q2 :
     ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜✓ (q1 + q2)%Qp ∧ a1 = a2⌝.
