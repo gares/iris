@@ -332,6 +332,13 @@ Section fupd_derived.
   Lemma big_sepL_fupd {A} E (Φ : nat → A → PROP) l :
     ([∗ list] k↦x ∈ l, |={E}=> Φ k x) ={E}=∗ [∗ list] k↦x ∈ l, Φ k x.
   Proof. by rewrite (big_opL_commute _). Qed.
+  Lemma big_sepL2_fupd {A B} E (Φ : nat → A → B → PROP) l1 l2 :
+    ([∗ list] k↦x;y ∈ l1;l2, |={E}=> Φ k x y) ={E}=∗ [∗ list] k↦x;y ∈ l1;l2, Φ k x y.
+  Proof.
+    rewrite !big_sepL2_alt !persistent_and_affinely_sep_l.
+    etrans; [| by apply fupd_frame_l]. apply sep_mono_r. apply big_sepL_fupd.
+  Qed.
+
   Lemma big_sepM_fupd `{Countable K} {A} E (Φ : K → A → PROP) m :
     ([∗ map] k↦x ∈ m, |={E}=> Φ k x) ={E}=∗ [∗ map] k↦x ∈ m, Φ k x.
   Proof. by rewrite (big_opM_commute _). Qed.

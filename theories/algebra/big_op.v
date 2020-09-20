@@ -192,6 +192,13 @@ Section list.
     ([^o list] k↦y ∈ h <$> l, f k y) ≡ ([^o list] k↦y ∈ l, f k (h y)).
   Proof. revert f. induction l as [|x l IH]=> f; csimpl=> //. by rewrite IH. Qed.
 
+  Lemma big_opL_omap {B} (h : A → option B) (f : B → M) l :
+    ([^o list] y ∈ omap h l, f y) ≡ ([^o list] y ∈ l, from_option f monoid_unit (h y)).
+  Proof.
+    revert f. induction l as [|x l IH]=> f //; csimpl.
+    case_match; csimpl; by rewrite IH // left_id.
+  Qed.
+
   Lemma big_opL_op f g l :
     ([^o list] k↦x ∈ l, f k x `o` g k x)
     ≡ ([^o list] k↦x ∈ l, f k x) `o` ([^o list] k↦x ∈ l, g k x).
@@ -321,6 +328,18 @@ Section gmap.
   Proof.
     rewrite big_opM_eq /big_opM_def map_to_list_fmap big_opL_fmap.
     by apply big_opL_proper=> ? [??].
+  Qed.
+
+  Lemma big_opM_omap {B} (h : A → option B) (f : K → B → M) m :
+    ([^o map] k↦y ∈ omap h m, f k y) ≡ [^o map] k↦y ∈ m, from_option (f k) monoid_unit (h y).
+  Proof.
+    revert f. induction m as [|i x m Hmi IH] using map_ind=> f.
+    { by rewrite omap_empty !big_opM_empty. }
+    assert (omap h m !! i = None) by (by rewrite lookup_omap Hmi).
+    destruct (h x) as [y|] eqn:Hhx.
+    - by rewrite (omap_insert _ _ _ _ y) // !big_opM_insert // IH Hhx.
+    - rewrite omap_insert_None // delete_notin // big_opM_insert //.
+      by rewrite Hhx /= left_id.
   Qed.
 
   Lemma big_opM_insert_delete `{Countable K} {B} (f : K → B → M) (m : gmap K B) i x :
