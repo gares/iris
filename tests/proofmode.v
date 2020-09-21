@@ -1104,6 +1104,13 @@ Proof.
   iIntros "HQ" (x). Fail iIntros (x).
 Abort.
 
+Check "iIntros_pure_not_forall".
+Lemma iIntros_pure_not_forall P Q :
+  P -∗ Q.
+Proof.
+  Fail iIntros (?).
+Abort.
+
 Check "iSplitL_one_of_many".
 Lemma iSplitL_one_of_many P :
   P -∗ P -∗ P ∗ P.
