@@ -541,6 +541,10 @@ The command has indeed failed with message:
 Tactic failure: iIntro: "HP" not fresh.
 The command has indeed failed with message:
 x is already used.
+"iIntros_pure_not_forall"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntro: cannot turn (P -∗ Q)%I into a universal quantifier.
 "iSplitL_one_of_many"
      : string
 The command has indeed failed with message:
