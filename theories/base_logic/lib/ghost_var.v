@@ -50,6 +50,13 @@ Section lemmas.
     iDestruct (own_valid_2 with "Hvar1 Hvar2") as %[Hq Ha]%frac_agree_op_valid.
     done.
   Qed.
+  (** Almost all the time, this is all you really need. *)
+  Lemma ghost_var_agree γ a1 q1 a2 q2 :
+    ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜a1 = a2⌝.
+  Proof.
+    iIntros "Hvar1 Hvar2".
+    iDestruct (ghost_var_valid_2 with "Hvar1 Hvar2") as %[_ ?]. done.
+  Qed.
 
   (** This is just an instance of fractionality above, but that can be hard to find. *)
   Lemma ghost_var_split γ a q1 q2 :
