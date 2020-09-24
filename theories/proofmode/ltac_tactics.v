@@ -1453,9 +1453,9 @@ Local Ltac iDestructHypFindPat Hgo pat found pats :=
   | ISimpl :: ?pats => simpl; iDestructHypFindPat Hgo pat found pats
   | IClear ?H :: ?pats => iClear H; iDestructHypFindPat Hgo pat found pats
   | IClearFrame ?H :: ?pats => iFrame H; iDestructHypFindPat Hgo pat found pats
-  | ?pat :: ?pats =>
+  | ?pat1 :: ?pats =>
      lazymatch found with
-     | false => iDestructHypGo Hgo pat; iDestructHypFindPat Hgo pat true pats
+     | false => iDestructHypGo Hgo pat1; iDestructHypFindPat Hgo pat true pats
      | true => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
      end
   end.

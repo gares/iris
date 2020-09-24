@@ -1217,7 +1217,12 @@ Proof. Fail iRevert "H". Abort.
 
 Check "iDestruct_fail".
 Lemma iDestruct_fail P : P -∗ <absorb> P.
-Proof. iIntros "HP". Fail iDestruct "HP" as "{HP}". Fail iDestruct "HP" as "[{HP}]". Abort.
+Proof.
+  iIntros "HP".
+  Fail iDestruct "HP" as "{HP}".
+  Fail iDestruct "HP" as "[{HP}]".
+  Fail iDestruct "HP" as "HP HQ HR".
+Abort.
 
 Check "iOrDestruct_fail".
 Lemma iOrDestruct_fail P : (P ∨ P) -∗ P -∗ P.
