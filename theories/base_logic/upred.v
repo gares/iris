@@ -50,7 +50,7 @@ Record uPred (M : ucmraT) : Type := UPred {
   uPred_holds :> nat → M → Prop;
 
   uPred_mono n1 n2 x1 x2 :
-    uPred_holds n1 x1 → x1 ≼{n1} x2 → n2 ≤ n1 → uPred_holds n2 x2
+    uPred_holds n1 x1 → x1 ≼{n2} x2 → n2 ≤ n1 → uPred_holds n2 x2
 }.
 Bind Scope bi_scope with uPred.
 Arguments uPred_holds {_} _%I _ _ : simpl never.
@@ -259,7 +259,7 @@ Program Definition uPred_sep_def {M} (P Q : uPred M) : uPred M :=
 Next Obligation.
   intros M P Q n1 n2 x y (x1&x2&Hx&?&?) [z Hy] Hn.
   exists x1, (x2 ⋅ z); split_and?; eauto using uPred_mono, cmra_includedN_l.
-  eapply dist_le, Hn. by rewrite Hy Hx assoc.
+  rewrite Hy. eapply dist_le, Hn. by rewrite Hx assoc.
 Qed.
 Definition uPred_sep_aux : seal (@uPred_sep_def). Proof. by eexists. Qed.
 Definition uPred_sep := uPred_sep_aux.(unseal).
@@ -315,8 +315,8 @@ Definition uPred_later_eq :
 Program Definition uPred_ownM_def {M : ucmraT} (a : M) : uPred M :=
   {| uPred_holds n x := a ≼{n} x |}.
 Next Obligation.
-  intros M a n1 n2 x1 x [a' Hx1] [x2 Hx] Hn. eapply cmra_includedN_le=>//.
-  exists (a' ⋅ x2). by rewrite Hx(assoc op) Hx1.
+  intros M a n1 n2 x1 x [a' Hx1] [x2 Hx] Hn.
+  exists (a' ⋅ x2). rewrite Hx. eapply dist_le, Hn. rewrite (assoc op) -Hx1 //.
 Qed.
 Definition uPred_ownM_aux : seal (@uPred_ownM_def). Proof. by eexists. Qed.
 Definition uPred_ownM := uPred_ownM_aux.(unseal).
