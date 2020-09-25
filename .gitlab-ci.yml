@@ -37,7 +37,7 @@ build-coq.8.12.0:
   variables:
     OPAM_PINS: "coq version 8.12.0"
     DENY_WARNINGS: "1"
-    OPAM_PKG: "coq-iris"
+    OPAM_PKG: "1"
     DOC_DIR: "coqdoc@center.mpi-sws.org:iris"
     DOC_OPTS: "--external https://plv.mpi-sws.org/coqdoc/stdpp/ stdpp"
   tags:

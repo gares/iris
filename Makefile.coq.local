@@ -14,7 +14,7 @@ NORMALIZER:=test-normalizer.sed
 test: $(TESTFILES:.v=.vo)
 # Make sure everything imports the options.
 	$(HIDE)for FILE in $(VFILES); do \
-	  if ! fgrep -q 'From iris Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; echo; exit 1; fi \
+	  if ! fgrep -q 'From iris.prelude Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; echo; exit 1; fi \
 	done
 .PHONY: test
 

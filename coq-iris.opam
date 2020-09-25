@@ -13,5 +13,5 @@ depends: [
   "coq-stdpp" { (= "dev.2020-10-30.0.402f2d6a") | (= "dev") }
 ]
 
-build: [make "-j%{jobs}%"]
-install: [make "install"]
+build: ["./make-package" "iris" "-j%{jobs}%"]
+install: ["./make-package" "iris" "install"]
