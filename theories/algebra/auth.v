@@ -162,7 +162,7 @@ Proof.
   - by intros [?[->%(inj to_agree) []]].
   - naive_solver eauto using ucmra_unit_leastN.
 Qed.
-Lemma auth_auth_validN n a : ✓{n} a ↔ ✓{n} (● a).
+Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
 Proof.
   rewrite auth_auth_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
 Qed.

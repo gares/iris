@@ -20,6 +20,8 @@ With this release, we dropped support for Coq 8.9.
   (`iso_cmra_mixin_restrict`) and through an isomorphism (`iso_cmra_mixin`).
 * Add a `frac_agree` library which encapsulates `frac * agree A` for some OFE
   `A`, and provides some useful lemmas.
+* Fix direction of `auth_auth_validN` to make it consistent with similar lemmas,
+  e.g., `auth_auth_valid`. The direction is now `✓{n} (● a) ↔ ✓{n} a`.
 
 **Changes in `proofmode`:**
 
