@@ -73,14 +73,16 @@ Section lemmas.
     (q1 + q2 = 1)%Qp →
     ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 ==∗ ghost_var γ q1 b ∗ ghost_var γ q2 b.
   Proof.
-    iIntros (Hq) "[H1 H2]".
+    iIntros (Hq) "H1 H2".
     iDestruct (ghost_var_valid_2 with "H1 H2") as %[_ ->].
-    iCombine "H1 H2" as "H". rewrite -frac_agree_op Hq.
+    iDestruct (fractional_merge with "H1 H2") as "H". simpl. rewrite Hq.
     iMod (ghost_var_update with "H") as "H".
     rewrite -Hq. iApply ghost_var_split. done.
   Qed.
   Lemma ghost_var_update_halves b γ a1 a2 :
-    ghost_var γ (1/2) a1 -∗ ghost_var γ (1/2) a2 ==∗ ghost_var γ (1/2) b ∗ ghost_var γ (1/2) b.
+    ghost_var γ (1/2) a1 -∗
+    ghost_var γ (1/2) a2 ==∗
+    ghost_var γ (1/2) b ∗ ghost_var γ (1/2) b.
   Proof. iApply ghost_var_update_2. apply Qp_half_half. Qed.
 
 End lemmas.
