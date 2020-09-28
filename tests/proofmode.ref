@@ -653,6 +653,20 @@ Tactic failure: iApply: cannot apply P.
      : string
 The command has indeed failed with message:
 Tactic failure: iApply: remaining hypotheses not affine and the goal not absorbing.
+"iIntros_fail_nonempty_spatial"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntro: introducing non-persistent "HP" : P
+into non-empty spatial context.
+"iIntros_fail_not_fresh"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntro: "HP" not fresh.
+"iIntros_fail_nothing_to_introduce"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntro: could not introduce "HQ"
+, goal is not a wand or implication.
 "iApply_fail_not_affine_2"
      : string
 The command has indeed failed with message:

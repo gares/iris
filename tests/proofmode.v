@@ -1238,6 +1238,18 @@ Check "iApply_fail_not_affine_1".
 Lemma iApply_fail_not_affine_1 P Q : P -∗ Q -∗ Q.
 Proof. iIntros "HP HQ". Fail iApply "HQ". Abort.
 
+Check "iIntros_fail_nonempty_spatial".
+Lemma iIntro_fail_nonempty_spatial P Q : P -∗ P → Q.
+Proof. Fail iIntros "? HP". Abort.
+
+Check "iIntros_fail_not_fresh".
+Lemma iIntro_fail_not_fresh P Q : P -∗ P -∗ Q.
+Proof. Fail iIntros "HP HP". Abort.
+
+Check "iIntros_fail_nothing_to_introduce".
+Lemma iIntro_fail_nothing_to_introduce P Q : P -∗ Q.
+Proof. Fail iIntros "HP HQ". Abort.
+
 Check "iApply_fail_not_affine_2".
 Lemma iApply_fail_not_affine_2 P Q R : P -∗ R -∗ (R -∗ Q) -∗ Q.
 Proof. iIntros "HP HR HQ". Fail iApply ("HQ" with "HR"). Abort.
