@@ -25,6 +25,10 @@ Section lemmas.
   Global Instance to_frac_inj : Inj2 (≡) (≡) (≡) (@to_frac_agree A).
   Proof. by intros q1 a1 q2 a2 [??%(inj to_agree)]. Qed.
 
+  Lemma frac_agree_op q1 q2 a :
+    to_frac_agree (q1 + q2) a ≡ to_frac_agree q1 a ⋅ to_frac_agree q2 a.
+  Proof. rewrite /to_frac_agree -pair_op agree_idemp //. Qed.
+
   Lemma frac_agree_op_valid q1 a1 q2 a2 :
     ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
     ✓ (q1 + q2)%Qp ∧ a1 ≡ a2.

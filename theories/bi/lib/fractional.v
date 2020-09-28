@@ -38,6 +38,11 @@ Section fractional.
     P1 -∗ P2 -∗ P.
   Proof. intros. apply bi.wand_intro_r. by rewrite -(fractional_split P). Qed.
 
+  Lemma fractional_merge P1 P2 Φ q1 q2 `{!Fractional Φ} :
+    AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
+    P1 -∗ P2 -∗ Φ (q1 + q2)%Qp.
+  Proof. move=>-[-> _] [-> _]. rewrite fractional. apply bi.wand_intro_r. done. Qed.
+
   Lemma fractional_half P P12 Φ q :
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P ⊣⊢ P12 ∗ P12.
