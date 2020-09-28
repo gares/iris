@@ -491,6 +491,7 @@ Local Tactic Notation "iIntro" constr(H) :=
       [iSolveTC
       |pm_reduce; iSolveTC ||
        let P := lazymatch goal with |- Persistent ?P => P end in
+       let H := pretty_ident H in
        fail 1 "iIntro: introducing non-persistent" H ":" P
               "into non-empty spatial context"
       |iSolveTC
@@ -512,7 +513,8 @@ Local Tactic Notation "iIntro" constr(H) :=
           fail 1 "iIntro:" H "not fresh"
         | _ => idtac (* subgoal *)
         end]
-  | fail 1 "iIntro: nothing to introduce" ].
+  | let H := pretty_ident H in
+    fail 1 "iIntro: could not introduce" H ", goal is not a wand or implication" ].
 
 Local Tactic Notation "iIntro" "#" constr(H) :=
   iStartProof;
