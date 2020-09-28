@@ -4,23 +4,52 @@ From iris.algebra Require Import proofmode_classes.
 From iris.base_logic Require Import base_logic.
 From iris Require Import options.
 
-(** The view camera with fractional authoritative parts. The camera [view] has
-3 types of elements: the fractional authoritative [●V{q} a], the full
-authoritative [●V a ≡ ●V{1} a], and the non-authoritative [◯V a]. Updates are
-only possible with the full authoritative element [●V a], while fractional
-authoritative elements have agreement: [✓ (●V{p} a ⋅ ●V{q} b) → a ≡ b]. *)
+(** The view camera with fractional authoritative elements *)
+(** The view camera, which is reminiscent of the views framework, is used to
+provide a logical/"small-footprint" "view" of some "large-footprint" piece of
+data, which can be shared in the separation logic sense, i.e., different parts
+of the data can be separately owned by different functions or threads. This is
+achieved using the two elements of the view camera:
+
+- The authoritative element [●V a], which describes the data under consideration.
+- The fragment [◯V b], which provides a logical view of the data [a].
+
+To enable sharing of the fragments, the type of fragments is equipped with a
+camera structure so ownership of fragments can be split. Concretely, fragments
+enjoy the rule [◯V (b1 ⋅ b2) = ◯V b1 ⋅ ◯V b2].
+
+To enable sharing of the authoritative element [●V{q} a], it is equipped with a
+fraction [q]. Updates are only possible with the full authoritative element
+[●V a] (syntax for [●V{1} a]]), while fractional authoritative elements have
+agreement, i.e., [✓ (●V{p1} a1 ⋅ ●V{p2} a2) → a1 ≡ a2]. *)
 
 (** * The view relation *)
-(** The view camera is parametrized by a (step-indexed) relation
-[view_rel n a b] that relates the authoritative element [a] to the composition
-of all fragments [b]. This relation should be a.) down-closed w.r.t. the
-step-indexed [n], b.) non-expansive w.r.t. the argument [a], c.) monotone w.r.t.
-the argument [b], d.) ensure validity of the argument [b]. *)
+(** To relate the authoritative element [a] to its possible fragments [b], the
+view camera is parametrized by a (step-indexed) relation [view_rel n a b]. This
+relation should be a.) closed under smaller step-indexes [n], b.) non-expansive
+w.r.t. the argument [a], c.) closed under smaller [b] (which implies
+non-expansiveness w.r.t. [b]), and d.) ensure validity of the argument [b].
+
+Note 1: Instead of requiring both a step-indexed and a non-step-indexed version
+of the relation (like cameras do for validity), we use [∀ n, view_rel n] as the
+non-step-indexed version. This is anyway necessary when using [≼{n}] as the
+relation (like the authoritative camera does) as its non-step-indexed version
+is not equivalent to [∀ n, x ≼{n} y].
+
+Note 2: The view relation is defined as a canonical structure so that given a
+relation [nat → A → B → Prop], the instance with the laws can be inferred. We do
+not use type classes for this purpose because cameras themselves are represented
+using canonical structures. It has proven fragile for a canonical structure
+instance to take a type class as a parameter (in this case, [viewR] would need
+to take a class with the view relation laws). *)
 Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
   view_rel_holds :> nat → A → B → Prop;
   view_rel_mono n1 n2 a1 a2 b1 b2 :
     view_rel_holds n1 a1 b1 →
-    a1 ≡{n1}≡ a2 → b2 ≼{n1} b1 → n2 ≤ n1 → view_rel_holds n2 a2 b2;
+    a1 ≡{n2}≡ a2 →
+    b2 ≼{n2} b1 →
+    n2 ≤ n1 →
+    view_rel_holds n2 a2 b2;
   view_rel_validN n a b :
     view_rel_holds n a b → ✓{n} b
 }.
@@ -64,7 +93,7 @@ Notation "●V{ q } a" := (view_auth q a) (at level 20, format "●V{ q }  a").
 Notation "●V a" := (view_auth 1 a) (at level 20).
 Notation "◯V a" := (view_frag a) (at level 20).
 
-(** * Ofe *)
+(** * The OFE structure *)
 Section ofe.
   Context {A B : ofeT} (rel : nat → A → B → Prop).
   Implicit Types a : A.
@@ -111,7 +140,7 @@ Section ofe.
   Proof. by uPred.unseal. Qed.
 End ofe.
 
-(** * Camera *)
+(** * The camera structure *)
 Section cmra.
   Context {A B} (rel : view_rel A B).
   Implicit Types a : A.
@@ -161,14 +190,14 @@ Section cmra.
   Instance view_op : Op (view rel) := λ x y,
     View (view_auth_proj x ⋅ view_auth_proj y) (view_frag_proj x ⋅ view_frag_proj y).
 
-  Definition view_valid_eq :
+  Local Definition view_valid_eq :
     valid = λ x,
       match view_auth_proj x with
       | Some (q, ag) =>
          ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x))
       | None => ✓ view_frag_proj x
       end := eq_refl _.
-  Definition view_validN_eq :
+  Local Definition view_validN_eq :
     validN = λ n x, 
       match view_auth_proj x with
       | Some (q, ag) => ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
@@ -473,7 +502,7 @@ Section cmra.
   Qed.
 End cmra.
 
-(** * Functor *)
+(** * Utilities to construct functors *)
 (** Due to the dependent type [rel] in [view] we cannot actually define
 instances of the functor structures [rFunctor] and [urFunctor]. Functors can
 only be defined for instances of [view], like [auth]. To make it more convenient

@@ -3,23 +3,25 @@ From iris.algebra Require Import proofmode_classes.
 From iris.base_logic Require Import base_logic.
 From iris Require Import options.
 
-(** The authoritative camera with fractional authoritative elements. The camera
-[auth] has 3 types of elements: the fractional authoritative element [●{q} a],
-the full authoritative element [● a ≡ ●{1} a], and the fragment [◯ b] (of which
-there can be several). Updates are only possible with the full authoritative
-element [● a], while fractional authoritative elements have agreement, i.e.,
-[✓ (●{p1} a1 ⋅ ●{p2} a2) → a1 ≡ a2]. *)
+(** The authoritative camera with fractional authoritative elements *)
+(** The authoritative camera has 2 types of elements: the authoritative
+element [●{q} a] and the fragment [◯ b] (of which there can be several). To
+enable sharing of the authoritative element [●{q} a], it is equiped with a
+fraction [q]. Updates are only possible with the full authoritative element
+[● a] (syntax for [●{1} a]]), while fractional authoritative elements have
+agreement, i.e., [✓ (●{p1} a1 ⋅ ●{p2} a2) → a1 ≡ a2]. *)
 
 (** * Definition of the view relation *)
+(** The authoritative camera is obtained by instantiating the view camera. *)
 Definition auth_view_rel_raw {A : ucmraT} (n : nat) (a b : A) : Prop :=
   b ≼{n} a ∧ ✓{n} a.
 Lemma auth_view_rel_raw_mono (A : ucmraT) n1 n2 (a1 a2 b1 b2 : A) :
-  auth_view_rel_raw n1 a1 b1 → a1 ≡{n1}≡ a2 → b2 ≼{n1} b1 → n2 ≤ n1 →
+  auth_view_rel_raw n1 a1 b1 → a1 ≡{n2}≡ a2 → b2 ≼{n2} b1 → n2 ≤ n1 →
   auth_view_rel_raw n2 a2 b2.
 Proof.
   intros [??] Ha12 ??. split.
-  - apply cmra_includedN_le with n1; [|done]. rewrite -Ha12. by trans b1.
-  - apply cmra_validN_le with n1; [|lia]. by rewrite -Ha12.
+  - trans b1; [done|]. rewrite -Ha12. by apply cmra_includedN_le with n1.
+  - rewrite -Ha12. by apply cmra_validN_le with n1.
 Qed.
 Lemma auth_view_rel_raw_valid (A : ucmraT) n (a b : A) :
   auth_view_rel_raw n a b → ✓{n} b.
@@ -38,7 +40,7 @@ Proof.
   - by apply cmra_discrete_valid_iff_0.
 Qed.
 
-(** * Definition and operations on auth *)
+(** * Definition and operations on the authoritative camera *)
 (** The type [auth] is not defined as a [Definition], but as a [Notation].
 This way, one can use [auth A] with [A : Type] instead of [A : ucmraT], and let
 canonical structure search determine the corresponding camera instance. *)
@@ -59,7 +61,7 @@ Notation "◯ a" := (auth_frag a) (at level 20).
 Notation "●{ q } a" := (auth_auth q a) (at level 20, format "●{ q }  a").
 Notation "● a" := (auth_auth 1 a) (at level 20).
 
-(** * Laws *)
+(** * Laws of the authoritative camera *)
 Section auth.
   Context {A : ucmraT}.
   Implicit Types a b : A.
@@ -210,8 +212,8 @@ Section auth.
     ◯ b1 ≼ ●{p} a ⋅ ◯ b2 ↔ b1 ≼ b2.
   Proof. apply view_frag_included. Qed.
 
-  (** The weaker [view_both_included] lemmas below are a consequence of the
-  [view_auth_included] and [view_frag_included] lemmas above. *)
+  (** The weaker [auth_both_included] lemmas below are a consequence of the
+  [auth_auth_included] and [auth_frag_included] lemmas above. *)
   Lemma auth_both_includedN n p1 p2 a1 a2 b1 b2 :
     ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
   Proof. apply view_both_includedN. Qed.
