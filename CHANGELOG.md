@@ -40,6 +40,11 @@ With this release, we dropped support for Coq 8.9.
   existentials above. As part of this change, it now uses a base name of `H` for
   pure facts rather than the previous default of `a`. This also requires some
   changes if you were implementing `FromForall`, in order to forward names.
+* Make `iFrame` "less" smart w.r.t. clean up of modalities. It now consistently
+  removes the modalities `<affine>`, `<absorbing>`, `<persistent>` and `□` only
+  if the result after framing is `True` or `emp`. In particular, it no longer
+  removes `<affine>` if the result after framing is affine, and it no longer
+  removes `□` if the result after framing is intuitionistic.
 
 **Changes in `base_logic`:**
 
