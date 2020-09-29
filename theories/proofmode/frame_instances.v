@@ -6,6 +6,15 @@ Import bi.
 
 (** This file defines the instances that make up the framing machinery. *)
 
+(** When framing below logical connectives/modalities, framing will perform
+some "clean up" to remove connectives/modalities if the result of framing is
+[True] or [emp]. For example, framing [P] in [P ∗ Q] or [<affine> P] will
+result in [Q] and [emp], respectively, instead of [emp ∗ Q] and [<affine> emp],
+respectively. One could imagine a smarter way of cleaning up, as implemented in
+https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
+but that makes framing less predictable and might have some performance impact.
+Hence, we only perform such cleanup for [True] and [emp]. *)
+
 Section bi.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
