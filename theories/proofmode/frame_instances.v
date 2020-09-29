@@ -6,6 +6,15 @@ Import bi.
 
 (** This file defines the instances that make up the framing machinery. *)
 
+(** When framing below logical connectives/modalities, framing will perform
+some "clean up" to remove connectives/modalities if the result of framing is
+[True] or [emp]. For example, framing [P] in [P ∗ Q] or [<affine> P] will
+result in [Q] and [emp], respectively, instead of [emp ∗ Q] and [<affine> emp],
+respectively. One could imagine a smarter way of cleaning up, as implemented in
+https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/450 for some modalities,
+but that makes framing less predictable and might have some performance impact.
+Hence, we only perform such cleanup for [True] and [emp]. *)
+
 Section bi.
 Context {PROP : bi}.
 Implicit Types P Q R : PROP.
@@ -188,10 +197,10 @@ Proof.
   by rewrite assoc (comm _ P1) -assoc wand_elim_r.
 Qed.
 
+Global Instance make_affinely_emp : @KnownMakeAffinely PROP emp emp | 0.
+Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_emp. Qed.
 Global Instance make_affinely_True : @KnownMakeAffinely PROP True emp | 0.
 Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp affinely_emp. Qed.
-Global Instance make_affinely_affine P : Affine P → KnownMakeAffinely P P | 1.
-Proof. intros. by rewrite /KnownMakeAffinely /MakeAffinely affine_affinely. Qed.
 Global Instance make_affinely_default P : MakeAffinely P (<affine> P) | 100.
 Proof. by rewrite /MakeAffinely. Qed.
 
@@ -202,17 +211,17 @@ Proof.
   rewrite -{1}(affine_affinely (□ R)%I) affinely_sep_2 //.
 Qed.
 
+Global Instance make_intuitionistically_emp :
+  @KnownMakeIntuitionistically PROP emp emp | 0.
+Proof.
+  by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
+    intuitionistically_emp.
+Qed.
 Global Instance make_intuitionistically_True :
   @KnownMakeIntuitionistically PROP True emp | 0.
 Proof.
   by rewrite /KnownMakeIntuitionistically /MakeIntuitionistically
-             intuitionistically_True_emp.
-Qed.
-Global Instance make_intuitionistically_intuitionistic P :
-  Affine P → Persistent P → KnownMakeIntuitionistically P P | 1.
-Proof.
-  intros. rewrite /KnownMakeIntuitionistically /MakeIntuitionistically.
-  rewrite intuitionistic_intuitionistically //.
+    intuitionistically_True_emp.
 Qed.
 Global Instance make_intuitionistically_default P :
   MakeIntuitionistically P (□ P) | 100.
@@ -230,9 +239,8 @@ Proof.
   by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly
      -absorbingly_True_emp absorbingly_pure.
 Qed.
-(* Note: there is no point in having an instance `Absorbing P → MakeAbsorbingly P P`
-because framing will never turn a proposition that is not absorbing into
-something that is absorbing. *)
+Global Instance make_absorbingly_True : @KnownMakeAbsorbingly PROP True True | 0.
+Proof. by rewrite /KnownMakeAbsorbingly /MakeAbsorbingly absorbingly_pure. Qed.
 Global Instance make_absorbingly_default P : MakeAbsorbingly P (<absorb> P) | 100.
 Proof. by rewrite /MakeAbsorbingly. Qed.
 
@@ -242,13 +250,13 @@ Proof.
   rewrite /Frame /MakeAbsorbingly=> <- <- /=. by rewrite absorbingly_sep_r.
 Qed.
 
-Global Instance make_persistently_true : @KnownMakePersistently PROP True True.
-Proof. by rewrite /KnownMakePersistently /MakePersistently persistently_pure. Qed.
 Global Instance make_persistently_emp : @KnownMakePersistently PROP emp True.
 Proof.
   by rewrite /KnownMakePersistently /MakePersistently
      -persistently_True_emp persistently_pure.
 Qed.
+Global Instance make_persistently_True : @KnownMakePersistently PROP True True.
+Proof. by rewrite /KnownMakePersistently /MakePersistently persistently_pure. Qed.
 Global Instance make_persistently_default P :
   MakePersistently P (<pers> P) | 100.
 Proof. by rewrite /MakePersistently. Qed.
@@ -259,7 +267,7 @@ Proof.
   rewrite /Frame /MakePersistently=> <- <- /=.
   rewrite -persistently_and_intuitionistically_sep_l.
   by rewrite -persistently_sep_2 -persistently_and_sep_l_1
-     persistently_affinely_elim persistently_idemp.
+    persistently_affinely_elim persistently_idemp.
 Qed.
 
 Global Instance frame_exist {A} p R (Φ Ψ : A → PROP) :
