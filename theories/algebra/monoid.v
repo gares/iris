@@ -31,7 +31,7 @@ Proof. intros x. etrans; [apply monoid_comm|apply monoid_left_id]. Qed.
 
 (** The [Homomorphism] classes give rise to generic lemmas about big operators
 commuting with each other. We also consider a [WeakMonoidHomomorphism] which
-does not necesarrily commute with unit; an example is the [own] connective: we
+does not necessarily commute with unit; an example is the [own] connective: we
 only have `True ==∗ own γ ∅`, not `True ↔ own γ ∅`. *)
 Class WeakMonoidHomomorphism {M1 M2 : ofeT}
     (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{Monoid M1 o1, Monoid M2 o2}
