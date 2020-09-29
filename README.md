@@ -12,6 +12,18 @@ definitions and some derived forms is available in
 [tex/iris.tex](tex/iris.tex).  A compiled PDF version of this document is
 [available online](http://plv.mpi-sws.org/iris/appendix-3.2.pdf).
 
+## Side-effects
+
+Importing Iris has some side effects as the library sets some global options.
+
+* First of all, Iris imports std++, so the
+  [std++ side-effects](https://gitlab.mpi-sws.org/iris/stdpp/#side-effects)
+  apply.
+* On top of that, Iris imports ssreflect, which replaces the default `rewrite`
+  tactic with the ssreflect version. However, `done` is overwritten to keep
+  using the std++ version of the tactic.  We also set `SsrOldRewriteGoalsOrder`
+  and re-open `general_if_scope` to un-do some effects of ssreflect.
+
 ## Building Iris
 
 ### Prerequisites
