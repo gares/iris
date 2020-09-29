@@ -45,6 +45,9 @@ With this release, we dropped support for Coq 8.9.
   if the result after framing is `True` or `emp`. In particular, it no longer
   removes `<affine>` if the result after framing is affine, and it no longer
   removes `□` if the result after framing is intuitionistic.
+* Allow framing below an `<affine>` modality if the hypothesis that is framed is
+  affine. (Previously, framing below `<affine>` was only possible if the
+  hypothesis that is framed resides in the intuitionistic context.)
 
 **Changes in `base_logic`:**
 

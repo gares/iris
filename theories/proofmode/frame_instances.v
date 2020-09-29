@@ -204,11 +204,12 @@ Proof. by rewrite /KnownMakeAffinely /MakeAffinely affinely_True_emp affinely_em
 Global Instance make_affinely_default P : MakeAffinely P (<affine> P) | 100.
 Proof. by rewrite /MakeAffinely. Qed.
 
-Global Instance frame_affinely R P Q Q' :
-  Frame true R P Q → MakeAffinely Q Q' → Frame true R (<affine> P) Q'.
+Global Instance frame_affinely p R P Q Q' :
+  TCOr (TCEq p true) (Affine R) →
+  Frame p R P Q → MakeAffinely Q Q' → Frame p R (<affine> P) Q'.
 Proof.
-  rewrite /Frame /MakeAffinely=> <- <- /=.
-  rewrite -{1}(affine_affinely (□ R)%I) affinely_sep_2 //.
+  rewrite /Frame /MakeAffinely=> -[->|?] <- <- /=;
+    by rewrite -{1}(affine_affinely (_ R)%I) affinely_sep_2.
 Qed.
 
 Global Instance make_intuitionistically_emp :
