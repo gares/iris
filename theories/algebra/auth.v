@@ -101,6 +101,12 @@ Proof. intros. apply Auth_discrete; apply _. Qed.
 Instance auth_valid : Valid (auth A) := λ x,
   match auth_auth_proj x with
   | Some (q, ag) =>
+    (* Note that this definition is not logically equivalent to the more
+       intuitive [✓ q ∧ ∃ a, ag ≡ to_agree a ∧ auth_frag_proj x ≼ a ∧ ✓ a]
+       because [∀ n, x ≼{n} y] is not logically equivalent to [x ≼ y]. We have
+       chosen the current definition (which quantifies over each step-index [n])
+       so that we can prove [cmra_valid_validN], which does not hold for the
+       aforementioned more intuitive definition. *)
       ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a)
   | None => ✓ auth_frag_proj x
   end.
@@ -179,6 +185,24 @@ Proof.
   rewrite auth_both_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
 Qed.
 
+(** This lemma statement is a bit awkward as we cannot possibly extract a single
+witness for [b ≼ a] from validity, we have to make do with one witness per step-index. *)
+Lemma auth_both_frac_valid q a b :
+  ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ (∀ n, b ≼{n} a) ∧ ✓ a.
+Proof.
+  rewrite auth_valid_eq /=. apply and_iff_compat_l.
+  setoid_rewrite (left_id _ _ b). split.
+  - intros Hn. split.
+    + intros n. destruct (Hn n) as [? [->%(inj to_agree) [Hincl _]]]. done.
+    + apply cmra_valid_validN. intros n.
+      destruct (Hn n) as [? [->%(inj to_agree) [_ Hval]]]. done.
+  - intros [Hincl Hn] n. eexists. split; first done.
+    split; first done. apply cmra_valid_validN. done.
+Qed.
+Lemma auth_both_valid a b :
+  ✓ (● a ⋅ ◯ b) ↔ (∀ n, b ≼{n} a) ∧ ✓ a.
+Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
+
 Lemma auth_frag_valid a : ✓ (◯ a) ↔ ✓ a.
 Proof. done. Qed.
 Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
@@ -214,7 +238,7 @@ Proof.
   setoid_rewrite <-(discrete_iff _ a).
   setoid_rewrite <-cmra_discrete_valid_iff. naive_solver eauto using O.
 Qed.
-Lemma auth_both_frac_valid `{!CmraDiscrete A} q a b :
+Lemma auth_both_frac_valid_discrete `{!CmraDiscrete A} q a b :
   ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ b ≼ a ∧ ✓ a.
 Proof.
   rewrite auth_valid_discrete /=. apply and_iff_compat_l.
@@ -222,8 +246,8 @@ Proof.
   - by intros [?[->%(inj to_agree)]].
   - naive_solver.
 Qed.
-Lemma auth_both_valid `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
-Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
+Lemma auth_both_valid_discrete `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
+Proof. rewrite auth_both_frac_valid_discrete frac_valid'. naive_solver. Qed.
 
 Lemma auth_cmra_mixin : CmraMixin (auth A).
 Proof.

@@ -37,7 +37,7 @@ Section mono_proof.
   Proof.
     iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (● (MaxNat O) ⋅ ◯ (MaxNat O))) as (γ) "[Hγ Hγ']";
-      first by apply auth_both_valid.
+      first by apply auth_both_valid_discrete.
     iMod (inv_alloc N _ (mcounter_inv γ l) with "[Hl Hγ]").
     { iNext. iExists 0. by iFrame. }
     iModIntro. iApply "HΦ". rewrite /mcounter; eauto 10.
@@ -54,7 +54,7 @@ Section mono_proof.
     iInv N as (c') ">[Hγ Hl]".
     destruct (decide (c' = c)) as [->|].
     - iDestruct (own_valid_2 with "Hγ Hγf")
-        as %[?%max_nat_included _]%auth_both_valid.
+        as %[?%max_nat_included _]%auth_both_valid_discrete.
       iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
       { apply auth_update, (max_nat_local_update _ _ (MaxNat (S c))). simpl. auto. }
       wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
@@ -76,7 +76,7 @@ Section mono_proof.
     rewrite /read /=. wp_lam. iInv N as (c) ">[Hγ Hl]".
     wp_load.
     iDestruct (own_valid_2 with "Hγ Hγf")
-      as %[?%max_nat_included _]%auth_both_valid.
+      as %[?%max_nat_included _]%auth_both_valid_discrete.
     iMod (own_update_2 with "Hγ Hγf") as "[Hγ Hγf]".
     { apply auth_update, (max_nat_local_update _ _ (MaxNat c)); auto. }
     iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
@@ -116,7 +116,7 @@ Section contrib_spec.
   Proof.
     iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (●F O ⋅ ◯F 0)) as (γ) "[Hγ Hγ']";
-      first by apply auth_both_valid.
+      first by apply auth_both_valid_discrete.
     iMod (inv_alloc N _ (ccounter_inv γ l) with "[Hl Hγ]").
     { iNext. iExists 0. by iFrame. }
     iModIntro. iApply "HΦ". rewrite /ccounter_ctx /ccounter; eauto 10.

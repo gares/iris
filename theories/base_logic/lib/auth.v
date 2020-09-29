@@ -151,7 +151,7 @@ Section auth.
   Proof.
     iIntros (??) "Hφ". rewrite /auth_own /auth_ctx.
     iMod (own_alloc_strong (● f t ⋅ ◯ f t) I) as (γ) "[% [Hγ Hγ']]";
-      [done|by apply auth_both_valid|].
+      [done|by apply auth_both_valid_discrete|].
     iMod (inv_alloc N _ (auth_inv γ f φ) with "[-Hγ']") as "#?".
     { iNext. rewrite /auth_inv. iExists t. by iFrame. }
     eauto.
@@ -183,7 +183,7 @@ Section auth.
     iIntros "[Hinv Hγf]". rewrite /auth_inv /auth_own.
     iDestruct "Hinv" as (t) "[>Hγa Hφ]".
     iModIntro. iExists t.
-    iDestruct (own_valid_2 with "Hγa Hγf") as % [? ?]%auth_both_valid.
+    iDestruct (own_valid_2 with "Hγa Hγf") as % [? ?]%auth_both_valid_discrete.
     iSplit; first done. iFrame. iIntros (u b) "[% Hφ]".
     iMod (own_update_2 with "Hγa Hγf") as "[Hγa Hγf]".
     { eapply auth_update; eassumption. }

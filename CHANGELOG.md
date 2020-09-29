@@ -22,6 +22,9 @@ With this release, we dropped support for Coq 8.9.
   `A`, and provides some useful lemmas.
 * Fix direction of `auth_auth_validN` to make it consistent with similar lemmas,
   e.g., `auth_auth_valid`. The direction is now `✓{n} (● a) ↔ ✓{n} a`.
+* Rename `auth_both_valid` to `auth_both_valid_discrete` and
+  `auth_both_frac_valid` to `auth_both_frac_valid_discrete`. The old name is
+  used for new, stronger lemmas that do not assume discreteness.
 
 **Changes in `proofmode`:**
 
@@ -61,6 +64,9 @@ s/\bagree_op_inv'/to_agree_op_inv/g
 s/\bagree_op_invL'/to_agree_op_inv_L/g
 s/\bauth_auth_frac_op_invL\b/auth_auth_frac_op_inv_L/g
 s/\b(excl|frac|ufrac)_auth_agreeL/\1_auth_agree_L/g
+# auth_both_valid
+s/\bauth_both_valid\b/auth_both_valid_discrete/g
+s/\bauth_both_frac_valid\b/auth_both_frac_valid_discrete/g
 EOF
 ```
 

@@ -87,7 +87,7 @@ Section ufrac_auth.
   Proof. by rewrite auth_both_validN=> -[/Some_pair_includedN [_ ?] _]. Qed.
   Lemma ufrac_auth_included `{CmraDiscrete A} q p a b :
     ✓ (●U{p} a ⋅ ◯U{q} b) → Some b ≼ Some a.
-  Proof. rewrite auth_both_valid=> -[/Some_pair_included [_ ?] _] //. Qed.
+  Proof. rewrite auth_both_valid_discrete=> -[/Some_pair_included [_ ?] _] //. Qed.
   Lemma ufrac_auth_includedN_total `{CmraTotal A} n q p a b :
     ✓{n} (●U{p} a ⋅ ◯U{q} b) → b ≼{n} a.
   Proof. intros. by eapply Some_includedN_total, ufrac_auth_includedN. Qed.
