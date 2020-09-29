@@ -61,6 +61,7 @@ With this release, we dropped support for Coq 8.9.
   `saved_prop_alloc_cofinite`, `saved_pred_alloc_strong`,
   `saved_pred_alloc_cofinite`, `auth_alloc_strong`, `auth_alloc_cofinite`,
   `auth_alloc`.
+* Change `uPred_mono` to only require inclusion at the smaller step-index.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
