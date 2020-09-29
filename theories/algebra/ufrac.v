@@ -1,4 +1,4 @@
-(** This file provides a "bounded" version of the fractional camera whose
+(** This file provides an "unbounded" version of the fractional camera whose
 elements are in the interval (0,..) instead of (0,1]. *)
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra.
