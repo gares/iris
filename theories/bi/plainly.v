@@ -648,4 +648,5 @@ Hint Immediate plain_persistent : typeclass_instances.
 [class_apply @impl_persistent] shelves the [BiPlainly] premise, making proof
 search for the other premises fail. See the proof of [coreP_persistent] for an
 example where it would fail with a regular [Instance].*)
-Hint Extern 4 (Persistent _) => notypeclasses refine (impl_persistent _ _ _ _ _) : typeclass_instances.
+Hint Extern 4 (Persistent _) =>
+  notypeclasses refine (impl_persistent _ _ _ _ _) : typeclass_instances.
