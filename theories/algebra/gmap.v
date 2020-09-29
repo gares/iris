@@ -537,13 +537,23 @@ Proof.
   - by rewrite lookup_insert_ne // !lookup_op lookup_insert_ne.
 Qed.
 
+Lemma singleton_local_update_any m i y x' y' :
+  (∀ x, m !! i = Some x → (x, y) ~l~> (x', y')) →
+  (m, {[ i := y ]}) ~l~> (<[i:=x']>m, {[ i := y' ]}).
+Proof.
+  intros. rewrite /singletonM /map_singleton -(insert_insert ∅ i y' y).
+  apply local_update_total_valid0=>_ _ /singleton_includedN_l [x0 [/dist_Some_inv_r Hlk0 _]].
+  edestruct Hlk0 as [x [Hlk _]]; [done..|].
+  eapply insert_local_update; [|eapply lookup_insert|]; eauto.
+Qed.
+
 Lemma singleton_local_update m i x y x' y' :
   m !! i = Some x →
   (x, y) ~l~> (x', y') →
   (m, {[ i := y ]}) ~l~> (<[i:=x']>m, {[ i := y' ]}).
 Proof.
-  intros. rewrite /singletonM /map_singleton -(insert_insert ∅ i y' y).
-  by eapply insert_local_update; [|eapply lookup_insert|].
+  intros Hmi ?. apply singleton_local_update_any.
+  intros x2. rewrite Hmi=>[=<-]. done.
 Qed.
 
 Lemma delete_local_update m1 m2 i x `{!Exclusive x} :
