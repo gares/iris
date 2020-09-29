@@ -131,8 +131,12 @@ Modalities
   used to specify which modalities this tactic should introduce. Instances of
   that type class include: later, except 0, basic update and fancy update,
   intuitionistically, persistently, affinely, plainly, absorbingly, objectively,
-  and subjectively. The optional argument `mod` can be used to specify what
-  modality to introduce in case of ambiguity, e.g. `⎡|==> P⎤`.
+  and subjectively. The optional argument `mod` is a term pattern (i.e., a term
+  with holes as underscores). If present, `iModIntro` will find a subterm
+  matching `mod`, and try introducing its topmost modality. For instance, if the
+  goal is `⎡|==> P⎤`, using `iModIntro ⎡|==> P⎤%I` or `iModIntro ⎡_⎤%I` would
+  introduce `⎡_⎤` and produce goal `|==> P`, while `iModIntro (|==> _)%I` would
+  introduce `|==>` and produce goal `⎡P⎤`.
 - `iAlways` : a deprecated alias of `iModIntro`.
 - `iNext n` : an alias of `iModIntro (▷^n _)`.
 - `iNext` : an alias of `iModIntro (▷^_ _)`.
