@@ -119,14 +119,14 @@ Section cmra.
   Implicit Types b : B.
   Implicit Types x y : view rel.
 
-  Global Instance view_frag_ne: NonExpansive (@view_frag A B rel).
-  Proof. done. Qed.
-  Global Instance view_frag_proper : Proper ((≡) ==> (≡)) (@view_frag A B rel).
-  Proof. done. Qed.
   Global Instance view_auth_ne q : NonExpansive (@view_auth A B rel q).
   Proof. solve_proper. Qed.
   Global Instance view_auth_proper q : Proper ((≡) ==> (≡)) (@view_auth A B rel q).
   Proof. solve_proper. Qed.
+  Global Instance view_frag_ne: NonExpansive (@view_frag A B rel).
+  Proof. done. Qed.
+  Global Instance view_frag_proper : Proper ((≡) ==> (≡)) (@view_frag A B rel).
+  Proof. done. Qed.
 
   Instance view_valid : Valid (view rel) := λ x,
     match view_auth_proj x with
@@ -304,6 +304,36 @@ Section cmra.
   Lemma big_opMS_view_frag `{Countable C} (g : C → B) (X : gmultiset C) :
     (◯V [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯V (g x).
   Proof. apply (big_opMS_commute _). Qed.
+
+  (** Inclusion *)
+  Lemma view_auth_includedN n p1 p2 a1 a2 b :
+    ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b → (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+  Proof.
+    intros [[[[qf agf]|] bf]
+      [[?%(discrete_iff _ _) ?]%(inj Some) _]]; simplify_eq/=.
+    - split; [apply Qp_le_plus_l|]. apply to_agree_includedN. by exists agf.
+    - split; [done|]. by apply (inj to_agree).
+  Qed.
+  Lemma view_auth_included p1 p2 a1 a2 b :
+    ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b → (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+  Proof.
+    intros. split.
+    - by eapply (view_auth_includedN 0), cmra_included_includedN.
+    - apply equiv_dist=> n. by eapply view_auth_includedN, cmra_included_includedN.
+  Qed.
+
+  Lemma view_frag_includedN n p a b1 b2 :
+    ◯V b1 ≼{n} ●V{p} a ⋅ ◯V b2 → b1 ≼{n} b2.
+  Proof.
+    intros [xf [_ Hb]]; simpl in *.
+    revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+  Qed.
+  Lemma view_frag_included p a b1 b2 :
+    ◯V b1 ≼ ●V{p} a ⋅ ◯V b2 → b1 ≼ b2.
+  Proof.
+    intros [xf [_ Hb]]; simpl in *.
+    revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+  Qed.
 
   (** Internalized properties *)
   Lemma view_both_validI {M} (relI : uPred M) q a b :
