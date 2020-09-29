@@ -1041,6 +1041,13 @@ Instance option_mjoin_ne {A : ofeT} n:
   Proper (dist n ==> dist n) (@mjoin option _ A).
 Proof. destruct 1 as [?? []|]; simpl; by constructor. Qed.
 
+Lemma fmap_Some_dist {A B : ofeT} (f : A → B) (mx : option A) (y : B) n :
+  f <$> mx ≡{n}≡ Some y ↔ ∃ x : A, mx = Some x ∧ y ≡{n}≡ f x.
+Proof.
+  split; [|by intros (x&->&->)].
+  intros (?&?%fmap_Some&?)%dist_Some_inv_r'; naive_solver.
+Qed.
+
 Definition optionO_map {A B} (f : A -n> B) : optionO A -n> optionO B :=
   OfeMor (fmap f : optionO A → optionO B).
 Instance optionO_map_ne A B : NonExpansive (@optionO_map A B).

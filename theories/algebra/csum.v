@@ -299,6 +299,28 @@ Proof. intros ? [] ? EQ; inversion_clear EQ. by eapply id_free0_r. Qed.
 Global Instance Cinr_id_free b : IdFree b → IdFree (Cinr b).
 Proof. intros ? [] ? EQ; inversion_clear EQ. by eapply id_free0_r. Qed.
 
+(** Interaction with [option] *)
+Lemma Some_csum_includedN x y n :
+  Some x ≼{n} Some y ↔
+    y = CsumBot ∨
+    (∃ a a', x = Cinl a ∧ y = Cinl a' ∧ Some a ≼{n} Some a') ∨
+    (∃ b b', x = Cinr b ∧ y = Cinr b' ∧ Some b ≼{n} Some b').
+Proof.
+  repeat setoid_rewrite Some_includedN. rewrite csum_includedN. split.
+  - intros [Hxy|?]; [inversion Hxy|]; naive_solver.
+  - naive_solver by f_equiv.
+Qed.
+Lemma Some_csum_included x y :
+  Some x ≼ Some y ↔
+    y = CsumBot ∨
+    (∃ a a', x = Cinl a ∧ y = Cinl a' ∧ Some a ≼ Some a') ∨
+    (∃ b b', x = Cinr b ∧ y = Cinr b' ∧ Some b ≼ Some b').
+Proof.
+  repeat setoid_rewrite Some_included. rewrite csum_included. split.
+  - intros [Hxy|?]; [inversion Hxy|]; naive_solver.
+  - naive_solver by f_equiv.
+Qed.
+
 (** Internalized properties *)
 Lemma csum_validI {M} (x : csum A B) :
   ✓ x ⊣⊢@{uPredI M} match x with
