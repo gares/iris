@@ -163,7 +163,7 @@ Section proph_map.
   Proof.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
     rewrite /proph_map_ctx proph_eq /proph_def.
-    iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_both_valid.
+    iDestruct (own_valid_2 with "H● Hp") as %[HR%proph_map_singleton_included _]%auth_both_valid_discrete.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
     iMod (own_update_2 with "H● Hp") as "[H● H◯]".

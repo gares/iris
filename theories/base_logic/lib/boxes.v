@@ -110,7 +110,7 @@ Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
   iMod (own_alloc_cofinite (●E false ⋅ ◯E false,
     Some (to_agree (Next (iProp_unfold Q)))) (dom _ f))
-    as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid|]).
+    as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid_discrete|]).
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".
   iDestruct "Hdom" as % ?%not_elem_of_dom.
   iMod (inv_alloc N _ (slice_inv γ Q) with "[Hγ]") as "#Hinv".

@@ -137,7 +137,7 @@ Section inv_heap.
     ⌜∃ v I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H◯".
-    iDestruct (own_valid_2 with "H◯ Hl_inv") as %[Hincl Hvalid]%auth_both_valid.
+    iDestruct (own_valid_2 with "H◯ Hl_inv") as %[Hincl Hvalid]%auth_both_valid_discrete.
     iPureIntro.
     move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
     apply lookup_to_inv_heap_Some_2 in Hsome as (v'' & I'' & _ & HI & Hh).
@@ -150,7 +150,7 @@ Section inv_heap.
     ⌜ ∃ I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H●".
-    iDestruct (own_valid_2 with "H● Hl_inv") as %[Hincl Hvalid]%auth_both_valid.
+    iDestruct (own_valid_2 with "H● Hl_inv") as %[Hincl Hvalid]%auth_both_valid_discrete.
     iPureIntro.
     move: Hincl; rewrite singleton_included_l; intros ([v' I'] & Hsome & Hincl).
     apply lookup_to_inv_heap_Some_2 in Hsome as (v'' & I'' & -> & HI & Hh).
