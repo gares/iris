@@ -389,11 +389,20 @@ Section cmra.
     intros Hup. rewrite -(right_id _ _ (●V a')).
     apply view_update=> n bf. rewrite left_id. apply Hup.
   Qed.
+
   Lemma view_update_auth a a' b' :
-    (∀ n bf, rel n a bf → rel n a' bf) → ●V a ~~> ●V a'.
+    (∀ n bf, rel n a bf → rel n a' bf) →
+    ●V a ~~> ●V a'.
   Proof.
     intros Hup. rewrite -(right_id _ _ (●V a)) -(right_id _ _ (●V a')).
     apply view_update=> n bf. rewrite !left_id. apply Hup.
+  Qed.
+  Lemma view_update_frag b b' :
+    (∀ a n bf, rel n a (b ⋅ bf) → rel n a (b' ⋅ bf)) →
+    b ~~> b' →
+    ◯V b ~~> ◯V b'.
+  Proof.
+    rewrite !cmra_total_update view_validN_eq=> ?? n [[[q ag]|] bf]; naive_solver.
   Qed.
 
   Lemma view_update_alloc_frac q a b :
