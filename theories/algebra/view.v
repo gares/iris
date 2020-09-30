@@ -307,32 +307,44 @@ Section cmra.
 
   (** Inclusion *)
   Lemma view_auth_includedN n p1 p2 a1 a2 b :
-    ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b → (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+    ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
   Proof.
-    intros [[[[qf agf]|] bf]
-      [[?%(discrete_iff _ _) ?]%(inj Some) _]]; simplify_eq/=.
-    - split; [apply Qp_le_plus_l|]. apply to_agree_includedN. by exists agf.
-    - split; [done|]. by apply (inj to_agree).
+    split.
+    - intros [[[[qf agf]|] bf]
+        [[?%(discrete_iff _ _) ?]%(inj Some) _]]; simplify_eq/=.
+      + split; [apply Qp_le_plus_l|]. apply to_agree_includedN. by exists agf.
+      + split; [done|]. by apply (inj to_agree).
+    - intros [[[q ->]%frac_included| ->%Qp_eq]%Qcanon.Qcle_lt_or_eq ->].
+      + rewrite view_auth_frac_op -assoc. apply cmra_includedN_l.
+      + apply cmra_includedN_l.
   Qed.
   Lemma view_auth_included p1 p2 a1 a2 b :
-    ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b → (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+    ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
   Proof.
     intros. split.
-    - by eapply (view_auth_includedN 0), cmra_included_includedN.
-    - apply equiv_dist=> n. by eapply view_auth_includedN, cmra_included_includedN.
+    - split.
+      + by eapply (view_auth_includedN 0), cmra_included_includedN.
+      + apply equiv_dist=> n. by eapply view_auth_includedN, cmra_included_includedN.
+    - intros [[[q ->]%frac_included| ->%Qp_eq]%Qcanon.Qcle_lt_or_eq ->].
+      + rewrite view_auth_frac_op -assoc. apply cmra_included_l.
+      + apply cmra_included_l.
   Qed.
 
   Lemma view_frag_includedN n p a b1 b2 :
-    ◯V b1 ≼{n} ●V{p} a ⋅ ◯V b2 → b1 ≼{n} b2.
+    ◯V b1 ≼{n} ●V{p} a ⋅ ◯V b2 ↔ b1 ≼{n} b2.
   Proof.
-    intros [xf [_ Hb]]; simpl in *.
-    revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+    split.
+    - intros [xf [_ Hb]]; simpl in *.
+      revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+    - intros [bf ->]. rewrite comm view_frag_op -assoc. apply cmra_includedN_l.
   Qed.
   Lemma view_frag_included p a b1 b2 :
-    ◯V b1 ≼ ●V{p} a ⋅ ◯V b2 → b1 ≼ b2.
+    ◯V b1 ≼ ●V{p} a ⋅ ◯V b2 ↔ b1 ≼ b2.
   Proof.
-    intros [xf [_ Hb]]; simpl in *.
-    revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+    split.
+    - intros [xf [_ Hb]]; simpl in *.
+      revert Hb; rewrite left_id. by exists (view_frag_proj xf).
+    - intros [bf ->]. rewrite comm view_frag_op -assoc. apply cmra_included_l.
   Qed.
 
   (** Internalized properties *)

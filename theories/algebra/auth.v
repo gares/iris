@@ -189,17 +189,17 @@ Section auth.
 
   (** Inclusion *)
   Lemma auth_auth_includedN n p1 p2 a1 a2 b :
-    ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b → (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+    ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
   Proof. apply view_auth_includedN. Qed.
   Lemma auth_auth_included p1 p2 a1 a2 b :
-    ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b → (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+    ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
   Proof. apply view_auth_included. Qed.
 
   Lemma auth_frag_includedN n p a b1 b2 :
-    ◯ b1 ≼{n} ●{p} a ⋅ ◯ b2 → b1 ≼{n} b2.
+    ◯ b1 ≼{n} ●{p} a ⋅ ◯ b2 ↔ b1 ≼{n} b2.
   Proof. apply view_frag_includedN. Qed.
   Lemma auth_frag_included p a b1 b2 :
-    ◯ b1 ≼ ●{p} a ⋅ ◯ b2 → b1 ≼ b2.
+    ◯ b1 ≼ ●{p} a ⋅ ◯ b2 ↔ b1 ≼ b2.
   Proof. apply view_frag_included. Qed.
 
   (** Internalized properties *)
