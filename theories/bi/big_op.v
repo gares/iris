@@ -158,6 +158,10 @@ Section sep_list.
     ([∗ list] k↦y ∈ f <$> l, Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k (f y)).
   Proof. by rewrite big_opL_fmap. Qed.
 
+  Lemma big_sepL_omap {B} (f : A → option B) (Φ : B → PROP) l :
+    ([∗ list] y ∈ omap f l, Φ y) ⊣⊢ ([∗ list] y ∈ l, from_option Φ emp (f y)).
+  Proof. by rewrite big_opL_omap. Qed.
+
   Lemma big_sepL_bind {B} (f : A → list B) (Φ : B → PROP) l :
     ([∗ list] y ∈ l ≫= f, Φ y) ⊣⊢ ([∗ list] x ∈ l, [∗ list] y ∈ f x, Φ y).
   Proof. by rewrite big_opL_bind. Qed.
@@ -512,6 +516,15 @@ Section sep_list2.
   Lemma big_sepL2_reverse (Φ : A → B → PROP) l1 l2 :
     ([∗ list] y1;y2 ∈ reverse l1;reverse l2, Φ y1 y2) ⊣⊢ ([∗ list] y1;y2 ∈ l1;l2, Φ y1 y2).
   Proof. apply (anti_symm _); by rewrite big_sepL2_reverse_2 ?reverse_involutive. Qed.
+
+  Lemma big_sepL2_replicate_l l x Φ n :
+    length l = n →
+    ([∗ list] k↦x1;x2 ∈ replicate n x; l, Φ k x1 x2) ⊣⊢ [∗ list] k↦x2 ∈ l, Φ k x x2.
+  Proof. intros <-. revert Φ. induction l as [|y l IH]=> //= Φ. by rewrite IH. Qed.
+  Lemma big_sepL2_replicate_r l x Φ n :
+    length l = n →
+    ([∗ list] k↦x1;x2 ∈ l;replicate n x, Φ k x1 x2) ⊣⊢ [∗ list] k↦x1 ∈ l, Φ k x1 x.
+  Proof. intros <-. revert Φ. induction l as [|y l IH]=> //= Φ. by rewrite IH. Qed.
 
   Lemma big_sepL2_sep Φ Ψ l1 l2 :
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 ∗ Ψ k y1 y2)
@@ -902,6 +915,10 @@ Section map.
   Lemma big_sepM_fmap {B} (f : A → B) (Φ : K → B → PROP) m :
     ([∗ map] k↦y ∈ f <$> m, Φ k y) ⊣⊢ ([∗ map] k↦y ∈ m, Φ k (f y)).
   Proof. by rewrite big_opM_fmap. Qed.
+
+  Lemma big_sepM_omap {B} (f : A → option B) (Φ : K → B → PROP) m :
+    ([∗ map] k↦y ∈ omap f m, Φ k y) ⊣⊢ ([∗ map] k↦y ∈ m, from_option (Φ k) emp (f y)).
+  Proof. by rewrite big_opM_omap. Qed.
 
   Lemma big_sepM_insert_override Φ m i x x' :
     m !! i = Some x → (Φ i x ⊣⊢ Φ i x') →
