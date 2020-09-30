@@ -76,14 +76,12 @@ Structure cmraT := CmraT' {
   cmra_validN : ValidN cmra_car;
   cmra_ofe_mixin : OfeMixin cmra_car;
   cmra_mixin : CmraMixin cmra_car;
-  (* always same as [cmra_car], but by also having this as last field unification sometimes gets faster *)
-  _ : Type
 }.
-Arguments CmraT' _ {_ _ _ _ _ _} _ _ _.
+Arguments CmraT' _ {_ _ _ _ _ _} _ _.
 (* Given [m : CmraMixin A], the notation [CmraT A m] provides a smart
 constructor, which uses [ofe_mixin_of A] to infer the canonical OFE mixin of
 the type [A], so that it does not have to be given manually. *)
-Notation CmraT A m := (CmraT' A (ofe_mixin_of A%type) m A) (only parsing).
+Notation CmraT A m := (CmraT' A (ofe_mixin_of A%type) m) (only parsing).
 
 Arguments cmra_car : simpl never.
 Arguments cmra_equiv : simpl never.
@@ -202,11 +200,10 @@ Structure ucmraT := UcmraT' {
   ucmra_ofe_mixin : OfeMixin ucmra_car;
   ucmra_cmra_mixin : CmraMixin ucmra_car;
   ucmra_mixin : UcmraMixin ucmra_car;
-  _ : Type;
 }.
-Arguments UcmraT' _ {_ _ _ _ _ _ _} _ _ _ _.
+Arguments UcmraT' _ {_ _ _ _ _ _ _} _ _ _.
 Notation UcmraT A m :=
-  (UcmraT' A (ofe_mixin_of A%type) (cmra_mixin_of A%type) m A) (only parsing).
+  (UcmraT' A (ofe_mixin_of A%type) (cmra_mixin_of A%type) m) (only parsing).
 Arguments ucmra_car : simpl never.
 Arguments ucmra_equiv : simpl never.
 Arguments ucmra_dist : simpl never.
@@ -222,7 +219,7 @@ Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
 Coercion ucmra_ofeO (A : ucmraT) : ofeT := OfeT A (ucmra_ofe_mixin A).
 Canonical Structure ucmra_ofeO.
 Coercion ucmra_cmraR (A : ucmraT) : cmraT :=
-  CmraT' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A) A.
+  CmraT' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A).
 Canonical Structure ucmra_cmraR.
 
 (** Lifting properties from the mixin *)
@@ -1016,7 +1013,7 @@ Section discrete.
   Qed.
 
   Instance discrete_cmra_discrete :
-    CmraDiscrete (CmraT' A (discrete_ofe_mixin Heq) discrete_cmra_mixin A).
+    CmraDiscrete (CmraT' A (discrete_ofe_mixin Heq) discrete_cmra_mixin).
   Proof. split. apply _. done. Qed.
 End discrete.
 
