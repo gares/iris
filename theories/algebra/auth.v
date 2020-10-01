@@ -210,6 +210,15 @@ Section auth.
     ◯ b1 ≼ ●{p} a ⋅ ◯ b2 ↔ b1 ≼ b2.
   Proof. apply view_frag_included. Qed.
 
+  (** The weaker [view_both_included] lemmas below are a consequence of the
+  [view_auth_included] and [view_frag_included] lemmas above. *)
+  Lemma auth_both_includedN n p1 p2 a1 a2 b1 b2 :
+    ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+  Proof. apply view_both_includedN. Qed.
+  Lemma auth_both_included p1 p2 a1 a2 b1 b2 :
+    ●{p1} a1 ⋅ ◯ b1 ≼ ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+  Proof. apply view_both_included. Qed.
+
   (** Internalized properties *)
   Lemma auth_auth_validI {M} q (a b: A) :
     ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.

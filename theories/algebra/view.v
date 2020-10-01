@@ -363,6 +363,29 @@ Section cmra.
     - intros [bf ->]. rewrite comm view_frag_op -assoc. apply cmra_included_l.
   Qed.
 
+  (** The weaker [view_both_included] lemmas below are a consequence of the
+  [view_auth_included] and [view_frag_included] lemmas above. *)
+  Lemma view_both_includedN n p1 p2 a1 a2 b1 b2 :
+    ●V{p1} a1 ⋅ ◯V b1 ≼{n} ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+  Proof.
+    split.
+    - intros. rewrite assoc. split.
+      + rewrite -view_auth_includedN. by etrans; [apply cmra_includedN_l|].
+      + rewrite -view_frag_includedN. by etrans; [apply cmra_includedN_r|].
+    - intros (?&->&?bf&->). rewrite (comm _ b1) view_frag_op assoc.
+      by apply cmra_monoN_r, view_auth_includedN.
+  Qed.
+  Lemma view_both_included p1 p2 a1 a2 b1 b2 :
+    ●V{p1} a1 ⋅ ◯V b1 ≼ ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+  Proof.
+    split.
+    - intros. rewrite assoc. split.
+      + rewrite -view_auth_included. by etrans; [apply cmra_included_l|].
+      + rewrite -view_frag_included. by etrans; [apply cmra_included_r|].
+    - intros (?&->&?bf&->). rewrite (comm _ b1) view_frag_op assoc.
+      by apply cmra_mono_r, view_auth_included.
+  Qed.
+
   (** Internalized properties *)
   Lemma view_both_validI {M} (relI : uPred M) q a b :
     (∀ n (x : M), relI n x ↔ rel n a b) →
