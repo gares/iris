@@ -12,6 +12,7 @@ theories/algebra/big_op.v
 theories/algebra/cmra_big_op.v
 theories/algebra/sts.v
 theories/algebra/numbers.v
+theories/algebra/view.v
 theories/algebra/auth.v
 theories/algebra/gmap.v
 theories/algebra/ofe.v

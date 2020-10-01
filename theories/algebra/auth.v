@@ -1,506 +1,310 @@
-From iris.proofmode Require Import tactics.
-From iris.algebra Require Export frac agree local_updates.
+From iris.algebra Require Export view.
 From iris.algebra Require Import proofmode_classes.
 From iris.base_logic Require Import base_logic.
 From iris Require Import options.
 
-(** Authoritative CMRA with fractional authoritative parts. [auth] has 3 types
-  of elements: the fractional authoritative `●{q} a`, the full authoritative
-  `● a ≡ ●{1} a`, and the non-authoritative `◯ a`. Updates are only possible
-  with the full authoritative element `● a`, while fractional authoritative
-  elements have agreement: `✓ (●{p} a ⋅ ●{q} b) ⇒ a ≡ b`.
-*)
+(** The authoritative camera with fractional authoritative elements *)
+(** The authoritative camera has 2 types of elements: the authoritative
+element [●{q} a] and the fragment [◯ b] (of which there can be several). To
+enable sharing of the authoritative element [●{q} a], it is equiped with a
+fraction [q]. Updates are only possible with the full authoritative element
+[● a] (syntax for [●{1} a]]), while fractional authoritative elements have
+agreement, i.e., [✓ (●{p1} a1 ⋅ ●{p2} a2) → a1 ≡ a2]. *)
 
-Record auth (A : Type) :=
-  Auth { auth_auth_proj : option (frac * agree A) ; auth_frag_proj : A }.
-Add Printing Constructor auth.
-Arguments Auth {_} _ _.
-Arguments auth_auth_proj {_} _.
-Arguments auth_frag_proj {_} _.
-Instance: Params (@Auth) 1 := {}.
-Instance: Params (@auth_auth_proj) 1 := {}.
-Instance: Params (@auth_frag_proj) 1 := {}.
+(** * Definition of the view relation *)
+(** The authoritative camera is obtained by instantiating the view camera. *)
+Definition auth_view_rel_raw {A : ucmraT} (n : nat) (a b : A) : Prop :=
+  b ≼{n} a ∧ ✓{n} a.
+Lemma auth_view_rel_raw_mono (A : ucmraT) n1 n2 (a1 a2 b1 b2 : A) :
+  auth_view_rel_raw n1 a1 b1 → a1 ≡{n2}≡ a2 → b2 ≼{n2} b1 → n2 ≤ n1 →
+  auth_view_rel_raw n2 a2 b2.
+Proof.
+  intros [??] Ha12 ??. split.
+  - trans b1; [done|]. rewrite -Ha12. by apply cmra_includedN_le with n1.
+  - rewrite -Ha12. by apply cmra_validN_le with n1.
+Qed.
+Lemma auth_view_rel_raw_valid (A : ucmraT) n (a b : A) :
+  auth_view_rel_raw n a b → ✓{n} b.
+Proof. intros [??]; eauto using cmra_validN_includedN. Qed.
+Canonical Structure auth_view_rel {A : ucmraT} : view_rel A A :=
+  ViewRel auth_view_rel_raw (auth_view_rel_raw_mono A) (auth_view_rel_raw_valid A).
 
-Definition auth_frag {A: ucmraT} (a: A) : auth A := Auth None a.
-Definition auth_auth {A: ucmraT} (q: Qp) (a: A) : auth A :=
-  Auth (Some (q, to_agree a)) ε.
+Lemma auth_view_rel_unit {A : ucmraT} n (a : A) : auth_view_rel n a ε ↔ ✓{n} a.
+Proof. split; [by intros [??]|]. split; auto using ucmra_unit_leastN. Qed.
+
+Instance auth_view_rel_discrete {A : ucmraT} :
+  CmraDiscrete A → ViewRelDiscrete (auth_view_rel (A:=A)).
+Proof.
+  intros ? n a b [??]; split.
+  - by apply cmra_discrete_included_iff_0.
+  - by apply cmra_discrete_valid_iff_0.
+Qed.
+
+(** * Definition and operations on the authoritative camera *)
+(** The type [auth] is not defined as a [Definition], but as a [Notation].
+This way, one can use [auth A] with [A : Type] instead of [A : ucmraT], and let
+canonical structure search determine the corresponding camera instance. *)
+Notation auth A := (view (A:=A) (B:=A) auth_view_rel_raw).
+Definition authO (A : ucmraT) : ofeT := viewO (A:=A) (B:=A) auth_view_rel.
+Definition authR (A : ucmraT) : cmraT := viewR (A:=A) (B:=A) auth_view_rel.
+Definition authUR (A : ucmraT) : ucmraT := viewUR (A:=A) (B:=A) auth_view_rel.
+
+Definition auth_auth {A: ucmraT} : Qp → A → auth A := view_auth.
+Definition auth_frag {A: ucmraT} : A → auth A := view_frag.
 
 Typeclasses Opaque auth_auth auth_frag.
 
+Instance: Params (@auth_auth) 2 := {}.
 Instance: Params (@auth_frag) 1 := {}.
-Instance: Params (@auth_auth) 1 := {}.
 
 Notation "◯ a" := (auth_frag a) (at level 20).
 Notation "●{ q } a" := (auth_auth q a) (at level 20, format "●{ q }  a").
 Notation "● a" := (auth_auth 1 a) (at level 20).
 
-(* Ofe *)
-Section ofe.
-Context {A : ofeT}.
-Implicit Types a : option (frac * agree A).
-Implicit Types b : A.
-Implicit Types x y : auth A.
+(** * Laws of the authoritative camera *)
+(** We omit the usual [equivI] lemma because it is hard to state a suitably
+general version in terms of [●] and [◯], and because such a lemma has never
+been needed in practice. *)
+Section auth.
+  Context {A : ucmraT}.
+  Implicit Types a b : A.
+  Implicit Types x y : auth A.
 
-Instance auth_equiv : Equiv (auth A) := λ x y,
-  auth_auth_proj x ≡ auth_auth_proj y ∧ auth_frag_proj x ≡ auth_frag_proj y.
-Instance auth_dist : Dist (auth A) := λ n x y,
-  auth_auth_proj x ≡{n}≡ auth_auth_proj y ∧
-  auth_frag_proj x ≡{n}≡ auth_frag_proj y.
+  Global Instance auth_auth_ne q : NonExpansive (@auth_auth A q).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_auth_proper q : Proper ((≡) ==> (≡)) (@auth_auth A q).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_frag_ne : NonExpansive (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_proper : Proper ((≡) ==> (≡)) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
 
-Global Instance Auth_ne : NonExpansive2 (@Auth A).
-Proof. by split. Qed.
-Global Instance Auth_proper : Proper ((≡) ==> (≡) ==> (≡)) (@Auth A).
-Proof. by split. Qed.
-Global Instance auth_auth_proj_ne: NonExpansive (@auth_auth_proj A).
-Proof. by destruct 1. Qed.
-Global Instance auth_auth_proj_proper : Proper ((≡) ==> (≡)) (@auth_auth_proj A).
-Proof. by destruct 1. Qed.
-Global Instance auth_frag_proj_ne : NonExpansive (@auth_frag_proj A).
-Proof. by destruct 1. Qed.
-Global Instance auth_frag_proj_proper : Proper ((≡) ==> (≡)) (@auth_frag_proj A).
-Proof. by destruct 1. Qed.
+  Global Instance auth_auth_dist_inj n : Inj2 (=) (dist n) (dist n) (@auth_auth A).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_auth_inj : Inj2 (=) (≡) (≡) (@auth_auth A).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_frag_dist_inj n : Inj (dist n) (dist n) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_inj : Inj (≡) (≡) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
 
-Definition auth_ofe_mixin : OfeMixin (auth A).
-Proof. by apply (iso_ofe_mixin (λ x, (auth_auth_proj x, auth_frag_proj x))). Qed.
-Canonical Structure authO := OfeT (auth A) auth_ofe_mixin.
+  Lemma auth_auth_frac_validN n q a : ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
+  Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
+  Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
+  Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
+  Lemma auth_frag_validN n a : ✓{n} (◯ a) ↔ ✓{n} a.
+  Proof. apply view_frag_validN. Qed.
+  Lemma auth_both_frac_validN n q a b :
+    ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
+  Proof. apply view_both_frac_validN. Qed.
+  Lemma auth_both_validN n a b : ✓{n} (● a ⋅ ◯ b) ↔ b ≼{n} a ∧ ✓{n} a.
+  Proof. apply view_both_validN. Qed.
 
-Global Instance Auth_discrete a b :
-  Discrete a → Discrete b → Discrete (Auth a b).
-Proof. by intros ?? [??] [??]; split; apply: discrete. Qed.
-Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete authO.
-Proof. intros ? [??]; apply _. Qed.
+  Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
+  Proof.
+    rewrite view_auth_frac_valid !cmra_valid_validN.
+    by setoid_rewrite auth_view_rel_unit.
+  Qed.
+  Lemma auth_auth_valid a : ✓ (● a) ↔ ✓ a.
+  Proof.
+    rewrite view_auth_valid !cmra_valid_validN.
+    by setoid_rewrite auth_view_rel_unit.
+  Qed.
+  Lemma auth_frag_valid a : ✓ (◯ a) ↔ ✓ a.
+  Proof. apply view_frag_valid. Qed.
 
-(** Internalized properties *)
-Lemma auth_equivI {M} x y :
-  x ≡ y ⊣⊢@{uPredI M} auth_auth_proj x ≡ auth_auth_proj y ∧ auth_frag_proj x ≡ auth_frag_proj y.
-Proof. by uPred.unseal. Qed.
-End ofe.
+  (** These lemma statements are a bit awkward as we cannot possibly extract a
+  single witness for [b ≼ a] from validity, we have to make do with one witness
+  per step-index, i.e., [∀ n, b ≼{n} a]. *)
+  Lemma auth_both_frac_valid q a b :
+    ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ (∀ n, b ≼{n} a) ∧ ✓ a.
+  Proof.
+    rewrite view_both_frac_valid. apply and_iff_compat_l. split.
+    - intros Hrel. split.
+      + intros n. by destruct (Hrel n).
+      + apply cmra_valid_validN=> n. by destruct (Hrel n).
+    - intros [Hincl Hval] n. split; [done|by apply cmra_valid_validN].
+  Qed.
+  Lemma auth_both_valid a b :
+    ✓ (● a ⋅ ◯ b) ↔ (∀ n, b ≼{n} a) ∧ ✓ a.
+  Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
 
-Arguments authO : clear implicits.
+  (* The reverse direction of the two lemmas below only holds if the camera is
+  discrete. *)
+  Lemma auth_both_frac_valid_2 q a b : ✓ q → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
+  Proof.
+    intros. apply auth_both_frac_valid.
+    naive_solver eauto using cmra_included_includedN.
+  Qed.
+  Lemma auth_both_valid_2 a b : ✓ a → b ≼ a → ✓ (● a ⋅ ◯ b).
+  Proof. intros ??. by apply auth_both_frac_valid_2. Qed.
 
-(* Camera *)
-Section cmra.
-Context {A : ucmraT}.
-Implicit Types a b : A.
-Implicit Types x y : auth A.
+  Lemma auth_both_frac_valid_discrete `{!CmraDiscrete A} q a b :
+    ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ b ≼ a ∧ ✓ a.
+  Proof.
+    rewrite auth_both_frac_valid. setoid_rewrite <-cmra_discrete_included_iff.
+    naive_solver eauto using O.
+  Qed.
+  Lemma auth_both_valid_discrete `{!CmraDiscrete A} a b :
+    ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
+  Proof. rewrite auth_both_frac_valid_discrete frac_valid'. naive_solver. Qed.
 
-Global Instance auth_frag_ne: NonExpansive (@auth_frag A).
-Proof. done. Qed.
-Global Instance auth_frag_proper : Proper ((≡) ==> (≡)) (@auth_frag A).
-Proof. done. Qed.
-Global Instance auth_auth_ne q : NonExpansive (@auth_auth A q).
-Proof. solve_proper. Qed.
-Global Instance auth_auth_proper : Proper ((≡) ==> (≡) ==> (≡)) (@auth_auth A).
-Proof. solve_proper. Qed.
-Global Instance auth_auth_discrete q a :
-  Discrete a → Discrete (ε : A) → Discrete (●{q} a).
-Proof. intros. apply Auth_discrete; apply _. Qed.
-Global Instance auth_frag_discrete a : Discrete a → Discrete (◯ a).
-Proof. intros. apply Auth_discrete; apply _. Qed.
+  Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete (authO A).
+  Proof. apply _. Qed.
+  Global Instance auth_auth_discrete q a :
+    Discrete a → Discrete (ε : A) → Discrete (●{q} a).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_frag_discrete a : Discrete a → Discrete (◯ a).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_cmra_discrete : CmraDiscrete A → CmraDiscrete (authR A).
+  Proof. apply _. Qed.
 
-Instance auth_valid : Valid (auth A) := λ x,
-  match auth_auth_proj x with
-  | Some (q, ag) =>
-    (* Note that this definition is not logically equivalent to the more
-       intuitive [✓ q ∧ ∃ a, ag ≡ to_agree a ∧ auth_frag_proj x ≼ a ∧ ✓ a]
-       because [∀ n, x ≼{n} y] is not logically equivalent to [x ≼ y]. We have
-       chosen the current definition (which quantifies over each step-index [n])
-       so that we can prove [cmra_valid_validN], which does not hold for the
-       aforementioned more intuitive definition. *)
-      ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a)
-  | None => ✓ auth_frag_proj x
-  end.
-Instance auth_validN : ValidN (auth A) := λ n x,
-  match auth_auth_proj x with
-  | Some (q, ag) =>
-      ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a
-  | None => ✓{n} auth_frag_proj x
-  end.
-Instance auth_pcore : PCore (auth A) := λ x,
-  Some (Auth (core (auth_auth_proj x)) (core (auth_frag_proj x))).
-Instance auth_op : Op (auth A) := λ x y,
-  Auth (auth_auth_proj x ⋅ auth_auth_proj y) (auth_frag_proj x ⋅ auth_frag_proj y).
+  Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
+  Proof. apply view_auth_frac_op. Qed.
+  Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
+  Proof. apply view_auth_frac_op_invN. Qed.
+  Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
+  Proof. apply view_auth_frac_op_inv. Qed.
+  Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
+    ✓ (●{p} a ⋅ ●{q} b) → a = b.
+  Proof. by apply view_auth_frac_op_inv_L. Qed.
+  Global Instance is_op_auth_auth_frac q q1 q2 a :
+    IsOp q q1 q2 → IsOp' (●{q} a) (●{q1} a) (●{q2} a).
+  Proof. rewrite /auth_auth. apply _. Qed.
 
-Definition auth_valid_eq :
-  valid = λ x, match auth_auth_proj x with
-               | Some (q, ag) => ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a)
-               | None => ✓ auth_frag_proj x
-               end := eq_refl _.
-Definition auth_validN_eq :
-  validN = λ n x, match auth_auth_proj x with
-                  | Some (q, ag) => ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ auth_frag_proj x ≼{n} a ∧ ✓{n} a
-                  | None => ✓{n} auth_frag_proj x
-                  end := eq_refl _.
+  Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.
+  Proof. apply view_frag_op. Qed.
+  Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
+  Proof. apply view_frag_mono. Qed.
+  Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
+  Proof. apply view_frag_core. Qed.
+  Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance is_op_auth_frag a b1 b2 :
+    IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_sep_homomorphism :
+    MonoidHomomorphism op op (≡) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
 
-Lemma auth_included (x y : auth A) :
-  x ≼ y ↔
-  auth_auth_proj x ≼ auth_auth_proj y ∧ auth_frag_proj x ≼ auth_frag_proj y.
-Proof.
-  split; [intros [[z1 z2] Hz]; split; [exists z1|exists z2]; apply Hz|].
-  intros [[z1 Hz1] [z2 Hz2]]; exists (Auth z1 z2); split; auto.
-Qed.
+  Lemma big_opL_auth_frag {B} (g : nat → B → A) (l : list B) :
+    (◯ [^op list] k↦x ∈ l, g k x) ≡ [^op list] k↦x ∈ l, ◯ (g k x).
+  Proof. apply (big_opL_commute _). Qed.
+  Lemma big_opM_auth_frag `{Countable K} {B} (g : K → B → A) (m : gmap K B) :
+    (◯ [^op map] k↦x ∈ m, g k x) ≡ [^op map] k↦x ∈ m, ◯ (g k x).
+  Proof. apply (big_opM_commute _). Qed.
+  Lemma big_opS_auth_frag `{Countable B} (g : B → A) (X : gset B) :
+    (◯ [^op set] x ∈ X, g x) ≡ [^op set] x ∈ X, ◯ (g x).
+  Proof. apply (big_opS_commute _). Qed.
+  Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
+    (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
+  Proof. apply (big_opMS_commute _). Qed.
 
-Lemma auth_auth_proj_validN n x : ✓{n} x → ✓{n} auth_auth_proj x.
-Proof. destruct x as [[[]|]]; [by intros (? & ? & -> & ?)|done]. Qed.
-Lemma auth_frag_proj_validN n x : ✓{n} x → ✓{n} auth_frag_proj x.
-Proof.
-  rewrite auth_validN_eq.
-  destruct x as [[[]|]]; [|done]. naive_solver eauto using cmra_validN_includedN.
-Qed.
-Lemma auth_auth_proj_valid x : ✓ x → ✓ auth_auth_proj x.
-Proof.
-  destruct x as [[[]|]]; [intros [? H]|done]. split; [done|].
-  intros n. by destruct (H n) as [? [-> [? ?]]].
-Qed.
-Lemma auth_frag_proj_valid x : ✓ x → ✓ auth_frag_proj x.
-Proof.
-  destruct x as [[[]|]]; [intros [? H]|done]. apply cmra_valid_validN.
-  intros n. destruct (H n) as [? [? [? ?]]].
-  naive_solver eauto using cmra_validN_includedN.
-Qed.
+  (** Inclusion *)
+  Lemma auth_auth_includedN n p1 p2 a1 a2 b :
+    ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+  Proof. apply view_auth_includedN. Qed.
+  Lemma auth_auth_included p1 p2 a1 a2 b :
+    ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+  Proof. apply view_auth_included. Qed.
 
-Lemma auth_frag_validN n a : ✓{n} (◯ a) ↔ ✓{n} a.
-Proof. done. Qed.
-Lemma auth_auth_frac_validN n q a :
-  ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
-Proof.
-  rewrite auth_validN_eq /=. apply and_iff_compat_l. split.
-  - by intros [?[->%(inj to_agree) []]].
-  - naive_solver eauto using ucmra_unit_leastN.
-Qed.
-Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
-Proof.
-  rewrite auth_auth_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
-Qed.
-Lemma auth_both_frac_validN n q a b :
-  ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
-Proof.
-  rewrite auth_validN_eq /=. apply and_iff_compat_l.
-  setoid_rewrite (left_id _ _ b). split.
-  - by intros [?[->%(inj to_agree)]].
-  - naive_solver.
-Qed.
-Lemma auth_both_validN n a b : ✓{n} (● a ⋅ ◯ b) ↔ b ≼{n} a ∧ ✓{n} a.
-Proof.
-  rewrite auth_both_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
-Qed.
+  Lemma auth_frag_includedN n p a b1 b2 :
+    ◯ b1 ≼{n} ●{p} a ⋅ ◯ b2 ↔ b1 ≼{n} b2.
+  Proof. apply view_frag_includedN. Qed.
+  Lemma auth_frag_included p a b1 b2 :
+    ◯ b1 ≼ ●{p} a ⋅ ◯ b2 ↔ b1 ≼ b2.
+  Proof. apply view_frag_included. Qed.
 
-(** This lemma statement is a bit awkward as we cannot possibly extract a single
-witness for [b ≼ a] from validity, we have to make do with one witness per step-index. *)
-Lemma auth_both_frac_valid q a b :
-  ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ (∀ n, b ≼{n} a) ∧ ✓ a.
-Proof.
-  rewrite auth_valid_eq /=. apply and_iff_compat_l.
-  setoid_rewrite (left_id _ _ b). split.
-  - intros Hn. split.
-    + intros n. destruct (Hn n) as [? [->%(inj to_agree) [Hincl _]]]. done.
-    + apply cmra_valid_validN. intros n.
-      destruct (Hn n) as [? [->%(inj to_agree) [_ Hval]]]. done.
-  - intros [Hincl Hn] n. eexists. split; first done.
-    split; first done. apply cmra_valid_validN. done.
-Qed.
-Lemma auth_both_valid a b :
-  ✓ (● a ⋅ ◯ b) ↔ (∀ n, b ≼{n} a) ∧ ✓ a.
-Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
+  (** The weaker [auth_both_included] lemmas below are a consequence of the
+  [auth_auth_included] and [auth_frag_included] lemmas above. *)
+  Lemma auth_both_includedN n p1 p2 a1 a2 b1 b2 :
+    ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+  Proof. apply view_both_includedN. Qed.
+  Lemma auth_both_included p1 p2 a1 a2 b1 b2 :
+    ●{p1} a1 ⋅ ◯ b1 ≼ ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+  Proof. apply view_both_included. Qed.
 
-Lemma auth_frag_valid a : ✓ (◯ a) ↔ ✓ a.
-Proof. done. Qed.
-Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
-Proof.
-  rewrite auth_valid_eq /=. apply and_iff_compat_l. split.
-  - intros H'. apply cmra_valid_validN. intros n.
-    by destruct (H' n) as [? [->%(inj to_agree) [??]]].
-  - intros. exists a. split; [done|].
-    split; by [apply ucmra_unit_leastN|apply cmra_valid_validN].
-Qed.
-Lemma auth_auth_valid a : ✓ (● a) ↔ ✓ a.
-Proof. rewrite auth_auth_frac_valid frac_valid'. naive_solver. Qed.
+  (** Internalized properties *)
+  Lemma auth_auth_validI {M} q (a b: A) :
+    ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
+  Proof.
+    apply view_auth_validI=> n. uPred.unseal; split; [|by intros [??]].
+    split; [|done]. apply ucmra_unit_leastN.
+  Qed.
+  Lemma auth_frag_validI {M} (a : A):
+    ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
+  Proof. apply view_frag_validI. Qed.
+  Lemma auth_both_validI {M} q (a b: A) :
+    ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
+  Proof. apply view_both_validI=> n. by uPred.unseal. Qed.
 
-(* The reverse direction of the two lemmas below only holds if the camera is
-discrete. *)
-Lemma auth_both_frac_valid_2 q a b : ✓ q → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
-Proof.
-  intros Val1 Val2 Incl. rewrite auth_valid_eq /=. split; [done|].
-  intros n. exists a. split; [done|]. rewrite left_id.
-  split; by [apply cmra_included_includedN|apply cmra_valid_validN].
-Qed.
-Lemma auth_both_valid_2 a b : ✓ a → b ≼ a → ✓ (● a ⋅ ◯ b).
-Proof. intros ??. by apply auth_both_frac_valid_2. Qed.
+  (** Updates *)
+  Lemma auth_update a b a' b' :
+    (a,b) ~l~> (a',b') → ● a ⋅ ◯ b ~~> ● a' ⋅ ◯ b'.
+  Proof.
+    intros Hup. apply view_update=> n bf [[bf' Haeq] Hav].
+    destruct (Hup n (Some (bf ⋅ bf'))); simpl in *; [done|by rewrite assoc|].
+    split; [|done]. exists bf'. by rewrite -assoc.
+  Qed.
 
-Lemma auth_valid_discrete `{!CmraDiscrete A} x :
-  ✓ x ↔ match auth_auth_proj x with
-        | Some (q, ag) => ✓ q ∧ ∃ a, ag ≡ to_agree a ∧ auth_frag_proj x ≼ a ∧ ✓ a
-        | None => ✓ auth_frag_proj x
-        end.
-Proof.
-  rewrite auth_valid_eq. destruct x as [[[??]|] ?]; simpl; [|done].
-  setoid_rewrite <-cmra_discrete_included_iff.
-  setoid_rewrite <-(discrete_iff _ a).
-  setoid_rewrite <-cmra_discrete_valid_iff. naive_solver eauto using O.
-Qed.
-Lemma auth_both_frac_valid_discrete `{!CmraDiscrete A} q a b :
-  ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ b ≼ a ∧ ✓ a.
-Proof.
-  rewrite auth_valid_discrete /=. apply and_iff_compat_l.
-  setoid_rewrite (left_id _ _ b). split.
-  - by intros [?[->%(inj to_agree)]].
-  - naive_solver.
-Qed.
-Lemma auth_both_valid_discrete `{!CmraDiscrete A} a b : ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
-Proof. rewrite auth_both_frac_valid_discrete frac_valid'. naive_solver. Qed.
+  Lemma auth_update_alloc a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a' ⋅ ◯ b'.
+  Proof. intros. rewrite -(right_id _ _ (● a)). by apply auth_update. Qed.
+  Lemma auth_update_dealloc a b a' : (a,b) ~l~> (a',ε) → ● a ⋅ ◯ b ~~> ● a'.
+  Proof. intros. rewrite -(right_id _ _ (● a')). by apply auth_update. Qed.
+  Lemma auth_update_auth a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a'.
+  Proof.
+    intros. etrans; first exact: auth_update_alloc.
+    exact: cmra_update_op_l.
+  Qed.
 
-Lemma auth_cmra_mixin : CmraMixin (auth A).
-Proof.
-  apply (iso_cmra_mixin_restrict (λ x : option (frac * agree A) * A, Auth x.1 x.2)
-    (λ x, (auth_auth_proj x, auth_frag_proj x))); try done.
-  - intros [x b]. by rewrite /= pair_pcore !cmra_pcore_core.
-  - intros n [[[q aa]|] b]; rewrite /= auth_validN_eq /=; last done.
-    intros (?&a&->&?&?). split; simpl; by eauto using cmra_validN_includedN.
-  - rewrite auth_validN_eq.
-    intros n [x1 b1] [x2 b2] [Hx ?]; simpl in *;
-      destruct Hx as [[q1 aa1] [q2 aa2] [??]|]; intros ?; by ofe_subst.
-  - rewrite auth_valid_eq auth_validN_eq.
-    intros [[[q aa]|] b]; rewrite /= cmra_valid_validN; naive_solver.
-  - rewrite auth_validN_eq. intros n [[[q aa]|] b];
-      naive_solver eauto using dist_S, cmra_includedN_S, cmra_validN_S.
-  - assert (∀ n (a b1 b2 : A), b1 ⋅ b2 ≼{n} a → b1 ≼{n} a).
-    { intros n a b1 b2 <-; apply cmra_includedN_l. }
-    rewrite auth_validN_eq. intros n [[[q1 a1]|] b1] [[[q2 a2]|] b2]; simpl;
-      [|naive_solver eauto using cmra_validN_op_l, cmra_validN_includedN..].
-    intros [? [a [Ha12a [? Valid]]]].
-    assert (a1 ≡{n}≡ a2) as Ha12 by (apply agree_op_invN; by rewrite Ha12a).
-    split; [naive_solver eauto using cmra_validN_op_l|].
-    exists a. rewrite -Ha12a -Ha12 agree_idemp. naive_solver.
-Qed.
-Canonical Structure authR := CmraT (auth A) auth_cmra_mixin.
+  Lemma auth_update_core_id q a b `{!CoreId b} :
+    b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
+  Proof.
+    intros Ha%(core_id_extract _ _). apply view_update_alloc_frac=> n bf [??].
+    split; [|done]. rewrite Ha (comm _ a). by apply cmra_monoN_l.
+  Qed.
 
-Global Instance auth_cmra_discrete : CmraDiscrete A → CmraDiscrete authR.
-Proof.
-  split; first apply _.
-  intros [[[]|] ?]; rewrite auth_valid_eq auth_validN_eq /=; auto.
-  - setoid_rewrite <-cmra_discrete_included_iff.
-    rewrite -cmra_discrete_valid_iff.
-    setoid_rewrite <-cmra_discrete_valid_iff.
-    setoid_rewrite <-(discrete_iff _ a). tauto.
-  - by rewrite -cmra_discrete_valid_iff.
-Qed.
+  Lemma auth_local_update a b0 b1 a' b0' b1' :
+    (b0, b1) ~l~> (b0', b1') → b0' ≼ a' → ✓ a' →
+    (● a ⋅ ◯ b0, ● a ⋅ ◯ b1) ~l~> (● a' ⋅ ◯ b0', ● a' ⋅ ◯ b1').
+  Proof.
+    intros. apply view_local_update; [done|]=> n [??]. split.
+    - by apply cmra_included_includedN.
+    - by apply cmra_valid_validN.
+  Qed.
+End auth.
 
-Instance auth_empty : Unit (auth A) := Auth ε ε.
-Lemma auth_ucmra_mixin : UcmraMixin (auth A).
-Proof.
-  split; simpl.
-  - rewrite auth_valid_eq /=. apply ucmra_unit_valid.
-  - by intros x; constructor; rewrite /= left_id.
-  - do 2 constructor; [done| apply (core_id_core _)].
-Qed.
-Canonical Structure authUR := UcmraT (auth A) auth_ucmra_mixin.
-
-Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
-Proof. do 2 constructor; simpl; auto. by apply core_id_core. Qed.
-
-Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.
-Proof. done. Qed.
-Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
-Proof. intros [c ->]. rewrite auth_frag_op. apply cmra_included_l. Qed.
-Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
-Proof. done. Qed.
-
-Global Instance auth_frag_sep_homomorphism :
-  MonoidHomomorphism op op (≡) (@auth_frag A).
-Proof. by split; [split; try apply _|]. Qed.
-
-Lemma big_opL_auth_frag {B} (g : nat → B → A) (l : list B) :
-  (◯ [^op list] k↦x ∈ l, g k x) ≡ [^op list] k↦x ∈ l, ◯ (g k x).
-Proof. apply (big_opL_commute _). Qed.
-Lemma big_opM_auth_frag `{Countable K} {B} (g : K → B → A) (m : gmap K B) :
-  (◯ [^op map] k↦x ∈ m, g k x) ≡ [^op map] k↦x ∈ m, ◯ (g k x).
-Proof. apply (big_opM_commute _). Qed.
-Lemma big_opS_auth_frag `{Countable B} (g : B → A) (X : gset B) :
-  (◯ [^op set] x ∈ X, g x) ≡ [^op set] x ∈ X, ◯ (g x).
-Proof. apply (big_opS_commute _). Qed.
-Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
-  (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
-Proof. apply (big_opMS_commute _). Qed.
-
-Lemma auth_both_op q a b : Auth (Some (q,to_agree a)) b ≡ ●{q} a ⋅ ◯ b.
-Proof. by rewrite /op /auth_op /= left_id. Qed.
-
-Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
-Proof.
-  intros; split; simpl; last by rewrite left_id.
-  by rewrite -Some_op -pair_op agree_idemp.
-Qed.
-Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
-Proof.
-  rewrite /op /auth_op /= left_id -Some_op -pair_op auth_validN_eq /=.
-  intros (?&?& Eq &?&?). apply (inj to_agree), agree_op_invN. by rewrite Eq.
-Qed.
-Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
-Proof.
-  intros ?. apply equiv_dist. intros n.
-  by eapply auth_auth_frac_op_invN, cmra_valid_validN.
-Qed.
-Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
-  ✓ (●{p} a ⋅ ●{q} b) → a = b.
-Proof. by intros ?%auth_auth_frac_op_inv%leibniz_equiv. Qed.
-
-(** Internalized properties *)
-Lemma auth_validI {M} x :
-  ✓ x ⊣⊢@{uPredI M} match auth_auth_proj x with
-                    | Some (q, ag) => ✓ q ∧
-                      ∃ a, ag ≡ to_agree a ∧ (∃ b, a ≡ auth_frag_proj x ⋅ b) ∧ ✓ a
-                    | None => ✓ auth_frag_proj x
-                    end.
-Proof. uPred.unseal. by destruct x as [[[]|]]. Qed.
-Lemma auth_frag_validI {M} (a : A):
-  ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
-Proof. by rewrite auth_validI. Qed.
-
-Lemma auth_both_validI {M} q (a b: A) :
-  ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
-Proof.
-  rewrite -auth_both_op auth_validI /=. apply bi.and_proper; [done|].
-  setoid_rewrite agree_equivI. iSplit.
-  - iDestruct 1 as (a') "[#Eq [H V]]". iDestruct "H" as (b') "H".
-    iRewrite -"Eq" in "H". iRewrite -"Eq" in "V". auto.
-  - iDestruct 1 as "[H V]". iExists a. auto.
-Qed.
-Lemma auth_auth_validI {M} q (a b: A) :
-  ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
-Proof.
-  rewrite auth_validI /=. apply bi.and_proper; [done|].
-  setoid_rewrite agree_equivI. iSplit.
-  - iDestruct 1 as (a') "[Eq [_ V]]". by iRewrite -"Eq" in "V".
-  - iIntros "V". iExists a. iSplit; [done|]. iSplit; [|done]. iExists a.
-    by rewrite left_id.
-Qed.
-
-Lemma auth_update a b a' b' :
-  (a,b) ~l~> (a',b') → ● a ⋅ ◯ b ~~> ● a' ⋅ ◯ b'.
-Proof.
-  intros Hup; apply cmra_total_update.
-  move=> n [[qa|] bf1] [/= Hq [a0 [Haa0 [[bf2 Ha] Ha0]]]]; do 2 red; simpl in *.
-  { by apply (exclusiveN_l _ _) in Hq. }
-  split; [done|]. apply (inj to_agree) in Haa0.
-  move: Ha; rewrite !left_id -assoc=> Ha.
-  destruct (Hup n (Some (bf1 ⋅ bf2))); [by rewrite Haa0..|]; simpl in *.
-  exists a'. split_and!; [done| |done].
-  exists bf2. by rewrite left_id -assoc.
-Qed.
-
-Lemma auth_update_alloc a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a' ⋅ ◯ b'.
-Proof. intros. rewrite -(right_id _ _ (● a)). by apply auth_update. Qed.
-
-Lemma auth_update_auth a a' b' : (a,ε) ~l~> (a',b') → ● a ~~> ● a'.
-Proof.
-  intros. etrans; first exact: auth_update_alloc.
-  exact: cmra_update_op_l.
-Qed.
-
-Lemma auth_update_core_id q a b `{!CoreId b} :
-  b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
-Proof.
-  intros Ha%(core_id_extract _ _). apply cmra_total_update.
-  move=> n [[[q' ag]|] bf1] [Hq [a0 [Haa0 [Hbf1 Ha0]]]]; simpl in *.
-  + split; simpl; [done|]. exists a0. split_and!; [done| |done].
-    assert (a ≡{n}≡ a0) as Haa0' by (apply to_agree_includedN; by exists ag).
-    rewrite -Haa0' Ha Haa0' -assoc (comm _ b) assoc. by apply cmra_monoN_r.
-  + split; simpl; [done|]. exists a0. split_and!; [done| |done].
-    apply (inj to_agree) in Haa0.
-    rewrite -Haa0 Ha Haa0 -assoc (comm _ b) assoc. by apply cmra_monoN_r.
-Qed.
-
-Lemma auth_update_dealloc a b a' : (a,b) ~l~> (a',ε) → ● a ⋅ ◯ b ~~> ● a'.
-Proof. intros. rewrite -(right_id _ _ (● a')). by apply auth_update. Qed.
-
-Lemma auth_local_update (a b0 b1 a' b0' b1': A) :
-  (b0, b1) ~l~> (b0', b1') → b0' ≼ a' → ✓ a' →
-  (● a ⋅ ◯ b0, ● a ⋅ ◯ b1) ~l~> (● a' ⋅ ◯ b0', ● a' ⋅ ◯ b1').
-Proof.
-  rewrite !local_update_unital=> Hup ? ? n /=.
-    move=> [[[qc ac]|] bc] /auth_both_validN [Le Val] [] /=.
-  - move => Ha. exfalso. move : Ha. rewrite right_id -Some_op -pair_op frac_op'.
-    move => /Some_dist_inj [/= Eq _].
-    apply (Qp_not_plus_q_ge_1 qc). by rewrite -Eq.
-  - move => _. rewrite !left_id=> ?.
-    destruct (Hup n bc) as [Hval' Heq]; eauto using cmra_validN_includedN.
-    rewrite -!auth_both_op auth_validN_eq /=.
-    split_and!; [done| |done]. exists a'.
-    split_and!; [done|by apply cmra_included_includedN|by apply cmra_valid_validN].
-Qed.
-End cmra.
-
-Arguments authR : clear implicits.
-Arguments authUR : clear implicits.
-
-(* Proof mode class instances *)
-Instance is_op_auth_frag {A : ucmraT} (a b1 b2 : A) :
-  IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
-Proof. done. Qed.
-Instance is_op_auth_auth_frac {A : ucmraT} (q q1 q2 : frac) (a : A) :
-  IsOp q q1 q2 → IsOp' (●{q} a) (●{q1} a) (●{q2} a).
-Proof. rewrite /IsOp' /IsOp => ->. by rewrite -auth_auth_frac_op. Qed.
-
-(* Functor *)
-Definition auth_map {A B} (f : A → B) (x : auth A) : auth B :=
-  Auth (prod_map id (agree_map f) <$> auth_auth_proj x) (f (auth_frag_proj x)).
-Lemma auth_map_id {A} (x : auth A) : auth_map id x = x.
-Proof. destruct x as [[[]|] ]; by rewrite // /auth_map /= agree_map_id. Qed.
-Lemma auth_map_compose {A B C} (f : A → B) (g : B → C) (x : auth A) :
-  auth_map (g ∘ f) x = auth_map g (auth_map f x).
-Proof. destruct x as [[[]|] ];  by rewrite // /auth_map /= agree_map_compose. Qed.
-Lemma auth_map_ext {A B : ofeT} (f g : A → B) `{!NonExpansive f} x :
-  (∀ x, f x ≡ g x) → auth_map f x ≡ auth_map g x.
-Proof.
-  constructor; simpl; auto.
-  apply option_fmap_equiv_ext=> a; by rewrite /prod_map /= agree_map_ext.
-Qed.
-Instance auth_map_ne {A B : ofeT} (f : A -> B) `{Hf : !NonExpansive f} :
-  NonExpansive (auth_map f).
-Proof.
-  intros n [??] [??] [??]; split; simpl in *; [|by apply Hf].
-  apply option_fmap_ne; [|done]=> x y ?. apply prod_map_ne; [done| |done].
-  by apply agree_map_ne.
-Qed.
-Instance auth_map_cmra_morphism {A B : ucmraT} (f : A → B) :
-  CmraMorphism f → CmraMorphism (auth_map f).
-Proof.
-  split; try apply _.
-  - intros n [[[??]|] b]; rewrite !auth_validN_eq;
-      [|naive_solver eauto using cmra_morphism_monotoneN, cmra_morphism_validN].
-    intros [? [a' [Eq [? ?]]]]. split; [done|]. exists (f a').
-    rewrite -agree_map_to_agree -Eq.
-    naive_solver eauto using cmra_morphism_monotoneN, cmra_morphism_validN.
-  - intros [??]. apply Some_proper; rewrite /auth_map /=.
-    by f_equiv; rewrite /= cmra_morphism_core.
-  - intros [[[??]|]?] [[[??]|]?]; try apply Auth_proper=>//=; by rewrite cmra_morphism_op.
-Qed.
-Definition authO_map {A B} (f : A -n> B) : authO A -n> authO B :=
-  OfeMor (auth_map f).
-Lemma authO_map_ne A B : NonExpansive (@authO_map A B).
-Proof. intros n f f' Hf [[[]|] ]; repeat constructor; try naive_solver;
-  apply agreeO_map_ne; auto. Qed.
-
+(** * Functor *)
 Program Definition authURF (F : urFunctor) : urFunctor := {|
   urFunctor_car A _ B _ := authUR (urFunctor_car F A B);
-  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg := authO_map (urFunctor_map F fg)
+  urFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
+    viewO_map (urFunctor_map F fg) (urFunctor_map F fg)
 |}.
 Next Obligation.
-  by intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_map_ne.
+  intros F A1 ? A2 ? B1 ? B2 ? n f g Hfg.
+  apply viewO_map_ne; by apply urFunctor_map_ne.
 Qed.
 Next Obligation.
-  intros F A ? B ? x. rewrite /= -{2}(auth_map_id x).
-  apply (auth_map_ext _ _)=>y; apply urFunctor_map_id.
+  intros F A ? B ? x; simpl in *. rewrite -{2}(view_map_id x).
+  apply (view_map_ext _ _ _ _)=> y; apply urFunctor_map_id.
 Qed.
 Next Obligation.
-  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x. rewrite /= -auth_map_compose.
-  apply (auth_map_ext _ _)=>y; apply urFunctor_map_compose.
+  intros F A1 ? A2 ? A3 ? B1 ? B2 ? B3 ? f g f' g' x; simpl in *.
+  rewrite -view_map_compose.
+  apply (view_map_ext _ _ _ _)=> y; apply urFunctor_map_compose.
+Qed.
+Next Obligation.
+  intros F A1 ? A2 ? B1 ? B2 ? fg; simpl.
+  apply view_map_cmra_morphism; [apply _..|]=> n a b [??]; split.
+  - by apply (cmra_morphism_monotoneN _).
+  - by apply (cmra_morphism_validN _).
 Qed.
 
 Instance authURF_contractive F :
   urFunctorContractive F → urFunctorContractive (authURF F).
 Proof.
-  by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply authO_map_ne, urFunctor_map_contractive.
+  intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
+  apply viewO_map_ne; by apply urFunctor_map_contractive.
 Qed.
 
 Definition authRF (F : urFunctor) :=

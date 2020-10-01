@@ -25,6 +25,16 @@ With this release, we dropped support for Coq 8.9.
 * Rename `auth_both_valid` to `auth_both_valid_discrete` and
   `auth_both_frac_valid` to `auth_both_frac_valid_discrete`. The old name is
   used for new, stronger lemmas that do not assume discreteness.
+* Add the view camera `view`, which generalizes the authoritative camera
+  `auth` by being parameterized by a relation that relates the authoritative
+  element with the fragments.
+* Redefine the authoritative camera in terms of the view camera. As part of this
+  change, we have removed lemmas that leaked implementation details. Hence, the
+  only way to construct elements of `auth` is via the elements `●{q} a` and
+  `◯ b`. The constructor `Auth`, and the projections `auth_auth_proj` and
+  `auth_frag_proj` no longer exist. Lemmas that referred to these constructors
+  have been removed, in particular, `auth_included`, `auth_valid_discrete`,
+  and `auth_both_op`.
 
 **Changes in `proofmode`:**
 
