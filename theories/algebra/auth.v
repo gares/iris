@@ -69,13 +69,21 @@ Section auth.
   Proof. rewrite /auth_auth. apply _. Qed.
   Global Instance auth_auth_proper q : Proper ((≡) ==> (≡)) (@auth_auth A q).
   Proof. rewrite /auth_auth. apply _. Qed.
-  Global Instance auth_frag_ne: NonExpansive (@auth_frag A).
+  Global Instance auth_frag_ne : NonExpansive (@auth_frag A).
   Proof. rewrite /auth_frag. apply _. Qed.
   Global Instance auth_frag_proper : Proper ((≡) ==> (≡)) (@auth_frag A).
   Proof. rewrite /auth_frag. apply _. Qed.
 
-  Lemma auth_auth_frac_validN n q a :
-    ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
+  Global Instance auth_auth_dist_inj n : Inj2 (=) (dist n) (dist n) (@auth_auth A).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_auth_inj : Inj2 (=) (≡) (≡) (@auth_auth A).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_frag_dist_inj n : Inj (dist n) (dist n) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_inj : Inj (≡) (≡) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
+
+  Lemma auth_auth_frac_validN n q a : ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
   Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.

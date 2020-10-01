@@ -123,10 +123,26 @@ Section cmra.
   Proof. solve_proper. Qed.
   Global Instance view_auth_proper q : Proper ((≡) ==> (≡)) (@view_auth A B rel q).
   Proof. solve_proper. Qed.
-  Global Instance view_frag_ne: NonExpansive (@view_frag A B rel).
+  Global Instance view_frag_ne : NonExpansive (@view_frag A B rel).
   Proof. done. Qed.
   Global Instance view_frag_proper : Proper ((≡) ==> (≡)) (@view_frag A B rel).
   Proof. done. Qed.
+
+  Global Instance view_auth_dist_inj n :
+    Inj2 (=) (dist n) (dist n) (@view_auth A B rel).
+  Proof.
+    intros p1 a1 p2 a2 [Hag ?]; inversion Hag as [?? [??]|]; simplify_eq/=.
+    split; [done|]. by apply (inj to_agree).
+  Qed.
+  Global Instance view_auth_inj : Inj2 (=) (≡) (≡) (@view_auth A B rel).
+  Proof.
+    intros p1 a1 p2 a2 [Hag ?]; inversion Hag as [?? [??]|]; simplify_eq/=.
+    split; [done|]. by apply (inj to_agree).
+  Qed.
+  Global Instance view_frag_dist_inj n : Inj (dist n) (dist n) (@view_frag A B rel).
+  Proof. by intros ?? [??]. Qed.
+  Global Instance view_frag_inj : Inj (≡) (≡) (@view_frag A B rel).
+  Proof. by intros ?? [??]. Qed.
 
   Instance view_valid : Valid (view rel) := λ x,
     match view_auth_proj x with
