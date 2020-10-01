@@ -62,6 +62,9 @@ Notation "●{ q } a" := (auth_auth q a) (at level 20, format "●{ q }  a").
 Notation "● a" := (auth_auth 1 a) (at level 20).
 
 (** * Laws of the authoritative camera *)
+(** We omit the usual [equivI] lemma because it is hard to state a suitably
+general version in terms of [●] and [◯], and because such a lemma has never
+been needed in practice. *)
 Section auth.
   Context {A : ucmraT}.
   Implicit Types a b : A.

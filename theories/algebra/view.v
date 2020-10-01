@@ -71,6 +71,9 @@ Class ViewRelDiscrete {A B} (rel : view_rel A B) :=
   view_rel_discrete n a b : rel 0 a b → rel n a b.
 
 (** * Definition of the view camera *)
+(** To make use of the lemmas provided in this file, elements of [view] should
+always be constructed using [●V] and [◯V], and never using the constructor
+[View]. *)
 Record view {A B} (rel : nat → A → B → Prop) :=
   View { view_auth_proj : option (frac * agree A) ; view_frag_proj : B }.
 Add Printing Constructor view.
@@ -94,6 +97,9 @@ Notation "●V a" := (view_auth 1 a) (at level 20).
 Notation "◯V a" := (view_frag a) (at level 20).
 
 (** * The OFE structure *)
+(** We omit the usual [equivI] lemma because it is hard to state a suitably
+general version in terms of [●V] and [◯V], and because such a lemma has never
+been needed in practice. *)
 Section ofe.
   Context {A B : ofeT} (rel : nat → A → B → Prop).
   Implicit Types a : A.
@@ -132,12 +138,6 @@ Section ofe.
   Global Instance view_ofe_discrete :
     OfeDiscrete A → OfeDiscrete B → OfeDiscrete viewO.
   Proof. intros ?? [??]; apply _. Qed.
-
-  (** Internalized properties *)
-  Lemma view_equivI {M} x y :
-    x ≡ y ⊣⊢@{uPredI M}
-      view_auth_proj x ≡ view_auth_proj y ∧ view_frag_proj x ≡ view_frag_proj y.
-  Proof. by uPred.unseal. Qed.
 End ofe.
 
 (** * The camera structure *)
