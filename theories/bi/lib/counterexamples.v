@@ -9,7 +9,6 @@ Set Default Proof Using "Type*".
 name-dependent allocation. *)
 Module savedprop. Section savedprop.
   Context `{BiAffine PROP}.
-  Notation "¬ P" := (□ (P → False))%I : bi_scope.
   Implicit Types P : PROP.
 
   Context (bupd : PROP → PROP).
@@ -39,15 +38,15 @@ Module savedprop. Section savedprop.
   Qed.
 
   (** A bad recursive reference: "Assertion with name [i] does not hold" *)
-  Definition A (i : ident) : PROP := (∃ P, ¬ P ∗ saved i P)%I.
+  Definition A (i : ident) : PROP := (∃ P, □ ¬ P ∗ saved i P)%I.
 
   Lemma A_alloc : ⊢ |==> ∃ i, saved i (A i).
   Proof. by apply sprop_alloc_dep. Qed.
 
   Lemma saved_NA i : saved i (A i) ⊢ ¬ A i.
   Proof.
-    iIntros "#Hs !> #HA". iPoseProof "HA" as "HA'".
-    iDestruct "HA'" as (P) "[#HNP HsP]". iApply "HNP".
+    iIntros "#Hs #HA". iPoseProof "HA" as "HA'".
+    iDestruct "HA'" as (P) "[HNP HsP]". iApply "HNP".
     iDestruct (sprop_agree i P (A i) with "[]") as "#[_ HP]".
     { eauto. }
     iApply "HP". done.
@@ -55,8 +54,8 @@ Module savedprop. Section savedprop.
 
   Lemma saved_A i : saved i (A i) ⊢ A i.
   Proof.
-    iIntros "#Hs". iExists (A i). iFrame "#".
-    by iApply saved_NA.
+    iIntros "#Hs". iExists (A i). iFrame "Hs".
+    iIntros "!>". by iApply saved_NA.
   Qed.
 
   Lemma contradiction : False.
@@ -188,14 +187,14 @@ Module inv. Section inv.
   Qed.
 
   (** And now we tie a bad knot. *)
-  Notation "¬ P" := (□ (P -∗ fupd M1 False))%I : bi_scope.
-  Definition A i : PROP := (∃ P, ¬P ∗ saved i P)%I.
+  Notation not_fupd P := (□ (P -∗ fupd M1 False))%I.
+  Definition A i : PROP := (∃ P, not_fupd P ∗ saved i P)%I.
   Global Instance A_persistent i : Persistent (A i) := _.
 
   Lemma A_alloc : ⊢ fupd M1 (∃ i, saved i (A i)).
   Proof. by apply saved_alloc. Qed.
 
-  Lemma saved_NA i : saved i (A i) ⊢ ¬A i.
+  Lemma saved_NA i : saved i (A i) ⊢ not_fupd (A i).
   Proof.
     iIntros "#Hi !> #HA". iPoseProof "HA" as "HA'".
     iDestruct "HA'" as (P) "#[HNP Hi']".

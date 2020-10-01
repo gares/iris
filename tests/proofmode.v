@@ -215,7 +215,7 @@ Proof.
   Show. auto.
 Qed.
 
-Lemma test_iIntros_pure_not : ⊢@{PROP} ⌜ ¬False ⌝.
+Lemma test_iIntros_pure_not `{!BiPureForall PROP} : ⊢@{PROP} ⌜ ¬False ⌝.
 Proof. by iIntros (?). Qed.
 
 Lemma test_fast_iIntros `{!BiInternalEq PROP} P Q :

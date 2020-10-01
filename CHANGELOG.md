@@ -48,6 +48,9 @@ With this release, we dropped support for Coq 8.9.
 * Allow framing below an `<affine>` modality if the hypothesis that is framed is
   affine. (Previously, framing below `<affine>` was only possible if the
   hypothesis that is framed resides in the intuitionistic context.)
+* Remove the laws `pure_forall_2 : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝` from the BI
+  interface and factor it into a type class `BiPureForall`.
+* Add notation `¬ P` for `P → False` to `bi_scope`.
 
 **Changes in `base_logic`:**
 

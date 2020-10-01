@@ -27,7 +27,7 @@ Section basic_tests.
   Lemma test_pure_texist {TT : tele} (φ : TT → Prop) :
     (∃.. x, ⌜ φ x ⌝) -∗ ∃.. x, ⌜ φ x ⌝ : PROP.
   Proof. iIntros (H) "!%". done. Qed.
-  Lemma test_pure_tforall {TT : tele} (φ : TT → Prop) :
+  Lemma test_pure_tforall `{!BiPureForall PROP} {TT : tele} (φ : TT → Prop) :
     (∀.. x, ⌜ φ x ⌝) -∗ ∀.. x, ⌜ φ x ⌝ : PROP.
   Proof. iIntros (H) "!%". done. Qed.
   Lemma test_pure_tforall_persistent {TT : tele} (Φ : TT → PROP) :

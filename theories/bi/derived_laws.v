@@ -526,23 +526,32 @@ Proof.
   - eapply pure_elim=> // -[?|?]; auto using pure_mono.
   - apply or_elim; eauto using pure_mono.
 Qed.
-Lemma pure_impl φ1 φ2 : ⌜φ1 → φ2⌝ ⊣⊢ (⌜φ1⌝ → ⌜φ2⌝).
+Lemma pure_impl_1 φ1 φ2 : ⌜φ1 → φ2⌝ ⊢ (⌜φ1⌝ → ⌜φ2⌝).
+Proof. apply impl_intro_l. rewrite -pure_and. apply pure_mono. naive_solver. Qed.
+Lemma pure_impl_2 `{!BiPureForall PROP} φ1 φ2 : (⌜φ1⌝ → ⌜φ2⌝) ⊢ ⌜φ1 → φ2⌝.
 Proof.
-  apply (anti_symm _).
-  - apply impl_intro_l. rewrite -pure_and. apply pure_mono. naive_solver.
-  - rewrite -pure_forall_2. apply forall_intro=> ?.
-    by rewrite -(left_id True bi_and (_→_))%I (pure_True φ1) // impl_elim_r.
+  rewrite -pure_forall_2. apply forall_intro=> ?.
+  by rewrite -(left_id True bi_and (_→_))%I (pure_True φ1) // impl_elim_r.
 Qed.
-Lemma pure_forall {A} (φ : A → Prop) : ⌜∀ x, φ x⌝ ⊣⊢ ∀ x, ⌜φ x⌝.
-Proof.
-  apply (anti_symm _); auto using pure_forall_2.
-  apply forall_intro=> x. eauto using pure_mono.
-Qed.
+Lemma pure_impl `{!BiPureForall PROP} φ1 φ2 : ⌜φ1 → φ2⌝ ⊣⊢ (⌜φ1⌝ → ⌜φ2⌝).
+Proof. apply (anti_symm _); auto using pure_impl_1, pure_impl_2. Qed.
+Lemma pure_forall_1 {A} (φ : A → Prop) : ⌜∀ x, φ x⌝ ⊢ ∀ x, ⌜φ x⌝.
+Proof. apply forall_intro=> x. eauto using pure_mono. Qed.
+Lemma pure_forall `{!BiPureForall PROP} {A} (φ : A → Prop) :
+  ⌜∀ x, φ x⌝ ⊣⊢ ∀ x, ⌜φ x⌝.
+Proof. apply (anti_symm _); auto using pure_forall_1, pure_forall_2. Qed.
 Lemma pure_exist {A} (φ : A → Prop) : ⌜∃ x, φ x⌝ ⊣⊢ ∃ x, ⌜φ x⌝.
 Proof.
   apply (anti_symm _).
   - eapply pure_elim=> // -[x ?]. rewrite -(exist_intro x); auto using pure_mono.
   - apply exist_elim=> x. eauto using pure_mono.
+Qed.
+
+Lemma bi_pure_forall_em : (∀ φ : Prop, φ ∨ ¬φ) → BiPureForall PROP.
+Proof.
+  intros Hem A φ. destruct (Hem (∃ a, ¬φ a)) as [[a Hφ]|Hφ].
+  { rewrite (forall_elim a). by apply pure_elim'. }
+  apply pure_intro=> a. destruct (Hem (φ a)); naive_solver.
 Qed.
 
 Lemma pure_impl_forall φ P : (⌜φ⌝ → P) ⊣⊢ (∀ _ : φ, P).

@@ -37,7 +37,6 @@ Proof.
   - solve_proper.
   - exact: pure_intro.
   - exact: pure_elim'.
-  - exact: @pure_forall_2.
   - exact: and_elim_l.
   - exact: and_elim_r.
   - exact: and_intro.
@@ -115,6 +114,9 @@ Qed.
 Canonical Structure siPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of siProp;
      bi_bi_mixin := siProp_bi_mixin; bi_bi_later_mixin := siProp_bi_later_mixin |}.
+
+Instance siProp_pure_forall : BiPureForall siPropI.
+Proof. exact: @pure_forall_2. Qed.
 
 Instance siProp_later_contractive : BiLaterContractive siPropI.
 Proof. apply later_contractive. Qed.

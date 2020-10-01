@@ -31,6 +31,8 @@ Notation "(/\)" := bi_and (only parsing) : bi_scope.
 Notation "P \/ Q" := (P ∨ Q)%I (only parsing) : bi_scope.
 Notation "(\/)" := bi_or (only parsing) : bi_scope.
 Notation "P -> Q" := (P → Q)%I (only parsing) : bi_scope.
+Notation "~ P" := (P → False)%I (only parsing) : bi_scope.
+
 Notation "P ** Q" := (P ∗ Q)%I
   (at level 80, right associativity, only parsing) : bi_scope.
 Notation "(**)" := bi_sep (only parsing) : bi_scope.

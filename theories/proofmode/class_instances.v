@@ -155,9 +155,9 @@ Proof. rewrite /IntoPure pure_and. by intros -> ->. Qed.
 Global Instance into_pure_pure_or (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 ∨ P2) (φ1 ∨ φ2).
 Proof. rewrite /IntoPure pure_or. by intros -> ->. Qed.
-Global Instance into_pure_pure_impl (φ1 φ2 : Prop) P1 P2 :
+Global Instance into_pure_pure_impl `{!BiPureForall PROP} (φ1 φ2 : Prop) P1 P2 :
   FromPure false P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 → P2) (φ1 → φ2).
-Proof. rewrite /FromPure /IntoPure pure_impl=> <- -> //. Qed.
+Proof. rewrite /FromPure /IntoPure /= => <- ->. apply pure_impl_2. Qed.
 
 Global Instance into_pure_exist {A} (Φ : A → PROP) (φ : A → Prop) :
   (∀ x, IntoPure (Φ x) (φ x)) → IntoPure (∃ x, Φ x) (∃ x, φ x).
@@ -165,10 +165,12 @@ Proof. rewrite /IntoPure=>Hx. rewrite pure_exist. by setoid_rewrite Hx. Qed.
 Global Instance into_pure_texist {TT : tele} (Φ : TT → PROP) (φ : TT → Prop) :
   (∀ x, IntoPure (Φ x) (φ x)) → IntoPure (∃.. x, Φ x) (∃.. x, φ x).
 Proof. rewrite /IntoPure texist_exist bi_texist_exist. apply into_pure_exist. Qed.
-Global Instance into_pure_forall {A} (Φ : A → PROP) (φ : A → Prop) :
+Global Instance into_pure_forall `{!BiPureForall PROP}
+    {A} (Φ : A → PROP) (φ : A → Prop) :
   (∀ x, IntoPure (Φ x) (φ x)) → IntoPure (∀ x, Φ x) (∀ x, φ x).
 Proof. rewrite /IntoPure=>Hx. rewrite -pure_forall_2. by setoid_rewrite Hx. Qed.
-Global Instance into_pure_tforall {TT : tele} (Φ : TT → PROP) (φ : TT → Prop) :
+Global Instance into_pure_tforall `{!BiPureForall PROP}
+    {TT : tele} (Φ : TT → PROP) (φ : TT → Prop) :
   (∀ x, IntoPure (Φ x) (φ x)) → IntoPure (∀.. x, Φ x) (∀.. x, φ x).
 Proof.
   rewrite /IntoPure !tforall_forall bi_tforall_forall. apply into_pure_forall.
@@ -177,7 +179,7 @@ Qed.
 Global Instance into_pure_pure_sep (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 ∗ P2) (φ1 ∧ φ2).
 Proof. rewrite /IntoPure=> -> ->. by rewrite sep_and pure_and. Qed.
-Global Instance into_pure_pure_wand a (φ1 φ2 : Prop) P1 P2 :
+Global Instance into_pure_pure_wand `{!BiPureForall PROP} a (φ1 φ2 : Prop) P1 P2 :
   FromPure a P1 φ1 → IntoPure P2 φ2 → IntoPure (P1 -∗ P2) (φ1 → φ2).
 Proof.
   rewrite /FromPure /IntoPure=> <- -> /=. rewrite pure_impl.
@@ -218,7 +220,7 @@ Qed.
 Global Instance from_pure_pure_impl a (φ1 φ2 : Prop) P1 P2 :
   IntoPure P1 φ1 → FromPure a P2 φ2 → FromPure a (P1 → P2) (φ1 → φ2).
 Proof.
-  rewrite /FromPure /IntoPure pure_impl=> -> <-. destruct a=>//=.
+  rewrite /FromPure /IntoPure pure_impl_1=> -> <-. destruct a=>//=.
   apply bi.impl_intro_l. by rewrite affinely_and_r bi.impl_elim_r.
 Qed.
 
@@ -234,7 +236,7 @@ Proof. rewrite /FromPure texist_exist bi_texist_exist. apply from_pure_exist. Qe
 Global Instance from_pure_forall {A} a (Φ : A → PROP) (φ : A → Prop) :
   (∀ x, FromPure a (Φ x) (φ x)) → FromPure a (∀ x, Φ x) (∀ x, φ x).
 Proof.
-  rewrite /FromPure=>Hx. rewrite pure_forall. setoid_rewrite <-Hx.
+  rewrite /FromPure=>Hx. rewrite pure_forall_1. setoid_rewrite <-Hx.
   destruct a=>//=. apply affinely_forall.
 Qed.
 Global Instance from_pure_tforall {TT : tele} a (Φ : TT → PROP) (φ : TT → Prop) :
@@ -260,8 +262,8 @@ Proof.
   destruct a; simpl.
   - destruct Ha as [Ha|?]; first inversion Ha.
     rewrite -persistent_and_affinely_sep_r -(affine_affinely P1) HP1.
-    by rewrite affinely_and_l pure_impl impl_elim_r.
-  - by rewrite HP1 sep_and pure_impl impl_elim_r.
+    by rewrite affinely_and_l pure_impl_1 impl_elim_r.
+  - by rewrite HP1 sep_and pure_impl_1 impl_elim_r.
 Qed.
 
 Global Instance from_pure_persistently P a φ :
@@ -880,15 +882,16 @@ Proof. by rewrite /FromForall. Qed.
 Global Instance from_forall_tforall {TT : tele} (Φ : TT → PROP) name :
   AsIdentName Φ name → FromForall (bi_tforall Φ) Φ name.
 Proof. by rewrite /FromForall bi_tforall_forall. Qed.
-Global Instance from_forall_pure {A} (φ : A → Prop) name :
+Global Instance from_forall_pure `{!BiPureForall PROP} {A} (φ : A → Prop) name :
   AsIdentName φ name → @FromForall PROP A ⌜∀ a : A, φ a⌝ (λ a, ⌜ φ a ⌝)%I name.
-Proof. by rewrite /FromForall pure_forall. Qed.
-Global Instance from_tforall_pure {TT : tele} (φ : TT → Prop) name :
+Proof. by rewrite /FromForall pure_forall_2. Qed.
+Global Instance from_tforall_pure `{!BiPureForall PROP}
+    {TT : tele} (φ : TT → Prop) name :
   AsIdentName φ name → @FromForall PROP TT ⌜tforall φ⌝ (λ x, ⌜ φ x ⌝)%I name.
 Proof. by rewrite /FromForall tforall_forall pure_forall. Qed.
 
 (* [H] is the default name for the [φ] hypothesis, in the following three instances *)
-Global Instance from_forall_pure_not (φ : Prop) :
+Global Instance from_forall_pure_not `{!BiPureForall PROP} (φ : Prop) :
   @FromForall PROP φ ⌜¬ φ⌝ (λ _ : φ, False)%I (to_ident_name H).
 Proof. by rewrite /FromForall pure_forall. Qed.
 Global Instance from_forall_impl_pure P Q φ :

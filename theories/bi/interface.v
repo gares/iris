@@ -65,9 +65,6 @@ Section bi_mixin.
     (** Higher-order logic *)
     bi_mixin_pure_intro (φ : Prop) P : φ → P ⊢ ⌜ φ ⌝;
     bi_mixin_pure_elim' (φ : Prop) P : (φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P;
-    (* This is actually derivable if we assume excluded middle in Coq,
-       via [(∀ a, φ a) ∨ (∃ a, ¬φ a)]. *)
-    bi_mixin_pure_forall_2 {A} (φ : A → Prop) : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝;
 
     bi_mixin_and_elim_l P Q : P ∧ Q ⊢ P;
     bi_mixin_and_elim_r P Q : P ∧ Q ⊢ Q;
@@ -247,6 +244,7 @@ Notation "(∧)" := bi_and (only parsing) : bi_scope.
 Infix "∨" := bi_or : bi_scope.
 Notation "(∨)" := bi_or (only parsing) : bi_scope.
 Infix "→" := bi_impl : bi_scope.
+Notation "¬ P" := (P → False)%I : bi_scope.
 Infix "∗" := bi_sep : bi_scope.
 Notation "(∗)" := bi_sep (only parsing) : bi_scope.
 Notation "P -∗ Q" := (bi_wand P Q) : bi_scope.
@@ -310,8 +308,6 @@ Lemma pure_intro (φ : Prop) P : φ → P ⊢ ⌜ φ ⌝.
 Proof. eapply bi_mixin_pure_intro, bi_bi_mixin. Qed.
 Lemma pure_elim' (φ : Prop) P : (φ → True ⊢ P) → ⌜ φ ⌝ ⊢ P.
 Proof. eapply bi_mixin_pure_elim', bi_bi_mixin. Qed.
-Lemma pure_forall_2 {A} (φ : A → Prop) : (∀ a, ⌜ φ a ⌝) ⊢@{PROP} ⌜ ∀ a, φ a ⌝.
-Proof. eapply bi_mixin_pure_forall_2, bi_bi_mixin. Qed.
 
 Lemma and_elim_l P Q : P ∧ Q ⊢ P.
 Proof. eapply bi_mixin_and_elim_l, bi_bi_mixin. Qed.
