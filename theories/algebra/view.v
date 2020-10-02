@@ -495,7 +495,7 @@ Section cmra.
     rewrite !local_update_unital.
     move=> Hup Hrel n [[[q ag]|] bf] /view_both_validN Hrel' [/=].
     - rewrite right_id -Some_op -pair_op frac_op'=> /Some_dist_inj [/= H1q _].
-      exfalso. apply (Qp_not_plus_q_ge_1 q). by rewrite -H1q.
+      exfalso. apply (Qp_not_plus_ge 1 q). by rewrite -H1q.
     - rewrite !left_id=> _ Hb0.
       destruct (Hup n bf) as [? Hb0']; [by eauto using view_rel_validN..|].
       split; [apply view_both_validN; by auto|]. by rewrite -assoc Hb0'.
