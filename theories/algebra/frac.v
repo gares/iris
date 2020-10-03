@@ -47,10 +47,7 @@ Global Instance frac_cancelable (q : frac) : Cancelable q.
 Proof. intros ?????. by apply Qp_eq, (inj (Qcplus q)), (Qp_eq (q+y) (q+z))%Qp. Qed.
 
 Global Instance frac_id_free (q : frac) : IdFree q.
-Proof.
-  intros [q0 Hq0] ? EQ%Qp_eq. rewrite -{1}(Qcplus_0_r q) in EQ.
-  eapply Qclt_not_eq; first done. by apply (inj (Qcplus q)).
-Qed.
+Proof. intros p _. apply Qp_plus_id_free. Qed.
 
 Lemma frac_op' (q p : Qp) : (p ⋅ q) = (p + q)%Qp.
 Proof. done. Qed.
