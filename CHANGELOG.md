@@ -33,8 +33,9 @@ With this release, we dropped support for Coq 8.9.
   only way to construct elements of `auth` is via the elements `●{q} a` and
   `◯ b`. The constructor `Auth`, and the projections `auth_auth_proj` and
   `auth_frag_proj` no longer exist. Lemmas that referred to these constructors
-  have been removed, in particular, `auth_included`, `auth_valid_discrete`,
-  and `auth_both_op`.
+  have been removed, in particular: `auth_equivI`, `auth_validI`,
+  `auth_included`, `auth_valid_discrete`, and `auth_both_op`.  For validity, use
+  `auth_auth_valid*`, `auth_frag_valid*`, or `auth_both_valid*` instead.
 
 **Changes in `proofmode`:**
 
