@@ -20,11 +20,9 @@
     discarded. Conversely, knowing that a fraction has been discarded implies
     that no one can own 1. And, since discarding is an irreversible operation, it
     also implies that no one can own 1 in the future *)
-
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra proofmode_classes updates.
 From iris Require Import options.
-Set Default Proof Using "Type".
 
 (** An element of dfrac denotes ownership of a fraction, knowledge that a
     fraction has been discarded, or both. Note that all elements can be written
