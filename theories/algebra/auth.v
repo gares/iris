@@ -262,10 +262,10 @@ Section auth.
 
   (** Inclusion *)
   Lemma auth_auth_frac_includedN n p1 p2 a1 a2 b :
-    ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+    ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qp ∧ a1 ≡{n}≡ a2.
   Proof. apply view_auth_frac_includedN. Qed.
   Lemma auth_auth_frac_included p1 p2 a1 a2 b :
-    ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+    ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qp ∧ a1 ≡ a2.
   Proof. apply view_auth_frac_included. Qed.
   Lemma auth_auth_includedN n a1 a2 b :
     ● a1 ≼{n} ● a2 ⋅ ◯ b ↔ a1 ≡{n}≡ a2.
@@ -284,10 +284,10 @@ Section auth.
   (** The weaker [auth_both_included] lemmas below are a consequence of the
   [auth_auth_included] and [auth_frag_included] lemmas above. *)
   Lemma auth_both_frac_includedN n p1 p2 a1 a2 b1 b2 :
-    ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+    ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qp ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
   Proof. apply view_both_frac_includedN. Qed.
   Lemma auth_both_frac_included p1 p2 a1 a2 b1 b2 :
-    ●{p1} a1 ⋅ ◯ b1 ≼ ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+    ●{p1} a1 ⋅ ◯ b1 ≼ ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qp ∧ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof. apply view_both_frac_included. Qed.
   Lemma auth_both_includedN n a1 a2 b1 b2 :
     ● a1 ⋅ ◯ b1 ≼{n} ● a2 ⋅ ◯ b2 ↔ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.

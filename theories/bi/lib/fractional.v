@@ -98,15 +98,15 @@ Section fractional.
 
   (** Mult instances *)
 
-  Global Instance mult_fractional_l Φ Ψ p :
+  Global Instance mul_fractional_l Φ Ψ p :
     (∀ q, AsFractional (Φ q) Ψ (q * p)) → Fractional Φ.
   Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp_mult_plus_distr_l. by apply H.
+    intros H q q'. rewrite ->!as_fractional, Qp_mul_add_distr_r. by apply H.
   Qed.
-  Global Instance mult_fractional_r Φ Ψ p :
+  Global Instance mul_fractional_r Φ Ψ p :
     (∀ q, AsFractional (Φ q) Ψ (p * q)) → Fractional Φ.
   Proof.
-    intros H q q'. rewrite ->!as_fractional, Qp_mult_plus_distr_r. by apply H.
+    intros H q q'. rewrite ->!as_fractional, Qp_mul_add_distr_l. by apply H.
   Qed.
 
   (* REMARK: These two instances do not work in either direction of the
@@ -114,16 +114,16 @@ Section fractional.
        - In the forward direction, they make the search not terminate
        - In the backward direction, the higher order unification of Φ
          with the goal does not work. *)
-  Instance mult_as_fractional_l P Φ p q :
+  Instance mul_as_fractional_l P Φ p q :
     AsFractional P Φ (q * p) → AsFractional P (λ q, Φ (q * p)%Qp) q.
   Proof.
-    intros H. split. apply H. eapply (mult_fractional_l _ Φ p).
+    intros H. split. apply H. eapply (mul_fractional_l _ Φ p).
     split. done. apply H.
   Qed.
-  Instance mult_as_fractional_r P Φ p q :
+  Instance mul_as_fractional_r P Φ p q :
     AsFractional P Φ (p * q) → AsFractional P (λ q, Φ (p * q)%Qp) q.
   Proof.
-    intros H. split. apply H. eapply (mult_fractional_r _ Φ p).
+    intros H. split. apply H. eapply (mul_fractional_r _ Φ p).
     split. done. apply H.
   Qed.
 

@@ -384,26 +384,26 @@ Section cmra.
 
   (** Inclusion *)
   Lemma view_auth_frac_includedN n p1 p2 a1 a2 b :
-    ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
+    ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qp ∧ a1 ≡{n}≡ a2.
   Proof.
     split.
     - intros [[[[qf agf]|] bf]
         [[?%(discrete_iff _ _) ?]%(inj Some) _]]; simplify_eq/=.
-      + split; [apply Qp_le_plus_l|]. apply to_agree_includedN. by exists agf.
+      + split; [apply Qp_le_add_l|]. apply to_agree_includedN. by exists agf.
       + split; [done|]. by apply (inj to_agree).
-    - intros [[[q ->]%frac_included| ->%Qp_eq]%Qcanon.Qcle_lt_or_eq ->].
+    - intros [[[q ->]%frac_included| ->]%Qp_le_lteq ->].
       + rewrite view_auth_frac_op -assoc. apply cmra_includedN_l.
       + apply cmra_includedN_l.
   Qed.
   Lemma view_auth_frac_included p1 p2 a1 a2 b :
-    ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+    ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qp ∧ a1 ≡ a2.
   Proof.
     intros. split.
     - split.
       + by eapply (view_auth_frac_includedN 0), cmra_included_includedN.
       + apply equiv_dist=> n.
         by eapply view_auth_frac_includedN, cmra_included_includedN.
-    - intros [[[q ->]%frac_included| ->%Qp_eq]%Qcanon.Qcle_lt_or_eq ->].
+    - intros [[[q ->]%frac_included| ->]%Qp_le_lteq ->].
       + rewrite view_auth_frac_op -assoc. apply cmra_included_l.
       + apply cmra_included_l.
   Qed.
@@ -434,7 +434,7 @@ Section cmra.
   (** The weaker [view_both_included] lemmas below are a consequence of the
   [view_auth_included] and [view_frag_included] lemmas above. *)
   Lemma view_both_frac_includedN n p1 p2 a1 a2 b1 b2 :
-    ●V{p1} a1 ⋅ ◯V b1 ≼{n} ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+    ●V{p1} a1 ⋅ ◯V b1 ≼{n} ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qp ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
   Proof.
     split.
     - intros. rewrite assoc. split.
@@ -444,7 +444,7 @@ Section cmra.
       by apply cmra_monoN_r, view_auth_frac_includedN.
   Qed.
   Lemma view_both_frac_included p1 p2 a1 a2 b1 b2 :
-    ●V{p1} a1 ⋅ ◯V b1 ≼ ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+    ●V{p1} a1 ⋅ ◯V b1 ≼ ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qp ∧ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof.
     split.
     - intros. rewrite assoc. split.
@@ -522,7 +522,7 @@ Section cmra.
     rewrite !local_update_unital.
     move=> Hup Hrel n [[[q ag]|] bf] /view_both_validN Hrel' [/=].
     - rewrite right_id -Some_op -pair_op frac_op'=> /Some_dist_inj [/= H1q _].
-      exfalso. apply (Qp_not_plus_ge 1 q). by rewrite -H1q.
+      by destruct (Qp_add_id_free 1 q).
     - rewrite !left_id=> _ Hb0.
       destruct (Hup n bf) as [? Hb0']; [by eauto using view_rel_validN..|].
       split; [apply view_both_validN; by auto|]. by rewrite -assoc Hb0'.

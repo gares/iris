@@ -3,7 +3,6 @@ in the internal (0,1] of the rational numbers.
 
 Notice that this camera could in principle be obtained by restricting the
 validity of the unbounded fractional camera [ufrac]. *)
-From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import proofmode_classes.
 From iris Require Import options.
@@ -14,51 +13,43 @@ From iris Require Import options.
 Notation frac := Qp (only parsing).
 
 Section frac.
-Canonical Structure fracO := leibnizO frac.
+  Canonical Structure fracO := leibnizO frac.
 
-Instance frac_valid : Valid frac := λ x, (x ≤ 1)%Qc.
-Instance frac_pcore : PCore frac := λ _, None.
-Instance frac_op : Op frac := λ x y, (x + y)%Qp.
+  Instance frac_valid : Valid frac := λ x, (x ≤ 1)%Qp.
+  Instance frac_pcore : PCore frac := λ _, None.
+  Instance frac_op : Op frac := λ x y, (x + y)%Qp.
 
-Lemma frac_included (x y : frac) : x ≼ y ↔ (x < y)%Qc.
-Proof. by rewrite Qp_lt_sum. Qed.
+  Lemma frac_valid' p : ✓ p ↔ (p ≤ 1)%Qp.
+  Proof. done. Qed.
+  Lemma frac_op' p q : p ⋅ q = (p + q)%Qp.
+  Proof. done. Qed.
+  Lemma frac_included p q : p ≼ q ↔ (p < q)%Qp.
+  Proof. by rewrite Qp_lt_sum. Qed.
 
-Corollary frac_included_weak (x y : frac) : x ≼ y → (x ≤ y)%Qc.
-Proof. intros ?%frac_included. auto using Qclt_le_weak. Qed.
+  Corollary frac_included_weak p q : p ≼ q → (p ≤ q)%Qp.
+  Proof. rewrite frac_included. apply Qp_lt_le_incl. Qed.
 
-Definition frac_ra_mixin : RAMixin frac.
-Proof.
-  split; try apply _; try done.
-  unfold valid, op, frac_op, frac_valid. intros x y. trans (x+y)%Qp; last done.
-  rewrite -{1}(Qcplus_0_r x) -Qcplus_le_mono_l; auto using Qclt_le_weak.
-Qed.
-Canonical Structure fracR := discreteR frac frac_ra_mixin.
+  Definition frac_ra_mixin : RAMixin frac.
+  Proof.
+    split; try apply _; try done.
+    intros p q. rewrite !frac_valid' frac_op'=> ?.
+    trans (p + q)%Qp; last done. apply Qp_le_add_l.
+  Qed.
+  Canonical Structure fracR := discreteR frac frac_ra_mixin.
 
-Global Instance frac_cmra_discrete : CmraDiscrete fracR.
-Proof. apply discrete_cmra_discrete. Qed.
+  Global Instance frac_cmra_discrete : CmraDiscrete fracR.
+  Proof. apply discrete_cmra_discrete. Qed.
+  Global Instance frac_full_exclusive : Exclusive 1%Qp.
+  Proof. intros p. apply Qp_not_add_le_l. Qed.
+  Global Instance frac_cancelable (q : frac) : Cancelable q.
+  Proof. intros n p1 p2 _. apply (inj (Qp_add q)). Qed.
+  Global Instance frac_id_free (q : frac) : IdFree q.
+  Proof. intros p _. apply Qp_add_id_free. Qed.
+
+  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
+     of an [⋅]. *)
+  Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2 | 10.
+  Proof. done. Qed.
+  Global Instance is_op_frac q : IsOp' q (q/2)%Qp (q/2)%Qp.
+  Proof. by rewrite /IsOp' /IsOp frac_op' Qp_div_2. Qed.
 End frac.
-
-Global Instance frac_full_exclusive : Exclusive 1%Qp.
-Proof.
-  move=> y /Qcle_not_lt [] /=. by rewrite -{1}(Qcplus_0_r 1) -Qcplus_lt_mono_l.
-Qed.
-
-Global Instance frac_cancelable (q : frac) : Cancelable q.
-Proof. intros n y z ??. by apply Qp_eq, (inj (Qcplus q)), (Qp_eq (q+y) (q+z))%Qp. Qed.
-
-Global Instance frac_id_free (q : frac) : IdFree q.
-Proof. intros p _. apply Qp_plus_id_free. Qed.
-
-Lemma frac_op' (q p : Qp) : (p ⋅ q) = (p + q)%Qp.
-Proof. done. Qed.
-
-Lemma frac_valid' (p : Qp) : ✓ p ↔ (p ≤ 1%Qp)%Qc.
-Proof. done. Qed.
-
-Global Instance frac_is_op_half q : IsOp' q (q/2)%Qp (q/2)%Qp.
-Proof. by rewrite /IsOp' /IsOp frac_op' Qp_div_2. Qed.
-
-(* This one has a higher precendence than [is_op_op] so we get a [+] instead
-   of an [⋅]. *)
-Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2 | 10.
-Proof. done. Qed.

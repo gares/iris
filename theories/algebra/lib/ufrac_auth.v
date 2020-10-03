@@ -16,7 +16,6 @@ difference:
 - We no longer have the [◯U{1} a] is the exclusive fragmental element (cf.
   [frac_auth_frag_validN_op_1_l]).
 *)
-From Coq Require Import QArith Qcanon.
 From iris.algebra Require Export auth frac updates local_updates.
 From iris.algebra Require Import ufrac proofmode_classes.
 From iris Require Import options.
@@ -71,10 +70,9 @@ Section ufrac_auth.
 
   Lemma ufrac_auth_agreeN n p a b : ✓{n} (●U{p} a ⋅ ◯U{p} b) → a ≡{n}≡ b.
   Proof.
-    rewrite auth_both_validN=> -[Hincl Hvalid].
-    move: Hincl=> /Some_includedN=> -[[_ ? //]|[[[p' ?] ?] [/=]]].
-    rewrite -discrete_iff leibniz_equiv_iff. rewrite ufrac_op'=> [/Qp_eq/=].
-    rewrite -{1}(Qcplus_0_r p)=> /(inj (Qcplus p))=> ?; by subst.
+    rewrite auth_both_validN=> -[/Some_includedN [[_ ? //]|Hincl] _].
+    move: Hincl=> /pair_includedN=> -[/ufrac_included Hincl _].
+    by destruct (irreflexivity (<)%Qp p).
   Qed.
   Lemma ufrac_auth_agree p a b : ✓ (●U{p} a ⋅ ◯U{p} b) → a ≡ b.
   Proof.
