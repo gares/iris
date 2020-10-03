@@ -36,6 +36,8 @@ With this release, we dropped support for Coq 8.9.
   have been removed, in particular: `auth_equivI`, `auth_validI`,
   `auth_included`, `auth_valid_discrete`, and `auth_both_op`.  For validity, use
   `auth_auth_valid*`, `auth_frag_valid*`, or `auth_both_valid*` instead.
+* Add the camera of discardable fractions `dfrac`. This is a generalization of
+  the normal fractional camera. See `theories/algebra/dfrac.v` for further information.
 
 **Changes in `proofmode`:**
 

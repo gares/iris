@@ -23,6 +23,7 @@ theories/algebra/agree.v
 theories/algebra/excl.v
 theories/algebra/functions.v
 theories/algebra/frac.v
+theories/algebra/dfrac.v
 theories/algebra/csum.v
 theories/algebra/list.v
 theories/algebra/vector.v
