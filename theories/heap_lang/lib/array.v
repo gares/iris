@@ -131,39 +131,42 @@ Section proof.
     length xs = i →
     i ≤ n →
     ([∗ list] k↦x∈xs, Q k x) -∗
-    (□ ∀ i : nat, WP f #i @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }}) -∗
+    ([∗ list] j ∈ seq i (n-i), WP f #(j : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q j x }}) -∗
     l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
     WP array_init_loop #l #i #n f @ stk; E {{ _, ∃ ys,
        l ↦∗ (g <$> (xs ++ ys)) ∗ ⌜length (xs++ys) = n⌝ ∗ ([∗ list] k↦x∈(xs++ys), Q k x) }}.
   Proof.
-    iIntros (Hn Hxs Hi) "Hxs #Hf Hl". iRevert (Hxs Hi).
+    iIntros (Hn Hxs Hi) "Hxs Hf Hl". iRevert (Hxs Hi).
     iLöb as "IH" forall (xs i). iIntros (Hxs Hi).
     wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
     - iExists []. iFrame.
       assert (length xs - length xs = 0) as -> by lia.
       rewrite !app_nil_r. eauto with iFrame.
-    - wp_bind (f #(length xs)). iApply (wp_wand with "Hf").
+    - wp_bind (f #(length xs)).
+      destruct n as [|n]; first by lia.
+      assert (length xs ≠ S n) by congruence.
+      rewrite Nat.sub_succ_l; last by lia.
+      iSimpl in "Hf". iDestruct "Hf" as "[H Hf]".
+      iApply (wp_wand with "H").
       iIntros (v). iDestruct 1 as (x) "[-> Hx]".
       wp_apply (wp_store_offset with "Hl").
       { apply lookup_lt_is_Some_2.
         rewrite app_length.
-        assert (length xs ≠ n) by naive_solver.
-        assert (n - length xs > 0) by lia.
+        assert (S n - length xs > 0) by lia.
         rewrite fmap_length replicate_length. lia. }
       iIntros "Hl". wp_pures.
       assert ((Z.of_nat (length xs) + 1)%Z = Z.of_nat (length xs + 1)) as -> by lia.
-      iSpecialize ("IH" $! (xs++[x]) (length xs + 1) with "[Hx Hxs] [Hl] [%] [%]").
+      iSpecialize ("IH" $! (xs++[x]) (length xs + 1) with "[Hx Hxs] [Hf] [Hl] [%] [%]").
       { rewrite big_sepL_app /= Nat.add_0_r. by iFrame. }
+      { by rewrite Nat.add_1_r Nat.sub_succ. }
       { assert (length xs = length xs + 0) as Hlen1 by lia.
         rewrite {1}Hlen1.
         rewrite -{1}(fmap_length g xs).
         rewrite insert_app_r fmap_app /=.
         rewrite app_assoc_reverse /=.
-        assert (length xs ≠ n) by naive_solver.
-        assert ((n - length xs) = S (n - (length xs + 1))) as -> by lia.
-        done. }
+        by rewrite Nat.add_1_r Nat.sub_succ. }
       { by rewrite app_length. }
-      { assert (length xs ≠ n) by naive_solver. lia. }
+      { lia. }
       iApply (wp_wand with "IH").
       iIntros (_). iDestruct 1 as (ys) "(Hys & Hlen & HQs)".
       iDestruct "Hlen" as %Hlen.
@@ -175,14 +178,15 @@ Section proof.
   Theorem wp_array_init {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
           n (f : val) stk E :
     (0 < n)%Z →
-    {{{ (□ ∀ i : nat, WP f #i @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }}) }}}
+    {{{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }} }}}
       array_init #n f @ stk; E
     {{{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }}}.
   Proof.
-    intros Hn. iIntros (Φ) "#Hf HΦ".
+    intros Hn. iIntros (Φ) "Hf HΦ".
     wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
     wp_pures.
-    iPoseProof (wp_array_init_loop g Q [] 0 (Z.to_nat n) with "[//] Hf [Hl]") as "H"; try by (simpl; lia).
+    iPoseProof (wp_array_init_loop g Q [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
+    { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
     assert (Z.of_nat (Z.to_nat n) = n) as -> by lia.
@@ -192,7 +196,8 @@ Section proof.
     iFrame "Hl HQs". iPureIntro. lia.
   Qed.
 
-  (* Version of [wp_array_init] with the auxiliary type [A] set to [val]. *)
+  (* Version of [wp_array_init] with the auxiliary type [A] set to
+  [val], and with the persistent assumption on the function [f]. *)
   Lemma wp_array_init' (Q : nat → val → iProp Σ) n (f : val) stk E :
     (0 < n)%Z →
     {{{ (□ ∀ i : nat, WP f #i @ stk; E {{ v, Q i v }}) }}}
@@ -201,8 +206,12 @@ Section proof.
   Proof.
     intros Hn. iIntros (Φ) "#Hf HΦ".
     iApply (wp_array_init id Q with "[Hf]"); try done.
-    { iModIntro. iIntros (i). iApply (wp_wand with "Hf").
-      iIntros (v) "Hv". iExists v; eauto with iFrame. }
+    { generalize 0. intros j.
+      iInduction (Z.to_nat n) as [|k] "IH" forall (j); eauto.
+      simpl. iSplitL "Hf".
+      - iApply (wp_wand with "Hf").
+        iIntros (v) "Hv". iExists v; eauto with iFrame.
+      - iApply "IH". }
     iNext. iIntros (l xs). by rewrite list_fmap_id.
   Qed.
 
