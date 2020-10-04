@@ -959,6 +959,10 @@ Proof. rewrite /urFunctorContractive; apply _. Qed.
 Definition cmra_transport {A B : cmraT} (H : A = B) (x : A) : B :=
   eq_rect A id x _ H.
 
+Lemma cmra_transport_trans {A B C : cmraT} (H1 : A = B) (H2 : B = C) x :
+  cmra_transport H2 (cmra_transport H1 x) = cmra_transport (eq_trans H1 H2) x.
+Proof. by destruct H2. Qed.
+
 Section cmra_transport.
   Context {A B : cmraT} (H : A = B).
   Notation T := (cmra_transport H).
