@@ -38,6 +38,8 @@ With this release, we dropped support for Coq 8.9.
   `auth_auth_valid*`, `auth_frag_valid*`, or `auth_both_valid*` instead.
 * Add the camera of discardable fractions `dfrac`. This is a generalization of
   the normal fractional camera. See `theories/algebra/dfrac.v` for further information.
+* Rename `cmra_monotone_valid` into `cmra_morphism_valid` (this rename was
+  forgotten in !56).
 
 **Changes in `proofmode`:**
 
