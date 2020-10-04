@@ -769,7 +769,7 @@ Section cmra_morphism.
   Proof. intros [z ->]. exists (f z). by rewrite cmra_morphism_op. Qed.
   Lemma cmra_morphism_monotoneN n x y : x ≼{n} y → f x ≼{n} f y.
   Proof. intros [z ->]. exists (f z). by rewrite cmra_morphism_op. Qed.
-  Lemma cmra_monotone_valid x : ✓ x → ✓ f x.
+  Lemma cmra_morphism_valid x : ✓ x → ✓ f x.
   Proof. rewrite !cmra_valid_validN; eauto using cmra_morphism_validN. Qed.
 End cmra_morphism.
 
