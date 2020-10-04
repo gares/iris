@@ -9,7 +9,7 @@ Import uPred.
    saved whatever-you-like. *)
 
 Class savedAnythingG (Σ : gFunctors) (F : oFunctor) := SavedAnythingG {
-  saved_anything_inG :> inG Σ (agreeR (oFunctor_apply F (iPrePropO Σ)));
+  saved_anything_inG :> inG Σ (agreeR (oFunctor_apply F (iPropO Σ)));
   saved_anything_contractive : oFunctorContractive F (* NOT an instance to avoid cycles with [subG_savedAnythingΣ]. *)
 }.
 Definition savedAnythingΣ (F : oFunctor) `{!oFunctorContractive F} : gFunctors :=
@@ -21,7 +21,7 @@ Proof. solve_inG. Qed.
 
 Definition saved_anything_own `{!savedAnythingG Σ F}
     (γ : gname) (x : oFunctor_apply F (iPropO Σ)) : iProp Σ :=
-  own γ (to_agree $ (oFunctor_map F (iProp_fold, iProp_unfold) x)).
+  own γ (to_agree x).
 Typeclasses Opaque saved_anything_own.
 Instance: Params (@saved_anything_own) 4 := {}.
 
@@ -56,13 +56,7 @@ Section saved_anything.
   Proof.
     iIntros "Hx Hy". rewrite /saved_anything_own.
     iDestruct (own_valid_2 with "Hx Hy") as "Hv".
-    rewrite agree_validI agree_equivI.
-    set (G1 := oFunctor_map F (iProp_fold, iProp_unfold)).
-    set (G2 := oFunctor_map F (@iProp_unfold Σ, @iProp_fold Σ)).
-    assert (∀ z, G2 (G1 z) ≡ z) as help.
-    { intros z. rewrite /G1 /G2 -oFunctor_map_compose -{2}[z]oFunctor_map_id.
-      apply (ne_proper (oFunctor_map F)); split=>?; apply iProp_fold_unfold. }
-    rewrite -{2}[x]help -{2}[y]help. by iApply f_equivI.
+    by rewrite agree_validI agree_equivI.
   Qed.
 End saved_anything.
 
