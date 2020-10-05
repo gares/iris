@@ -127,7 +127,7 @@ Section dfrac.
     intros [q| |q];
       rewrite /op /cmra_op -cmra_discrete_valid_iff /valid /cmra_valid /=.
     - apply (Qp_not_plus_ge 1 q).
-    - move=>/Qclt_not_eq. intros Heq. apply Heq. done.
+    - intros []%irreflexivity. apply _.
     - move=> /Qclt_le_weak. apply (Qp_not_plus_ge 1 q).
   Qed.
 
