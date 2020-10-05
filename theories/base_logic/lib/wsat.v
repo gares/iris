@@ -1,6 +1,6 @@
 From stdpp Require Export coPset.
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import gmap_auth gset coPset.
+From iris.algebra Require Import gmap_view gset coPset.
 From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 
@@ -9,7 +9,7 @@ exception of what's in the [invG] module. The module [invG] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
 Module invG.
   Class invG (Σ : gFunctors) : Set := WsatG {
-    inv_inG :> inG Σ (gmap_authR positive (laterO (iPropO Σ)));
+    inv_inG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
     enabled_inG :> inG Σ coPset_disjR;
     disabled_inG :> inG Σ (gset_disjR positive);
     invariant_name : gname;
@@ -18,12 +18,12 @@ Module invG.
   }.
 
   Definition invΣ : gFunctors :=
-    #[GFunctor (gmap_authRF positive (laterOF idOF));
+    #[GFunctor (gmap_viewRF positive (laterOF idOF));
       GFunctor coPset_disjUR;
       GFunctor (gset_disjUR positive)].
 
   Class invPreG (Σ : gFunctors) : Set := WsatPreG {
-    inv_inPreG :> inG Σ (gmap_authR positive (laterO (iPropO Σ)));
+    inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
     enabled_inPreG :> inG Σ coPset_disjR;
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.
@@ -36,7 +36,7 @@ Import invG.
 Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.
 Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
-  own invariant_name (gmap_auth_frag_ro i (invariant_unfold P)).
+  own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)).
 Arguments ownI {_ _} _ _%I.
 Typeclasses Opaque ownI.
 Instance: Params (@invariant_unfold) 1 := {}.
@@ -54,7 +54,7 @@ Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{!invG Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
-    own invariant_name (gmap_auth_auth_ro (invariant_unfold <$> I)) ∗
+    own invariant_name (gmap_view_auth (invariant_unfold <$> I)) ∗
     [∗ map] i ↦ Q ∈ I, ▷ Q ∗ ownD {[i]} ∨ ownE {[i]})%I.
 
 Section wsat.
@@ -106,11 +106,11 @@ Lemma ownD_singleton_twice i : ownD {[i]} ∗ ownD {[i]} ⊢ False.
 Proof. rewrite ownD_disjoint. iIntros (?); set_solver. Qed.
 
 Lemma invariant_lookup (I : gmap positive (iProp Σ)) i P :
-  own invariant_name (gmap_auth_auth_ro (invariant_unfold <$> I)) ∗
-  own invariant_name (gmap_auth_frag_ro i (invariant_unfold P)) ⊢
+  own invariant_name (gmap_view_auth (invariant_unfold <$> I)) ∗
+  own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)) ⊢
   ∃ Q, ⌜I !! i = Some Q⌝ ∗ ▷ (Q ≡ P).
 Proof.
-  rewrite -own_op own_valid gmap_auth_auth_ro_frag_ro_validI.
+  rewrite -own_op own_valid gmap_view_both_validI bi.and_elim_r.
   rewrite lookup_fmap option_equivI.
   case: (I !! i)=> [Q|] /=; last by eauto.
   iIntros "?". iExists Q; iSplit; first done.
@@ -152,7 +152,8 @@ Proof.
       as (i & [? HIi%not_elem_of_dom]%not_elem_of_union & ?); eauto. }
   iDestruct "HE" as (X) "[Hi HE]"; iDestruct "Hi" as %(i & -> & HIi & ?).
   iMod (own_update with "Hw") as "[Hw HiP]".
-  { eapply (gmap_auth_ro_alloc _ i). by rewrite /= lookup_fmap HIi. }
+  { eapply (gmap_view_alloc _ i DfracDiscarded); last done.
+    by rewrite /= lookup_fmap HIi. }
   iModIntro; iExists i;  iSplit; [done|]. rewrite /ownI; iFrame "HiP".
   iExists (<[i:=P]>I); iSplitL "Hw".
   { by rewrite fmap_insert. }
@@ -172,7 +173,8 @@ Proof.
       as (i & [? HIi%not_elem_of_dom]%not_elem_of_union & ?); eauto. }
   iDestruct "HD" as (X) "[Hi HD]"; iDestruct "Hi" as %(i & -> & HIi & ?).
   iMod (own_update with "Hw") as "[Hw HiP]".
-  { eapply (gmap_auth_ro_alloc _ i). by rewrite /= lookup_fmap HIi. }
+  { eapply (gmap_view_alloc _ i DfracDiscarded); last done.
+    by rewrite /= lookup_fmap HIi. }
   iModIntro; iExists i;  iSplit; [done|]. rewrite /ownI; iFrame "HiP".
   rewrite -/(ownD _). iFrame "HD".
   iIntros "HE". iExists (<[i:=P]>I); iSplitL "Hw".
@@ -186,8 +188,8 @@ End wsat.
 Lemma wsat_alloc `{!invPreG Σ} : ⊢ |==> ∃ _ : invG Σ, wsat ∗ ownE ⊤.
 Proof.
   iIntros.
-  iMod (own_alloc (gmap_auth_auth_ro ∅)) as (γI) "HI";
-    first by apply gmap_auth_auth_ro_valid.
+  iMod (own_alloc (gmap_view_auth ∅)) as (γI) "HI";
+    first by apply gmap_view_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
   iModIntro; iExists (WsatG _ _ _ _ γI γE γD).

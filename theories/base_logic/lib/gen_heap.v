@@ -1,7 +1,7 @@
 From stdpp Require Export namespaces.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import gmap_auth namespace_map.
+From iris.algebra Require Import gmap_view namespace_map agree frac.
 From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 Import uPred.
@@ -59,8 +59,8 @@ this RA would be quite inconvenient to deal with. *)
 
 (** The CMRA we need. *)
 Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
-  gen_heap_inG :> inG Σ (gmap_authR L (leibnizO V));
-  gen_meta_inG :> inG Σ (gmap_authR L gnameO);
+  gen_heap_inG :> inG Σ (gmap_viewR L (leibnizO V));
+  gen_meta_inG :> inG Σ (gmap_viewR L gnameO);
   gen_meta_data_inG :> inG Σ (namespace_mapR (agreeR positiveO));
   gen_heap_name : gname;
   gen_meta_name : gname
@@ -69,14 +69,14 @@ Arguments gen_heap_name {L V Σ _ _} _ : assert.
 Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_preG_inG :> inG Σ (gmap_authR L (leibnizO V));
-  gen_meta_preG_inG :> inG Σ (gmap_authR L gnameO);
+  gen_heap_preG_inG :> inG Σ (gmap_viewR L (leibnizO V));
+  gen_meta_preG_inG :> inG Σ (gmap_viewR L gnameO);
   gen_meta_data_preG_inG :> inG Σ (namespace_mapR (agreeR positiveO));
 }.
 
 Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
-  GFunctor (gmap_authR L (leibnizO V));
-  GFunctor (gmap_authR L gnameO);
+  GFunctor (gmap_viewR L (leibnizO V));
+  GFunctor (gmap_viewR L gnameO);
   GFunctor (namespace_mapR (agreeR positiveO))
 ].
 
@@ -91,24 +91,24 @@ Section definitions.
     (* The [⊆] is used to avoid assigning ghost information to the locations in
     the initial heap (see [gen_heap_init]). *)
     ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∧
-    own (gen_heap_name hG) (gmap_auth_auth_mut (σ : gmap L (leibnizO V))) ∗
-    own (gen_meta_name hG) (gmap_auth_auth_ro (m : gmap L gnameO)).
+    own (gen_heap_name hG) (gmap_view_auth (σ : gmap L (leibnizO V))) ∗
+    own (gen_meta_name hG) (gmap_view_auth (m : gmap L gnameO)).
 
   Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
-    own (gen_heap_name hG) (gmap_auth_frag_mut l q (v : leibnizO V)).
+    own (gen_heap_name hG) (gmap_view_frag l (DfracOwn q) (v : leibnizO V)).
   Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
   Definition mapsto := mapsto_aux.(unseal).
   Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
 
   Definition meta_token_def (l : L) (E : coPset) : iProp Σ :=
-    ∃ γm, own (gen_meta_name hG) (gmap_auth_frag_ro l γm) ∗
+    ∃ γm, own (gen_meta_name hG) (gmap_view_frag l DfracDiscarded γm) ∗
           own γm (namespace_map_token E).
   Definition meta_token_aux : seal (@meta_token_def). Proof. by eexists. Qed.
   Definition meta_token := meta_token_aux.(unseal).
   Definition meta_token_eq : @meta_token = @meta_token_def := meta_token_aux.(seal_eq).
 
   Definition meta_def `{Countable A} (l : L) (N : namespace) (x : A) : iProp Σ :=
-    ∃ γm, own (gen_meta_name hG) (gmap_auth_frag_ro l γm) ∗
+    ∃ γm, own (gen_meta_name hG) (gmap_view_frag l DfracDiscarded γm) ∗
           own γm (namespace_map_data N (to_agree (encode x))).
   Definition meta_aux : seal (@meta_def). Proof. by eexists. Qed.
   Definition meta := meta_aux.(unseal).
@@ -127,10 +127,10 @@ Local Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ.
 Proof.
-  iMod (own_alloc (gmap_auth_auth_mut (σ : gmap L (leibnizO V)))) as (γh) "Hh".
-  { exact: gmap_auth_auth_mut_valid. }
-  iMod (own_alloc (gmap_auth_auth_ro (∅ : gmap L gnameO))) as (γm) "Hm".
-  { exact: gmap_auth_auth_ro_valid. }
+  iMod (own_alloc (gmap_view_auth (σ : gmap L (leibnizO V)))) as (γh) "Hh".
+  { exact: gmap_view_auth_valid. }
+  iMod (own_alloc (gmap_view_auth (∅ : gmap L gnameO))) as (γm) "Hm".
+  { exact: gmap_view_auth_valid. }
   iModIntro. iExists (GenHeapG L V Σ _ _ _ _ _ γh γm).
   iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L.
 Qed.
@@ -149,7 +149,7 @@ Section gen_heap.
   Proof. rewrite mapsto_eq /mapsto_def. apply _. Qed.
   Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{q} v)%I.
   Proof.
-    intros p q. rewrite mapsto_eq /mapsto_def -own_op gmap_auth_frag_mut_frac_op //.
+    intros p q. rewrite mapsto_eq /mapsto_def -own_op gmap_view_frag_plus //.
   Qed.
   Global Instance mapsto_as_fractional l q v :
     AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
@@ -159,7 +159,7 @@ Section gen_heap.
   Proof.
     apply wand_intro_r.
     rewrite mapsto_eq /mapsto_def -own_op own_valid discrete_valid.
-    apply pure_mono. intros [_ ?]%gmap_auth_frag_mut_op_valid_L. done.
+    apply pure_mono. intros [_ ?]%gmap_view_frag_op_valid_L. done.
   Qed.
 
   Lemma mapsto_combine l q1 q2 v1 v2 :
@@ -183,7 +183,7 @@ Section gen_heap.
   Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
   Proof.
     rewrite mapsto_eq /mapsto_def own_valid !discrete_valid.
-    rewrite gmap_auth_frag_mut_valid //.
+    rewrite gmap_view_frag_valid //.
   Qed.
   Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ✓ (q1 + q2)%Qp.
   Proof.
@@ -218,7 +218,7 @@ Section gen_heap.
   Proof.
     rewrite meta_token_eq /meta_token_def.
     iDestruct 1 as (γm1) "[#Hγm1 Hm1]". iDestruct 1 as (γm2) "[#Hγm2 Hm2]".
-    iDestruct (own_valid_2 with "Hγm1 Hγm2") as %->%gmap_auth_frag_ro_op_valid_L.
+    iDestruct (own_valid_2 with "Hγm1 Hγm2") as %[_ ->]%gmap_view_frag_op_valid_L.
     iDestruct (own_valid_2 with "Hm1 Hm2") as %?%namespace_map_token_valid_op.
     iExists γm2. iFrame "Hγm2". rewrite namespace_map_token_union //. by iSplitL "Hm1".
   Qed.
@@ -241,7 +241,7 @@ Section gen_heap.
   Proof.
     rewrite meta_eq /meta_def.
     iDestruct 1 as (γm1) "[Hγm1 Hm1]"; iDestruct 1 as (γm2) "[Hγm2 Hm2]".
-    iDestruct (own_valid_2 with "Hγm1 Hγm2") as %->%gmap_auth_frag_ro_op_valid_L.
+    iDestruct (own_valid_2 with "Hγm1 Hγm2") as %[_ ->]%gmap_view_frag_op_valid_L.
     iDestruct (own_valid_2 with "Hm1 Hm2") as %Hγ; iPureIntro.
     move: Hγ. rewrite -namespace_map_data_op namespace_map_data_valid.
     move=> /to_agree_op_inv_L. naive_solver.
@@ -262,11 +262,11 @@ Section gen_heap.
     iIntros (Hσl). rewrite /gen_heap_ctx mapsto_eq /mapsto_def meta_token_eq /meta_token_def /=.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iMod (own_update with "Hσ") as "[Hσ Hl]".
-    { eapply (gmap_auth_mut_alloc _ l). done. }
+    { eapply (gmap_view_alloc _ l (DfracOwn 1)); done. }
     iMod (own_alloc (namespace_map_token ⊤)) as (γm) "Hγm".
     { apply namespace_map_token_valid. }
     iMod (own_update with "Hm") as "[Hm Hlm]".
-    { eapply (gmap_auth_ro_alloc _ l). 
+    { eapply (gmap_view_alloc _ l DfracDiscarded); last done.
       move: Hσl. rewrite -!(not_elem_of_dom (D:=gset L)). set_solver. }
     iModIntro. iFrame "Hl". iSplitL "Hσ Hm"; last by eauto with iFrame.
     iExists (<[l:=γm]> m). iFrame. iPureIntro.
@@ -291,8 +291,8 @@ Section gen_heap.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
     rewrite /gen_heap_ctx mapsto_eq /mapsto_def.
-    iDestruct (own_valid_2 with "Hσ Hl") as %?%gmap_auth_auth_mut_frag_mut_valid.
-    iPureIntro. fold_leibniz. done.
+    iDestruct (own_valid_2 with "Hσ Hl") as %[??]%gmap_view_both_valid_L.
+    iPureIntro. done.
   Qed.
 
   Lemma gen_heap_update σ l v1 v2 :
@@ -300,9 +300,9 @@ Section gen_heap.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iIntros "Hl". rewrite /gen_heap_ctx mapsto_eq /mapsto_def.
-    iDestruct (own_valid_2 with "Hσ Hl") as %Hl%gmap_auth_auth_mut_frag_mut_valid_L.
+    iDestruct (own_valid_2 with "Hσ Hl") as %[_ Hl]%gmap_view_both_valid_L.
     iMod (own_update_2 with "Hσ Hl") as "[Hσ Hl]".
-    { eapply gmap_auth_mut_update. }
+    { eapply gmap_view_update. }
     iModIntro. iFrame "Hl". iExists m. iFrame.
     iPureIntro. apply (elem_of_dom_2 (D:=gset L)) in Hl.
     rewrite dom_insert_L. set_solver.

@@ -175,6 +175,24 @@ Proof. by apply lookup_merge. Qed.
 Lemma lookup_core m i : core m !! i = core (m !! i).
 Proof. by apply lookup_omap. Qed.
 
+Lemma lookup_includedN n (m1 m2 : gmap K A) : m1 ≼{n} m2 ↔ ∀ i, m1 !! i ≼{n} m2 !! i.
+Proof.
+  split; [by intros [m Hm] i; exists (m !! i); rewrite -lookup_op Hm|].
+  revert m2. induction m1 as [|i x m Hi IH] using map_ind=> m2 Hm.
+  { exists m2. by rewrite left_id. }
+  destruct (IH (delete i m2)) as [m2' Hm2'].
+  { intros j. move: (Hm j); destruct (decide (i = j)) as [->|].
+    - intros _. rewrite Hi. apply: ucmra_unit_leastN.
+    - rewrite lookup_insert_ne // lookup_delete_ne //. }
+  destruct (Hm i) as [my Hi']; simplify_map_eq.
+  exists (partial_alter (λ _, my) i m2')=>j; destruct (decide (i = j)) as [->|].
+  - by rewrite Hi' lookup_op lookup_insert lookup_partial_alter.
+  - move: (Hm2' j). by rewrite !lookup_op lookup_delete_ne //
+      lookup_insert_ne // lookup_partial_alter_ne.
+Qed.
+
+(* [m1 ≼ m2] is not equivalent to [∀ n, m1 ≼{n} m2],
+so there is no good way to reuse the above proof. *)
 Lemma lookup_included (m1 m2 : gmap K A) : m1 ≼ m2 ↔ ∀ i, m1 !! i ≼ m2 !! i.
 Proof.
   split; [by intros [m Hm] i; exists (m !! i); rewrite -lookup_op Hm|].
@@ -238,6 +256,15 @@ Canonical Structure gmapUR := UcmraT (gmap K A) gmap_ucmra_mixin.
 (** Internalized properties *)
 Lemma gmap_validI {M} m : ✓ m ⊣⊢@{uPredI M} ∀ i, ✓ (m !! i).
 Proof. by uPred.unseal. Qed.
+Lemma singleton_validI {M} i x : ✓ {[ i := x ]} ⊣⊢@{uPredI M} ✓ x.
+Proof.
+  rewrite gmap_validI. apply: anti_symm.
+  - rewrite (bi.forall_elim i) lookup_singleton uPred.option_validI. done.
+  - apply bi.forall_intro=>j. destruct (decide (i = j)) as [<-|Hne].
+    + rewrite lookup_singleton uPred.option_validI. done.
+    + rewrite lookup_singleton_ne // uPred.option_validI.
+      apply bi.True_intro.
+Qed.
 End cmra.
 
 Arguments gmapR _ {_ _} _.
