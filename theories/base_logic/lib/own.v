@@ -45,12 +45,12 @@ Ltac solve_inG :=
   repeat match goal with
          | H : subG _ _ |- _ => move:(H); (apply subG_inG in H || clear H)
          end;
-  (* Again get all assumptions *)
-  intros;
+  (* Again get all assumptions and simplify the functors *)
+  intros; simpl in *;
   (* We support two kinds of goals: Things convertible to inG;
      and records with inG and typeclass fields. Try to solve the
      first case. *)
-  try done;
+  try assumption;
   (* That didn't work, now we're in for the second case. *)
   split; (assumption || by apply _).
 
