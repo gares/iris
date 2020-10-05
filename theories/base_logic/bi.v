@@ -197,7 +197,7 @@ Lemma bupd_ownM_updateP x (Φ : M → Prop) :
   x ~~>: Φ → uPred_ownM x ⊢ |==> ∃ y, ⌜Φ y⌝ ∧ uPred_ownM y.
 Proof. exact: uPred_primitive.bupd_ownM_updateP. Qed.
 
-(* This is really just a special case of an entailment
+(** This is really just a special case of an entailment
 between two [siProp], but we do not have the infrastructure
 to express the more general case. This temporary proof rule will
 be replaced by the proper one eventually. *)
@@ -224,6 +224,14 @@ Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜�
 Proof. exact: uPred_primitive.discrete_valid. Qed.
 Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. exact: uPred_primitive.discrete_fun_validI. Qed.
+
+(** This is really just a special case of an entailment
+between two [siProp], but we do not have the infrastructure
+to express the more general case. This temporary proof rule will
+be replaced by the proper one eventually. *)
+Lemma valid_entails {A B : cmraT} (a : A) (b : B) :
+  (∀ n, ✓{n} a → ✓{n} b) → ✓ a ⊢ ✓ b.
+Proof. exact: uPred_primitive.valid_entails. Qed.
 
 (** Consistency/soundness statement *)
 Lemma pure_soundness φ : (⊢@{uPredI M} ⌜ φ ⌝) → φ.

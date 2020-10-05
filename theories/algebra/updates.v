@@ -137,6 +137,36 @@ Section cmra_transport.
   Proof. eauto using cmra_transport_updateP. Qed.
 End cmra_transport.
 
+(** * Isomorphism *)
+Section iso_cmra.
+  Context {A B : cmraT} (f : A → B) (g : B → A).
+
+  Lemma iso_cmra_updateP (P : B → Prop) (Q : A → Prop) y
+      (gf : ∀ x, g (f x) ≡ x)
+      (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
+      (g_validN : ∀ n y, ✓{n} (g y) ↔ ✓{n} y) :
+    y ~~>: P →
+    (∀ y', P y' → Q (g y')) →
+    g y ~~>: Q.
+  Proof.
+    intros Hup Hx n mz Hmz.
+    destruct (Hup n (f <$> mz)) as (y'&HPy'&Hy'%g_validN).
+    { apply g_validN. destruct mz as [z|]; simpl in *; [|done].
+      by rewrite g_op gf. }
+    exists (g y'); split; [by eauto|].
+    destruct mz as [z|]; simpl in *; [|done].
+    revert Hy'. by rewrite g_op gf.
+  Qed.
+
+  Lemma iso_cmra_updateP' (P : B → Prop) y
+      (gf : ∀ x, g (f x) ≡ x)
+      (g_op : ∀ y1 y2, g (y1 ⋅ y2) ≡ g y1 ⋅ g y2)
+      (g_validN : ∀ n y, ✓{n} (g y) ↔ ✓{n} y) :
+    y ~~>: P →
+    g y ~~>: λ x, ∃ y, x = g y ∧ P y.
+  Proof. eauto using iso_cmra_updateP. Qed.
+End iso_cmra.
+
 (** * Product *)
 Section prod.
   Context {A B : cmraT}.

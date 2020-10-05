@@ -720,7 +720,7 @@ Proof.
   unseal=> ?. split=> n x ?. by apply (discrete_iff n).
 Qed.
 
-(* This is really just a special case of an entailment
+(** This is really just a special case of an entailment
 between two [siProp], but we do not have the infrastructure
 to express the more general case. This temporary proof rule will
 be replaced by the proper one eventually. *)
@@ -817,6 +817,14 @@ Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
 
 Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. by unseal. Qed.
+
+(** This is really just a special case of an entailment
+between two [siProp], but we do not have the infrastructure
+to express the more general case. This temporary proof rule will
+be replaced by the proper one eventually. *)
+Lemma valid_entails {A B : cmraT} (a : A) (b : B) :
+  (∀ n, ✓{n} a → ✓{n} b) → ✓ a ⊢ ✓ b.
+Proof. unseal=> Hval. split=>n x ?. apply Hval. Qed.
 
 (** Consistency/soundness statement *)
 (** The lemmas [pure_soundness] and [internal_eq_soundness] should become an

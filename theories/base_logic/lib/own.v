@@ -8,16 +8,20 @@ Import uPred.
 individual CMRAs instead of (lists of) CMRA *functors*. This additional class is
 needed because Coq is otherwise unable to solve type class constraints due to
 higher-order unification problems. *)
-Class inG (Σ : gFunctors) (A : cmraT) :=
-  InG { inG_id : gid Σ; inG_prf :
-    A = rFunctor_apply (gFunctors_lookup Σ inG_id) (iPrePropO Σ)}.
+Class inG (Σ : gFunctors) (A : cmraT) := InG {
+  inG_id : gid Σ;
+  inG_apply := rFunctor_apply (gFunctors_lookup Σ inG_id);
+  inG_prf : A = inG_apply (iPropO Σ) _;
+}.
 Arguments inG_id {_ _} _.
+Arguments inG_apply {_ _} _ _ {_}.
+
 (** We use the mode [-] for [Σ] since there is always a unique [Σ]. We use the
 mode [!] for [A] since we can have multiple [inG]s for different [A]s, so we do
 not want Coq to pick one arbitrarily. *)
 Hint Mode inG - ! : typeclass_instances.
 
-Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (rFunctor_apply F (iPrePropO Σ)).
+Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (rFunctor_apply F (iPropO Σ)).
 Proof. move=> /(_ 0%fin) /= [j ->]. by exists j. Qed.
 
 (** This tactic solves the usual obligations "subG ? Σ → {in,?}G ? Σ" *)
@@ -51,31 +55,112 @@ Ltac solve_inG :=
   split; (assumption || by apply _).
 
 (** * Definition of the connective [own] *)
-Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
-  discrete_fun_singleton (inG_id i) {[ γ := cmra_transport inG_prf a ]}.
+Local Definition inG_unfold {Σ A} {i : inG Σ A} :
+    inG_apply i (iPropO Σ) -n> inG_apply i (iPrePropO Σ) :=
+  rFunctor_map _ (iProp_fold, iProp_unfold).
+Local Definition inG_fold {Σ A} {i : inG Σ A} :
+    inG_apply i (iPrePropO Σ) -n> inG_apply i (iPropO Σ) :=
+  rFunctor_map _ (iProp_unfold, iProp_fold).
+
+Local Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
+  discrete_fun_singleton (inG_id i)
+    {[ γ := inG_unfold (cmra_transport inG_prf a) ]}.
 Instance: Params (@iRes_singleton) 4 := {}.
 
-Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
+Local Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
-Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
+Local Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
 Definition own := own_aux.(unseal).
 Arguments own {Σ A _} γ a.
-Definition own_eq : @own = @own_def := own_aux.(seal_eq).
-Instance: Params (@own) 4 := {}.
+Local Definition own_eq : @own = @own_def := own_aux.(seal_eq).
+Local Instance: Params (@own) 4 := {}.
 
 (** * Properties about ghost ownership *)
 Section global.
-Context `{Hin: !inG Σ A}.
+Context `{i : !inG Σ A}.
 Implicit Types a : A.
 
 (** ** Properties of [iRes_singleton] *)
-Global Instance iRes_singleton_ne γ :
-  NonExpansive (@iRes_singleton Σ A _ γ).
+Local Lemma inG_unfold_fold (x : inG_apply i (iPrePropO Σ)) :
+  inG_unfold (inG_fold x) ≡ x.
+Proof.
+  rewrite /inG_unfold /inG_fold -rFunctor_map_compose -{2}[x]rFunctor_map_id.
+  apply (ne_proper (rFunctor_map _)); split=> ?; apply iProp_unfold_fold.
+Qed.
+Local Lemma inG_fold_unfold (x : inG_apply i (iPropO Σ)) :
+  inG_fold (inG_unfold x) ≡ x.
+Proof.
+  rewrite /inG_unfold /inG_fold -rFunctor_map_compose -{2}[x]rFunctor_map_id.
+  apply (ne_proper (rFunctor_map _)); split=> ?; apply iProp_fold_unfold.
+Qed.
+Local Lemma inG_unfold_validN n (x : inG_apply i (iPropO Σ)) :
+  ✓{n} (inG_unfold x) ↔ ✓{n} x.
+Proof.
+  split; [|apply (cmra_morphism_validN _)].
+  move=> /(cmra_morphism_validN inG_fold). by rewrite inG_fold_unfold.
+Qed.
+
+Local Instance iRes_singleton_ne γ : NonExpansive (@iRes_singleton Σ A _ γ).
 Proof. by intros n a a' Ha; apply discrete_fun_singleton_ne; rewrite Ha. Qed.
-Lemma iRes_singleton_op γ a1 a2 :
+Local Lemma iRes_singleton_validI γ a : ✓ (iRes_singleton γ a) ⊢@{iPropI Σ} ✓ a.
+Proof.
+  rewrite /iRes_singleton.
+  rewrite discrete_fun_validI (forall_elim (inG_id i)) discrete_fun_lookup_singleton.
+  rewrite gmap_validI (forall_elim γ) lookup_singleton option_validI.
+  trans (✓ cmra_transport inG_prf a : iProp Σ)%I; last by destruct inG_prf.
+  apply valid_entails=> n. apply inG_unfold_validN.
+Qed.
+Local Lemma iRes_singleton_op γ a1 a2 :
   iRes_singleton γ (a1 ⋅ a2) ≡ iRes_singleton γ a1 ⋅ iRes_singleton γ a2.
 Proof.
-  rewrite /iRes_singleton discrete_fun_singleton_op singleton_op -cmra_transport_op //.
+  rewrite /iRes_singleton discrete_fun_singleton_op singleton_op cmra_transport_op.
+  f_equiv. apply: singletonM_proper. apply (cmra_morphism_op _).
+Qed.
+
+Local Instance iRes_singleton_discrete γ a :
+  Discrete a → Discrete (iRes_singleton γ a).
+Proof.
+  intros ?. rewrite /iRes_singleton.
+  apply discrete_fun_singleton_discrete, gmap_singleton_discrete; [apply _|].
+  intros x Hx. assert (cmra_transport inG_prf a ≡ inG_fold x) as Ha.
+  { apply (discrete _). by rewrite -Hx inG_fold_unfold. }
+  by rewrite Ha inG_unfold_fold.
+Qed.
+Local Instance iRes_singleton_core_id γ a :
+  CoreId a → CoreId (iRes_singleton γ a).
+Proof.
+  intros. apply discrete_fun_singleton_core_id, gmap_singleton_core_id.
+  by rewrite /CoreId -cmra_morphism_pcore core_id.
+Qed.
+
+Local Lemma later_internal_eq_iRes_singleton γ a r :
+  ▷ (r ≡ iRes_singleton γ a) ⊢@{iPropI Σ}
+  ◇ ∃ b r', r ≡ iRes_singleton γ b ⋅ r' ∧ ▷ (a ≡ b).
+Proof.
+  assert (NonExpansive (λ r : iResUR Σ, r (inG_id i) !! γ)).
+  { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id i)). }
+  rewrite (f_equivI (λ r : iResUR Σ, r (inG_id i) !! γ) r).
+  rewrite {1}/iRes_singleton discrete_fun_lookup_singleton lookup_singleton.
+  rewrite option_equivI. case Hb: (r (inG_id _) !! γ)=> [b|]; last first.
+  { by rewrite /bi_except_0 -or_intro_l. }
+  rewrite -except_0_intro.
+  rewrite -(exist_intro (cmra_transport (eq_sym inG_prf) (inG_fold b))).
+  rewrite -(exist_intro (discrete_fun_insert (inG_id _) (delete γ (r (inG_id i))) r)).
+  apply and_intro.
+  - apply equiv_internal_eq. rewrite /iRes_singleton.
+    rewrite cmra_transport_trans eq_trans_sym_inv_l /=.
+    intros i'. rewrite discrete_fun_lookup_op.
+    destruct (decide (i' = inG_id i)) as [->|?].
+    + rewrite discrete_fun_lookup_insert discrete_fun_lookup_singleton.
+      intros γ'. rewrite lookup_op. destruct (decide (γ' = γ)) as [->|?].
+      * by rewrite lookup_singleton lookup_delete Hb inG_unfold_fold.
+      * by rewrite lookup_singleton_ne // lookup_delete_ne // left_id.
+    + rewrite discrete_fun_lookup_insert_ne //.
+      by rewrite discrete_fun_lookup_singleton_ne // left_id.
+  - apply later_mono. rewrite (f_equivI inG_fold) inG_fold_unfold.
+    apply: (internal_eq_rewrite' _ _ (λ b, a ≡ cmra_transport (eq_sym inG_prf) b)%I);
+      [solve_proper|apply internal_eq_sym|].
+    rewrite cmra_transport_trans eq_trans_sym_inv_r /=. apply internal_eq_refl.
 Qed.
 
 (** ** Properties of [own] *)
@@ -93,13 +178,7 @@ Global Instance own_mono' γ : Proper (flip (≼) ==> (⊢)) (@own Σ A _ γ).
 Proof. intros a1 a2. apply own_mono. Qed.
 
 Lemma own_valid γ a : own γ a ⊢ ✓ a.
-Proof.
-  rewrite !own_eq /own_def ownM_valid /iRes_singleton.
-  rewrite discrete_fun_validI (forall_elim (inG_id Hin)) discrete_fun_lookup_singleton.
-  rewrite gmap_validI (forall_elim γ) lookup_singleton option_validI.
-  (* implicit arguments differ a bit *)
-  by trans (✓ cmra_transport inG_prf a : iProp Σ)%I; last destruct inG_prf.
-Qed.
+Proof. by rewrite !own_eq /own_def ownM_valid iRes_singleton_validI. Qed.
 Lemma own_valid_2 γ a1 a2 : own γ a1 -∗ own γ a2 -∗ ✓ (a1 ⋅ a2).
 Proof. apply wand_intro_r. by rewrite -own_op own_valid. Qed.
 Lemma own_valid_3 γ a1 a2 a3 : own γ a1 -∗ own γ a2 -∗ own γ a3 -∗ ✓ (a1 ⋅ a2 ⋅ a3).
@@ -110,38 +189,22 @@ Lemma own_valid_l γ a : own γ a ⊢ ✓ a ∗ own γ a.
 Proof. by rewrite comm -own_valid_r. Qed.
 
 Global Instance own_timeless γ a : Discrete a → Timeless (own γ a).
-Proof. rewrite !own_eq /own_def; apply _. Qed.
+Proof. rewrite !own_eq /own_def. apply _. Qed.
 Global Instance own_core_persistent γ a : CoreId a → Persistent (own γ a).
 Proof. rewrite !own_eq /own_def; apply _. Qed.
 
-Lemma later_own γ a : ▷ own γ a -∗ ◇ (∃ b, own γ b ∧ ▷ (a ≡ b)).
+Lemma later_own γ a : ▷ own γ a -∗ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b).
 Proof.
   rewrite own_eq /own_def later_ownM. apply exist_elim=> r.
-  assert (NonExpansive (λ r : iResUR Σ, r (inG_id Hin) !! γ)).
-  { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id Hin)). }
-  rewrite (f_equivI (λ r : iResUR Σ, r (inG_id Hin) !! γ) _ r).
-  rewrite {1}/iRes_singleton discrete_fun_lookup_singleton lookup_singleton.
-  rewrite option_equivI. case Hb: (r (inG_id _) !! γ)=> [b|]; last first.
-  { by rewrite and_elim_r /bi_except_0 -or_intro_l. }
-  rewrite -except_0_intro -(exist_intro (cmra_transport (eq_sym inG_prf) b)).
-  apply and_mono.
-  - rewrite /iRes_singleton. assert (∀ {A A' : cmraT} (Heq : A' = A) (a : A),
-      cmra_transport Heq (cmra_transport (eq_sym Heq) a) = a) as ->
-      by (by intros ?? ->).
-    apply ownM_mono=> /=.
-    exists (discrete_fun_insert (inG_id _) (delete γ (r (inG_id Hin))) r).
-    intros i'. rewrite discrete_fun_lookup_op.
-    destruct (decide (i' = inG_id Hin)) as [->|?].
-    + rewrite discrete_fun_lookup_insert discrete_fun_lookup_singleton.
-      intros γ'. rewrite lookup_op. destruct (decide (γ' = γ)) as [->|?].
-      * by rewrite lookup_singleton lookup_delete Hb.
-      * by rewrite lookup_singleton_ne // lookup_delete_ne // left_id.
-    + rewrite discrete_fun_lookup_insert_ne //.
-      by rewrite discrete_fun_lookup_singleton_ne // left_id.
-  - apply later_mono.
-    by assert (∀ {A A' : cmraT} (Heq : A' = A) (a' : A') (a : A),
-      cmra_transport Heq a' ≡ a ⊢@{iPropI Σ}
-        a' ≡ cmra_transport (eq_sym Heq) a) as -> by (by intros ?? ->).
+  assert (NonExpansive (λ r : iResUR Σ, r (inG_id i) !! γ)).
+  { intros n r1 r2 Hr. f_equiv. by specialize (Hr (inG_id i)). }
+  rewrite internal_eq_sym later_internal_eq_iRes_singleton.
+  rewrite (except_0_intro (uPred_ownM r)) -except_0_and. f_equiv.
+  rewrite and_exist_l. f_equiv=> b. rewrite and_exist_l. apply exist_elim=> r'.
+  rewrite assoc. apply and_mono_l.
+  etrans; [|apply ownM_mono, (cmra_included_l _ r')].
+  eapply (internal_eq_rewrite' _ _ uPred_ownM _); [apply and_elim_r|].
+  apply and_elim_l.
 Qed.
 
 (** ** Allocation *)
@@ -152,13 +215,16 @@ Lemma own_alloc_strong_dep (f : gname → A) (P : gname → Prop) :
   (∀ γ, P γ → ✓ (f γ)) →
   ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ own γ (f γ).
 Proof.
-  intros HP Ha.
+  intros HPinf Hf.
   rewrite -(bupd_mono (∃ m, ⌜∃ γ, P γ ∧ m = iRes_singleton γ (f γ)⌝ ∧ uPred_ownM m)%I).
   - rewrite /bi_emp_valid (ownM_unit emp).
-    eapply bupd_ownM_updateP, (discrete_fun_singleton_updateP_empty (inG_id Hin)).
-    + eapply alloc_updateP_strong_dep'; first done.
-      intros i _ ?. eapply cmra_transport_valid, Ha. done.
-    + naive_solver.
+    apply bupd_ownM_updateP, (discrete_fun_singleton_updateP_empty _ (λ m, ∃ γ,
+      m = {[ γ := inG_unfold (cmra_transport inG_prf (f γ)) ]} ∧ P γ));
+      [|naive_solver].
+    apply (alloc_updateP_strong_dep _ P _ (λ γ,
+      inG_unfold (cmra_transport inG_prf (f γ)))); [done| |naive_solver].
+    intros γ _ ?.
+    by apply (cmra_morphism_valid inG_unfold), cmra_transport_valid, Hf.
   - apply exist_elim=>m; apply pure_elim_l=>-[γ [Hfresh ->]].
     by rewrite !own_eq /own_def -(exist_intro γ) pure_True // left_id.
 Qed.
@@ -168,8 +234,8 @@ Proof.
   intros Ha.
   apply (own_alloc_strong_dep f (λ γ, γ ∉ G))=> //.
   apply (pred_infinite_set (C:=gset gname)).
-  intros E. set (i := fresh (G ∪ E)).
-  exists i. apply not_elem_of_union, is_fresh.
+  intros E. set (γ := fresh (G ∪ E)).
+  exists γ. apply not_elem_of_union, is_fresh.
 Qed.
 Lemma own_alloc_dep (f : gname → A) :
   (∀ γ, ✓ (f γ)) → ⊢ |==> ∃ γ, own γ (f γ).
@@ -191,14 +257,21 @@ Proof. intros Ha. eapply own_alloc_dep with (f := λ _, a); eauto. Qed.
 (** ** Frame preserving updates *)
 Lemma own_updateP P γ a : a ~~>: P → own γ a ==∗ ∃ a', ⌜P a'⌝ ∗ own γ a'.
 Proof.
-  intros Ha. rewrite !own_eq.
-  rewrite -(bupd_mono (∃ m, ⌜∃ a', m = iRes_singleton γ a' ∧ P a'⌝ ∧ uPred_ownM m)%I).
-  - eapply bupd_ownM_updateP, discrete_fun_singleton_updateP;
-      first by (eapply singleton_updateP', cmra_transport_updateP', Ha).
-    naive_solver.
-  - apply exist_elim=>m; apply pure_elim_l=>-[a' [-> HP]].
+  intros Hupd. rewrite !own_eq.
+  rewrite -(bupd_mono (∃ m,
+    ⌜ ∃ a', m = iRes_singleton γ a' ∧ P a' ⌝ ∧ uPred_ownM m)%I).
+  - apply bupd_ownM_updateP, (discrete_fun_singleton_updateP _ (λ m, ∃ x,
+      m = {[ γ := x ]} ∧ ∃ x',
+      x = inG_unfold x' ∧ ∃ a',
+      x' = cmra_transport inG_prf a' ∧ P a')); [|naive_solver].
+    apply singleton_updateP', (iso_cmra_updateP' inG_fold).
+    { apply inG_unfold_fold. }
+    { apply (cmra_morphism_op _). }
+    { apply inG_unfold_validN. }
+    by apply cmra_transport_updateP'.
+  - apply exist_elim=> m; apply pure_elim_l=> -[a' [-> HP]].
     rewrite -(exist_intro a'). rewrite -persistent_and_sep.
-      by apply and_intro; [apply pure_intro|].
+    by apply and_intro; [apply pure_intro|].
 Qed.
 
 Lemma own_update γ a a' : a ~~> a' → own γ a ==∗ own γ a'.
@@ -224,13 +297,16 @@ Arguments own_update {_ _} [_] _ _ _ _.
 Arguments own_update_2 {_ _} [_] _ _ _ _ _.
 Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
 
-Lemma own_unit A `{!inG Σ (A:ucmraT)} γ : ⊢ |==> own γ (ε:A).
+Lemma own_unit A `{i : !inG Σ (A:ucmraT)} γ : ⊢ |==> own γ (ε:A).
 Proof.
   rewrite /bi_emp_valid (ownM_unit emp) !own_eq /own_def.
   apply bupd_ownM_update, discrete_fun_singleton_update_empty.
-  apply (alloc_unit_singleton_update (cmra_transport inG_prf ε)); last done.
-  - apply cmra_transport_valid, ucmra_unit_valid.
-  - intros x; destruct inG_prf. by rewrite left_id.
+  apply (alloc_unit_singleton_update (inG_unfold (cmra_transport inG_prf ε))).
+  - apply (cmra_morphism_valid _), cmra_transport_valid, ucmra_unit_valid.
+  - intros x. rewrite -(inG_unfold_fold x) -(cmra_morphism_op inG_unfold).
+    f_equiv. generalize (inG_fold x)=> x'.
+    destruct inG_prf=> /=. by rewrite left_id.
+  - done.
 Qed.
 
 (** Big op class instances *)
@@ -257,7 +333,6 @@ Section big_op_instances.
     X ≠ ∅ →
     own γ ([^op mset] x ∈ X, g x) ⊣⊢ [∗ mset] x ∈ X, own γ (g x).
   Proof. apply (big_opMS_commute1 _). Qed.
-
 
   Global Instance own_cmra_sep_entails_homomorphism :
     MonoidHomomorphism op uPred_sep (⊢) (own γ).

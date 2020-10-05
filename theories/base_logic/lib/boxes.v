@@ -8,7 +8,7 @@ Import uPred.
 Class boxG Σ :=
   boxG_inG :> inG Σ (prodR
     (excl_authR boolO)
-    (optionR (agreeR (laterO (iPrePropO Σ))))).
+    (optionR (agreeR (laterO (iPropO Σ))))).
 
 Definition boxΣ : gFunctors := #[ GFunctor (excl_authR boolO *
                                             optionRF (agreeRF (▶ ∙)) ) ].
@@ -25,7 +25,7 @@ Section box_defs.
     own γ (a, None).
 
   Definition box_own_prop (γ : slice_name) (P : iProp Σ) : iProp Σ :=
-    own γ (ε, Some (to_agree (Next (iProp_unfold P)))).
+    own γ (ε, Some (to_agree (Next P))).
 
   Definition slice_inv (γ : slice_name) (P : iProp Σ) : iProp Σ :=
     ∃ b, box_own_auth γ (●E b) ∗ if b then P else True.
@@ -93,9 +93,7 @@ Lemma box_own_agree γ Q1 Q2 :
   box_own_prop γ Q1 ∗ box_own_prop γ Q2 ⊢ ▷ (Q1 ≡ Q2).
 Proof.
   rewrite /box_own_prop -own_op own_valid prod_validI /= and_elim_r.
-  rewrite option_validI /= agree_validI agree_equivI later_equivI /=.
-  iIntros "#HQ". iNext. rewrite -{2}(iProp_fold_unfold Q1).
-  iRewrite "HQ". by rewrite iProp_fold_unfold.
+  by rewrite option_validI /= agree_validI agree_equivI later_equivI /=.
 Qed.
 
 Lemma box_alloc : ⊢ box N ∅ True.
@@ -109,7 +107,7 @@ Lemma slice_insert_empty E q f Q P :
 Proof.
   iDestruct 1 as (Φ) "[#HeqP Hf]".
   iMod (own_alloc_cofinite (●E false ⋅ ◯E false,
-    Some (to_agree (Next (iProp_unfold Q)))) (dom _ f))
+    Some (to_agree (Next Q))) (dom _ f))
     as (γ) "[Hdom Hγ]"; first by (split; [apply auth_both_valid_discrete|]).
   rewrite pair_split. iDestruct "Hγ" as "[[Hγ Hγ'] #HγQ]".
   iDestruct "Hdom" as % ?%not_elem_of_dom.
