@@ -91,6 +91,12 @@ Proof.
   rewrite /inG_unfold /inG_fold -rFunctor_map_compose -{2}[x]rFunctor_map_id.
   apply (ne_proper (rFunctor_map _)); split=> ?; apply iProp_fold_unfold.
 Qed.
+Lemma inG_unfold_validN n (x : inG_apply i (iPropO Σ)) :
+  ✓{n} (inG_unfold x) ↔ ✓{n} x.
+Proof.
+  split; [|apply (cmra_morphism_validN _)].
+  move=> /(cmra_morphism_validN inG_fold). by rewrite inG_fold_unfold.
+Qed.
 
 Global Instance iRes_singleton_ne γ : NonExpansive (@iRes_singleton Σ A _ γ).
 Proof. by intros n a a' Ha; apply discrete_fun_singleton_ne; rewrite Ha. Qed.
@@ -100,8 +106,7 @@ Proof.
   rewrite discrete_fun_validI (forall_elim (inG_id i)) discrete_fun_lookup_singleton.
   rewrite gmap_validI (forall_elim γ) lookup_singleton option_validI.
   trans (✓ cmra_transport inG_prf a : iProp Σ)%I; last by destruct inG_prf.
-  apply valid_entails.
-  move=> n /(cmra_morphism_validN inG_fold). by rewrite inG_fold_unfold.
+  apply valid_entails=> n. apply inG_unfold_validN.
 Qed.
 Lemma iRes_singleton_op γ a1 a2 :
   iRes_singleton γ (a1 ⋅ a2) ≡ iRes_singleton γ a1 ⋅ iRes_singleton γ a2.
@@ -260,8 +265,7 @@ Proof.
     apply singleton_updateP', (iso_cmra_updateP' inG_fold).
     { apply inG_unfold_fold. }
     { apply (cmra_morphism_op _). }
-    { intros n x. split; [|apply (cmra_morphism_validN _)].
-      move=> /(cmra_morphism_validN inG_fold). by rewrite inG_fold_unfold. }
+    { apply inG_unfold_validN. }
     by apply cmra_transport_updateP'.
   - apply exist_elim=> m; apply pure_elim_l=> -[a' [-> HP]].
     rewrite -(exist_intro a'). rewrite -persistent_and_sep.
