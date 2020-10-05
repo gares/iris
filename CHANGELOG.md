@@ -80,6 +80,13 @@ With this release, we dropped support for Coq 8.9.
   `saved_pred_alloc_cofinite`, `auth_alloc_strong`, `auth_alloc_cofinite`,
   `auth_alloc`.
 * Change `uPred_mono` to only require inclusion at the smaller step-index.
+* Put `iProp`/`iPreProp`-isomorphism into the `own` construction. This affects
+  clients that define higher-order ghost state constructions. Concretely, when
+  defining an `inG`, the functor no longer needs to be applied to `iPreProp`,
+  but should be applied to `iProp`. This avoids clients from having to push
+  through the `iProp`/`iPreProp`-isomorphism themselves, which is now handled
+  once and for all by the `own` construction.
+
 
 **Changes in `program_logic`:**
 
