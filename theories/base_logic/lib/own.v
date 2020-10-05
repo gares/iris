@@ -55,25 +55,25 @@ Ltac solve_inG :=
   split; (assumption || by apply _).
 
 (** * Definition of the connective [own] *)
-Definition inG_unfold {Σ A} {i : inG Σ A} :
+Local Definition inG_unfold {Σ A} {i : inG Σ A} :
     inG_apply i (iPropO Σ) -n> inG_apply i (iPrePropO Σ) :=
   rFunctor_map _ (iProp_fold, iProp_unfold).
-Definition inG_fold {Σ A} {i : inG Σ A} :
+Local Definition inG_fold {Σ A} {i : inG Σ A} :
     inG_apply i (iPrePropO Σ) -n> inG_apply i (iPropO Σ) :=
   rFunctor_map _ (iProp_unfold, iProp_fold).
 
-Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
+Local Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
   discrete_fun_singleton (inG_id i)
     {[ γ := inG_unfold (cmra_transport inG_prf a) ]}.
 Instance: Params (@iRes_singleton) 4 := {}.
 
-Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
+Local Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
-Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
+Local Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
 Definition own := own_aux.(unseal).
 Arguments own {Σ A _} γ a.
-Definition own_eq : @own = @own_def := own_aux.(seal_eq).
-Instance: Params (@own) 4 := {}.
+Local Definition own_eq : @own = @own_def := own_aux.(seal_eq).
+Local Instance: Params (@own) 4 := {}.
 
 (** * Properties about ghost ownership *)
 Section global.
@@ -81,26 +81,28 @@ Context `{i : !inG Σ A}.
 Implicit Types a : A.
 
 (** ** Properties of [iRes_singleton] *)
-Lemma inG_unfold_fold (x : inG_apply i (iPrePropO Σ)) : inG_unfold (inG_fold x) ≡ x.
+Local Lemma inG_unfold_fold (x : inG_apply i (iPrePropO Σ)) :
+  inG_unfold (inG_fold x) ≡ x.
 Proof.
   rewrite /inG_unfold /inG_fold -rFunctor_map_compose -{2}[x]rFunctor_map_id.
   apply (ne_proper (rFunctor_map _)); split=> ?; apply iProp_unfold_fold.
 Qed.
-Lemma inG_fold_unfold (x : inG_apply i (iPropO Σ)) : inG_fold (inG_unfold x) ≡ x.
+Local Lemma inG_fold_unfold (x : inG_apply i (iPropO Σ)) :
+  inG_fold (inG_unfold x) ≡ x.
 Proof.
   rewrite /inG_unfold /inG_fold -rFunctor_map_compose -{2}[x]rFunctor_map_id.
   apply (ne_proper (rFunctor_map _)); split=> ?; apply iProp_fold_unfold.
 Qed.
-Lemma inG_unfold_validN n (x : inG_apply i (iPropO Σ)) :
+Local Lemma inG_unfold_validN n (x : inG_apply i (iPropO Σ)) :
   ✓{n} (inG_unfold x) ↔ ✓{n} x.
 Proof.
   split; [|apply (cmra_morphism_validN _)].
   move=> /(cmra_morphism_validN inG_fold). by rewrite inG_fold_unfold.
 Qed.
 
-Global Instance iRes_singleton_ne γ : NonExpansive (@iRes_singleton Σ A _ γ).
+Local Instance iRes_singleton_ne γ : NonExpansive (@iRes_singleton Σ A _ γ).
 Proof. by intros n a a' Ha; apply discrete_fun_singleton_ne; rewrite Ha. Qed.
-Lemma iRes_singleton_validI γ a : ✓ (iRes_singleton γ a) ⊢@{iPropI Σ} ✓ a.
+Local Lemma iRes_singleton_validI γ a : ✓ (iRes_singleton γ a) ⊢@{iPropI Σ} ✓ a.
 Proof.
   rewrite /iRes_singleton.
   rewrite discrete_fun_validI (forall_elim (inG_id i)) discrete_fun_lookup_singleton.
@@ -108,14 +110,14 @@ Proof.
   trans (✓ cmra_transport inG_prf a : iProp Σ)%I; last by destruct inG_prf.
   apply valid_entails=> n. apply inG_unfold_validN.
 Qed.
-Lemma iRes_singleton_op γ a1 a2 :
+Local Lemma iRes_singleton_op γ a1 a2 :
   iRes_singleton γ (a1 ⋅ a2) ≡ iRes_singleton γ a1 ⋅ iRes_singleton γ a2.
 Proof.
   rewrite /iRes_singleton discrete_fun_singleton_op singleton_op cmra_transport_op.
   f_equiv. apply: singletonM_proper. apply (cmra_morphism_op _).
 Qed.
 
-Global Instance iRes_singleton_discrete γ a :
+Local Instance iRes_singleton_discrete γ a :
   Discrete a → Discrete (iRes_singleton γ a).
 Proof.
   intros ?. rewrite /iRes_singleton.
@@ -124,14 +126,14 @@ Proof.
   { apply (discrete _). by rewrite -Hx inG_fold_unfold. }
   by rewrite Ha inG_unfold_fold.
 Qed.
-Global Instance iRes_singleton_core_id γ a :
+Local Instance iRes_singleton_core_id γ a :
   CoreId a → CoreId (iRes_singleton γ a).
 Proof.
   intros. apply discrete_fun_singleton_core_id, gmap_singleton_core_id.
   by rewrite /CoreId -cmra_morphism_pcore core_id.
 Qed.
 
-Lemma later_internal_eq_iRes_singleton γ a r :
+Local Lemma later_internal_eq_iRes_singleton γ a r :
   ▷ (r ≡ iRes_singleton γ a) ⊢@{iPropI Σ}
   ◇ ∃ b r', r ≡ iRes_singleton γ b ⋅ r' ∧ ▷ (a ≡ b).
 Proof.
