@@ -1575,8 +1575,15 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply optionO_map_ne, rFunctor_map_contractive.
 Qed.
 
-Definition optionRF (F : rFunctor) : rFunctor :=
-  urFunctor_to_rFunctor (optionURF F).
+Program Definition optionRF (F : rFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := optionR (rFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := optionO_map (rFunctor_map F fg)
+|}.
+Solve Obligations with apply optionURF.
+
+Instance optionRF_contractive F :
+  rFunctorContractive F → rFunctorContractive (optionRF F).
+Proof. apply optionURF_contractive. Qed.
 
 (* Dependently-typed functions over a discrete domain *)
 Section discrete_fun_cmra.

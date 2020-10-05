@@ -19,8 +19,8 @@ Module invG.
 
   Definition invΣ : gFunctors :=
     #[GFunctor (gmap_viewRF positive (laterOF idOF));
-      GFunctor coPset_disjUR;
-      GFunctor (gset_disjUR positive)].
+      GFunctor coPset_disjR;
+      GFunctor (gset_disjR positive)].
 
   Class invPreG (Σ : gFunctors) : Set := WsatPreG {
     inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));

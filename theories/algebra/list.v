@@ -572,5 +572,12 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, urFunctor_map_contractive.
 Qed.
 
-Definition listRF (F : urFunctor) : rFunctor :=
-  urFunctor_to_rFunctor (listURF F).
+Program Definition listRF (F : urFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := listR (urFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := listO_map (urFunctor_map F fg)
+|}.
+Solve Obligations with apply listURF.
+
+Instance listRF_contractive F :
+  urFunctorContractive F → rFunctorContractive (listRF F).
+Proof. apply listURF_contractive. Qed.
