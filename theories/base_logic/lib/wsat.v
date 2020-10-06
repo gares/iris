@@ -110,7 +110,7 @@ Lemma invariant_lookup (I : gmap positive (iProp Σ)) i P :
   own invariant_name (◯ {[i := invariant_unfold P]}) ⊢
   ∃ Q, ⌜I !! i = Some Q⌝ ∗ ▷ (Q ≡ P).
 Proof.
-  rewrite -own_op own_valid auth_both_validI /=. iIntros "[_ [#HI #HvI]]".
+  rewrite -own_op own_valid auth_both_validI /=. iIntros "[#HI #HvI]".
   iDestruct "HI" as (I') "HI". rewrite gmap_equivI gmap_validI.
   iSpecialize ("HI" $! i). iSpecialize ("HvI" $! i).
   rewrite lookup_fmap lookup_op lookup_singleton option_equivI.
