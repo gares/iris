@@ -1,5 +1,4 @@
 opam-version: "2.0"
-name: "coq-iris"
 maintainer: "Ralf Jung <jung@mpi-sws.org>"
 authors: "The Iris Team"
 license: "BSD-3-Clause"
