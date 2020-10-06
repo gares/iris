@@ -525,7 +525,7 @@ Section cmra.
     rewrite !cmra_total_update view_validN_eq=> ?? n [[[q ag]|] bf]; naive_solver.
   Qed.
 
-  Lemma view_update_alloc_frac q a b :
+  Lemma view_update_frac_alloc q a b :
     (∀ n bf, rel n a bf → rel n a (b ⋅ bf)) →
     ●V{q} a ~~> ●V{q} a ⋅ ◯V b.
   Proof.

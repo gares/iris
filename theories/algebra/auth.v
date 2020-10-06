@@ -278,10 +278,10 @@ Section auth.
     exact: cmra_update_op_l.
   Qed.
 
-  Lemma auth_update_core_id q a b `{!CoreId b} :
+  Lemma auth_update_frac_alloc q a b `{!CoreId b} :
     b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
   Proof.
-    intros Ha%(core_id_extract _ _). apply view_update_alloc_frac=> n bf [??].
+    intros Ha%(core_id_extract _ _). apply view_update_frac_alloc=> n bf [??].
     split; [|done]. rewrite Ha (comm _ a). by apply cmra_monoN_l.
   Qed.
 
