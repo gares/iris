@@ -244,6 +244,19 @@ Proof. by intros ?%agree_op_inv%(inj to_agree). Qed.
 Lemma to_agree_op_inv_L `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) → a = b.
 Proof. by intros ?%to_agree_op_inv%leibniz_equiv. Qed.
 
+Lemma to_agree_op_validN a b n : ✓{n} (to_agree a ⋅ to_agree b) ↔ a ≡{n}≡ b.
+Proof.
+  split; first by apply to_agree_op_invN.
+  intros ->. rewrite agree_idemp //.
+Qed.
+Lemma to_agree_op_valid a b : ✓ (to_agree a ⋅ to_agree b) ↔ a ≡ b.
+Proof.
+  split; first by apply to_agree_op_inv.
+  intros ->. rewrite agree_idemp //.
+Qed.
+Lemma to_agree_op_valid_L `{!LeibnizEquiv A} a b : ✓ (to_agree a ⋅ to_agree b) ↔ a = b.
+Proof. rewrite to_agree_op_valid. by fold_leibniz. Qed.
+
 (** Internalized properties *)
 Lemma agree_equivI {M} a b : to_agree a ≡ to_agree b ⊣⊢@{uPredI M} (a ≡ b).
 Proof.
