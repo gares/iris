@@ -201,11 +201,17 @@ Section auth.
   Proof. apply (big_opMS_commute _). Qed.
 
   (** Inclusion *)
-  Lemma auth_auth_includedN n p1 p2 a1 a2 b :
+  Lemma auth_auth_frac_includedN n p1 p2 a1 a2 b :
     ●{p1} a1 ≼{n} ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
-  Proof. apply view_auth_includedN. Qed.
-  Lemma auth_auth_included p1 p2 a1 a2 b :
+  Proof. apply view_auth_frac_includedN. Qed.
+  Lemma auth_auth_frac_included p1 p2 a1 a2 b :
     ●{p1} a1 ≼ ●{p2} a2 ⋅ ◯ b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
+  Proof. apply view_auth_frac_included. Qed.
+  Lemma auth_auth_includedN n a1 a2 b :
+    ● a1 ≼{n} ● a2 ⋅ ◯ b ↔ a1 ≡{n}≡ a2.
+  Proof. apply view_auth_includedN. Qed.
+  Lemma auth_auth_included a1 a2 b :
+    ● a1 ≼ ● a2 ⋅ ◯ b ↔ a1 ≡ a2.
   Proof. apply view_auth_included. Qed.
 
   Lemma auth_frag_includedN n p a b1 b2 :
@@ -217,26 +223,41 @@ Section auth.
 
   (** The weaker [auth_both_included] lemmas below are a consequence of the
   [auth_auth_included] and [auth_frag_included] lemmas above. *)
-  Lemma auth_both_includedN n p1 p2 a1 a2 b1 b2 :
+  Lemma auth_both_frac_includedN n p1 p2 a1 a2 b1 b2 :
     ●{p1} a1 ⋅ ◯ b1 ≼{n} ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
-  Proof. apply view_both_includedN. Qed.
-  Lemma auth_both_included p1 p2 a1 a2 b1 b2 :
+  Proof. apply view_both_frac_includedN. Qed.
+  Lemma auth_both_frac_included p1 p2 a1 a2 b1 b2 :
     ●{p1} a1 ⋅ ◯ b1 ≼ ●{p2} a2 ⋅ ◯ b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
+  Proof. apply view_both_frac_included. Qed.
+  Lemma auth_both_includedN n a1 a2 b1 b2 :
+    ● a1 ⋅ ◯ b1 ≼{n} ● a2 ⋅ ◯ b2 ↔ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+  Proof. apply view_both_includedN. Qed.
+  Lemma auth_both_included a1 a2 b1 b2 :
+    ● a1 ⋅ ◯ b1 ≼ ● a2 ⋅ ◯ b2 ↔ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof. apply view_both_included. Qed.
 
   (** Internalized properties *)
-  Lemma auth_auth_validI {M} q (a b: A) :
-    ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
+  Lemma auth_auth_frac_validI {M} q a : ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
   Proof.
-    apply view_auth_validI=> n. uPred.unseal; split; [|by intros [??]].
+    apply view_auth_frac_validI=> n. uPred.unseal; split; [|by intros [??]].
     split; [|done]. apply ucmra_unit_leastN.
   Qed.
-  Lemma auth_frag_validI {M} (a : A):
-    ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
+  Lemma auth_auth_validI {M} a : ✓ (● a) ⊣⊢@{uPredI M} ✓ a.
+  Proof.
+    by rewrite auth_auth_frac_validI uPred.discrete_valid bi.pure_True // left_id.
+  Qed.
+
+  Lemma auth_frag_validI {M} a : ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
   Proof. apply view_frag_validI. Qed.
-  Lemma auth_both_validI {M} q (a b: A) :
+
+  Lemma auth_both_frac_validI {M} q a b :
     ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
-  Proof. apply view_both_validI=> n. by uPred.unseal. Qed.
+  Proof. apply view_both_frac_validI=> n. by uPred.unseal. Qed.
+  Lemma auth_both_validI {M} a b :
+    ✓ (● a ⋅ ◯ b) ⊣⊢@{uPredI M} (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
+  Proof.
+    by rewrite auth_both_frac_validI uPred.discrete_valid bi.pure_True // left_id.
+  Qed.
 
   (** Updates *)
   Lemma auth_update a b a' b' :
@@ -257,10 +278,10 @@ Section auth.
     exact: cmra_update_op_l.
   Qed.
 
-  Lemma auth_update_core_id q a b `{!CoreId b} :
+  Lemma auth_update_frac_alloc q a b `{!CoreId b} :
     b ≼ a → ●{q} a ~~> ●{q} a ⋅ ◯ b.
   Proof.
-    intros Ha%(core_id_extract _ _). apply view_update_alloc_frac=> n bf [??].
+    intros Ha%(core_id_extract _ _). apply view_update_frac_alloc=> n bf [??].
     split; [|done]. rewrite Ha (comm _ a). by apply cmra_monoN_l.
   Qed.
 

@@ -36,6 +36,7 @@ With this release, we dropped support for Coq 8.9.
   have been removed, in particular: `auth_equivI`, `auth_validI`,
   `auth_included`, `auth_valid_discrete`, and `auth_both_op`.  For validity, use
   `auth_auth_valid*`, `auth_frag_valid*`, or `auth_both_valid*` instead.
+* Rename `auth_update_core_id` into `auth_update_frac_alloc`.
 * Add the camera of discardable fractions `dfrac`. This is a generalization of
   the normal fractional camera. See `theories/algebra/dfrac.v` for further information.
 * Rename `cmra_monotone_valid` into `cmra_morphism_valid` (this rename was

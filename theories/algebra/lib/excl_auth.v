@@ -62,7 +62,7 @@ Section excl_auth.
 
   Lemma excl_auth_agreeI {M} a b : ✓ (●E a ⋅ ◯E b) ⊢@{uPredI M} (a ≡ b).
   Proof.
-    rewrite auth_both_validI bi.and_elim_r bi.and_elim_l.
+    rewrite auth_both_validI bi.and_elim_l.
     apply bi.exist_elim=> -[[c|]|];
       by rewrite option_equivI /= excl_equivI //= bi.False_elim.
   Qed.

@@ -351,7 +351,7 @@ Section cmra.
   Proof. apply (big_opMS_commute _). Qed.
 
   (** Inclusion *)
-  Lemma view_auth_includedN n p1 p2 a1 a2 b :
+  Lemma view_auth_frac_includedN n p1 p2 a1 a2 b :
     ●V{p1} a1 ≼{n} ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2.
   Proof.
     split.
@@ -363,17 +363,24 @@ Section cmra.
       + rewrite view_auth_frac_op -assoc. apply cmra_includedN_l.
       + apply cmra_includedN_l.
   Qed.
-  Lemma view_auth_included p1 p2 a1 a2 b :
+  Lemma view_auth_frac_included p1 p2 a1 a2 b :
     ●V{p1} a1 ≼ ●V{p2} a2 ⋅ ◯V b ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2.
   Proof.
     intros. split.
     - split.
-      + by eapply (view_auth_includedN 0), cmra_included_includedN.
-      + apply equiv_dist=> n. by eapply view_auth_includedN, cmra_included_includedN.
+      + by eapply (view_auth_frac_includedN 0), cmra_included_includedN.
+      + apply equiv_dist=> n.
+        by eapply view_auth_frac_includedN, cmra_included_includedN.
     - intros [[[q ->]%frac_included| ->%Qp_eq]%Qcanon.Qcle_lt_or_eq ->].
       + rewrite view_auth_frac_op -assoc. apply cmra_included_l.
       + apply cmra_included_l.
   Qed.
+  Lemma view_auth_includedN n a1 a2 b :
+    ●V a1 ≼{n} ●V a2 ⋅ ◯V b ↔ a1 ≡{n}≡ a2.
+  Proof. rewrite view_auth_frac_includedN. naive_solver. Qed.
+  Lemma view_auth_included a1 a2 b :
+    ●V a1 ≼ ●V a2 ⋅ ◯V b ↔ a1 ≡ a2.
+  Proof. rewrite view_auth_frac_included. naive_solver. Qed.
 
   Lemma view_frag_includedN n p a b1 b2 :
     ◯V b1 ≼{n} ●V{p} a ⋅ ◯V b2 ↔ b1 ≼{n} b2.
@@ -394,41 +401,86 @@ Section cmra.
 
   (** The weaker [view_both_included] lemmas below are a consequence of the
   [view_auth_included] and [view_frag_included] lemmas above. *)
-  Lemma view_both_includedN n p1 p2 a1 a2 b1 b2 :
+  Lemma view_both_frac_includedN n p1 p2 a1 a2 b1 b2 :
     ●V{p1} a1 ⋅ ◯V b1 ≼{n} ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
   Proof.
     split.
     - intros. rewrite assoc. split.
-      + rewrite -view_auth_includedN. by etrans; [apply cmra_includedN_l|].
+      + rewrite -view_auth_frac_includedN. by etrans; [apply cmra_includedN_l|].
       + rewrite -view_frag_includedN. by etrans; [apply cmra_includedN_r|].
     - intros (?&->&?bf&->). rewrite (comm _ b1) view_frag_op assoc.
-      by apply cmra_monoN_r, view_auth_includedN.
+      by apply cmra_monoN_r, view_auth_frac_includedN.
   Qed.
-  Lemma view_both_included p1 p2 a1 a2 b1 b2 :
+  Lemma view_both_frac_included p1 p2 a1 a2 b1 b2 :
     ●V{p1} a1 ⋅ ◯V b1 ≼ ●V{p2} a2 ⋅ ◯V b2 ↔ (p1 ≤ p2)%Qc ∧ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof.
     split.
     - intros. rewrite assoc. split.
-      + rewrite -view_auth_included. by etrans; [apply cmra_included_l|].
+      + rewrite -view_auth_frac_included. by etrans; [apply cmra_included_l|].
       + rewrite -view_frag_included. by etrans; [apply cmra_included_r|].
     - intros (?&->&?bf&->). rewrite (comm _ b1) view_frag_op assoc.
-      by apply cmra_mono_r, view_auth_included.
+      by apply cmra_mono_r, view_auth_frac_included.
   Qed.
+  Lemma view_both_includedN n a1 a2 b1 b2 :
+    ●V a1 ⋅ ◯V b1 ≼{n} ●V a2 ⋅ ◯V b2 ↔ a1 ≡{n}≡ a2 ∧ b1 ≼{n} b2.
+  Proof. rewrite view_both_frac_includedN. naive_solver. Qed.
+  Lemma view_both_included a1 a2 b1 b2 :
+    ●V a1 ⋅ ◯V b1 ≼ ●V a2 ⋅ ◯V b2 ↔ a1 ≡ a2 ∧ b1 ≼ b2.
+  Proof. rewrite view_both_frac_included. naive_solver. Qed.
 
   (** Internalized properties *)
-  Lemma view_both_validI {M} (relI : uPred M) q a b :
-    (∀ n (x : M), relI n x ↔ rel n a b) →
-    ✓ (●V{q} a ⋅ ◯V b) ⊣⊢ ✓ q ∧ relI.
+  Lemma view_both_frac_validI_1 {M} (relI : uPred M) q a b :
+    (∀ n (x : M), rel n a b → relI n x) →
+    ✓ (●V{q} a ⋅ ◯V b) ⊢ ✓ q ∧ relI.
   Proof.
     intros Hrel. uPred.unseal. split=> n x _ /=.
-    by rewrite {1}/uPred_holds /= view_both_frac_validN -(Hrel _ x).
+    rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
   Qed.
-  Lemma view_auth_validI {M} (relI : uPred M) q a :
+  Lemma view_both_frac_validI_2 {M} (relI : uPred M) q a b :
+    (∀ n (x : M), relI n x → rel n a b) →
+    ✓ q ∧ relI ⊢ ✓ (●V{q} a ⋅ ◯V b).
+  Proof.
+    intros Hrel. uPred.unseal. split=> n x _ /=.
+    rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
+  Qed.
+  Lemma view_both_frac_validI {M} (relI : uPred M) q a b :
+    (∀ n (x : M), rel n a b ↔ relI n x) →
+    ✓ (●V{q} a ⋅ ◯V b) ⊣⊢ ✓ q ∧ relI.
+  Proof.
+    intros. apply (anti_symm _);
+      [apply view_both_frac_validI_1|apply view_both_frac_validI_2]; naive_solver.
+  Qed.
+
+  Lemma view_both_validI_1 {M} (relI : uPred M) a b :
+    (∀ n (x : M), rel n a b → relI n x) →
+    ✓ (●V a ⋅ ◯V b) ⊢ relI.
+  Proof. intros. by rewrite view_both_frac_validI_1 // bi.and_elim_r. Qed.
+  Lemma view_both_validI_2 {M} (relI : uPred M) a b :
+    (∀ n (x : M), relI n x → rel n a b) →
+    relI ⊢ ✓ (●V a ⋅ ◯V b).
+  Proof.
+    intros. rewrite -view_both_frac_validI_2 // uPred.discrete_valid.
+    apply bi.and_intro; [|done]. by apply bi.pure_intro.
+  Qed.
+  Lemma view_both_validI {M} (relI : uPred M) a b :
+    (∀ n (x : M), rel n a b ↔ relI n x) →
+    ✓ (●V a ⋅ ◯V b) ⊣⊢ relI.
+  Proof.
+    intros. apply (anti_symm _);
+      [apply view_both_validI_1|apply view_both_validI_2]; naive_solver.
+  Qed.
+
+  Lemma view_auth_frac_validI {M} (relI : uPred M) q a :
     (∀ n (x : M), relI n x ↔ rel n a ε) →
     ✓ (●V{q} a) ⊣⊢ ✓ q ∧ relI.
   Proof.
-    intros. rewrite -(right_id ε op (●V{q} a)). by apply view_both_validI.
+    intros. rewrite -(right_id ε op (●V{q} a)). by apply view_both_frac_validI.
   Qed.
+  Lemma view_auth_validI {M} (relI : uPred M) a :
+    (∀ n (x : M), relI n x ↔ rel n a ε) →
+    ✓ (●V a) ⊣⊢ relI.
+  Proof. intros. rewrite -(right_id ε op (●V a)). by apply view_both_validI. Qed.
+
   Lemma view_frag_validI {M} b : ✓ (◯V b) ⊣⊢@{uPredI M} ✓ b.
   Proof. by uPred.unseal. Qed.
 
@@ -473,7 +525,7 @@ Section cmra.
     rewrite !cmra_total_update view_validN_eq=> ?? n [[[q ag]|] bf]; naive_solver.
   Qed.
 
-  Lemma view_update_alloc_frac q a b :
+  Lemma view_update_frac_alloc q a b :
     (∀ n bf, rel n a bf → rel n a (b ⋅ bf)) →
     ●V{q} a ~~> ●V{q} a ⋅ ◯V b.
   Proof.
