@@ -105,7 +105,7 @@ Instance agree_assoc : Assoc (≡) (@op (agree A) _).
 Proof.
   intros x y z n; split=> a /=; repeat setoid_rewrite elem_of_app; naive_solver.
 Qed.
-Lemma agree_idemp (x : agree A) : x ⋅ x ≡ x.
+Lemma agree_idemp x : x ⋅ x ≡ x.
 Proof. intros n; split=> a /=; setoid_rewrite elem_of_app; naive_solver. Qed.
 
 Instance agree_validN_ne n : Proper (dist n ==> impl) (@validN (agree A) _ n).
@@ -124,13 +124,13 @@ Instance agree_op_ne : NonExpansive2 (@op (agree A) _).
 Proof. by intros n x1 x2 Hx y1 y2 Hy; rewrite Hy !(comm _ _ y2) Hx. Qed.
 Instance agree_op_proper : Proper ((≡) ==> (≡) ==> (≡)) op := ne_proper_2 _.
 
-Lemma agree_included (x y : agree A) : x ≼ y ↔ y ≡ x ⋅ y.
+Lemma agree_included x y : x ≼ y ↔ y ≡ x ⋅ y.
 Proof.
   split; [|by intros ?; exists y].
   by intros [z Hz]; rewrite Hz assoc agree_idemp.
 Qed.
 
-Lemma agree_op_invN n (x1 x2 : agree A) : ✓{n} (x1 ⋅ x2) → x1 ≡{n}≡ x2.
+Lemma agree_op_invN n x1 x2 : ✓{n} (x1 ⋅ x2) → x1 ≡{n}≡ x2.
 Proof.
   rewrite agree_validN_def /=. setoid_rewrite elem_of_app=> Hv; split=> a Ha.
   - destruct (elem_of_agree x2); naive_solver.
@@ -152,7 +152,7 @@ Canonical Structure agreeR : cmraT := CmraT (agree A) agree_cmra_mixin.
 
 Global Instance agree_cmra_total : CmraTotal agreeR.
 Proof. rewrite /CmraTotal; eauto. Qed.
-Global Instance agree_core_id (x : agree A) : CoreId x.
+Global Instance agree_core_id x : CoreId x.
 Proof. by constructor. Qed.
 
 Global Instance agree_cmra_discrete : OfeDiscrete A → CmraDiscrete agreeR.
