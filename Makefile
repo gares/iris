@@ -36,7 +36,7 @@ builddep-opamfiles: $(BUILDDEPFILES)
 .PHONY: builddep-opamfiles
 
 builddep: builddep-opamfiles
-	@# We want opam to not just instal the build-deps now, but to also keep satisfying these
+	@# We want opam to not just install the build-deps now, but to also keep satisfying these
 	@# constraints.  Otherwise, `opam upgrade` may well update some packages to versions
 	@# that are incompatible with our build requirements.
 	@# To achieve this, we create a fake opam package that has our build-dependencies as
