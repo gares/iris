@@ -5,6 +5,49 @@ From iris Require Import options.
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
+(** This proves that in an affine BI (i.e., a BI that enjoys [P ∗ Q ⊢ P]), the
+classical excluded middle ([P ∨ ¬P]) axiom makes the separation conjunction
+trivial, i.e., it gives [P -∗ P ∗ P] and [P ∧ Q -∗ P ∗ Q].
+
+Our proof essentially follows the structure of the proof of Theorem 3 in
+https://scholar.princeton.edu/sites/default/files/qinxiang/files/putting_order_to_the_separation_logic_jungle_revised_version.pdf *)
+Module affine_em. Section affine_em.
+  Context `{!BiAffine PROP}.
+  Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
+  Implicit Types P Q : PROP.
+
+  Lemma sep_dup P : P -∗ P ∗ P.
+  Proof.
+    iIntros "HP". iDestruct (em P) as "[HP'|HnotP]".
+    - iFrame "HP HP'".
+    - iExFalso. by iApply "HnotP".
+  Qed.
+
+  Lemma and_sep P Q : P ∧ Q -∗ P ∗ Q.
+  Proof.
+    iIntros "HPQ". iDestruct (sep_dup with "HPQ") as "[HPQ HPQ']".
+    iSplitL "HPQ".
+    - by iDestruct "HPQ" as "[HP _]".
+    - by iDestruct "HPQ'" as "[_ HQ]".
+  Qed.
+End affine_em. End affine_em.
+
+(** This proves that the combination of Löb induction [(▷ P → P) ⊢ P] and the
+classical excluded-middle [P ∨ ¬P] axiom makes the later operator trivial, i.e.,
+it gives [▷ P] for any [P], or equivalently [▷ P ≡ True]. *)
+Module löb_em. Section löb_em.
+  Context `{!BiLöb PROP}.
+  Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
+  Implicit Types P : PROP.
+
+  Lemma later_anything P : ⊢@{PROP} ▷ P.
+  Proof.
+    iDestruct (em (▷ False)%I) as "#[HP|HnotP]".
+    - iNext. done.
+    - iExFalso. iLöb as "IH". iSpecialize ("HnotP" with "IH"). done.
+  Qed.
+End löb_em. End löb_em.
+
 (** This proves that we need the ▷ in a "Saved Proposition" construction with
 name-dependent allocation. *)
 Module savedprop. Section savedprop.
