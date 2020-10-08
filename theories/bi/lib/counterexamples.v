@@ -7,23 +7,29 @@ Set Default Proof Using "Type*".
 
 (** This proves that the combination of affinity [P ∗ Q ⊢ P] and the classical
 excluded-middle [P ∨ ¬P] axiom makes the separation conjunction trivial, i.e.,
-it gives [P -∗ P ∗ P].
+it gives [P -∗ P ∗ P] and [P ∧ Q -∗ P ∗ Q].
 
-A similar proof is presented in
+Our proof essentially follows the structure of the proof of Theorem 3 in
 https://scholar.princeton.edu/sites/default/files/qinxiang/files/putting_order_to_the_separation_logic_jungle_revised_version.pdf *)
 Module affine_em. Section affine_em.
   Context `{!BiAffine PROP}.
   Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
   Implicit Types P Q : PROP.
 
-  Lemma and_sep P Q : P ∧ Q -∗ P ∗ Q.
-  Proof using All.
-    iIntros "HPQ". iDestruct (em P) as "[HP|HnotP]".
-    - iFrame "HP". by iDestruct "HPQ" as "[_ HQ]".
-    - iExFalso. iApply "HnotP". by iDestruct "HPQ" as "[HP _]".
+  Lemma sep_dup P : P -∗ P ∗ P.
+  Proof.
+    iIntros "HP". iDestruct (em P) as "[HP'|HnotP]".
+    - iFrame "HP HP'".
+    - iExFalso. by iApply "HnotP".
   Qed.
-  Lemma sep_trivial P : P -∗ P ∗ P.
-  Proof using All. iIntros "HP". iApply and_sep; auto. Qed.
+
+  Lemma and_sep P Q : P ∧ Q -∗ P ∗ Q.
+  Proof.
+    iIntros "HPQ". iDestruct (sep_dup with "HPQ") as "[HPQ HPQ']".
+    iSplitL "HPQ".
+    - by iDestruct "HPQ" as "[HP _]".
+    - by iDestruct "HPQ'" as "[_ HQ]".
+  Qed.
 End affine_em. End affine_em.
 
 (** This proves that the combination of Löb induction [(▷ P → P) ⊢ P] and the
