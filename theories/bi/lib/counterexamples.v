@@ -5,6 +5,40 @@ From iris Require Import options.
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
+(** This proves that the combination of affinity [P ∗ Q ⊢ P] and the classical
+excluded-middle [P ∨ ¬P] axiom makes the separation conjunction trivial, i.e.,
+it gives [P -∗ P ∗ P]. *)
+Module affine_em. Section affine_em.
+  Context `{!BiAffine PROP}.
+  Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
+  Implicit Types P Q : PROP.
+
+  Lemma and_sep P Q : P ∧ Q -∗ P ∗ Q.
+  Proof using All.
+    iIntros "HPQ". iDestruct (em P) as "[HP|HnotP]".
+    - iFrame "HP". by iDestruct "HPQ" as "[_ HQ]".
+    - iExFalso. iApply "HnotP". by iDestruct "HPQ" as "[HP _]".
+  Qed.
+  Lemma sep_trivial P : P -∗ P ∗ P.
+  Proof using All. iIntros "HP". iApply and_sep; auto. Qed.
+End affine_em. End affine_em.
+
+(** This proves that the combination of Löb induction [(▷ P → P) ⊢ P] and the
+classical excluded-middle [P ∨ ¬P] axiom makes the later operator trivial, i.e.,
+it gives [▷ False]. *)
+Module löb_em. Section löb_em.
+  Context `{!BiLöb PROP}.
+  Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
+  Implicit Types P : PROP.
+
+  Lemma later_False : ⊢@{PROP} ▷ False.
+  Proof.
+    iDestruct (em (▷ False)%I) as "#[HP|HnotP]".
+    - done.
+    - iExFalso. iLöb as "IH". iSpecialize ("HnotP" with "IH"). done.
+  Qed.
+End löb_em. End löb_em.
+
 (** This proves that we need the ▷ in a "Saved Proposition" construction with
 name-dependent allocation. *)
 Module savedprop. Section savedprop.
