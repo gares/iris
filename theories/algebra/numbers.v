@@ -40,7 +40,7 @@ Section nat.
 
   (* This one has a higher precendence than [is_op_op] so we get a [+] instead
      of an [⋅]. *)
-  Global Instance is_op_plus (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
+  Global Instance nat_is_op (n1 n2 : nat) : IsOp (n1 + n2) n1 n2.
   Proof. done. Qed.
 End nat.
 
@@ -93,6 +93,10 @@ Section max_nat.
 
   Global Instance : IdemP (=@{max_nat}) (⋅).
   Proof. intros [x]. rewrite max_nat_op_max. apply f_equal. lia. Qed.
+
+  Global Instance max_nat_is_op (x y : nat) :
+    IsOp (MaxNat (x `max` y)) (MaxNat x) (MaxNat y).
+  Proof. done. Qed.
 End max_nat.
 
 (** ** Natural numbers with [min] as the operation. *)
@@ -145,6 +149,10 @@ Section min_nat.
 
   Global Instance : IdemP (=@{min_nat}) (⋅).
   Proof. intros [x]. rewrite min_nat_op_min. apply f_equal. lia. Qed.
+
+  Global Instance min_nat_is_op (x y : nat) :
+    IsOp (MinNat (x `min` y)) (MinNat x) (MinNat y).
+  Proof. done. Qed.
 End min_nat.
 
 (** ** Positive integers with [Pos.add] as the operation. *)
@@ -175,4 +183,9 @@ Section positive.
     intros y ??. apply (Pos.add_no_neutral x y). rewrite Pos.add_comm.
     by apply leibniz_equiv.
   Qed.
+
+  (* This one has a higher precendence than [is_op_op] so we get a [+] instead
+     of an [⋅]. *)
+  Global Instance pos_is_op (x y : positive) : IsOp (x + y)%positive x y.
+  Proof. done. Qed.
 End positive.
