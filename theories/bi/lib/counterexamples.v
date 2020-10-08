@@ -7,7 +7,10 @@ Set Default Proof Using "Type*".
 
 (** This proves that the combination of affinity [P ∗ Q ⊢ P] and the classical
 excluded-middle [P ∨ ¬P] axiom makes the separation conjunction trivial, i.e.,
-it gives [P -∗ P ∗ P]. *)
+it gives [P -∗ P ∗ P].
+
+A similar proof is presented in
+https://scholar.princeton.edu/sites/default/files/qinxiang/files/putting_order_to_the_separation_logic_jungle_revised_version.pdf *)
 Module affine_em. Section affine_em.
   Context `{!BiAffine PROP}.
   Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
