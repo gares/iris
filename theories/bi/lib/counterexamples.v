@@ -5,9 +5,9 @@ From iris Require Import options.
 (* The sections add extra BI assumptions, which is only picked up with "Type"*. *)
 Set Default Proof Using "Type*".
 
-(** This proves that the combination of affinity [P ∗ Q ⊢ P] and the classical
-excluded-middle [P ∨ ¬P] axiom makes the separation conjunction trivial, i.e.,
-it gives [P -∗ P ∗ P] and [P ∧ Q -∗ P ∗ Q].
+(** This proves that in an affine BI (i.e., a BI that enjoys [P ∗ Q ⊢ P]), the
+classical excluded middle ([P ∨ ¬P]) axiom makes the separation conjunction
+trivial, i.e., it gives [P -∗ P ∗ P] and [P ∧ Q -∗ P ∗ Q].
 
 Our proof essentially follows the structure of the proof of Theorem 3 in
 https://scholar.princeton.edu/sites/default/files/qinxiang/files/putting_order_to_the_separation_logic_jungle_revised_version.pdf *)
@@ -34,16 +34,16 @@ End affine_em. End affine_em.
 
 (** This proves that the combination of Löb induction [(▷ P → P) ⊢ P] and the
 classical excluded-middle [P ∨ ¬P] axiom makes the later operator trivial, i.e.,
-it gives [▷ False]. *)
+it gives [▷ P] for any [P], or equivalently [▷ P ≡ True]. *)
 Module löb_em. Section löb_em.
   Context `{!BiLöb PROP}.
   Context (em : ∀ P : PROP, ⊢ P ∨ ¬P).
   Implicit Types P : PROP.
 
-  Lemma later_False : ⊢@{PROP} ▷ False.
+  Lemma later_anything P : ⊢@{PROP} ▷ P.
   Proof.
     iDestruct (em (▷ False)%I) as "#[HP|HnotP]".
-    - done.
+    - iNext. done.
     - iExFalso. iLöb as "IH". iSpecialize ("HnotP" with "IH"). done.
   Qed.
 End löb_em. End löb_em.
