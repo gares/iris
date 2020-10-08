@@ -165,6 +165,12 @@ Proof.
   by rewrite -later_and impl_elim_r (comm _ R) wand_elim_r.
 Qed.
 
+(** A funny consequence of Löb induction.
+This shows that Löb induction is incompatible with classical logic.
+See [lib/counterexamples.v] for a fully worked-out proof of that fact. *)
+Lemma not_not_later_False `{!BiLöb PROP} : ⊢@{PROP} ¬ ¬ ▷ False.
+Proof. apply entails_impl, löb. Qed.
+
 (* Iterated later modality *)
 Global Instance laterN_ne m : NonExpansive (@bi_laterN PROP m).
 Proof. induction m; simpl. by intros ???. solve_proper. Qed.
