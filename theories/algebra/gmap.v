@@ -300,7 +300,7 @@ Proof. apply singleton_core. rewrite cmra_pcore_core //. Qed.
 Lemma singleton_op (i : K) (x y : A) :
   {[ i := x ]} ⋅ {[ i := y ]} =@{gmap K A} {[ i := x ⋅ y ]}.
 Proof. by apply (merge_singleton _ _ _ x y). Qed.
-Global Instance is_op_singleton i a a1 a2 :
+Global Instance singleton_is_op i a a1 a2 :
   IsOp a a1 a2 → IsOp' ({[ i := a ]} : gmap K A) {[ i := a1 ]} {[ i := a2 ]}.
 Proof. rewrite /IsOp' /IsOp=> ->. by rewrite -singleton_op. Qed.
 

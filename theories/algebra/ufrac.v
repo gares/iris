@@ -43,5 +43,5 @@ Qed.
 Lemma ufrac_op' (q p : ufrac) : (p ⋅ q) = (p + q)%Qp.
 Proof. done. Qed.
 
-Global Instance is_op_ufrac (q : ufrac) : IsOp' q (q/2)%Qp (q/2)%Qp.
+Global Instance ufrac_is_op (q : ufrac) : IsOp' q (q/2)%Qp (q/2)%Qp.
 Proof. by rewrite /IsOp' /IsOp ufrac_op' Qp_div_2. Qed.

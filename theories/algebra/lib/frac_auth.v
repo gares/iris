@@ -96,11 +96,11 @@ Section frac_auth.
   Lemma frac_auth_frag_valid_op_1_l q a b : ✓ (◯F{1} a ⋅ ◯F{q} b) → False.
   Proof. rewrite -frac_auth_frag_op frac_auth_frag_valid=> -[/exclusive_l []]. Qed.
 
-  Global Instance is_op_frac_auth (q q1 q2 : frac) (a a1 a2 : A) :
+  Global Instance frac_auth_is_op (q q1 q2 : frac) (a a1 a2 : A) :
     IsOp q q1 q2 → IsOp a a1 a2 → IsOp' (◯F{q} a) (◯F{q1} a1) (◯F{q2} a2).
   Proof. by rewrite /IsOp' /IsOp=> /leibniz_equiv_iff -> ->. Qed.
 
-  Global Instance is_op_frac_auth_core_id (q q1 q2 : frac) (a  : A) :
+  Global Instance frac_auth_is_op_core_id (q q1 q2 : frac) (a  : A) :
     CoreId a → IsOp q q1 q2 → IsOp' (◯F{q} a) (◯F{q1} a) (◯F{q2} a).
   Proof.
     rewrite /IsOp' /IsOp=> ? /leibniz_equiv_iff ->.
