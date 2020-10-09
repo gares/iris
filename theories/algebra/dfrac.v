@@ -19,7 +19,7 @@
     that no one can own 1. And, since discarding is an irreversible operation,
     it also implies that no one can own 1 in the future *)
 From Coq.QArith Require Import Qcanon.
-From iris.algebra Require Export cmra proofmode_classes updates.
+From iris.algebra Require Import cmra proofmode_classes updates frac.
 From iris Require Import options.
 
 (** An element of dfrac denotes ownership of a fraction, knowledge that a
@@ -162,8 +162,10 @@ Section dfrac.
     ✓ (DfracOwn q ⋅ DfracDiscarded) ↔ (q < 1%Qp)%Qc.
   Proof. done. Qed.
 
-  Global Instance is_op_frac q : IsOp' (DfracOwn q) (DfracOwn (q/2)) (DfracOwn (q/2)).
-  Proof. by rewrite /IsOp' /IsOp dfrac_op_own Qp_div_2. Qed.
+  Global Instance dfrac_is_op q q1 q2 :
+    IsOp q q1 q2 →
+    IsOp' (DfracOwn q) (DfracOwn q1) (DfracOwn q2).
+  Proof. rewrite /IsOp' /IsOp dfrac_op_own=>-> //. Qed.
 
   (** Discarding a fraction is a frame preserving update. *)
   Lemma dfrac_discard_update q : DfracOwn q ~~> DfracDiscarded.

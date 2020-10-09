@@ -318,7 +318,7 @@ Section cmra.
   Lemma view_auth_frac_op_inv_L `{!LeibnizEquiv A} p1 a1 p2 a2 :
     ✓ (●V{p1} a1 ⋅ ●V{p2} a2) → a1 = a2.
   Proof. by intros ?%view_auth_frac_op_inv%leibniz_equiv. Qed.
-  Global Instance is_op_view_auth_frac q q1 q2 a :
+  Global Instance view_auth_frac_is_op q q1 q2 a :
     IsOp q q1 q2 → IsOp' (●V{q} a) (●V{q1} a) (●V{q2} a).
   Proof. rewrite /IsOp' /IsOp => ->. by rewrite -view_auth_frac_op. Qed.
 
@@ -330,7 +330,7 @@ Section cmra.
   Proof. done. Qed.
   Global Instance view_frag_core_id b : CoreId b → CoreId (◯V b).
   Proof. do 2 constructor; simpl; auto. by apply core_id_core. Qed.
-  Global Instance is_op_view_frag b b1 b2 :
+  Global Instance view_frag_is_op b b1 b2 :
     IsOp b b1 b2 → IsOp' (◯V b) (◯V b1) (◯V b2).
   Proof. done. Qed.
   Global Instance view_frag_sep_homomorphism :

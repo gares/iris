@@ -218,7 +218,7 @@ Qed.
 Lemma namespace_map_data_mono N a b :
   a ≼ b → namespace_map_data N a ≼ namespace_map_data N b.
 Proof. intros [c ->]. rewrite namespace_map_data_op. apply cmra_included_l. Qed.
-Global Instance is_op_namespace_map_data N a b1 b2 :
+Global Instance namespace_map_data_is_op N a b1 b2 :
   IsOp a b1 b2 →
   IsOp' (namespace_map_data N a) (namespace_map_data N b1) (namespace_map_data N b2).
 Proof. rewrite /IsOp' /IsOp=> ->. by rewrite namespace_map_data_op. Qed.

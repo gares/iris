@@ -55,5 +55,10 @@ Proof. done. Qed.
 Lemma frac_valid' (p : Qp) : ✓ p ↔ (p ≤ 1%Qp)%Qc.
 Proof. done. Qed.
 
-Global Instance is_op_frac q : IsOp' q (q/2)%Qp (q/2)%Qp.
+Global Instance frac_is_op_half q : IsOp' q (q/2)%Qp (q/2)%Qp.
 Proof. by rewrite /IsOp' /IsOp frac_op' Qp_div_2. Qed.
+
+(* This one has a higher precendence than [is_op_op] so we get a [+] instead
+   of an [⋅]. *)
+Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2.
+Proof. done. Qed.

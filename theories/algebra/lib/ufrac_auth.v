@@ -111,11 +111,11 @@ Section ufrac_auth.
   Lemma ufrac_auth_frag_op q1 q2 a1 a2 : ◯U{q1+q2} (a1 ⋅ a2) ≡ ◯U{q1} a1 ⋅ ◯U{q2} a2.
   Proof. done. Qed.
 
-  Global Instance is_op_ufrac_auth q q1 q2 a a1 a2 :
+  Global Instance ufrac_auth_is_op q q1 q2 a a1 a2 :
     IsOp q q1 q2 → IsOp a a1 a2 → IsOp' (◯U{q} a) (◯U{q1} a1) (◯U{q2} a2).
   Proof. by rewrite /IsOp' /IsOp=> /leibniz_equiv_iff -> ->. Qed.
 
-  Global Instance is_op_ufrac_auth_core_id q q1 q2 a :
+  Global Instance ufrac_auth_is_op_core_id q q1 q2 a :
     CoreId a → IsOp q q1 q2 → IsOp' (◯U{q} a) (◯U{q1} a) (◯U{q2} a).
   Proof.
     rewrite /IsOp' /IsOp=> ? /leibniz_equiv_iff ->.

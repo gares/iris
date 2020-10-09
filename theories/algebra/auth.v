@@ -168,7 +168,7 @@ Section auth.
   Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
     ✓ (●{p} a ⋅ ●{q} b) → a = b.
   Proof. by apply view_auth_frac_op_inv_L. Qed.
-  Global Instance is_op_auth_auth_frac q q1 q2 a :
+  Global Instance auth_auth_frac_is_op q q1 q2 a :
     IsOp q q1 q2 → IsOp' (●{q} a) (●{q1} a) (●{q2} a).
   Proof. rewrite /auth_auth. apply _. Qed.
 
@@ -180,7 +180,7 @@ Section auth.
   Proof. apply view_frag_core. Qed.
   Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
   Proof. rewrite /auth_frag. apply _. Qed.
-  Global Instance is_op_auth_frag a b1 b2 :
+  Global Instance auth_frag_is_op a b1 b2 :
     IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
   Proof. rewrite /auth_frag. apply _. Qed.
   Global Instance auth_frag_sep_homomorphism :
