@@ -41,6 +41,11 @@ With this release, we dropped support for Coq 8.9.
   the normal fractional camera. See `theories/algebra/dfrac.v` for further information.
 * Rename `cmra_monotone_valid` into `cmra_morphism_valid` (this rename was
   forgotten in !56).
+* Add `gmap_view`, a camera providing a "view of a `gmap`". The authoritative
+  element is any `gmap`; the fragment provides fractional ownership of a single
+  key, including support for persistent read-only ownership through `dfrac`.
+  See `theories/algebra/lib/gmap_view.v` for further information.
+  NOTE: The API surface for `gmap_view` is experimental and subject to change.
 
 **Changes in `proofmode`:**
 

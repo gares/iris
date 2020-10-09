@@ -6,8 +6,22 @@ From iris.algebra Require Import local_updates proofmode_classes.
 From iris.base_logic Require Import base_logic.
 From iris Require Import options.
 
-(** * Authoritative CMRA over a map.
-The elements of the map are of type [dfrac * agree T]. *)
+(** * CMRA for a "view of a gmap".
+
+The authoritative element [gmap_view_auth] is any [gmap K V].  The fragments
+[gmap_view_frag] represent ownership of a single key in that map.  Ownership is
+governed by a discardable fraction, which provides the possibiltiy to obtain
+persistent read-only ownership of a key.
+
+The key frame-preserving updates are [gmap_view_alloc] to allocate a new key,
+[gmap_view_update] to update a key given full ownership of the corresponding
+fragment, and [gmap_view_freeze] to make a key read-only by discarding any
+fraction of the corresponding fragment. Crucially, the latter does not require
+owning the authoritative element.
+
+NOTE: The API surface for [gmap_view] is experimental and subject to change.  We
+plan to add notations for authoritative elements and fragments, and hope to
+support arbitrary maps as fragments. *)
 
 Local Definition gmap_view_fragUR (K : Type) `{Countable K} (V : ofeT) : ucmraT :=
   gmapUR K (prodR dfracR (agreeR V)).
