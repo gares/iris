@@ -60,5 +60,5 @@ Proof. by rewrite /IsOp' /IsOp frac_op' Qp_div_2. Qed.
 
 (* This one has a higher precendence than [is_op_op] so we get a [+] instead
    of an [⋅]. *)
-Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2.
+Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2 | 10.
 Proof. done. Qed.
