@@ -164,7 +164,7 @@ Section lemmas.
   Lemma gmap_view_frag_op k dq1 dq2 v :
     gmap_view_frag k (dq1 ⋅ dq2) v ≡ gmap_view_frag k dq1 v ⋅ gmap_view_frag k dq2 v.
   Proof. rewrite -view_frag_op singleton_op -pair_op agree_idemp //. Qed.
-  Lemma gmap_view_frag_plus k q1 q2 v :
+  Lemma gmap_view_frag_add k q1 q2 v :
     gmap_view_frag k (DfracOwn (q1 + q2)) v ≡
       gmap_view_frag k (DfracOwn q1) v ⋅ gmap_view_frag k (DfracOwn q2) v.
   Proof. rewrite -gmap_view_frag_op. done. Qed.
@@ -262,7 +262,7 @@ Section lemmas.
       rewrite lookup_insert_ne //.
   Qed.
 
-  Lemma gmap_view_freeze k q v :
+  Lemma gmap_view_persist k q v :
     gmap_view_frag k (DfracOwn q) v ~~> gmap_view_frag k DfracDiscarded v.
   Proof.
     apply view_update_frag; last first.
@@ -291,7 +291,7 @@ Section lemmas.
   Qed.
 
   (** Typeclass instances *)
-  Global Instance gmap_view_frag_core_id k v : CoreId (gmap_view_frag k DfracDiscarded v).
+  Global Instance gmap_view_frag_core_id k v : CoreId dq → CoreId (gmap_view_frag k dq v).
   Proof. apply _. Qed.
 
   Global Instance gmap_view_cmra_discrete : OfeDiscrete V → CmraDiscrete (gmap_viewR K V).

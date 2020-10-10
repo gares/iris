@@ -149,7 +149,7 @@ Section gen_heap.
   Proof. rewrite mapsto_eq /mapsto_def. apply _. Qed.
   Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{q} v)%I.
   Proof.
-    intros p q. rewrite mapsto_eq /mapsto_def -own_op gmap_view_frag_plus //.
+    intros p q. rewrite mapsto_eq /mapsto_def -own_op gmap_view_frag_add //.
   Qed.
   Global Instance mapsto_as_fractional l q v :
     AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
