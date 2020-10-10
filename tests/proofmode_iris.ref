@@ -115,6 +115,35 @@ The command has indeed failed with message:
 Tactic failure: iInv: invariant nroot not found.
 The command has indeed failed with message:
 Tactic failure: iInv: invariant "H2" not found.
+"test_frac_split_combine"
+     : string
+1 subgoal
+  
+  Σ : gFunctors
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  inG0 : inG Σ fracR
+  γ : gname
+  ============================
+  "H1" : own γ (1 / 2)%Qp
+  "H2" : own γ (1 / 2)%Qp
+  --------------------------------------∗
+  own γ 1%Qp
+  
+1 subgoal
+  
+  Σ : gFunctors
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  inG0 : inG Σ fracR
+  γ : gname
+  ============================
+  "H" : own γ 1%Qp
+  --------------------------------------∗
+  own γ 1%Qp
+  
 "test_iInv"
      : string
 1 subgoal

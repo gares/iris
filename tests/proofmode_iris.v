@@ -1,4 +1,5 @@
 From iris.proofmode Require Import tactics monpred.
+From iris.algebra Require Import frac.
 From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants.
 
@@ -236,6 +237,16 @@ Section iris_tests.
     x' ≼ x →
     own γ x -∗ own γ x'.
   Proof. intros. by iApply own_mono. Qed.
+
+  Check "test_frac_split_combine".
+  Lemma test_frac_split_combine `{!inG Σ fracR} γ :
+    own γ 1%Qp -∗ own γ 1%Qp.
+  Proof.
+    iIntros "[H1 H2]". Show.
+    iCombine "H1 H2" as "H". Show.
+    iExact "H".
+  Qed.
+
 End iris_tests.
 
 Section monpred_tests.
