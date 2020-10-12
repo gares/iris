@@ -106,7 +106,7 @@ Local Lemma iRes_singleton_validI γ a : ✓ (iRes_singleton γ a) ⊢@{iPropI �
 Proof.
   rewrite /iRes_singleton.
   rewrite discrete_fun_validI (forall_elim (inG_id i)) discrete_fun_lookup_singleton.
-  rewrite gmap_validI (forall_elim γ) lookup_singleton option_validI.
+  rewrite singleton_validI.
   trans (✓ cmra_transport inG_prf a : iProp Σ)%I; last by destruct inG_prf.
   apply valid_entails=> n. apply inG_unfold_validN.
 Qed.

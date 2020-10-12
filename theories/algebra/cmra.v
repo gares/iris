@@ -1433,6 +1433,12 @@ Section option.
   Proof. destruct ma, mb; naive_solver. Qed.
   Lemma op_is_Some ma mb : is_Some (ma ⋅ mb) ↔ is_Some ma ∨ is_Some mb.
   Proof. rewrite -!not_eq_None_Some op_None. destruct ma, mb; naive_solver. Qed.
+  (* When the goal is already of the form [None ⋅ x], the [LeftId] instance for
+     [ε] does not fire. *)
+  Global Instance op_None_left_id : LeftId (=) None (@op (option A) _).
+  Proof. intros [a|]; done. Qed.
+  Global Instance op_None_right_id : RightId (=) None (@op (option A) _).
+  Proof. intros [a|]; done. Qed.
 
   Lemma cmra_opM_opM_assoc a mb mc : a ⋅? mb ⋅? mc ≡ a ⋅? (mb ⋅ mc).
   Proof. destruct mb, mc; by rewrite /= -?assoc. Qed.
