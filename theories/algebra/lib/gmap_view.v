@@ -205,7 +205,7 @@ Section lemmas.
     rewrite /gmap_view_auth /gmap_view_frag.
     rewrite view_both_valid. setoid_rewrite gmap_view_rel_lookup.
     split; intros Hm; split.
-    - apply (Hm 0).
+    - apply (Hm 0%nat).
     - apply equiv_dist=>n. apply Hm.
     - apply Hm.
     - revert n. apply equiv_dist. apply Hm.
