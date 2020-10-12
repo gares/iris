@@ -718,5 +718,12 @@ Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply gmapO_map_ne, rFunctor_map_contractive.
 Qed.
 
-Definition gmapRF K `{Countable K} (F : rFunctor) : rFunctor :=
-  urFunctor_to_rFunctor (gmapURF K F).
+Program Definition gmapRF K `{Countable K} (F : rFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := gmapR K (rFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg := gmapO_map (rFunctor_map F fg)
+|}.
+Solve Obligations with apply gmapURF.
+
+Instance gmapRF_contractive K `{Countable K} F :
+  rFunctorContractive F → rFunctorContractive (gmapRF K F).
+Proof. apply gmapURF_contractive. Qed.

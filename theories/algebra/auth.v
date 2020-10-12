@@ -328,5 +328,13 @@ Proof.
   apply viewO_map_ne; by apply urFunctor_map_contractive.
 Qed.
 
-Definition authRF (F : urFunctor) :=
-  urFunctor_to_rFunctor (authURF F).
+Program Definition authRF (F : urFunctor) : rFunctor := {|
+  rFunctor_car A _ B _ := authR (urFunctor_car F A B);
+  rFunctor_map A1 _ A2 _ B1 _ B2 _ fg :=
+    viewO_map (urFunctor_map F fg) (urFunctor_map F fg)
+|}.
+Solve Obligations with apply authURF.
+
+Instance authRF_contractive F :
+  urFunctorContractive F → rFunctorContractive (authRF F).
+Proof. apply authURF_contractive. Qed.
