@@ -9,8 +9,13 @@ Import uPred.
 (** This file provides a generic mechanism for a point-to connective [l ↦{q} v]
 with fractional permissions (where [l : L] and [v : V] over some abstract type
 [L] for locations and [V] for values). This mechanism can be plugged into a
-language by using the heap invariant [gen_heap_ctx σ] where [σ : gmap L V]. See
-heap-lang for an example.
+language and related to the physical heap by using [gen_heap_ctx σ] in the state
+interpretation of the weakest precondition, where [σ : gmap L V]. See heap-lang
+for an example.
+
+This library is not meant to be used for ghost state unrelated to the physical
+heap, and will not be very usable for that case. Use [algebra.lib.gmap_view]
+together with [own] instead.
 
 Next to the point-to connective [l ↦{q} v], which keeps track of the value [v]
 of a location [l], this mechanism allows one to attach "meta" or "ghost" data to
