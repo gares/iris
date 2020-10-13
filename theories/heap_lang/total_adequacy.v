@@ -14,7 +14,7 @@ Proof.
   iMod (proph_map_init [] σ.(used_proph_id)) as (?) "Hp".
   iModIntro.
   iExists
-    (λ σ κs _, (gen_heap_ctx σ.(heap) ∗ proph_map_ctx κs σ.(used_proph_id))%I),
+    (λ σ κs _, (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id))%I),
     (λ _, True%I); iFrame.
   iApply (Hwp (HeapG _ _ _ _ _)). done.
 Qed.

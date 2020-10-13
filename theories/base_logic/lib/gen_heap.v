@@ -9,7 +9,7 @@ Import uPred.
 (** This file provides a generic mechanism for a point-to connective [l ↦{q} v]
 with fractional permissions (where [l : L] and [v : V] over some abstract type
 [L] for locations and [V] for values). This mechanism can be plugged into a
-language and related to the physical heap by using [gen_heap_ctx σ] in the state
+language and related to the physical heap by using [gen_heap_interp σ] in the state
 interpretation of the weakest precondition, where [σ : gmap L V]. See heap-lang
 for an example.
 
@@ -54,7 +54,7 @@ these can be matched up with the invariant namespaces. *)
   [namespace_map (agree positive)], which store the actual meta information.
   This indirection is needed because we cannot perform frame preserving updates
   in an authoritative fragment without owning the full authoritative element
-  (in other words, without the indirection [meta_set] would need [gen_heap_ctx]
+  (in other words, without the indirection [meta_set] would need [gen_heap_interp]
   as a premise).
 
 Note that in principle we could have used one big authoritative RA to keep track
@@ -92,7 +92,7 @@ Proof. solve_inG. Qed.
 Section definitions.
   Context `{Countable L, hG : !gen_heapG L V Σ}.
 
-  Definition gen_heap_ctx (σ : gmap L V) : iProp Σ := ∃ m : gmap L gname,
+  Definition gen_heap_interp (σ : gmap L V) : iProp Σ := ∃ m : gmap L gname,
     (* The [⊆] is used to avoid assigning ghost information to the locations in
     the initial heap (see [gen_heap_init]). *)
     ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∧
@@ -130,7 +130,7 @@ Local Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
 Local Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
-  ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ.
+  ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_interp σ.
 Proof.
   iMod (own_alloc (gmap_view_auth (σ : gmap L (leibnizO V)))) as (γh) "Hh".
   { exact: gmap_view_auth_valid. }
@@ -262,9 +262,9 @@ Section gen_heap.
   (** Update lemmas *)
   Lemma gen_heap_alloc σ l v :
     σ !! l = None →
-    gen_heap_ctx σ ==∗ gen_heap_ctx (<[l:=v]>σ) ∗ l ↦ v ∗ meta_token l ⊤.
+    gen_heap_interp σ ==∗ gen_heap_interp (<[l:=v]>σ) ∗ l ↦ v ∗ meta_token l ⊤.
   Proof.
-    iIntros (Hσl). rewrite /gen_heap_ctx mapsto_eq /mapsto_def meta_token_eq /meta_token_def /=.
+    iIntros (Hσl). rewrite /gen_heap_interp mapsto_eq /mapsto_def meta_token_eq /meta_token_def /=.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
     iMod (own_update with "Hσ") as "[Hσ Hl]".
     { eapply (gmap_view_alloc _ l (DfracOwn 1)); done. }
@@ -280,8 +280,8 @@ Section gen_heap.
 
   Lemma gen_heap_alloc_gen σ σ' :
     σ' ##ₘ σ →
-    gen_heap_ctx σ ==∗
-    gen_heap_ctx (σ' ∪ σ) ∗ ([∗ map] l ↦ v ∈ σ', l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ', meta_token l ⊤).
+    gen_heap_interp σ ==∗
+    gen_heap_interp (σ' ∪ σ) ∗ ([∗ map] l ↦ v ∈ σ', l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ', meta_token l ⊤).
   Proof.
     revert σ; induction σ' as [| l v σ' Hl IH] using map_ind; iIntros (σ Hdisj) "Hσ".
     { rewrite left_id_L. auto. }
@@ -292,19 +292,19 @@ Section gen_heap.
       first by apply lookup_union_None.
   Qed.
 
-  Lemma gen_heap_valid σ l q v : gen_heap_ctx σ -∗ l ↦{q} v -∗ ⌜σ !! l = Some v⌝.
+  Lemma gen_heap_valid σ l q v : gen_heap_interp σ -∗ l ↦{q} v -∗ ⌜σ !! l = Some v⌝.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
-    rewrite /gen_heap_ctx mapsto_eq /mapsto_def.
+    rewrite /gen_heap_interp mapsto_eq /mapsto_def.
     iDestruct (own_valid_2 with "Hσ Hl") as %[??]%gmap_view_both_valid_L.
     iPureIntro. done.
   Qed.
 
   Lemma gen_heap_update σ l v1 v2 :
-    gen_heap_ctx σ -∗ l ↦ v1 ==∗ gen_heap_ctx (<[l:=v2]>σ) ∗ l ↦ v2.
+    gen_heap_interp σ -∗ l ↦ v1 ==∗ gen_heap_interp (<[l:=v2]>σ) ∗ l ↦ v2.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ Hm]".
-    iIntros "Hl". rewrite /gen_heap_ctx mapsto_eq /mapsto_def.
+    iIntros "Hl". rewrite /gen_heap_interp mapsto_eq /mapsto_def.
     iDestruct (own_valid_2 with "Hσ Hl") as %[_ Hl]%gmap_view_both_valid_L.
     iMod (own_update_2 with "Hσ Hl") as "[Hσ Hl]".
     { eapply gmap_view_update. }

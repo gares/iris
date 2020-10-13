@@ -41,7 +41,7 @@ Section definitions.
   Definition proph_resolves_in_list R pvs :=
     map_Forall (λ p vs, vs = proph_list_resolves pvs p) R.
 
-  Definition proph_map_ctx pvs (ps : gset P) : iProp Σ :=
+  Definition proph_map_interp pvs (ps : gset P) : iProp Σ :=
     (∃ R, ⌜proph_resolves_in_list R pvs ∧
           dom (gset _) R ⊆ ps⌝ ∗
           own (proph_map_name pG) (gmap_view_auth (V:=listO $ leibnizO V) R))%I.
@@ -73,7 +73,7 @@ Section list_resolves.
 End list_resolves.
 
 Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
-  ⊢ |==> ∃ _ : proph_mapG P V PVS, proph_map_ctx pvs ps.
+  ⊢ |==> ∃ _ : proph_mapG P V PVS, proph_map_interp pvs ps.
 Proof.
   iMod (own_alloc (gmap_view_auth ∅)) as (γ) "Hh".
   { apply gmap_view_auth_valid. }
@@ -104,8 +104,8 @@ Section proph_map.
 
   Lemma proph_map_new_proph p ps pvs :
     p ∉ ps →
-    proph_map_ctx pvs ps ==∗
-    proph_map_ctx pvs ({[p]} ∪ ps) ∗ proph p (proph_list_resolves pvs p).
+    proph_map_interp pvs ps ==∗
+    proph_map_interp pvs ({[p]} ∪ ps) ∗ proph p (proph_list_resolves pvs p).
   Proof.
     iIntros (Hp) "HR". iDestruct "HR" as (R) "[[% %] H●]".
     rewrite proph_eq /proph_def.
@@ -120,11 +120,11 @@ Section proph_map.
   Qed.
 
   Lemma proph_map_resolve_proph p v pvs ps vs :
-    proph_map_ctx ((p,v) :: pvs) ps ∗ proph p vs ==∗
-    ∃vs', ⌜vs = v::vs'⌝ ∗ proph_map_ctx pvs ps ∗ proph p vs'.
+    proph_map_interp ((p,v) :: pvs) ps ∗ proph p vs ==∗
+    ∃vs', ⌜vs = v::vs'⌝ ∗ proph_map_interp pvs ps ∗ proph p vs'.
   Proof.
     iIntros "[HR Hp]". iDestruct "HR" as (R) "[HP H●]". iDestruct "HP" as %[Hres Hdom].
-    rewrite /proph_map_ctx proph_eq /proph_def.
+    rewrite /proph_map_interp proph_eq /proph_def.
     iDestruct (own_valid_2 with "H● Hp") as %[_ HR]%gmap_view_both_valid_L.
     assert (vs = v :: proph_list_resolves pvs p) as ->.
     { rewrite (Hres p vs HR). simpl. by rewrite decide_True. }
