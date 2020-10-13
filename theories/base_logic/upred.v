@@ -11,7 +11,7 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
     base_logic.base_logic; that will also give you all the primitive
     and many derived laws for the logic. *)
 
-(* A good way of understanding this definition of the uPred OFE is to
+(** A good way of understanding this definition of the uPred OFE is to
    consider the OFE uPred0 of monotonous SProp predicates. That is,
    uPred0 is the OFE of non-expansive functions from M to SProp that
    are monotonous with respect to CMRA inclusion. This notion of
@@ -45,6 +45,63 @@ Local Hint Extern 10 (_ ≤ _) => lia : core.
    would moreover need to prove one more property for every logical
    connective.
  *)
+
+(** Note that, somewhat curiously, [uPred M] is *not* in general a Camera,
+   at least not if all propositions are considered "valid" Camera elements.
+   It fails to satisfy the extension axiom. Here is the counterexample:
+
+We use [M := (option Ex {A,B})^2] -- so we have pairs
+whose components are ε, A or B.
+
+Let
+[[
+  P r n := (ownM (A,A) ∧ ▷ False) ∨ ownM (A,B) ∨ ownM (B,A) ∨ ownM (B,B)
+         ↔ r = (A,A) ∧ n = 0 ∨
+           r = (A,B) ∨
+           r = (B,A) ∨
+           r = (B,B)
+ Q1 r n := ownM (A, ε) ∨ ownM (B, ε)
+         ↔ (A, ε) ≼ r ∨ (B, ε) ≼ r
+           ("Left component is not ε")
+ Q2 r n := ownM (ε, A) ∨ ownM (ε, B)
+         ↔ (ε, A) ≼ r ∨ (ε, B) ≼ r
+           ("Right component is not ε")
+]]
+These are all sufficiently closed and non-expansive and whatnot.
+We have [P ≡{0}≡ Q1 * Q2]. So assume extension holds, then we get Q1', Q2'
+such that
+[[
+  P ≡ Q1' ∗ Q2'
+ Q1 ≡{0}≡ Q1'
+ Q2 ≡{0}≡ Q2'
+]]
+Now comes the contradiction:
+We know that [P (A,A) 1] does *not* hold, but I am going to show that
+[(Q1' ∗ Q2') (A,A) 1] holds, which would be a contraction.
+To this end, I will show (a) [Q1' (A,ε) 1] and (b) [Q2' (ε,A) 1].
+The result [(Q1' ∗ Q2') (A,A)] follows from [(A,ε) ⋅ (ε,A) = (A,A)].
+
+(a) Proof of [Q1' (A,ε) 1].
+    We have [P (A,B) 1], and thus [Q1' r1 1] and [Q2' r2 1] for some
+    [r1 ⋅ r2 = (A,B)]. There are four possible decompositions [r1 ⋅ r2]:
+    - [(ε,ε) ⋅ (A,B)]: This would give us [Q1' (ε,ε) 1], from which we
+      obtain (through down-closure and the equality [Q1 ≡{0}≡ Q1'] above) that
+      [Q1 (ε,ε) 0]. However, we know that's false.
+    - [(A,B) ⋅ (ε,ε)]: Can be excluded for similar reasons
+      (the second resource must not be ε in the 2nd component).
+    - [(ε,B) ⋅ (A,ε)]: Can be excluded for similar reasons
+      (the first resource must not be ε in the 1st component).
+    - [(A,ε) ⋅ (ε,B)]: This gives us the desired [Q1' (A,ε) 1].
+
+(b) Proof of [Q2' (ε,A) 1].
+    We have [P (B,A) 1], and thus [Q1' r1 1] and [Q2' r2 1] for some
+    [r1 ⋅ r2 = (B,A)]. There are again four possible decompositions,
+    and like above we can exclude three of them. This leaves us with
+    [(B,ε) ⋅ (ε,A)] and thus [Q2' (ε,A) 1].
+
+This completes the proof.
+
+*)
 
 Record uPred (M : ucmraT) : Type := UPred {
   uPred_holds :> nat → M → Prop;
