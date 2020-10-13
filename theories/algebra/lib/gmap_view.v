@@ -237,6 +237,21 @@ Section lemmas.
       rewrite lookup_insert_ne //.
   Qed.
 
+  Lemma gmap_view_delete m k v :
+    gmap_view_auth m ⋅ gmap_view_frag k (DfracOwn 1) v ~~>
+    gmap_view_auth (delete k m).
+  Proof.
+    apply view_update_dealloc=>n bf Hrel j [df va] Hbf /=.
+    destruct (decide (j = k)) as [->|Hne].
+    - edestruct (Hrel k) as (v' & _ & Hdf & _).
+      { rewrite lookup_op Hbf lookup_singleton -Some_op. done. }
+      exfalso. apply: dfrac_full_exclusive. apply Hdf.
+    - edestruct (Hrel j) as (v' & ? & ? & Hm).
+      { rewrite lookup_op lookup_singleton_ne // Hbf. done. }
+      exists v'. do 2 (split; first done).
+      rewrite lookup_delete_ne //.
+  Qed.
+
   Lemma gmap_view_update m k v v' :
     gmap_view_auth m ⋅ gmap_view_frag k (DfracOwn 1) v ~~>
       gmap_view_auth (<[k := v']> m) ⋅ gmap_view_frag k (DfracOwn 1) v'.
