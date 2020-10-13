@@ -6,20 +6,23 @@ From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 Import uPred.
 
-(** This file provides a generic mechanism for a point-to connective [l ↦{q} v]
-with fractional permissions (where [l : L] and [v : V] over some abstract type
-[L] for locations and [V] for values). This mechanism can be plugged into a
-language and related to the physical heap by using [gen_heap_interp σ] in the state
-interpretation of the weakest precondition, where [σ : gmap L V]. See heap-lang
-for an example.
+(** This file provides a generic mechanism for a language-level point-to
+connective [l ↦{q} v] reflecting the physical heap.  This library is designed to
+be used as a singleton (i.e., with only a single instance existing in any
+proof), with the [gen_heapG] typeclass providing the ghost names of that unique
+instance.  That way, [mapsto] does not need an explicit [gname] parameter.
+This mechanism can be plugged into a language and related to the physical heap
+by using [gen_heap_interp σ] in the state interpretation of the weakest
+precondition. See heap-lang for an example.
 
-This library is not meant to be used for ghost state unrelated to the physical
-heap, and will not be very usable for that case. Use [algebra.lib.gmap_view]
-together with [own] instead.
+If you are looking for a library providing "ghost heaps" independent of the
+physical state, you will likely want explicit ghost names and are thus better
+off using [algebra.lib.gmap_view] together with [base_logic.lib.own].
 
-Next to the point-to connective [l ↦{q} v], which keeps track of the value [v]
-of a location [l], this mechanism allows one to attach "meta" or "ghost" data to
-locations. This is done as follows:
+This library is generic in the types [L] for locations and [V] for values and
+supports fractional permissions.  Next to the point-to connective [l ↦{q} v],
+which keeps track of the value [v] of a location [l], this library also provides
+a way to attach "meta" or "ghost" data to locations. This is done as follows:
 
 - When one allocates a location, in addition to the point-to connective [l ↦ v],
   one also obtains the token [meta_token l ⊤]. This token is an exclusive
@@ -45,24 +48,22 @@ these can be matched up with the invariant namespaces. *)
 
 (** To implement this mechanism, we use three resource algebras:
 
-- An authoritative RA over [gmap L (fracR * agreeR V)], which keeps track of the
-  values of locations.
-- An authoritative RA over [gmap L (agree gname)], which keeps track of the meta
-  information of locations. This RA introduces an indirection, it keeps track of
-  a ghost name for each location.
+- A [gmap_view L V], which keeps track of the values of locations.
+- A [gmap_view L gname], which keeps track of the meta information of
+  locations. More specifically, this RA introduces an indirection: it keeps
+  track of a ghost name for each location.
 - The ghost names in the aforementioned authoritative RA refer to namespace maps
   [namespace_map (agree positive)], which store the actual meta information.
   This indirection is needed because we cannot perform frame preserving updates
   in an authoritative fragment without owning the full authoritative element
   (in other words, without the indirection [meta_set] would need [gen_heap_interp]
   as a premise).
+ *)
 
-Note that in principle we could have used one big authoritative RA to keep track
-of both values and ghost names for meta information, for example:
-[gmap L (option (fracR * agreeR V) ∗ option (agree gname)]. Due to the [option]s,
-this RA would be quite inconvenient to deal with. *)
+(** The CMRAs we need, and the global ghost names we are using.
 
-(** The CMRA we need. *)
+Typically, the adequacy theorem will use [gen_heap_init] to obtain an instance
+of this class; everything else should assume it as a premise.  *)
 Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
   gen_heap_inG :> inG Σ (gmap_viewR L (leibnizO V));
   gen_meta_inG :> inG Σ (gmap_viewR L gnameO);
