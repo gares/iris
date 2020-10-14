@@ -22,7 +22,7 @@ Class heapG Σ := HeapG {
 Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
   iris_invG := heapG_invG;
   state_interp σ κs _ :=
-    (gen_heap_ctx σ.(heap) ∗ proph_map_ctx κs σ.(used_proph_id))%I;
+    (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id))%I;
   fork_post _ := True%I;
 }.
 

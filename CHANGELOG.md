@@ -92,7 +92,10 @@ With this release, we dropped support for Coq 8.9.
   but should be applied to `iProp`. This avoids clients from having to push
   through the `iProp`/`iPreProp`-isomorphism themselves, which is now handled
   once and for all by the `own` construction.
-
+* Rename `gen_heap_ctx` to `gen_heap_interp`, since it is meant to be used in
+  the state interpretation of WP and since `_ctx` is elsewhere used as a suffix
+  indicating "this is a persistent assumption that clients should always have in
+  their context". Likewise, rename `proph_map_ctx` to `proph_map_interp`.
 
 **Changes in `program_logic`:**
 
@@ -113,6 +116,9 @@ s/\b(excl|frac|ufrac)_auth_agreeL/\1_auth_agree_L/g
 # auth_both_valid
 s/\bauth_both_valid\b/auth_both_valid_discrete/g
 s/\bauth_both_frac_valid\b/auth_both_frac_valid_discrete/g
+# gen_heap_ctx and proph_map_ctx
+s/\bgen_heap_ctx\b/gen_heap_interp/g
+s/\bproph_map_ctx\b/proph_map_interp/g
 EOF
 ```
 
