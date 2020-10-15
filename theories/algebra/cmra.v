@@ -279,10 +279,10 @@ Global Instance cmra_op_ne' : NonExpansive2 (@op A _).
 Proof. intros n x1 x2 Hx y1 y2 Hy. by rewrite Hy (comm _ x1) Hx (comm _ y2). Qed.
 Global Instance cmra_op_proper' : Proper ((≡) ==> (≡) ==> (≡)) (@op A _).
 Proof. apply (ne_proper_2 _). Qed.
-Global Instance cmra_validN_ne' : Proper (dist n ==> iff) (@validN A _ n) | 1.
+Global Instance cmra_validN_ne' n : Proper (dist n ==> iff) (@validN A _ n) | 1.
 Proof. by split; apply cmra_validN_ne. Qed.
-Global Instance cmra_validN_proper : Proper ((≡) ==> iff) (@validN A _ n) | 1.
-Proof. by intros n x1 x2 Hx; apply cmra_validN_ne', equiv_dist. Qed.
+Global Instance cmra_validN_proper n : Proper ((≡) ==> iff) (@validN A _ n) | 1.
+Proof. by intros x1 x2 Hx; apply cmra_validN_ne', equiv_dist. Qed.
 
 Global Instance cmra_valid_proper : Proper ((≡) ==> iff) (@valid A _).
 Proof.

@@ -17,8 +17,8 @@ Global Instance cons_ne : NonExpansive2 (@cons A) := _.
 Global Instance app_ne : NonExpansive2 (@app A) := _.
 Global Instance length_ne n : Proper (dist n ==> (=)) (@length A) := _.
 Global Instance tail_ne : NonExpansive (@tail A) := _.
-Global Instance take_ne : NonExpansive (@take A n) := _.
-Global Instance drop_ne : NonExpansive (@drop A n) := _.
+Global Instance take_ne n : NonExpansive (@take A n) := _.
+Global Instance drop_ne n : NonExpansive (@drop A n) := _.
 Global Instance head_ne : NonExpansive (head (A:=A)).
 Proof. destruct 1; by constructor. Qed.
 Global Instance list_lookup_ne i : NonExpansive (lookup (M:=list A) i).
@@ -37,7 +37,7 @@ Proof. intros ????; by apply Forall2_option_list, dist_option_Forall2. Qed.
 Global Instance list_filter_ne n P `{∀ x, Decision (P x)} :
   Proper (dist n ==> iff) P →
   Proper (dist n ==> dist n) (filter (B:=list A) P) := _.
-Global Instance replicate_ne : NonExpansive (@replicate A n) := _.
+Global Instance replicate_ne n : NonExpansive (@replicate A n) := _.
 Global Instance reverse_ne : NonExpansive (@reverse A) := _.
 Global Instance last_ne : NonExpansive (@last A).
 Proof. intros ????; by apply dist_option_Forall2, Forall2_last. Qed.
@@ -122,7 +122,7 @@ Instance list_bind_ne {A B : ofeT} (f : A → list A) n :
 Proof. induction 2; simpl; [constructor|solve_proper]. Qed.
 Instance list_join_ne {A : ofeT} : NonExpansive (mjoin (M:=list) (A:=A)).
 Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
-Instance zip_with_ne {A B C : ofeT} (f : A → B → C) :
+Instance zip_with_ne {A B C : ofeT} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
   Proper (dist n ==> dist n ==> dist n) (zip_with f).
 Proof. induction 2; destruct 1; simpl; [constructor..|f_equiv; [f_equiv|]; auto]. Qed.

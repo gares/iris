@@ -276,7 +276,7 @@ Implicit Types m : gmap K A.
 Implicit Types i : K.
 Implicit Types x y : A.
 
-Global Instance lookup_op_homomorphism :
+Global Instance lookup_op_homomorphism i :
   MonoidHomomorphism op op (≡) (lookup i : gmap K A → option A).
 Proof. split; [split|]; try apply _. intros m1 m2; by rewrite lookup_op. done. Qed.
 
