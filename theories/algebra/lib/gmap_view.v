@@ -27,7 +27,8 @@ Local Definition gmap_view_fragUR (K : Type) `{Countable K} (V : ofeT) : ucmraT 
 (** View relation. *)
 Section rel.
   Context (K : Type) `{Countable K} (V : ofeT).
-  Implicit Types (m : gmap K V) (k : K) (v : V) (n : nat) (f : gmap_view_fragUR K V).
+  Implicit Types (m : gmap K V) (k : K) (v : V) (n : nat).
+  Implicit Types (f : gmap K (dfrac * agree V)).
 
   Local Definition gmap_view_rel_raw n m f : Prop :=
     map_Forall (λ k dv, ∃ v, dv.2 ≡{n}≡ to_agree v ∧ ✓ dv.1 ∧ m !! k = Some v) f.
@@ -75,8 +76,37 @@ Section rel.
     - rewrite Hagree. done.
   Qed.
 
+  Local Lemma gmap_view_rel_raw_unit n :
+    ∃ m, gmap_view_rel_raw n m ε.
+  Proof. exists ∅. apply: map_Forall_empty. Qed.
+
   Local Canonical Structure gmap_view_rel : view_rel (gmapO K V) (gmap_view_fragUR K V) :=
-    ViewRel gmap_view_rel_raw gmap_view_rel_raw_mono gmap_view_rel_raw_valid.
+    ViewRel gmap_view_rel_raw gmap_view_rel_raw_mono
+            gmap_view_rel_raw_valid gmap_view_rel_raw_unit.
+
+  Local Lemma gmap_view_rel_exists n (f : gmap K (dfrac * agreeR V)) :
+    (∃ m, gmap_view_rel n m f) ↔ ✓{n} f.
+  Proof.
+    split.
+    { intros [m Hrel]. eapply gmap_view_rel_raw_valid, Hrel. }
+    intros Hf.
+    cut (∃ m, gmap_view_rel n m f ∧ ∀ k, f !! k = None → m !! k = None).
+    { naive_solver. }
+    induction f as [|k [dq ag] f Hk' IH] using map_ind.
+    { exists ∅. split; [|done]. apply: map_Forall_empty. }
+    move: (Hf k). rewrite lookup_insert=> -[/= ??].
+    destruct (to_agree_uninjN n ag) as [v ?]; [done|].
+    destruct IH as (m & Hm & Hdom).
+    { intros k'. destruct (decide (k = k')) as [->|?]; [by rewrite Hk'|].
+      move: (Hf k'). by rewrite lookup_insert_ne. }
+    exists (<[k:=v]> m).
+    rewrite /gmap_view_rel /= /gmap_view_rel_raw map_Forall_insert //=. split_and!.
+    - exists v. by rewrite lookup_insert.
+    - eapply map_Forall_impl; [apply Hm|]; simpl.
+      intros k' [dq' ag'] (v'&?&?&?). exists v'.
+      rewrite lookup_insert_ne; naive_solver.
+    - intros k'. rewrite !lookup_insert_None. naive_solver.
+  Qed.
 
   Local Lemma gmap_view_rel_discrete :
     OfeDiscrete V → ViewRelDiscrete gmap_view_rel.
@@ -148,15 +178,13 @@ Section lemmas.
 
   Lemma gmap_view_frag_validN n k dq v : ✓{n} gmap_view_frag k dq v ↔ ✓ dq.
   Proof.
-    rewrite view_frag_validN singleton_validN. split.
-    - intros [??]. done.
-    - intros ?. split; done.
+    rewrite view_frag_validN gmap_view_rel_exists singleton_validN pair_validN.
+    naive_solver.
   Qed.
   Lemma gmap_view_frag_valid k dq v : ✓ gmap_view_frag k dq v ↔ ✓ dq.
   Proof.
-    rewrite view_frag_valid singleton_valid. split.
-    - intros [??]. done.
-    - intros ?. split; done.
+    rewrite cmra_valid_validN. setoid_rewrite gmap_view_frag_validN.
+    naive_solver eauto using O.
   Qed.
 
   Lemma gmap_view_frag_op k dq1 dq2 v :
@@ -171,18 +199,15 @@ Section lemmas.
     ✓{n} (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ↔
       ✓ (dq1 ⋅ dq2) ∧ v1 ≡{n}≡ v2.
   Proof.
-    rewrite view_frag_validN singleton_op singleton_validN -pair_op.
-    split; intros [Hfrac Hagree]; (split; first done); simpl in *.
-    - apply to_agree_op_invN. done.
-    - rewrite Hagree agree_idemp. done.
+    rewrite view_frag_validN gmap_view_rel_exists singleton_op singleton_validN.
+    by rewrite -pair_op pair_validN to_agree_op_validN.
   Qed.
   Lemma gmap_view_frag_op_valid k dq1 dq2 v1 v2 :
     ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ↔ ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
   Proof.
-    rewrite view_frag_valid singleton_op singleton_valid -pair_op.
-    split; intros [Hfrac Hagree]; (split; first done); simpl in *.
-    - apply to_agree_op_inv. done.
-    - rewrite Hagree agree_idemp. done.
+    rewrite view_frag_valid. setoid_rewrite gmap_view_rel_exists.
+    rewrite -cmra_valid_validN singleton_op singleton_valid.
+    by rewrite -pair_op pair_valid to_agree_op_valid.
   Qed.
   Lemma gmap_view_frag_op_valid_L `{!LeibnizEquiv V} k dq1 dq2 v1 v2 :
     ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ↔ ✓ (dq1 ⋅ dq2) ∧ v1 = v2.
@@ -278,10 +303,7 @@ Section lemmas.
   Lemma gmap_view_persist k q v :
     gmap_view_frag k (DfracOwn q) v ~~> gmap_view_frag k DfracDiscarded v.
   Proof.
-    apply view_update_frag; last first.
-    { eapply singleton_update, prod_update; simpl; last done.
-      apply dfrac_discard_update. }
-    move=>m n bf Hrel j [df va] /=.
+    apply view_update_frag=>m n bf Hrel j [df va] /=.
     rewrite lookup_op. destruct (decide (j = k)) as [->|Hne].
     - rewrite lookup_singleton.
       edestruct (Hrel k ((DfracOwn q, to_agree v) ⋅? bf !! k)) as (v' & Hdf & Hva & Hm).
@@ -314,7 +336,6 @@ Section lemmas.
     IsOp dq dq1 dq2 →
     IsOp' (gmap_view_frag k dq v) (gmap_view_frag k dq1 v) (gmap_view_frag k dq2 v).
   Proof. rewrite /IsOp' /IsOp => ->. apply gmap_view_frag_op. Qed.
-
 End lemmas.
 
 (** Functor *)

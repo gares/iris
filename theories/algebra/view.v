@@ -49,7 +49,9 @@ Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
     n2 ≤ n1 →
     view_rel_holds n2 a2 b2;
   view_rel_validN n a b :
-    view_rel_holds n a b → ✓{n} b
+    view_rel_holds n a b → ✓{n} b;
+  view_rel_unit n :
+    ∃ a, view_rel_holds n a ε
 }.
 Arguments ViewRel {_ _} _ _.
 Arguments view_rel_holds {_ _} _ _ _ _.
@@ -175,13 +177,13 @@ Section cmra.
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x))
-    | None => ✓ view_frag_proj x
+    | None => ∀ n, ∃ a, rel n a (view_frag_proj x)
     end.
   Instance view_validN : ValidN (view rel) := λ n x,
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
-    | None => ✓{n} view_frag_proj x
+    | None => ∃ a, rel n a (view_frag_proj x)
     end.
   Instance view_pcore : PCore (view rel) := λ x,
     Some (View (core (view_auth_proj x)) (core (view_frag_proj x))).
@@ -193,13 +195,13 @@ Section cmra.
       match view_auth_proj x with
       | Some (q, ag) =>
          ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x))
-      | None => ✓ view_frag_proj x
+      | None => ∀ n, ∃ a, rel n a (view_frag_proj x)
       end := eq_refl _.
   Local Definition view_validN_eq :
     validN = λ n x, 
       match view_auth_proj x with
       | Some (q, ag) => ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
-      | None => ✓{n} view_frag_proj x
+      | None => ∃ a, rel n a (view_frag_proj x)
       end := eq_refl _.
 
   Lemma view_auth_frac_validN n q a : ✓{n} (●V{q} a) ↔ ✓{n} q ∧ rel n a ε.
@@ -211,7 +213,7 @@ Section cmra.
   Proof.
     rewrite view_auth_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
   Qed.
-  Lemma view_frag_validN n b : ✓{n} (◯V b) ↔ ✓{n} b.
+  Lemma view_frag_validN n b : ✓{n} (◯V b) ↔ ∃ a, rel n a b.
   Proof. done. Qed.
   Lemma view_both_frac_validN n q a b :
     ✓{n} (●V{q} a ⋅ ◯V b) ↔ ✓{n} q ∧ rel n a b.
@@ -232,7 +234,7 @@ Section cmra.
   Qed.
   Lemma view_auth_valid a : ✓ (●V a) ↔ ∀ n, rel n a ε.
   Proof. rewrite view_auth_frac_valid frac_valid'. naive_solver. Qed.
-  Lemma view_frag_valid b : ✓ (◯V b) ↔ ✓ b.
+  Lemma view_frag_valid b : ✓ (◯V b) ↔ ∀ n, ∃ a, rel n a b.
   Proof. done. Qed.
   Lemma view_both_frac_valid q a b : ✓ (●V{q} a ⋅ ◯V b) ↔ ✓ q ∧ ∀ n, rel n a b.
   Proof.
@@ -249,16 +251,19 @@ Section cmra.
       (λ x : option (frac * agree A) * B, View x.1 x.2)
       (λ x, (view_auth_proj x, view_frag_proj x))); try done.
     - intros [x b]. by rewrite /= pair_pcore !cmra_pcore_core.
-    - intros n [[[q ag]|] b]; rewrite /= view_validN_eq /=; last done.
-      intros (?&a&->&?). repeat split; simpl; [done|]. by eapply view_rel_validN.
+    - intros n [[[q ag]|] b]; rewrite /= view_validN_eq /=.
+      + intros (?&a&->&?). repeat split; simpl; [done|]. by eapply view_rel_validN.
+      + intros [a ?]. repeat split; simpl. by eapply view_rel_validN.
     - rewrite view_validN_eq.
       intros n [x1 b1] [x2 b2] [Hx ?]; simpl in *;
         destruct Hx as [[q1 ag1] [q2 ag2] [??]|]; intros ?; by ofe_subst.
     - rewrite view_valid_eq view_validN_eq.
-      intros [[[q aa]|] b]; rewrite /= cmra_valid_validN; naive_solver.
-    - rewrite view_validN_eq=> n [[[q ag]|] b] /=; [|by eauto using cmra_validN_S].
-      intros [? (a&?&?)]; split; [done|]. exists a; split; [by eauto using dist_S|].
-      apply view_rel_mono with (S n) a b; auto with lia.
+      intros [[[q aa]|] b]; rewrite /= ?cmra_valid_validN; naive_solver.
+    - rewrite view_validN_eq=> n [[[q ag]|] b] /=.
+      + intros [? (a&?&?)]; split; [done|].
+        exists a; split; [by eauto using dist_S|].
+        apply view_rel_mono with (S n) a b; auto with lia.
+      + intros [a ?]. exists a. apply view_rel_mono with (S n) a b; auto with lia.
     - rewrite view_validN_eq=> n [[[q1 ag1]|] b1] [[[q2 ag2]|] b2] /=.
       + intros [?%cmra_validN_op_l (a & Haga & ?)]. split; [done|].
         assert (ag1 ≡{n}≡ ag2) as Ha12 by (apply agree_op_invN; by rewrite Haga).
@@ -266,8 +271,10 @@ Section cmra.
         apply view_rel_mono with n a (b1 ⋅ b2); eauto using cmra_includedN_l.
       + intros [? (a & Haga & ?)]. split; [done|]. exists a; split; [done|].
         apply view_rel_mono with n a (b1 ⋅ b2); eauto using cmra_includedN_l.
-      + intros [? (a & Haga & ?%view_rel_validN)]. eauto using cmra_validN_op_l.
-      + eauto using cmra_validN_op_l.
+      + intros [? (a & Haga & ?)]. exists a.
+        apply view_rel_mono with n a (b1 ⋅ b2); eauto using cmra_includedN_l.
+      + intros [a ?]. exists a.
+        apply view_rel_mono with n a (b1 ⋅ b2); eauto using cmra_includedN_l.
   Qed.
   Canonical Structure viewR := CmraT (view rel) view_cmra_mixin.
 
@@ -284,14 +291,14 @@ Section cmra.
     split; [apply _|]=> -[[[q ag]|] b]; rewrite view_valid_eq view_validN_eq /=.
     - rewrite -cmra_discrete_valid_iff.
       setoid_rewrite <-(discrete_iff _ ag). naive_solver.
-    - by rewrite -cmra_discrete_valid_iff.
+    - naive_solver.
   Qed.
 
   Instance view_empty : Unit (view rel) := View ε ε.
   Lemma view_ucmra_mixin : UcmraMixin (view rel).
   Proof.
     split; simpl.
-    - rewrite view_valid_eq /=. apply ucmra_unit_valid.
+    - rewrite view_valid_eq /=. apply view_rel_unit.
     - by intros x; constructor; rewrite /= left_id.
     - do 2 constructor; [done| apply (core_id_core _)].
   Qed.
@@ -461,10 +468,9 @@ Section cmra.
   Qed.
   Lemma view_update_frag b b' :
     (∀ a n bf, rel n a (b ⋅ bf) → rel n a (b' ⋅ bf)) →
-    b ~~> b' →
     ◯V b ~~> ◯V b'.
   Proof.
-    rewrite !cmra_total_update view_validN_eq=> ?? n [[[q ag]|] bf]; naive_solver.
+    rewrite !cmra_total_update view_validN_eq=> ? n [[[q ag]|] bf]; naive_solver.
   Qed.
 
   Lemma view_update_frac_alloc q a b :

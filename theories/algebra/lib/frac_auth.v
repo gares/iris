@@ -84,9 +84,9 @@ Section frac_auth.
   Proof. rewrite !cmra_valid_validN. by setoid_rewrite frac_auth_auth_validN. Qed.
 
   Lemma frac_auth_frag_validN n q a : ✓{n} (◯F{q} a) ↔ ✓{n} q ∧ ✓{n} a.
-  Proof. done. Qed.
+  Proof. by rewrite /frac_auth_frag auth_frag_validN. Qed.
   Lemma frac_auth_frag_valid q a : ✓ (◯F{q} a) ↔ ✓ q ∧ ✓ a.
-  Proof. done. Qed.
+  Proof. by rewrite /frac_auth_frag auth_frag_valid. Qed.
 
   Lemma frac_auth_frag_op q1 q2 a1 a2 : ◯F{q1+q2} (a1 ⋅ a2) ≡ ◯F{q1} a1 ⋅ ◯F{q2} a2.
   Proof. done. Qed.
