@@ -16,7 +16,10 @@ agreement, i.e., [✓ (●{p1} a1 ⋅ ●{p2} a2) → a1 ≡ a2]. *)
 Definition auth_view_rel_raw {A : ucmraT} (n : nat) (a b : A) : Prop :=
   b ≼{n} a ∧ ✓{n} a.
 Lemma auth_view_rel_raw_mono (A : ucmraT) n1 n2 (a1 a2 b1 b2 : A) :
-  auth_view_rel_raw n1 a1 b1 → a1 ≡{n2}≡ a2 → b2 ≼{n2} b1 → n2 ≤ n1 →
+  auth_view_rel_raw n1 a1 b1 →
+  a1 ≡{n2}≡ a2 →
+  b2 ≼{n2} b1 →
+  n2 ≤ n1 →
   auth_view_rel_raw n2 a2 b2.
 Proof.
   intros [??] Ha12 ??. split.
