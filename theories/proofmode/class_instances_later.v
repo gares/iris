@@ -235,7 +235,7 @@ Global Instance into_except_0_persistently P Q :
 Proof. rewrite /IntoExcept0=> ->. by rewrite except_0_persistently. Qed.
 
 (** ElimModal *)
-Global Instance elim_modal_timeless p P Q :
+Global Instance elim_modal_timeless p P P' Q :
   IntoExcept0 P P' → IsExcept0 Q → ElimModal True p p P P' Q Q.
 Proof.
   intros. rewrite /ElimModal (except_0_intro (_ -∗ _)%I) (into_except_0 P).

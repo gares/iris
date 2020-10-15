@@ -822,8 +822,8 @@ Section sum.
   Instance sum_dist : Dist (A + B) := λ n, sum_relation (dist n) (dist n).
   Global Instance inl_ne : NonExpansive (@inl A B) := _.
   Global Instance inr_ne : NonExpansive (@inr A B) := _.
-  Global Instance inl_ne_inj : Inj (dist n) (dist n) (@inl A B) := _.
-  Global Instance inr_ne_inj : Inj (dist n) (dist n) (@inr A B) := _.
+  Global Instance inl_ne_inj n : Inj (dist n) (dist n) (@inl A B) := _.
+  Global Instance inr_ne_inj n : Inj (dist n) (dist n) (@inr A B) := _.
 
   Definition sum_ofe_mixin : OfeMixin (A + B).
   Proof.
@@ -1003,7 +1003,7 @@ Section option.
   Proof. by constructor. Qed.
   Global Instance is_Some_ne n : Proper (dist n ==> iff) (@is_Some A).
   Proof. destruct 1; split; eauto. Qed.
-  Global Instance Some_dist_inj : Inj (dist n) (dist n) (@Some A).
+  Global Instance Some_dist_inj n : Inj (dist n) (dist n) (@Some A).
   Proof. by inversion_clear 1. Qed.
   Global Instance from_option_ne {B} (R : relation B) (f : A → B) n :
     Proper (dist n ==> R) f → Proper (R ==> dist n ==> R) (from_option f).

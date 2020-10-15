@@ -312,7 +312,7 @@ Proof. by rewrite /KnownMakeLaterN /MakeLaterN laterN_True. Qed.
 Global Instance make_laterN_emp `{!BiAffine PROP} n :
   @KnownMakeLaterN PROP n emp emp | 0.
 Proof. by rewrite /KnownMakeLaterN /MakeLaterN laterN_emp. Qed.
-Global Instance make_laterN_default P : MakeLaterN n P (▷^n P) | 100.
+Global Instance make_laterN_default n P : MakeLaterN n P (▷^n P) | 100.
 Proof. by rewrite /MakeLaterN. Qed.
 
 Global Instance frame_later p R R' P Q Q' :

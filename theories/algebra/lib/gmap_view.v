@@ -306,7 +306,7 @@ Section lemmas.
   Qed.
 
   (** Typeclass instances *)
-  Global Instance gmap_view_frag_core_id k v : CoreId dq → CoreId (gmap_view_frag k dq v).
+  Global Instance gmap_view_frag_core_id k dq v : CoreId dq → CoreId (gmap_view_frag k dq v).
   Proof. apply _. Qed.
 
   Global Instance gmap_view_cmra_discrete : OfeDiscrete V → CmraDiscrete (gmap_viewR K V).

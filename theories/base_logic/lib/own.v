@@ -313,7 +313,7 @@ Qed.
 Section big_op_instances.
   Context `{!inG Σ (A:ucmraT)}.
 
-  Global Instance own_cmra_sep_homomorphism :
+  Global Instance own_cmra_sep_homomorphism γ :
     WeakMonoidHomomorphism op uPred_sep (≡) (own γ).
   Proof. split; try apply _. apply own_op. Qed.
 
@@ -334,7 +334,7 @@ Section big_op_instances.
     own γ ([^op mset] x ∈ X, g x) ⊣⊢ [∗ mset] x ∈ X, own γ (g x).
   Proof. apply (big_opMS_commute1 _). Qed.
 
-  Global Instance own_cmra_sep_entails_homomorphism :
+  Global Instance own_cmra_sep_entails_homomorphism γ :
     MonoidHomomorphism op uPred_sep (⊢) (own γ).
   Proof.
     split; [split|]; try apply _.
