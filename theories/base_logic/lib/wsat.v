@@ -54,7 +54,7 @@ Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{!invG Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
-    own invariant_name (gmap_view_auth (invariant_unfold <$> I)) ∗
+    own invariant_name (gmap_view_auth 1 (invariant_unfold <$> I)) ∗
     [∗ map] i ↦ Q ∈ I, ▷ Q ∗ ownD {[i]} ∨ ownE {[i]})%I.
 
 Section wsat.
@@ -106,7 +106,7 @@ Lemma ownD_singleton_twice i : ownD {[i]} ∗ ownD {[i]} ⊢ False.
 Proof. rewrite ownD_disjoint. iIntros (?); set_solver. Qed.
 
 Lemma invariant_lookup (I : gmap positive (iProp Σ)) i P :
-  own invariant_name (gmap_view_auth (invariant_unfold <$> I)) ∗
+  own invariant_name (gmap_view_auth 1 (invariant_unfold <$> I)) ∗
   own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)) ⊢
   ∃ Q, ⌜I !! i = Some Q⌝ ∗ ▷ (Q ≡ P).
 Proof.
@@ -188,7 +188,7 @@ End wsat.
 Lemma wsat_alloc `{!invPreG Σ} : ⊢ |==> ∃ _ : invG Σ, wsat ∗ ownE ⊤.
 Proof.
   iIntros.
-  iMod (own_alloc (gmap_view_auth ∅)) as (γI) "HI";
+  iMod (own_alloc (gmap_view_auth 1 ∅)) as (γI) "HI";
     first by apply gmap_view_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
