@@ -55,7 +55,7 @@ Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
 }.
 Arguments ViewRel {_ _} _ _.
 Arguments view_rel_holds {_ _} _ _ _ _.
-Instance: Params (@view_rel) 4 := {}.
+Instance: Params (@view_rel_holds) 4 := {}.
 
 Instance view_rel_ne {A B} (rel : view_rel A B) n :
   Proper (dist n ==> dist n ==> iff) (rel n).
