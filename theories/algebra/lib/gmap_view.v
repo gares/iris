@@ -180,19 +180,19 @@ Section lemmas.
   Lemma gmap_view_auth_valid m : ✓ gmap_view_auth 1 m.
   Proof. rewrite gmap_view_auth_frac_valid. done. Qed.
 
-  Lemma auth_auth_frac_op p q m :
+  Lemma gmap_view_auth_frac_op p q m :
     gmap_view_auth (p + q) m ≡ gmap_view_auth p m ⋅ gmap_view_auth q m.
   Proof. apply view_auth_frac_op. Qed.
-  Lemma auth_auth_frac_op_invN n p m1 q m2 :
+  Lemma gmap_view_auth_frac_op_invN n p m1 q m2 :
     ✓{n} (gmap_view_auth p m1 ⋅ gmap_view_auth q m2) → m1 ≡{n}≡ m2.
   Proof. apply view_auth_frac_op_invN. Qed.
-  Lemma auth_auth_frac_op_inv p m1 q m2 :
+  Lemma gmap_view_auth_frac_op_inv p m1 q m2 :
     ✓ (gmap_view_auth p m1 ⋅ gmap_view_auth q m2) → m1 ≡ m2.
   Proof. apply view_auth_frac_op_inv. Qed.
-  Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv V} q m1 p m2 :
+  Lemma gmap_view_auth_frac_op_inv_L `{!LeibnizEquiv V} q m1 p m2 :
     ✓ (gmap_view_auth p m1 ⋅ gmap_view_auth q m2) → m1 = m2.
   Proof. apply view_auth_frac_op_inv_L, _. Qed.
-  Global Instance auth_auth_frac_is_op q q1 q2 m :
+  Global Instance gmap_view_auth_frac_is_op q q1 q2 m :
     IsOp q q1 q2 → IsOp' (gmap_view_auth q m) (gmap_view_auth q1 m) (gmap_view_auth q2 m).
   Proof. rewrite /gmap_view_auth. apply _. Qed.
 
