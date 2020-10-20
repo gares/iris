@@ -863,17 +863,8 @@ Proof. by unseal. Qed.
 Lemma cmra_valid_weaken {A : cmraT} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
 Proof. unseal; split=> n x _; apply cmra_validN_op_l. Qed.
 
-Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
-Proof. by unseal. Qed.
-Lemma option_validI {A : cmraT} (mx : option A) :
-  ✓ mx ⊣⊢ match mx with Some x => ✓ x | None => True : uPred M end.
-Proof. unseal. by destruct mx. Qed.
-
 Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
-
-Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
-Proof. by unseal. Qed.
 
 (** This is really just a special case of an entailment
 between two [siProp], but we do not have the infrastructure

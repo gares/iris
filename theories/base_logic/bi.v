@@ -215,15 +215,8 @@ Lemma plainly_cmra_valid_1 {A : cmraT} (a : A) : ✓ a ⊢ ■ ✓ a.
 Proof. exact: uPred_primitive.plainly_cmra_valid_1. Qed.
 Lemma cmra_valid_weaken {A : cmraT} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
 Proof. exact: uPred_primitive.cmra_valid_weaken. Qed.
-Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
-Proof. exact: uPred_primitive.prod_validI. Qed.
-Lemma option_validI {A : cmraT} (mx : option A) :
-  ✓ mx ⊣⊢ match mx with Some x => ✓ x | None => True : uPred M end.
-Proof. exact: uPred_primitive.option_validI. Qed.
 Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. exact: uPred_primitive.discrete_valid. Qed.
-Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) : ✓ g ⊣⊢ ∀ i, ✓ g i.
-Proof. exact: uPred_primitive.discrete_fun_validI. Qed.
 
 (** This is really just a special case of an entailment
 between two [siProp], but we do not have the infrastructure

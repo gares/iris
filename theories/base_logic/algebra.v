@@ -8,6 +8,15 @@ From iris Require Import options.
 Section upred.
 Context {M : ucmraT}.
 
+Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢@{uPredI M} ✓ x.1 ∧ ✓ x.2.
+Proof. by uPred.unseal. Qed.
+Lemma option_validI {A : cmraT} (mx : option A) :
+  ✓ mx ⊣⊢@{uPredI M} match mx with Some x => ✓ x | None => True : uPred M end.
+Proof. uPred.unseal. by destruct mx. Qed.
+Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) :
+  ✓ g ⊣⊢@{uPredI M} ∀ i, ✓ g i.
+Proof. by uPred.unseal. Qed.
+
 Section gmap_ofe.
   Context `{Countable K} {A : ofeT}.
   Implicit Types m : gmap K A.
@@ -26,10 +35,10 @@ Section gmap_cmra.
   Lemma singleton_validI i x : ✓ ({[ i := x ]} : gmap K A) ⊣⊢@{uPredI M} ✓ x.
   Proof.
     rewrite gmap_validI. apply: anti_symm.
-    - rewrite (bi.forall_elim i) lookup_singleton uPred.option_validI. done.
+    - rewrite (bi.forall_elim i) lookup_singleton option_validI. done.
     - apply bi.forall_intro=>j. destruct (decide (i = j)) as [<-|Hne].
-      + rewrite lookup_singleton uPred.option_validI. done.
-      + rewrite lookup_singleton_ne // uPred.option_validI.
+      + rewrite lookup_singleton option_validI. done.
+      + rewrite lookup_singleton_ne // option_validI.
         apply bi.True_intro.
   Qed.
 End gmap_cmra.
@@ -241,7 +250,7 @@ Section gmap_view.
       ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
   Proof.
     rewrite /gmap_view_frag -view_frag_op view_frag_validI.
-    rewrite singleton_op singleton_validI -pair_op uPred.prod_validI /=.
+    rewrite singleton_op singleton_validI -pair_op prod_validI /=.
     apply bi.and_mono; first done.
     rewrite agree_validI agree_equivI. done.
   Qed.
