@@ -106,10 +106,14 @@ Section auth.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
   Lemma auth_frag_validN n b : ✓{n} (◯ b) ↔ ✓{n} b.
   Proof. by rewrite view_frag_validN auth_view_rel_exists. Qed.
-  (** Stated as an implication (instead of a bi-implication) to force [apply] to
-  use the lemma in the right direction. *)
-  Lemma auth_frag_frag_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
+  (** Also stated as implications, which can be used to force [apply] to use the
+  lemma in the right direction. *)
+  Lemma auth_frag_frag_validN n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) ↔ ✓{n} (b1 ⋅ b2).
   Proof. apply auth_frag_validN. Qed.
+  Lemma auth_frag_frag_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
+  Proof. apply auth_frag_frag_validN. Qed.
+  Lemma auth_frag_frag_validN_2 n b1 b2 : ✓{n} (b1 ⋅ b2) → ✓{n} (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_frag_validN. Qed.
 
   Lemma auth_both_frac_validN n q a b :
     ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
@@ -132,10 +136,14 @@ Section auth.
     rewrite view_frag_valid cmra_valid_validN.
     by setoid_rewrite auth_view_rel_exists.
   Qed.
-  (** Stated as an implication (instead of a bi-implication) to force [apply] to
-  use the lemma in the right direction. *)
-  Lemma auth_frag_frag_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
+  (** Also stated as implications, which can be used to force [apply] to use the
+  lemma in the right direction. *)
+  Lemma auth_frag_frag_valid b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) ↔ ✓ (b1 ⋅ b2).
   Proof. apply auth_frag_valid. Qed.
+  Lemma auth_frag_frag_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
+  Proof. apply auth_frag_frag_valid. Qed.
+  Lemma auth_frag_frag_valid_2 b1 b2 : ✓ (b1 ⋅ b2) → ✓ (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_frag_valid. Qed.
 
   (** These lemma statements are a bit awkward as we cannot possibly extract a
   single witness for [b ≼ a] from validity, we have to make do with one witness
