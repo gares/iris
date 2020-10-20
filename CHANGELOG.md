@@ -46,6 +46,9 @@ With this release, we dropped support for Coq 8.9.
   key, including support for persistent read-only ownership through `dfrac`.
   See `theories/algebra/lib/gmap_view.v` for further information.
   NOTE: The API surface for `gmap_view` is experimental and subject to change.
+* Move the `*_validI` and `*_equivI` lemmas to a new module, `base_logic.algebra`.
+  That module is exported by `base_logic.base_logic` so it should usually be
+  available everywhere without further changes.
 
 **Changes in `proofmode`:**
 
@@ -96,6 +99,10 @@ With this release, we dropped support for Coq 8.9.
   the state interpretation of WP and since `_ctx` is elsewhere used as a suffix
   indicating "this is a persistent assumption that clients should always have in
   their context". Likewise, rename `proph_map_ctx` to `proph_map_interp`.
+* Move `uPred.prod_validI`, `uPred.option_validI`, and
+  `uPred.discrete_fun_validI` to the new `base_logic.algebra` module. That
+  module is exported by `base_logic.base_logic` so these names are now usually
+  available everywhere, and no longer inside the `uPred` module.
 
 **Changes in `program_logic`:**
 

@@ -1,10 +1,9 @@
 From stdpp Require Export list.
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import updates local_updates.
-From iris.base_logic Require Import base_logic.
+From iris.algebra Require Import updates local_updates big_op.
 From iris Require Import options.
 
-Section cofe.
+Section ofe.
 Context {A : ofeT}.
 Implicit Types l : list A.
 
@@ -94,10 +93,7 @@ Proof. inversion_clear 1; constructor. Qed.
 Global Instance cons_discrete x l : Discrete x → Discrete l → Discrete (x :: l).
 Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
 
-(** Internalized properties *)
-Lemma list_equivI {M} l1 l2 : l1 ≡ l2 ⊣⊢@{uPredI M} ∀ i, l1 !! i ≡ l2 !! i.
-Proof. uPred.unseal; constructor=> n x ?. apply list_dist_lookup. Qed.
-End cofe.
+End ofe.
 
 Arguments listO : clear implicits.
 
@@ -137,22 +133,6 @@ Proof.
   { apply monoid_ne. }
   intros k. assert (l1 !! k ≡{n}≡ l2 !! k) as Hlk by (by f_equiv).
   destruct (l1 !! k) eqn:?, (l2 !! k) eqn:?; inversion Hlk; naive_solver.
-Qed.
-
-Lemma big_sepL2_ne_2 {PROP : bi} {A B : ofeT}
-    (Φ Ψ : nat → A → B → PROP) l1 l2 l1' l2' n :
-  l1 ≡{n}≡ l1' → l2 ≡{n}≡ l2' →
-  (∀ k y1 y1' y2 y2',
-    l1 !! k = Some y1 → l1' !! k = Some y1' → y1 ≡{n}≡ y1' →
-    l2 !! k = Some y2 → l2' !! k = Some y2' → y2 ≡{n}≡ y2' →
-    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
-  ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2)%I ≡{n}≡ ([∗ list] k ↦ y1;y2 ∈ l1';l2', Ψ k y1 y2)%I.
-Proof.
-  intros Hl1 Hl2 Hf. rewrite !big_sepL2_alt. f_equiv.
-  { do 2 f_equiv; by apply: length_ne. }
-  apply big_opL_ne_2; [by f_equiv|].
-  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%lookup_zip_with_Some
-    (?&?&[=<- <-]&?&?)%lookup_zip_with_Some [??]; naive_solver.
 Qed.
 
 (** Functor *)
@@ -314,9 +294,6 @@ Section cmra.
   Global Instance list_core_id l : (∀ x : A, CoreId x) → CoreId l.
   Proof. intros Hyp; by apply list_core_id'. Qed.
 
-  (** Internalized properties *)
-  Lemma list_validI {M} l : ✓ l ⊣⊢@{uPredI M} ∀ i, ✓ (l !! i).
-  Proof. uPred.unseal; constructor=> n x ?. apply list_lookup_validN. Qed.
 End cmra.
 
 Arguments listR : clear implicits.

@@ -1,7 +1,7 @@
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import local_updates.
-From iris.base_logic Require Import base_logic.
+From iris.algebra Require Import updates local_updates.
 From iris Require Import options.
+
 Local Arguments pcore _ _ !_ /.
 Local Arguments cmra_pcore _ !_ /.
 Local Arguments validN _ _ _ !_ /.
@@ -26,7 +26,7 @@ Instance maybe_Cinl {A B} : Maybe (@Cinl A B) := λ x,
 Instance maybe_Cinr {A B} : Maybe (@Cinr A B) := λ x,
   match x with Cinr b => Some b | _ => None end.
 
-Section cofe.
+Section ofe.
 Context {A B : ofeT}.
 Implicit Types a : A.
 Implicit Types b : B.
@@ -108,19 +108,7 @@ Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
 Global Instance Cinr_discrete b : Discrete b → Discrete (Cinr b).
 Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
 
-(** Internalized properties *)
-Lemma csum_equivI {M} (x y : csum A B) :
-  x ≡ y ⊣⊢@{uPredI M} match x, y with
-                      | Cinl a, Cinl a' => a ≡ a'
-                      | Cinr b, Cinr b' => b ≡ b'
-                      | CsumBot, CsumBot => True
-                      | _, _ => False
-                      end.
-Proof.
-  uPred.unseal; do 2 split; first by destruct 1.
-  by destruct x, y; try destruct 1; try constructor.
-Qed.
-End cofe.
+End ofe.
 
 Arguments csumO : clear implicits.
 
@@ -320,15 +308,6 @@ Proof.
   - intros [Hxy|?]; [inversion Hxy|]; naive_solver.
   - naive_solver by f_equiv.
 Qed.
-
-(** Internalized properties *)
-Lemma csum_validI {M} (x : csum A B) :
-  ✓ x ⊣⊢@{uPredI M} match x with
-                    | Cinl a => ✓ a
-                    | Cinr b => ✓ b
-                    | CsumBot => False
-                    end.
-Proof. uPred.unseal. by destruct x. Qed.
 
 (** Updates *)
 Lemma csum_update_l (a1 a2 : A) : a1 ~~> a2 → Cinl a1 ~~> Cinl a2.

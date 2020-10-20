@@ -1,10 +1,9 @@
 From stdpp Require Export list gmap.
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import updates local_updates proofmode_classes.
-From iris.base_logic Require Import base_logic.
+From iris.algebra Require Import updates local_updates proofmode_classes big_op.
 From iris Require Import options.
 
-Section cofe.
+Section ofe.
 Context `{Countable K} {A : ofeT}.
 Implicit Types m : gmap K A.
 Implicit Types i : K.
@@ -96,9 +95,7 @@ Lemma insert_idN n m i x :
 Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 
 (** Internalized properties *)
-Lemma gmap_equivI {M} m1 m2 : m1 ≡ m2 ⊣⊢@{uPredI M} ∀ i, m1 !! i ≡ m2 !! i.
-Proof. by uPred.unseal. Qed.
-End cofe.
+End ofe.
 
 Arguments gmapO _ {_ _} _.
 
@@ -137,26 +134,6 @@ Proof.
   { apply monoid_ne. }
   intros k. assert (m1 !! k ≡{n}≡ m2 !! k) as Hlk by (by f_equiv).
   destruct (m1 !! k) eqn:?, (m2 !! k) eqn:?; inversion Hlk; naive_solver.
-Qed.
-
-Lemma big_sepM2_ne_2 {PROP : bi} `{Countable K} (A B : ofeT)
-    (Φ Ψ : K → A → B → PROP) m1 m2 m1' m2' n :
-  m1 ≡{n}≡ m1' → m2 ≡{n}≡ m2' →
-  (∀ k y1 y1' y2 y2',
-    m1 !! k = Some y1 → m1' !! k = Some y1' → y1 ≡{n}≡ y1' →
-    m2 !! k = Some y2 → m2' !! k = Some y2' → y2 ≡{n}≡ y2' →
-    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
-  ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2)%I ≡{n}≡ ([∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2)%I.
-Proof.
-  intros Hm1 Hm2 Hf. rewrite big_sepM2_eq /big_sepM2_def. f_equiv.
-  { f_equiv; split; intros Hm k.
-    - trans (is_Some (m1 !! k)); [symmetry; apply: is_Some_ne; by f_equiv|].
-      rewrite Hm. apply: is_Some_ne; by f_equiv.
-    - trans (is_Some (m1' !! k)); [apply: is_Some_ne; by f_equiv|].
-      rewrite Hm. symmetry. apply: is_Some_ne; by f_equiv. }
-  apply big_opM_ne_2; [by f_equiv|].
-  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
-    (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
 Qed.
 
 (* CMRA *)
@@ -253,18 +230,6 @@ Proof.
 Qed.
 Canonical Structure gmapUR := UcmraT (gmap K A) gmap_ucmra_mixin.
 
-(** Internalized properties *)
-Lemma gmap_validI {M} m : ✓ m ⊣⊢@{uPredI M} ∀ i, ✓ (m !! i).
-Proof. by uPred.unseal. Qed.
-Lemma singleton_validI {M} i x : ✓ {[ i := x ]} ⊣⊢@{uPredI M} ✓ x.
-Proof.
-  rewrite gmap_validI. apply: anti_symm.
-  - rewrite (bi.forall_elim i) lookup_singleton uPred.option_validI. done.
-  - apply bi.forall_intro=>j. destruct (decide (i = j)) as [<-|Hne].
-    + rewrite lookup_singleton uPred.option_validI. done.
-    + rewrite lookup_singleton_ne // uPred.option_validI.
-      apply bi.True_intro.
-Qed.
 End cmra.
 
 Arguments gmapR _ {_ _} _.

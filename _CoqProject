@@ -70,6 +70,7 @@ theories/base_logic/bi.v
 theories/base_logic/derived.v
 theories/base_logic/proofmode.v
 theories/base_logic/base_logic.v
+theories/base_logic/algebra.v
 theories/base_logic/bupd_alt.v
 theories/base_logic/lib/iprop.v
 theories/base_logic/lib/own.v

@@ -1,7 +1,5 @@
-From iris.proofmode Require Import tactics.
-From iris.algebra Require Export frac agree local_updates.
-From iris.algebra Require Import proofmode_classes.
-From iris.base_logic Require Import base_logic.
+From iris.algebra Require Export updates local_updates frac agree.
+From iris.algebra Require Import proofmode_classes big_op.
 From iris Require Import options.
 
 (** The view camera with fractional authoritative elements *)
@@ -427,62 +425,6 @@ Section cmra.
   Lemma view_both_included a1 a2 b1 b2 :
     ●V a1 ⋅ ◯V b1 ≼ ●V a2 ⋅ ◯V b2 ↔ a1 ≡ a2 ∧ b1 ≼ b2.
   Proof. rewrite view_both_frac_included. naive_solver. Qed.
-
-  (** Internalized properties *)
-  Lemma view_both_frac_validI_1 {M} (relI : uPred M) q a b :
-    (∀ n (x : M), rel n a b → relI n x) →
-    ✓ (●V{q} a ⋅ ◯V b) ⊢ ✓ q ∧ relI.
-  Proof.
-    intros Hrel. uPred.unseal. split=> n x _ /=.
-    rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
-  Qed.
-  Lemma view_both_frac_validI_2 {M} (relI : uPred M) q a b :
-    (∀ n (x : M), relI n x → rel n a b) →
-    ✓ q ∧ relI ⊢ ✓ (●V{q} a ⋅ ◯V b).
-  Proof.
-    intros Hrel. uPred.unseal. split=> n x _ /=.
-    rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
-  Qed.
-  Lemma view_both_frac_validI {M} (relI : uPred M) q a b :
-    (∀ n (x : M), rel n a b ↔ relI n x) →
-    ✓ (●V{q} a ⋅ ◯V b) ⊣⊢ ✓ q ∧ relI.
-  Proof.
-    intros. apply (anti_symm _);
-      [apply view_both_frac_validI_1|apply view_both_frac_validI_2]; naive_solver.
-  Qed.
-
-  Lemma view_both_validI_1 {M} (relI : uPred M) a b :
-    (∀ n (x : M), rel n a b → relI n x) →
-    ✓ (●V a ⋅ ◯V b) ⊢ relI.
-  Proof. intros. by rewrite view_both_frac_validI_1 // bi.and_elim_r. Qed.
-  Lemma view_both_validI_2 {M} (relI : uPred M) a b :
-    (∀ n (x : M), relI n x → rel n a b) →
-    relI ⊢ ✓ (●V a ⋅ ◯V b).
-  Proof.
-    intros. rewrite -view_both_frac_validI_2 // uPred.discrete_valid.
-    apply bi.and_intro; [|done]. by apply bi.pure_intro.
-  Qed.
-  Lemma view_both_validI {M} (relI : uPred M) a b :
-    (∀ n (x : M), rel n a b ↔ relI n x) →
-    ✓ (●V a ⋅ ◯V b) ⊣⊢ relI.
-  Proof.
-    intros. apply (anti_symm _);
-      [apply view_both_validI_1|apply view_both_validI_2]; naive_solver.
-  Qed.
-
-  Lemma view_auth_frac_validI {M} (relI : uPred M) q a :
-    (∀ n (x : M), relI n x ↔ rel n a ε) →
-    ✓ (●V{q} a) ⊣⊢ ✓ q ∧ relI.
-  Proof.
-    intros. rewrite -(right_id ε op (●V{q} a)). by apply view_both_frac_validI.
-  Qed.
-  Lemma view_auth_validI {M} (relI : uPred M) a :
-    (∀ n (x : M), relI n x ↔ rel n a ε) →
-    ✓ (●V a) ⊣⊢ relI.
-  Proof. intros. rewrite -(right_id ε op (●V a)). by apply view_both_validI. Qed.
-
-  Lemma view_frag_validI {M} b : ✓ (◯V b) ⊣⊢@{uPredI M} ✓ b.
-  Proof. by uPred.unseal. Qed.
 
   (** Updates *)
   Lemma view_update a b a' b' :

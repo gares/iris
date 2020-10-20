@@ -1,6 +1,7 @@
 From stdpp Require Import countable fin_sets functions.
-From iris.bi Require Import derived_laws_later.
 From iris.algebra Require Export big_op.
+From iris.algebra Require Import list gmap.
+From iris.bi Require Import derived_laws_later.
 From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 
@@ -617,6 +618,22 @@ Section sep_list2.
     Timeless ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
   Proof. rewrite big_sepL2_alt. apply _. Qed.
 End sep_list2.
+
+Lemma big_sepL2_ne_2 {A B : ofeT}
+    (Φ Ψ : nat → A → B → PROP) l1 l2 l1' l2' n :
+  l1 ≡{n}≡ l1' → l2 ≡{n}≡ l2' →
+  (∀ k y1 y1' y2 y2',
+    l1 !! k = Some y1 → l1' !! k = Some y1' → y1 ≡{n}≡ y1' →
+    l2 !! k = Some y2 → l2' !! k = Some y2' → y2 ≡{n}≡ y2' →
+    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
+  ([∗ list] k ↦ y1;y2 ∈ l1;l2, Φ k y1 y2)%I ≡{n}≡ ([∗ list] k ↦ y1;y2 ∈ l1';l2', Ψ k y1 y2)%I.
+Proof.
+  intros Hl1 Hl2 Hf. rewrite !big_sepL2_alt. f_equiv.
+  { do 2 f_equiv; by apply: length_ne. }
+  apply big_opL_ne_2; [by f_equiv|].
+  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%lookup_zip_with_Some
+    (?&?&[=<- <-]&?&?)%lookup_zip_with_Some [??]; naive_solver.
+Qed.
 
 Section and_list.
   Context {A : Type}.
@@ -1456,6 +1473,26 @@ Section map2.
     Timeless ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2).
   Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
+
+Lemma big_sepM2_ne_2 `{Countable K} (A B : ofeT)
+    (Φ Ψ : K → A → B → PROP) m1 m2 m1' m2' n :
+  m1 ≡{n}≡ m1' → m2 ≡{n}≡ m2' →
+  (∀ k y1 y1' y2 y2',
+    m1 !! k = Some y1 → m1' !! k = Some y1' → y1 ≡{n}≡ y1' →
+    m2 !! k = Some y2 → m2' !! k = Some y2' → y2 ≡{n}≡ y2' →
+    Φ k y1 y2 ≡{n}≡ Ψ k y1' y2') →
+  ([∗ map] k ↦ y1;y2 ∈ m1;m2, Φ k y1 y2)%I ≡{n}≡ ([∗ map] k ↦ y1;y2 ∈ m1';m2', Ψ k y1 y2)%I.
+Proof.
+  intros Hm1 Hm2 Hf. rewrite big_sepM2_eq /big_sepM2_def. f_equiv.
+  { f_equiv; split; intros Hm k.
+    - trans (is_Some (m1 !! k)); [symmetry; apply: is_Some_ne; by f_equiv|].
+      rewrite Hm. apply: is_Some_ne; by f_equiv.
+    - trans (is_Some (m1' !! k)); [apply: is_Some_ne; by f_equiv|].
+      rewrite Hm. symmetry. apply: is_Some_ne; by f_equiv. }
+  apply big_opM_ne_2; [by f_equiv|].
+  intros k [x1 y1] [x2 y2] (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some
+    (?&?&[=<- <-]&?&?)%map_lookup_zip_with_Some [??]; naive_solver.
+Qed.
 
 (** ** Big ops over finite sets *)
 Section gset.

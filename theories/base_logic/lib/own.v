@@ -1,4 +1,5 @@
 From iris.algebra Require Import functions gmap proofmode_classes.
+From iris.proofmode Require Import classes.
 From iris.base_logic.lib Require Export iprop.
 From iris Require Import options.
 Import uPred.
