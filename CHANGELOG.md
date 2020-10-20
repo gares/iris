@@ -49,6 +49,8 @@ With this release, we dropped support for Coq 8.9.
 * Move the `*_validI` and `*_equivI` lemmas to a new module, `base_logic.algebra`.
   That module is exported by `base_logic.base_logic` so it should usually be
   available everywhere without further changes.
+* The authoritative fragment `✓ (◯ b : auth A)` is no longer definitionally
+  equal to `✓ b`.
 
 **Changes in `proofmode`:**
 

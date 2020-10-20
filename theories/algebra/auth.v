@@ -28,11 +28,21 @@ Qed.
 Lemma auth_view_rel_raw_valid (A : ucmraT) n (a b : A) :
   auth_view_rel_raw n a b → ✓{n} b.
 Proof. intros [??]; eauto using cmra_validN_includedN. Qed.
+Lemma auth_view_rel_raw_unit (A : ucmraT) n :
+  ∃ a : A, auth_view_rel_raw n a ε.
+Proof. exists ε. split; [done|]. apply ucmra_unit_validN. Qed.
 Canonical Structure auth_view_rel {A : ucmraT} : view_rel A A :=
-  ViewRel auth_view_rel_raw (auth_view_rel_raw_mono A) (auth_view_rel_raw_valid A).
+  ViewRel auth_view_rel_raw (auth_view_rel_raw_mono A)
+          (auth_view_rel_raw_valid A) (auth_view_rel_raw_unit A).
 
 Lemma auth_view_rel_unit {A : ucmraT} n (a : A) : auth_view_rel n a ε ↔ ✓{n} a.
 Proof. split; [by intros [??]|]. split; auto using ucmra_unit_leastN. Qed.
+Lemma auth_view_rel_exists {A : ucmraT} n (b : A) :
+  (∃ a, auth_view_rel n a b) ↔ ✓{n} b.
+Proof.
+  split; [|intros; exists b; by split].
+  intros [a Hrel]. eapply auth_view_rel_raw_valid, Hrel.
+Qed.
 
 Instance auth_view_rel_discrete {A : ucmraT} :
   CmraDiscrete A → ViewRelDiscrete (auth_view_rel (A:=A)).
@@ -94,8 +104,17 @@ Section auth.
   Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
-  Lemma auth_frag_validN n a : ✓{n} (◯ a) ↔ ✓{n} a.
-  Proof. apply view_frag_validN. Qed.
+  Lemma auth_frag_validN n b : ✓{n} (◯ b) ↔ ✓{n} b.
+  Proof. by rewrite view_frag_validN auth_view_rel_exists. Qed.
+  (** Also stated as implications, which can be used to force [apply] to use the
+  lemma in the right direction. *)
+  Lemma auth_frag_op_validN n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) ↔ ✓{n} (b1 ⋅ b2).
+  Proof. apply auth_frag_validN. Qed.
+  Lemma auth_frag_op_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
+  Proof. apply auth_frag_op_validN. Qed.
+  Lemma auth_frag_op_validN_2 n b1 b2 : ✓{n} (b1 ⋅ b2) → ✓{n} (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_op_validN. Qed.
+
   Lemma auth_both_frac_validN n q a b :
     ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
   Proof. apply view_both_frac_validN. Qed.
@@ -112,8 +131,19 @@ Section auth.
     rewrite view_auth_valid !cmra_valid_validN.
     by setoid_rewrite auth_view_rel_unit.
   Qed.
-  Lemma auth_frag_valid a : ✓ (◯ a) ↔ ✓ a.
-  Proof. apply view_frag_valid. Qed.
+  Lemma auth_frag_valid b : ✓ (◯ b) ↔ ✓ b.
+  Proof.
+    rewrite view_frag_valid cmra_valid_validN.
+    by setoid_rewrite auth_view_rel_exists.
+  Qed.
+  (** Also stated as implications, which can be used to force [apply] to use the
+  lemma in the right direction. *)
+  Lemma auth_frag_op_valid b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) ↔ ✓ (b1 ⋅ b2).
+  Proof. apply auth_frag_valid. Qed.
+  Lemma auth_frag_op_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
+  Proof. apply auth_frag_op_valid. Qed.
+  Lemma auth_frag_op_valid_2 b1 b2 : ✓ (b1 ⋅ b2) → ✓ (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_op_valid. Qed.
 
   (** These lemma statements are a bit awkward as we cannot possibly extract a
   single witness for [b ≼ a] from validity, we have to make do with one witness

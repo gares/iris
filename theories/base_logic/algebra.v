@@ -187,8 +187,10 @@ Section view.
     ✓ (●V a : view rel) ⊣⊢ relI.
   Proof. intros. rewrite -(right_id ε op (●V a)). by apply view_both_validI. Qed.
 
-  Lemma view_frag_validI b : ✓ (◯V b : view rel) ⊣⊢@{uPredI M} ✓ b.
-  Proof. by uPred.unseal. Qed.
+  Lemma view_frag_validI (relI : uPred M) b :
+    (∀ n (x : M), relI n x ↔ ∃ a, rel n a b) →
+    ✓ (◯V b : view rel) ⊣⊢@{uPredI M} relI.
+  Proof. uPred.unseal=> Hrel. split=> n x _. by rewrite Hrel. Qed.
 End view.
 
 Section auth.
@@ -207,7 +209,10 @@ Section auth.
   Qed.
 
   Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
-  Proof. apply view_frag_validI. Qed.
+  Proof.
+    apply view_frag_validI=> n x.
+    rewrite auth_view_rel_exists. by uPred.unseal.
+  Qed.
 
   Lemma auth_both_frac_validI q a b :
     ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
@@ -245,13 +250,12 @@ Section gmap_view.
   Qed.
 
   Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :
-    ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊢@{uPredI M}
-      ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
+    ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊣⊢@{uPredI M}
+    ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
   Proof.
-    rewrite /gmap_view_frag -view_frag_op view_frag_validI.
-    rewrite singleton_op singleton_validI -pair_op prod_validI /=.
-    apply bi.and_mono; first done.
-    rewrite agree_validI agree_equivI. done.
+    rewrite /gmap_view_frag -view_frag_op. apply view_frag_validI=> n x.
+    rewrite gmap_view.gmap_view_rel_exists singleton_op singleton_validN.
+    rewrite -pair_op pair_validN to_agree_op_validN. by uPred.unseal.
   Qed.
 End gmap_view.
 

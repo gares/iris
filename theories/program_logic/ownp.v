@@ -94,7 +94,9 @@ Section lifting.
       as %[->%Excl_included _]%auth_both_valid_discrete.
   Qed.
   Lemma ownP_state_twice σ1 σ2 : ownP σ1 ∗ ownP σ2 ⊢ False.
-  Proof. rewrite /ownP -own_op own_valid. by iIntros (?). Qed.
+  Proof.
+    rewrite /ownP -own_op own_valid. by iIntros (?%excl_auth_frag_valid_op_1_l).
+  Qed.
   Global Instance ownP_timeless σ : Timeless (@ownP Λ Σ _ σ).
   Proof. rewrite /ownP; apply _. Qed.
 
