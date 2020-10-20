@@ -108,12 +108,12 @@ Section auth.
   Proof. by rewrite view_frag_validN auth_view_rel_exists. Qed.
   (** Also stated as implications, which can be used to force [apply] to use the
   lemma in the right direction. *)
-  Lemma auth_frag_frag_validN n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) ↔ ✓{n} (b1 ⋅ b2).
+  Lemma auth_frag_op_validN n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) ↔ ✓{n} (b1 ⋅ b2).
   Proof. apply auth_frag_validN. Qed.
-  Lemma auth_frag_frag_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
-  Proof. apply auth_frag_frag_validN. Qed.
-  Lemma auth_frag_frag_validN_2 n b1 b2 : ✓{n} (b1 ⋅ b2) → ✓{n} (◯ b1 ⋅ ◯ b2).
-  Proof. apply auth_frag_frag_validN. Qed.
+  Lemma auth_frag_op_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
+  Proof. apply auth_frag_op_validN. Qed.
+  Lemma auth_frag_op_validN_2 n b1 b2 : ✓{n} (b1 ⋅ b2) → ✓{n} (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_op_validN. Qed.
 
   Lemma auth_both_frac_validN n q a b :
     ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
@@ -138,12 +138,12 @@ Section auth.
   Qed.
   (** Also stated as implications, which can be used to force [apply] to use the
   lemma in the right direction. *)
-  Lemma auth_frag_frag_valid b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) ↔ ✓ (b1 ⋅ b2).
+  Lemma auth_frag_op_valid b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) ↔ ✓ (b1 ⋅ b2).
   Proof. apply auth_frag_valid. Qed.
-  Lemma auth_frag_frag_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
-  Proof. apply auth_frag_frag_valid. Qed.
-  Lemma auth_frag_frag_valid_2 b1 b2 : ✓ (b1 ⋅ b2) → ✓ (◯ b1 ⋅ ◯ b2).
-  Proof. apply auth_frag_frag_valid. Qed.
+  Lemma auth_frag_op_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
+  Proof. apply auth_frag_op_valid. Qed.
+  Lemma auth_frag_op_valid_2 b1 b2 : ✓ (b1 ⋅ b2) → ✓ (◯ b1 ⋅ ◯ b2).
+  Proof. apply auth_frag_op_valid. Qed.
 
   (** These lemma statements are a bit awkward as we cannot possibly extract a
   single witness for [b ≼ a] from validity, we have to make do with one witness

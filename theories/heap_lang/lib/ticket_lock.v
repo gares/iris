@@ -66,7 +66,7 @@ Section proof.
   Lemma locked_exclusive (γ : gname) : locked γ -∗ locked γ -∗ False.
   Proof.
     iDestruct 1 as (o1) "H1". iDestruct 1 as (o2) "H2".
-    iDestruct (own_valid_2 with "H1 H2") as %[[] _]%auth_frag_frag_valid_1.
+    iDestruct (own_valid_2 with "H1 H2") as %[[] _]%auth_frag_op_valid_1.
   Qed.
 
   Lemma is_lock_iff γ lk R1 R2 :
@@ -105,7 +105,7 @@ Section proof.
         wp_pures. case_bool_decide; [|done]. wp_if.
         iApply ("HΦ" with "[-]"). rewrite /locked. iFrame. eauto.
       + iDestruct (own_valid_2 with "Ht Haown")
-          as %[_ ?%gset_disj_valid_op]%auth_frag_frag_valid_1.
+          as %[_ ?%gset_disj_valid_op]%auth_frag_op_valid_1.
         set_solver.
     - iModIntro. iSplitL "Hlo Hln Ha".
       { iNext. iExists o, n. by iFrame. }
@@ -160,7 +160,7 @@ Section proof.
     iDestruct (own_valid_2 with "Hauth Hγo") as
       %[[<-%Excl_included%leibniz_equiv _]%prod_included _]%auth_both_valid_discrete.
     iDestruct "Haown" as "[[Hγo' _]|Haown]".
-    { iDestruct (own_valid_2 with "Hγo Hγo'") as %[[] ?]%auth_frag_frag_valid_1. }
+    { iDestruct (own_valid_2 with "Hγo Hγo'") as %[[] ?]%auth_frag_op_valid_1. }
     iMod (own_update_2 with "Hauth Hγo") as "[Hauth Hγo]".
     { apply auth_update, prod_local_update_1.
       by apply option_local_update, (exclusive_local_update _ (Excl (S o))). }
