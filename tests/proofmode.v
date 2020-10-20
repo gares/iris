@@ -1228,6 +1228,7 @@ Proof.
   iIntros "HP".
   Fail iDestruct "HP" as "{HP}".
   Fail iDestruct "HP" as "[{HP}]".
+  Fail iDestruct "HP" as "[HP HQ HR]".
   Fail iDestruct "HP" as "HP HQ HR".
 Abort.
 

@@ -1419,7 +1419,8 @@ Local Ltac string_to_ident s :=
   end.
 
 (** * Basic destruct tactic *)
-Local Ltac iDestructHypGo Hz pat :=
+(* pat0 is the unparsed pattern and is only used in error messages *)
+Local Ltac iDestructHypGo Hz pat0 pat :=
   lazymatch pat with
   | IFresh =>
      lazymatch Hz with
@@ -1430,20 +1431,21 @@ Local Ltac iDestructHypGo Hz pat :=
   | IFrame => iFrameHyp Hz
   | IIdent ?y => iRename Hz into y
   | IList [[]] => iExFalso; iExact Hz
-  | IList [[?pat1; IDrop]] => iAndDestructChoice Hz as Left Hz; iDestructHypGo Hz pat1
-  | IList [[IDrop; ?pat2]] => iAndDestructChoice Hz as Right Hz; iDestructHypGo Hz pat2
+  | IList [[?pat1; IDrop]] => iAndDestructChoice Hz as Left Hz; iDestructHypGo Hz pat0 pat1
+  | IList [[IDrop; ?pat2]] => iAndDestructChoice Hz as Right Hz; iDestructHypGo Hz pat0 pat2
   | IList [[?pat1; ?pat2]] =>
-     let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat1; iDestructHypGo Hy pat2
-  | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat1|iDestructHypGo Hz pat2]
+     let Hy := iFresh in iAndDestruct Hz as Hz Hy; iDestructHypGo Hz pat0 pat1; iDestructHypGo Hy pat0 pat2
+  | IList [[?pat1];[?pat2]] => iOrDestruct Hz as Hz Hz; [iDestructHypGo Hz pat0 pat1|iDestructHypGo Hz pat0 pat2]
+  | IList [_ :: _ :: _] => fail "iDestruct:" pat0 "has too many conjuncts"
   | IPure IGallinaAnon => iPure Hz as ?
   | IPure (IGallinaNamed ?s) => let x := string_to_ident s in
                                 iPure Hz as x
   | IRewrite Right => iPure Hz as ->
   | IRewrite Left => iPure Hz as <-
-  | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat
-  | ISpatial ?pat => iSpatial Hz; iDestructHypGo Hz pat
-  | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat
-  | _ => fail "iDestruct:" pat "invalid"
+  | IIntuitionistic ?pat => iIntuitionistic Hz; iDestructHypGo Hz pat0 pat
+  | ISpatial ?pat => iSpatial Hz; iDestructHypGo Hz pat0 pat
+  | IModalElim ?pat => iModCore Hz; iDestructHypGo Hz pat0 pat
+  | _ => fail "iDestruct:" pat0 "invalid"
   end.
 Local Ltac iDestructHypFindPat Hgo pat found pats :=
   lazymatch pats with
@@ -1457,7 +1459,7 @@ Local Ltac iDestructHypFindPat Hgo pat found pats :=
   | IClearFrame ?H :: ?pats => iFrame H; iDestructHypFindPat Hgo pat found pats
   | ?pat1 :: ?pats =>
      lazymatch found with
-     | false => iDestructHypGo Hgo pat1; iDestructHypFindPat Hgo pat true pats
+     | false => iDestructHypGo Hgo pat pat1; iDestructHypFindPat Hgo pat true pats
      | true => fail "iDestruct:" pat "should contain exactly one proper introduction pattern"
      end
   end.
