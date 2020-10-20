@@ -196,7 +196,6 @@ Section auth.
   Implicit Types a b : A.
   Implicit Types x y : auth A.
 
-  (** Internalized properties *)
   Lemma auth_auth_frac_validI q a : ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
   Proof.
     apply view_auth_frac_validI=> n. uPred.unseal; split; [|by intros [??]].
