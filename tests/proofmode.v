@@ -1226,10 +1226,18 @@ Check "iDestruct_fail".
 Lemma iDestruct_fail P : P -∗ <absorb> P.
 Proof.
   iIntros "HP".
-  Fail iDestruct "HP" as "{HP}".
   Fail iDestruct "HP" as "[{HP}]".
+  (* IDone is unsupported (see issue #380) *)
+  Fail iDestruct "HP" as "// H".
+  (* fails due to not having "one proper intro pattern" (see issue #380) *)
+  Fail iDestruct "HP" as "HP //".
+  (* both of these work *)
+  iDestruct "HP" as "HP /=".
+  iDestruct "HP" as "/= HP".
   Fail iDestruct "HP" as "[HP HQ HR]".
-  Fail iDestruct "HP" as "HP HQ HR".
+  Fail iDestruct "HP" as "[HP|HQ|HR]".
+  Fail iDestruct "HP" as "[HP]".
+  Fail iDestruct "HP" as "[HP HQ|HR]".
 Abort.
 
 Check "iOrDestruct_fail".

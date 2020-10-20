@@ -631,15 +631,20 @@ Tactic failure: iElaborateSelPat: "H" not found.
 "iDestruct_fail"
      : string
 The command has indeed failed with message:
-Tactic failure: iDestruct: "{HP}"
-should contain exactly one proper introduction pattern.
+Tactic failure: iDestruct: "[{HP}]" has just a single conjunct.
 The command has indeed failed with message:
-Tactic failure: iDestruct: "[{HP}]" invalid.
+Tactic failure: iDestruct: "// H" is not supported due to IDone.
+The command has indeed failed with message:
+Tactic failure: iDestruct: "HP //"
+should contain exactly one proper introduction pattern.
 The command has indeed failed with message:
 Tactic failure: iDestruct: "[HP HQ HR]" has too many conjuncts.
 The command has indeed failed with message:
-Tactic failure: iDestruct: "HP HQ HR"
-should contain exactly one proper introduction pattern.
+Tactic failure: iDestruct: "[HP|HQ|HR]" has too many disjuncts.
+The command has indeed failed with message:
+Tactic failure: iDestruct: "[HP]" has just a single conjunct.
+The command has indeed failed with message:
+Tactic failure: iDestruct: in "[HP HQ|HR]" a disjunct has multiple patterns.
 "iOrDestruct_fail"
      : string
 The command has indeed failed with message:
