@@ -1,5 +1,5 @@
-From iris.algebra Require Import cmra view auth agree csum list excl gmap lib.excl_auth lib.gmap_view.
-From iris.proofmode Require Import tactics.
+From iris.algebra Require Import cmra view auth agree csum list excl gmap.
+From iris.algebra.lib Require Import excl_auth gmap_view.
 From iris.base_logic Require Import bi derived.
 From iris Require Import options.
 
