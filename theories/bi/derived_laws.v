@@ -249,6 +249,25 @@ Proof.
   - rewrite -(exist_intro ()). done.
 Qed.
 
+Lemma exist_exist {A B} (Ψ : A → B → PROP) :
+  (∃ x y, Ψ x y) ⊣⊢ (∃ y x, Ψ x y).
+Proof.
+  apply (anti_symm (⊢));
+    do 2 (apply exist_elim=>?); rewrite -2!exist_intro; eauto.
+Qed.
+Lemma forall_forall {A B} (Ψ : A → B → PROP) :
+  (∀ x y, Ψ x y) ⊣⊢ (∀ y x, Ψ x y).
+Proof.
+  apply (anti_symm (⊢));
+    do 2 (apply forall_intro=>?); rewrite 2!forall_elim; eauto.
+Qed.
+Lemma exist_forall {A B} (Ψ : A → B → PROP) :
+  (∃ x, ∀ y, Ψ x y) ⊢ (∀ y, ∃ x, Ψ x y).
+Proof.
+  apply forall_intro=>?. apply exist_elim=>?.
+  rewrite -exist_intro forall_elim ; eauto.
+Qed.
+
 Lemma impl_curry P Q R : (P → Q → R) ⊣⊢ (P ∧ Q → R).
 Proof.
   apply (anti_symm _).
