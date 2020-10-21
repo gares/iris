@@ -108,6 +108,9 @@ Section rel.
     - intros k'. rewrite !lookup_insert_None. naive_solver.
   Qed.
 
+  Local Lemma gmap_view_rel_unit n m : gmap_view_rel n m ε.
+  Proof. apply: map_Forall_empty. Qed.
+
   Local Lemma gmap_view_rel_discrete :
     OfeDiscrete V → ViewRelDiscrete gmap_view_rel.
   Proof.
@@ -174,18 +177,13 @@ Section lemmas.
   Qed.
 
   (** Composition and validity *)
-  Lemma gmap_view_auth_frac_valid m q : ✓ gmap_view_auth q m ↔ ✓ q.
-  Proof.
-    rewrite view_auth_frac_valid. split; first by naive_solver.
-    intros. split; first done.
-    intros n l ? Hl. rewrite lookup_empty in Hl. done.
-  Qed.
-  Lemma gmap_view_auth_valid m : ✓ gmap_view_auth 1 m.
-  Proof. rewrite gmap_view_auth_frac_valid. done. Qed.
-
   Lemma gmap_view_auth_frac_op p q m :
     gmap_view_auth (p + q) m ≡ gmap_view_auth p m ⋅ gmap_view_auth q m.
   Proof. apply view_auth_frac_op. Qed.
+  Global Instance gmap_view_auth_frac_is_op q q1 q2 m :
+    IsOp q q1 q2 → IsOp' (gmap_view_auth q m) (gmap_view_auth q1 m) (gmap_view_auth q2 m).
+  Proof. rewrite /gmap_view_auth. apply _. Qed.
+
   Lemma gmap_view_auth_frac_op_invN n p m1 q m2 :
     ✓{n} (gmap_view_auth p m1 ⋅ gmap_view_auth q m2) → m1 ≡{n}≡ m2.
   Proof. apply view_auth_frac_op_invN. Qed.
@@ -195,9 +193,22 @@ Section lemmas.
   Lemma gmap_view_auth_frac_op_inv_L `{!LeibnizEquiv V} q m1 p m2 :
     ✓ (gmap_view_auth p m1 ⋅ gmap_view_auth q m2) → m1 = m2.
   Proof. apply view_auth_frac_op_inv_L, _. Qed.
-  Global Instance gmap_view_auth_frac_is_op q q1 q2 m :
-    IsOp q q1 q2 → IsOp' (gmap_view_auth q m) (gmap_view_auth q1 m) (gmap_view_auth q2 m).
-  Proof. rewrite /gmap_view_auth. apply _. Qed.
+
+  Lemma gmap_view_auth_frac_valid m q : ✓ gmap_view_auth q m ↔ ✓ q.
+  Proof.
+    rewrite view_auth_frac_valid. intuition eauto using gmap_view_rel_unit.
+  Qed.
+  Lemma gmap_view_auth_valid m : ✓ gmap_view_auth 1 m.
+  Proof. rewrite gmap_view_auth_frac_valid. done. Qed.
+
+  Lemma gmap_view_auth_frac_op_valid q1 q2 m1 m2 :
+    ✓ (gmap_view_auth q1 m1 ⋅ gmap_view_auth q2 m2) ↔ ✓ (q1 + q2)%Qp ∧ m1 ≡ m2.
+  Proof.
+    rewrite view_auth_frac_op_valid. intuition eauto using gmap_view_rel_unit.
+  Qed.
+  Lemma gmap_view_auth_op_valid m1 m2 :
+    ✓ (gmap_view_auth 1 m1 ⋅ gmap_view_auth 1 m2) ↔ False.
+  Proof. rewrite gmap_view_auth_frac_op_valid. naive_solver. Qed.
 
   Lemma gmap_view_frag_validN n k dq v : ✓{n} gmap_view_frag k dq v ↔ ✓ dq.
   Proof.
@@ -256,8 +267,8 @@ Section lemmas.
     rewrite view_both_frac_valid. setoid_rewrite gmap_view_rel_lookup.
     split=>[[Hq Hm]|[Hq Hm]].
     - split; first done. split.
-      +  apply (Hm 0%nat).
-      +  apply equiv_dist=>n. apply Hm.
+      + apply (Hm 0%nat).
+      + apply equiv_dist=>n. apply Hm.
     - split; first done. split.
       + apply Hm.
       + revert n. apply equiv_dist. apply Hm.
