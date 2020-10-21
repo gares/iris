@@ -104,10 +104,6 @@ Definition gmap_viewR (K : Type) `{Countable K} (V : ofeT) : cmraT :=
 Definition gmap_viewUR (K : Type) `{Countable K} (V : ofeT) : ucmraT :=
   viewUR (gmap_view_rel K V).
 
-(** Make sure the notation does not mix up its arguments. *)
-Local Definition gmap_view_check {K : Type} `{Countable K} {V : ofeT} :
-  gmap_view K V = gmap_viewO K V := eq_refl.
-
 Section definitions.
   Context {K : Type} `{Countable K} {V : ofeT}.
 

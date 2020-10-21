@@ -1,4 +1,4 @@
-From iris.algebra Require Import auth excl.
+From iris.algebra Require Import auth excl lib.gmap_view.
 From iris.base_logic.lib Require Import invariants.
 
 (** Make sure that the same [Equivalence] instance is picked for Leibniz OFEs
@@ -48,3 +48,9 @@ Section test_prod.
     Persistent (PROP:=iPropI Σ) (own γ (◯((None, None), Some (to_agree true)))).
   Proof. apply _. Qed.
 End test_prod.
+
+(** Make sure the [auth]/[gmap_view] notation does not mix up its arguments. *)
+Definition auth_check {A : ucmraT} :
+  auth A = authO A := eq_refl.
+Definition gmap_view_check {K : Type} `{Countable K} {V : ofeT} :
+  gmap_view K V = gmap_viewO K V := eq_refl.
