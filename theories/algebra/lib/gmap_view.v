@@ -243,6 +243,8 @@ Section lemmas.
     rewrite -cmra_valid_validN singleton_op singleton_valid.
     by rewrite -pair_op pair_valid to_agree_op_valid.
   Qed.
+  (* FIXME: Having a [valid_L] lemma is not consistent with [auth] and [view]; they
+     have [inv_L] lemmas instead that just have an equality on the RHS. *)
   Lemma gmap_view_frag_op_valid_L `{!LeibnizEquiv V} k dq1 dq2 v1 v2 :
     ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ↔ ✓ (dq1 ⋅ dq2) ∧ v1 = v2.
   Proof. unfold_leibniz. apply gmap_view_frag_op_valid. Qed.
@@ -277,6 +279,8 @@ Section lemmas.
     ✓ (gmap_view_auth 1 m ⋅ gmap_view_frag k dq v) ↔
     ✓ dq ∧ m !! k ≡ Some v.
   Proof. rewrite gmap_view_both_frac_valid. naive_solver done. Qed.
+  (* FIXME: Having a [valid_L] lemma is not consistent with [auth] and [view]; they
+     have [inv_L] lemmas instead that just have an equality on the RHS. *)
   Lemma gmap_view_both_valid_L `{!LeibnizEquiv V} m k dq v :
     ✓ (gmap_view_auth 1 m ⋅ gmap_view_frag k dq v) ↔
     ✓ dq ∧ m !! k = Some v.
