@@ -100,10 +100,70 @@ Section auth.
   Global Instance auth_frag_inj : Inj (≡) (≡) (@auth_frag A).
   Proof. rewrite /auth_frag. apply _. Qed.
 
+  Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete (authO A).
+  Proof. apply _. Qed.
+  Global Instance auth_auth_discrete q a :
+    Discrete a → Discrete (ε : A) → Discrete (●{q} a).
+  Proof. rewrite /auth_auth. apply _. Qed.
+  Global Instance auth_frag_discrete a : Discrete a → Discrete (◯ a).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_cmra_discrete : CmraDiscrete A → CmraDiscrete (authR A).
+  Proof. apply _. Qed.
+
+  (** Operation *)
+  Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
+  Proof. apply view_auth_frac_op. Qed.
+  Global Instance auth_auth_frac_is_op q q1 q2 a :
+    IsOp q q1 q2 → IsOp' (●{q} a) (●{q1} a) (●{q2} a).
+  Proof. rewrite /auth_auth. apply _. Qed.
+
+  Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.
+  Proof. apply view_frag_op. Qed.
+  Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
+  Proof. apply view_frag_mono. Qed.
+  Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
+  Proof. apply view_frag_core. Qed.
+  Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_is_op a b1 b2 :
+    IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
+  Proof. rewrite /auth_frag. apply _. Qed.
+  Global Instance auth_frag_sep_homomorphism :
+    MonoidHomomorphism op op (≡) (@auth_frag A).
+  Proof. rewrite /auth_frag. apply _. Qed.
+
+  Lemma big_opL_auth_frag {B} (g : nat → B → A) (l : list B) :
+    (◯ [^op list] k↦x ∈ l, g k x) ≡ [^op list] k↦x ∈ l, ◯ (g k x).
+  Proof. apply (big_opL_commute _). Qed.
+  Lemma big_opM_auth_frag `{Countable K} {B} (g : K → B → A) (m : gmap K B) :
+    (◯ [^op map] k↦x ∈ m, g k x) ≡ [^op map] k↦x ∈ m, ◯ (g k x).
+  Proof. apply (big_opM_commute _). Qed.
+  Lemma big_opS_auth_frag `{Countable B} (g : B → A) (X : gset B) :
+    (◯ [^op set] x ∈ X, g x) ≡ [^op set] x ∈ X, ◯ (g x).
+  Proof. apply (big_opS_commute _). Qed.
+  Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
+    (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
+  Proof. apply (big_opMS_commute _). Qed.
+
+  (** Validity *)
+  Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
+  Proof. apply view_auth_frac_op_invN. Qed.
+  Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
+  Proof. apply view_auth_frac_op_inv. Qed.
+  Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
+    ✓ (●{p} a ⋅ ●{q} b) → a = b.
+  Proof. by apply view_auth_frac_op_inv_L. Qed.
+
   Lemma auth_auth_frac_validN n q a : ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
   Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
+
+  Lemma auth_auth_frac_op_validN n q1 q2 a1 a2 :
+    ✓{n} (●{q1} a1 ⋅ ●{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡{n}≡ a2 ∧ ✓{n} a1.
+  Proof. by rewrite view_auth_frac_op_validN auth_view_rel_unit. Qed.
+  Lemma auth_auth_op_validN n a1 a2 : ✓{n} (● a1 ⋅ ● a2) ↔ False.
+  Proof. rewrite view_auth_frac_op_validN. naive_solver. Qed.
 
   (** The following lemmas are also stated as implications, which can be used
   to force [apply] to use the lemma in the right direction. *)
@@ -136,6 +196,15 @@ Section auth.
     rewrite view_auth_valid !cmra_valid_validN.
     by setoid_rewrite auth_view_rel_unit.
   Qed.
+
+  Lemma auth_auth_frac_op_valid q1 q2 a1 a2 :
+    ✓ (●{q1} a1 ⋅ ●{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡ a2 ∧ ✓ a1.
+  Proof.
+    rewrite view_auth_frac_op_valid !cmra_valid_validN.
+    by setoid_rewrite auth_view_rel_unit.
+  Qed.
+  Lemma auth_auth_op_valid a1 a2 : ✓ (● a1 ⋅ ● a2) ↔ False.
+  Proof. rewrite auth_auth_frac_op_valid. naive_solver. Qed.
 
   (** The following lemmas are also stated as implications, which can be used
   to force [apply] to use the lemma in the right direction. *)
@@ -190,57 +259,6 @@ Section auth.
   Lemma auth_both_valid_discrete `{!CmraDiscrete A} a b :
     ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
   Proof. rewrite auth_both_frac_valid_discrete frac_valid'. naive_solver. Qed.
-
-  Global Instance auth_ofe_discrete : OfeDiscrete A → OfeDiscrete (authO A).
-  Proof. apply _. Qed.
-  Global Instance auth_auth_discrete q a :
-    Discrete a → Discrete (ε : A) → Discrete (●{q} a).
-  Proof. rewrite /auth_auth. apply _. Qed.
-  Global Instance auth_frag_discrete a : Discrete a → Discrete (◯ a).
-  Proof. rewrite /auth_frag. apply _. Qed.
-  Global Instance auth_cmra_discrete : CmraDiscrete A → CmraDiscrete (authR A).
-  Proof. apply _. Qed.
-
-  Lemma auth_auth_frac_op p q a : ●{p + q} a ≡ ●{p} a ⋅ ●{q} a.
-  Proof. apply view_auth_frac_op. Qed.
-  Lemma auth_auth_frac_op_invN n p a q b : ✓{n} (●{p} a ⋅ ●{q} b) → a ≡{n}≡ b.
-  Proof. apply view_auth_frac_op_invN. Qed.
-  Lemma auth_auth_frac_op_inv p a q b : ✓ (●{p} a ⋅ ●{q} b) → a ≡ b.
-  Proof. apply view_auth_frac_op_inv. Qed.
-  Lemma auth_auth_frac_op_inv_L `{!LeibnizEquiv A} q a p b :
-    ✓ (●{p} a ⋅ ●{q} b) → a = b.
-  Proof. by apply view_auth_frac_op_inv_L. Qed.
-  Global Instance auth_auth_frac_is_op q q1 q2 a :
-    IsOp q q1 q2 → IsOp' (●{q} a) (●{q1} a) (●{q2} a).
-  Proof. rewrite /auth_auth. apply _. Qed.
-
-  Lemma auth_frag_op a b : ◯ (a ⋅ b) = ◯ a ⋅ ◯ b.
-  Proof. apply view_frag_op. Qed.
-  Lemma auth_frag_mono a b : a ≼ b → ◯ a ≼ ◯ b.
-  Proof. apply view_frag_mono. Qed.
-  Lemma auth_frag_core a : core (◯ a) = ◯ (core a).
-  Proof. apply view_frag_core. Qed.
-  Global Instance auth_frag_core_id a : CoreId a → CoreId (◯ a).
-  Proof. rewrite /auth_frag. apply _. Qed.
-  Global Instance auth_frag_is_op a b1 b2 :
-    IsOp a b1 b2 → IsOp' (◯ a) (◯ b1) (◯ b2).
-  Proof. rewrite /auth_frag. apply _. Qed.
-  Global Instance auth_frag_sep_homomorphism :
-    MonoidHomomorphism op op (≡) (@auth_frag A).
-  Proof. rewrite /auth_frag. apply _. Qed.
-
-  Lemma big_opL_auth_frag {B} (g : nat → B → A) (l : list B) :
-    (◯ [^op list] k↦x ∈ l, g k x) ≡ [^op list] k↦x ∈ l, ◯ (g k x).
-  Proof. apply (big_opL_commute _). Qed.
-  Lemma big_opM_auth_frag `{Countable K} {B} (g : K → B → A) (m : gmap K B) :
-    (◯ [^op map] k↦x ∈ m, g k x) ≡ [^op map] k↦x ∈ m, ◯ (g k x).
-  Proof. apply (big_opM_commute _). Qed.
-  Lemma big_opS_auth_frag `{Countable B} (g : B → A) (X : gset B) :
-    (◯ [^op set] x ∈ X, g x) ≡ [^op set] x ∈ X, ◯ (g x).
-  Proof. apply (big_opS_commute _). Qed.
-  Lemma big_opMS_auth_frag `{Countable B} (g : B → A) (X : gmultiset B) :
-    (◯ [^op mset] x ∈ X, g x) ≡ [^op mset] x ∈ X, ◯ (g x).
-  Proof. apply (big_opMS_commute _). Qed.
 
   (** Inclusion *)
   Lemma auth_auth_frac_includedN n p1 p2 a1 a2 b :
