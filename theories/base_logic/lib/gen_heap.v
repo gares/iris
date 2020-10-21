@@ -97,8 +97,8 @@ Section definitions.
     (* The [⊆] is used to avoid assigning ghost information to the locations in
     the initial heap (see [gen_heap_init]). *)
     ⌜ dom _ m ⊆ dom (gset L) σ ⌝ ∧
-    own (gen_heap_name hG) (gmap_view_auth (σ : gmap L (leibnizO V))) ∗
-    own (gen_meta_name hG) (gmap_view_auth (m : gmap L gnameO)).
+    own (gen_heap_name hG) (gmap_view_auth 1 (σ : gmap L (leibnizO V))) ∗
+    own (gen_meta_name hG) (gmap_view_auth 1 (m : gmap L gnameO)).
 
   Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
     own (gen_heap_name hG) (gmap_view_frag l (DfracOwn q) (v : leibnizO V)).
@@ -133,9 +133,9 @@ Local Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_interp σ.
 Proof.
-  iMod (own_alloc (gmap_view_auth (σ : gmap L (leibnizO V)))) as (γh) "Hh".
+  iMod (own_alloc (gmap_view_auth 1 (σ : gmap L (leibnizO V)))) as (γh) "Hh".
   { exact: gmap_view_auth_valid. }
-  iMod (own_alloc (gmap_view_auth (∅ : gmap L gnameO))) as (γm) "Hm".
+  iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L gnameO))) as (γm) "Hm".
   { exact: gmap_view_auth_valid. }
   iModIntro. iExists (GenHeapG L V Σ _ _ _ _ _ γh γm).
   iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L.

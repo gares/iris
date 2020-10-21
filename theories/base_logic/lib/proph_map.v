@@ -44,7 +44,7 @@ Section definitions.
   Definition proph_map_interp pvs (ps : gset P) : iProp Σ :=
     (∃ R, ⌜proph_resolves_in_list R pvs ∧
           dom (gset _) R ⊆ ps⌝ ∗
-          own (proph_map_name pG) (gmap_view_auth (V:=listO $ leibnizO V) R))%I.
+          own (proph_map_name pG) (gmap_view_auth (V:=listO $ leibnizO V) 1 R))%I.
 
   Definition proph_def (p : P) (vs : list V) : iProp Σ :=
     own (proph_map_name pG) (gmap_view_frag (V:=listO $ leibnizO V) p (DfracOwn 1) vs).
@@ -75,7 +75,7 @@ End list_resolves.
 Lemma proph_map_init `{Countable P, !proph_mapPreG P V PVS} pvs ps :
   ⊢ |==> ∃ _ : proph_mapG P V PVS, proph_map_interp pvs ps.
 Proof.
-  iMod (own_alloc (gmap_view_auth ∅)) as (γ) "Hh".
+  iMod (own_alloc (gmap_view_auth 1 ∅)) as (γ) "Hh".
   { apply gmap_view_auth_valid. }
   iModIntro. iExists (ProphMapG P V PVS _ _ _ γ), ∅. iSplit; last by iFrame.
   iPureIntro. done.

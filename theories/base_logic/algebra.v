@@ -242,7 +242,7 @@ Section gmap_view.
   Implicit Types (m : gmap K V) (k : K) (dq : dfrac) (v : V).
 
   Lemma gmap_view_both_validI m k dq v :
-    ✓ (gmap_view_auth m ⋅ gmap_view_frag k dq v) ⊢@{uPredI M}
+    ✓ (gmap_view_auth 1 m ⋅ gmap_view_frag k dq v) ⊢@{uPredI M}
     ✓ dq ∧ m !! k ≡ Some v.
   Proof.
     rewrite /gmap_view_auth /gmap_view_frag. apply view_both_validI_1.
@@ -257,6 +257,7 @@ Section gmap_view.
     rewrite gmap_view.gmap_view_rel_exists singleton_op singleton_validN.
     rewrite -pair_op pair_validN to_agree_op_validN. by uPred.unseal.
   Qed.
+
 End gmap_view.
 
 End upred.
