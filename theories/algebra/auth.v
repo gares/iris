@@ -104,10 +104,15 @@ Section auth.
   Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
+
+  (** The following lemmas are also stated as implications, which can be used
+  to force [apply] to use the lemma in the right direction. *)
   Lemma auth_frag_validN n b : ✓{n} (◯ b) ↔ ✓{n} b.
   Proof. by rewrite view_frag_validN auth_view_rel_exists. Qed.
-  (** Also stated as implications, which can be used to force [apply] to use the
-  lemma in the right direction. *)
+  Lemma auth_frag_validN_1 n b : ✓{n} (◯ b) → ✓{n} b.
+  Proof. apply auth_frag_validN. Qed.
+  Lemma auth_frag_validN_2 n b : ✓{n} b → ✓{n} (◯ b).
+  Proof. apply auth_frag_validN. Qed.
   Lemma auth_frag_op_validN n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) ↔ ✓{n} (b1 ⋅ b2).
   Proof. apply auth_frag_validN. Qed.
   Lemma auth_frag_op_validN_1 n b1 b2 : ✓{n} (◯ b1 ⋅ ◯ b2) → ✓{n} (b1 ⋅ b2).
@@ -131,13 +136,18 @@ Section auth.
     rewrite view_auth_valid !cmra_valid_validN.
     by setoid_rewrite auth_view_rel_unit.
   Qed.
+
+  (** The following lemmas are also stated as implications, which can be used
+  to force [apply] to use the lemma in the right direction. *)
   Lemma auth_frag_valid b : ✓ (◯ b) ↔ ✓ b.
   Proof.
     rewrite view_frag_valid cmra_valid_validN.
     by setoid_rewrite auth_view_rel_exists.
   Qed.
-  (** Also stated as implications, which can be used to force [apply] to use the
-  lemma in the right direction. *)
+  Lemma auth_frag_valid_1 b : ✓ (◯ b) → ✓ b.
+  Proof. apply auth_frag_valid. Qed.
+  Lemma auth_frag_valid_2 b : ✓ b → ✓ (◯ b).
+  Proof. apply auth_frag_valid. Qed.
   Lemma auth_frag_op_valid b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) ↔ ✓ (b1 ⋅ b2).
   Proof. apply auth_frag_valid. Qed.
   Lemma auth_frag_op_valid_1 b1 b2 : ✓ (◯ b1 ⋅ ◯ b2) → ✓ (b1 ⋅ b2).
