@@ -163,7 +163,7 @@ Section auth.
     ✓{n} (●{q1} a1 ⋅ ●{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡{n}≡ a2 ∧ ✓{n} a1.
   Proof. by rewrite view_auth_frac_op_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_op_validN n a1 a2 : ✓{n} (● a1 ⋅ ● a2) ↔ False.
-  Proof. rewrite view_auth_frac_op_validN. naive_solver. Qed.
+  Proof. apply view_auth_op_validN. Qed.
 
   (** The following lemmas are also stated as implications, which can be used
   to force [apply] to use the lemma in the right direction. *)
@@ -204,7 +204,7 @@ Section auth.
     by setoid_rewrite auth_view_rel_unit.
   Qed.
   Lemma auth_auth_op_valid a1 a2 : ✓ (● a1 ⋅ ● a2) ↔ False.
-  Proof. rewrite auth_auth_frac_op_valid. naive_solver. Qed.
+  Proof. apply view_auth_op_valid. Qed.
 
   (** The following lemmas are also stated as implications, which can be used
   to force [apply] to use the lemma in the right direction. *)

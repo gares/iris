@@ -208,7 +208,7 @@ Section lemmas.
   Qed.
   Lemma gmap_view_auth_op_valid m1 m2 :
     ✓ (gmap_view_auth 1 m1 ⋅ gmap_view_auth 1 m2) ↔ False.
-  Proof. rewrite gmap_view_auth_frac_op_valid. naive_solver. Qed.
+  Proof. apply view_auth_op_valid. Qed.
 
   Lemma gmap_view_frag_validN n k dq v : ✓{n} gmap_view_frag k dq v ↔ ✓ dq.
   Proof.
