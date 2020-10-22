@@ -32,7 +32,7 @@ Proof. apply discrete_cmra_discrete. Qed.
 End ufrac.
 
 Global Instance ufrac_cancelable (q : ufrac) : Cancelable q.
-Proof. intros ?????. by apply Qp_eq, (inj (Qcplus q)), (Qp_eq (q+y) (q+z))%Qp. Qed.
+Proof. intros n y z ??. by apply Qp_eq, (inj (Qcplus q)), (Qp_eq (q+y) (q+z))%Qp. Qed.
 
 Global Instance ufrac_id_free (q : ufrac) : IdFree q.
 Proof.

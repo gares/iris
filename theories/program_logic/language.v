@@ -310,7 +310,7 @@ Section language.
       t2 = <[i:=e']>t1 ++ efs ∧
       prim_step e σ1 κ e' σ2 efs).
   Proof.
-    intros [κ [e σ e' σ' ? t11 t12 ?? Hstep]] Hps; simplify_eq/=.
+    intros [κ [e σ e' σ' efs t11 t12 ?? Hstep]] Hps; simplify_eq/=.
     apply Forall2_app_inv_l in Hps
       as (t31&?&Hpsteps&(e''&t32&Hps&?&->)%Forall2_cons_inv_l&->).
     destruct Hps as [e|e1 e2 e3 [_ Hprs]].

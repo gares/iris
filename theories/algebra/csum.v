@@ -92,8 +92,8 @@ Global Program Instance csum_cofe `{Cofe A, Cofe B} : Cofe csumO :=
 Next Obligation.
   intros ?? n c; rewrite /compl /csum_compl.
   feed inversion (chain_cauchy c 0 n); first auto with lia; constructor.
-  + rewrite (conv_compl n (csum_chain_l c a')) /=. destruct (c n); naive_solver.
-  + rewrite (conv_compl n (csum_chain_r c b')) /=. destruct (c n); naive_solver.
+  + rewrite (conv_compl n (csum_chain_l c _)) /=. destruct (c n); naive_solver.
+  + rewrite (conv_compl n (csum_chain_r c _)) /=. destruct (c n); naive_solver.
 Qed.
 
 Global Instance csum_ofe_discrete :

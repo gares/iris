@@ -149,7 +149,7 @@ Section cofe.
   Next Obligation.
     intros n c; split=>i x Hin Hv.
     etrans; [|by symmetry; apply (chain_cauchy c i n)]. split=>H; [by apply H|].
-    repeat intro. apply (chain_cauchy c n' i)=>//. by eapply uPred_mono.
+    repeat intro. apply (chain_cauchy c _ i)=>//. by eapply uPred_mono.
   Qed.
 End cofe.
 Arguments uPredO : clear implicits.

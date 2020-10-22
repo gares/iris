@@ -797,7 +797,7 @@ Qed.
 Lemma monPred_at_later i P : (▷ P) i ⊣⊢ ▷ P i.
 Proof. by unseal. Qed.
 Lemma monPred_at_laterN n i P : (▷^n P) i ⊣⊢ ▷^n P i.
-Proof. induction n; first done. rewrite /= monPred_at_later IHn //. Qed.
+Proof. induction n as [|? IHn]; first done. rewrite /= monPred_at_later IHn //. Qed.
 Lemma monPred_at_except_0 i P : (◇ P) i ⊣⊢ ◇ P i.
 Proof. by unseal. Qed.
 

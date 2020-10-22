@@ -436,13 +436,13 @@ Section freshness.
     pred_infinite I →
     ✓ x → (∀ i, m !! i = None → I i → Q (<[i:=x]>m)) → m ~~>: Q.
   Proof.
-    move=> HP ? HQ. eapply alloc_updateP_strong_dep with (f := λ _, x); eauto.
+    move=> HP ? HQ. eapply (alloc_updateP_strong_dep _ _ _ (λ _, x)); eauto.
   Qed.
   Lemma alloc_updateP (Q : gmap K A → Prop) m x :
     ✓ x → (∀ i, m !! i = None → Q (<[i:=x]>m)) → m ~~>: Q.
   Proof.
     move=>??.
-    eapply alloc_updateP_strong with (I:=λ _, True);
+    eapply (alloc_updateP_strong _ (λ _, True));
     eauto using pred_infinite_True.
   Qed.
   Lemma alloc_updateP_cofinite (Q : gmap K A → Prop) (J : gset K) m x :

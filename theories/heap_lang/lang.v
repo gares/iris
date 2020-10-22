@@ -716,7 +716,9 @@ Proof. revert κ e2. induction Ki; inversion_clear 1; simplify_option_eq; eauto.
 Lemma fill_item_no_val_inj Ki1 Ki2 e1 e2 :
   to_val e1 = None → to_val e2 = None →
   fill_item Ki1 e1 = fill_item Ki2 e2 → Ki1 = Ki2.
-Proof. revert Ki1. induction Ki2, Ki1; naive_solver eauto with f_equal. Qed.
+Proof.
+  revert Ki1. induction Ki2; intros Ki1; induction Ki1; naive_solver eauto with f_equal.
+Qed.
 
 Lemma alloc_fresh v n σ :
   let l := fresh_locs (dom (gset loc) σ.(heap)) in

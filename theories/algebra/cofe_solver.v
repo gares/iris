@@ -118,8 +118,8 @@ Proof. by assert (k = j) by lia; subst; rewrite !coerce_id. Qed.
 Lemma gg_gg {k i i1 i2 j} : ∀ (H1: k = i + j) (H2: k = i2 + (i1 + j)) (x: A k),
   gg i (coerce H1 x) = gg i1 (gg i2 (coerce H2 x)).
 Proof.
-  intros ? -> x. assert (i = i2 + i1) as -> by lia. revert j x H1.
-  induction i2 as [|i2 IH]; intros j X H1; simplify_eq/=;
+  intros Hij -> x. assert (i = i2 + i1) as -> by lia. revert j x Hij.
+  induction i2 as [|i2 IH]; intros j X Hij; simplify_eq/=;
     [by rewrite coerce_id|by rewrite g_coerce IH].
 Qed.
 Lemma ff_ff {k i i1 i2 j} : ∀ (H1: i + k = j) (H2: i1 + (i2 + k) = j) (x: A k),

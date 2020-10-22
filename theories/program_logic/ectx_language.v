@@ -249,7 +249,7 @@ Section ectx_language.
     prim_step (fill K e1) σ1 κ e2 σ2 efs →
     ∃ e2', e2 = fill K e2' ∧ head_step e1 σ1 κ e2' σ2 efs.
   Proof.
-    intros (κ'&e2''&σ2''&efs''&?HhstepK) [K' e1' e2' HKe1 -> Hstep].
+    intros (κ'&e2''&σ2''&efs''&HhstepK) [K' e1' e2' HKe1 -> Hstep].
     edestruct (step_by_val K) as [K'' ?];
       eauto using val_head_stuck; simplify_eq/=.
     rewrite -fill_comp in HKe1; simplify_eq.
@@ -277,7 +277,7 @@ Section ectx_language.
     - eauto using fill_not_val.
     - intros ?????? [K' e1' e2' Heq1 Heq2 Hstep].
       by exists (comp_ectx K K') e1' e2'; rewrite ?Heq1 ?Heq2 ?fill_comp.
-    - intros e1 σ1 κ e2 σ2 ? Hnval [K'' e1'' e2'' Heq1 -> Hstep].
+    - intros e1 σ1 κ e2 σ2 efs Hnval [K'' e1'' e2'' Heq1 -> Hstep].
       destruct (step_by_val K K'' e1 e1'' σ1 κ e2'' σ2 efs) as [K' ->]; eauto.
       rewrite -fill_comp in Heq1; apply (inj (fill _)) in Heq1.
       exists (fill K' e2''); rewrite -fill_comp; split; auto.

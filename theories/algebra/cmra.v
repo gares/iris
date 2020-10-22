@@ -1493,7 +1493,7 @@ Section option.
   Global Instance cancelable_Some a :
     IdFree a → Cancelable a → Cancelable (Some a).
   Proof.
-    intros Hirr ?? [b|] [c|] ? EQ; inversion_clear EQ.
+    intros Hirr ? n [b|] [c|] ? EQ; inversion_clear EQ.
     - constructor. by apply (cancelableN a).
     - destruct (Hirr b); [|eauto using dist_le with lia].
       by eapply (cmra_validN_op_l 0 a b), (cmra_validN_le n); last lia.
