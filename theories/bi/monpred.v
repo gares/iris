@@ -917,17 +917,17 @@ Proof.
   - by (split=> ? /=; repeat f_equiv).
   - intros P Q [?]. split=> i /=. by do 3 f_equiv.
   - intros P. split=> i /=. by rewrite bi.forall_elim plainly_elim_persistently.
-  - intros P. split=> i /=. repeat setoid_rewrite <-plainly_forall.
+  - intros P. split=> i /=. do 3 setoid_rewrite <-plainly_forall.
     rewrite -plainly_idemp_2. f_equiv. by apply bi.forall_intro=>_.
   - intros A Ψ. split=> i /=. apply bi.forall_intro=> j.
     rewrite plainly_forall. apply bi.forall_intro=> a. by rewrite !bi.forall_elim.
-  - intros P Q. split=> i /=. repeat setoid_rewrite bi.pure_impl_forall.
-    repeat setoid_rewrite <-plainly_forall.
-    repeat setoid_rewrite bi.persistently_forall. do 4 f_equiv.
+  - intros P Q. split=> i /=. setoid_rewrite bi.pure_impl_forall.
+    setoid_rewrite <-plainly_forall.
+    do 2 setoid_rewrite bi.persistently_forall. do 4 f_equiv.
     apply persistently_impl_plainly.
   - intros P Q. split=> i /=.
-    repeat setoid_rewrite bi.pure_impl_forall. rewrite 2!bi.forall_elim //.
-    repeat setoid_rewrite <-plainly_forall.
+    setoid_rewrite bi.pure_impl_forall. rewrite 2!bi.forall_elim //.
+    do 2 setoid_rewrite <-plainly_forall.
     setoid_rewrite plainly_impl_plainly. f_equiv.
     do 3 apply bi.forall_intro => ?. f_equiv. rewrite bi.forall_elim //.
   - intros P. split=> i /=. apply bi.forall_intro=>_. by apply plainly_emp_intro.
@@ -951,7 +951,7 @@ Qed.
 Global Instance monPred_bi_plainly_exist `{!BiPlainly PROP} `{!BiIndexBottom bot} :
   BiPlainlyExist PROP → BiPlainlyExist monPredI.
 Proof.
-  split=> ? /=. rewrite monPred_plainly_eq /=. repeat setoid_rewrite monPred_at_exist.
+  split=> ? /=. rewrite monPred_plainly_eq /=. setoid_rewrite monPred_at_exist.
   rewrite (bi.forall_elim bot) plainly_exist_1. do 2 f_equiv.
   apply bi.forall_intro=>?. by do 2 f_equiv.
 Qed.
