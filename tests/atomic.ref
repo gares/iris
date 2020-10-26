@@ -9,7 +9,7 @@
   ============================
   "Hl" : l ↦ v
   --------------------------------------∗
-  AACC << ∀ (v0 : val) (q : Qp), l ↦{q} v0 ABORT l ↦ v >> @ ⊤, ∅
+  AACC << ∀ (v0 : val) (q : dfrac), l ↦{q} v0 ABORT l ↦ v >> @ ⊤, ∅
        << l ↦{q} v0, COMM Q -∗ Q >>
   
 "non_laterable"

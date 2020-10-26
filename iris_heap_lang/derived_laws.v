@@ -14,11 +14,11 @@ From iris.prelude Require Import options.
 (** The [array] connective is a version of [mapsto] that works
 with lists of values. *)
 
-Definition array `{!heapG Σ} (l : loc) (q : Qp) (vs : list val) : iProp Σ :=
+Definition array `{!heapG Σ} (l : loc) (q : dfrac) (vs : list val) : iProp Σ :=
   ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{q} v)%I.
-Notation "l ↦∗{ q } vs" := (array l q vs)
+Notation "l ↦∗{ q } vs" := (array l q%dfrac vs)
   (at level 20, q at level 50, format "l  ↦∗{ q }  vs") : bi_scope.
-Notation "l ↦∗ vs" := (array l 1 vs)
+Notation "l ↦∗ vs" := (array l (DfracOwn 1) vs)
   (at level 20, format "l  ↦∗  vs") : bi_scope.
 
 (** We have [FromSep] and [IntoSep] instances to split the fraction (via the
@@ -32,15 +32,14 @@ Implicit Types Φ : val → iProp Σ.
 Implicit Types σ : state.
 Implicit Types v : val.
 Implicit Types vs : list val.
-Implicit Types q : Qp.
 Implicit Types l : loc.
 Implicit Types sz off : nat.
 
 Global Instance array_timeless l q vs : Timeless (array l q vs) := _.
 
-Global Instance array_fractional l vs : Fractional (λ q, l ↦∗{q} vs)%I := _.
+Global Instance array_fractional l vs : Fractional (λ q, l ↦∗{#q} vs)%I := _.
 Global Instance array_as_fractional l q vs :
-  AsFractional (l ↦∗{q} vs) (λ q, l ↦∗{q} vs)%I q.
+  AsFractional (l ↦∗{#q} vs) (λ q, l ↦∗{#q} vs)%I q.
 Proof. split; done || apply _. Qed.
 
 Lemma array_nil l q : l ↦∗{q} [] ⊣⊢ emp.

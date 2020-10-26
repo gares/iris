@@ -32,6 +32,13 @@ Inductive dfrac :=
   | DfracDiscarded : dfrac
   | DfracBoth : Qp → dfrac.
 
+Declare Scope dfrac_scope.
+Delimit Scope dfrac_scope with dfrac.
+
+Notation "# q" := (DfracOwn q%Qp) (at level 8, format "# q") : dfrac_scope.
+Notation "#□" := (DfracDiscarded) : dfrac_scope.
+Notation "□" := (DfracDiscarded) : dfrac_scope.
+
 Section dfrac.
   Canonical Structure dfracO := leibnizO dfrac.
 

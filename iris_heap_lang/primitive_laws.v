@@ -28,9 +28,9 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 
 (** Since we use an [option val] instance of [gen_heap], we need to overwrite
 the notations.  That also helps for scopes and coercions. *)
-Notation "l ↦{ q } v" := (mapsto (L:=loc) (V:=option val) l q (Some v%V))
+Notation "l ↦{ q } v" := (mapsto (L:=loc) (V:=option val) l q%dfrac (Some v%V))
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
-Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l 1%Qp (Some v%V))
+Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V))
   (at level 20) : bi_scope.
 
 (** Same for [gen_inv_heap], except that these are higher-order notations so to
@@ -277,10 +277,10 @@ Qed.
 (** We need to adjust the [gen_heap] and [gen_inv_heap] lemmas because of our
 value type being [option val]. *)
 
-Lemma mapsto_valid l q v : l ↦{q} v -∗ ⌜q ≤ 1⌝%Qp.
+Lemma mapsto_valid l q v : l ↦{q} v -∗ ⌜✓ q⌝%Qp.
 Proof. apply mapsto_valid. Qed.
 Lemma mapsto_valid_2 l q1 q2 v1 v2 :
-  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ v1 = v2⌝.
+  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜✓ (q1 ⋅ q2) ∧ v1 = v2⌝.
 Proof.
   iIntros "H1 H2". iDestruct (mapsto_valid_2 with "H1 H2") as %[? [=?]]. done.
 Qed.
@@ -288,17 +288,20 @@ Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v
 Proof. iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %[=?]. done. Qed.
 
 Lemma mapsto_combine l q1 q2 v1 v2 :
-  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 + q2} v1 ∗ ⌜v1 = v2⌝.
+  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 ⋅ q2} v1 ∗ ⌜v1 = v2⌝.
 Proof.
-  iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
-  iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
+  iIntros "Hl1 Hl2". iDestruct (mapsto_combine with "Hl1 Hl2") as "[$ Heq]".
+  by iDestruct "Heq" as %[= ->].
 Qed.
 
 Lemma mapsto_frac_ne l1 l2 q1 q2 v1 v2 :
-  ¬ (q1 + q2 ≤ 1)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+  ¬ ✓(q1 ⋅ q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
 Proof. apply mapsto_frac_ne. Qed.
 Lemma mapsto_ne l1 l2 q2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
 Proof. apply mapsto_ne. Qed.
+
+Lemma mapsto_persist l q v : l ↦{#q} v ==∗ l ↦{#□} v.
+Proof. apply mapsto_persist. Qed.
 
 Global Instance inv_mapsto_own_proper l v :
   Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto_own l v).
@@ -372,7 +375,7 @@ Proof.
 Qed.
 
 Lemma heap_array_to_seq_mapsto l v (n : nat) :
-  ([∗ map] l' ↦ ov ∈ heap_array l (replicate n v), gen_heap.mapsto l' 1 ov) -∗
+  ([∗ map] l' ↦ ov ∈ heap_array l (replicate n v), gen_heap.mapsto l' (DfracOwn 1) ov) -∗
   [∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦ v.
 Proof.
   iIntros "Hvs". iInduction n as [|n] "IH" forall (l); simpl.
@@ -458,7 +461,7 @@ Lemma wp_load s E l q v :
   {{{ ▷ l ↦{q} v }}} Load (Val $ LitV $ LitLoc l) @ s; E {{{ RET v; l ↦{q} v }}}.
 Proof.
   iIntros (Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
-  iApply (twp_load with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
+  iApply (twp_load with "H"). iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
 Lemma twp_store s E l v' v :

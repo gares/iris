@@ -218,7 +218,7 @@ Lemma tac_wp_allocN Δ Δ' s E j K v n Φ :
   (0 < n)%Z →
   MaybeIntoLaterNEnvs 1 Δ Δ' →
   (∀ l,
-    match envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ' with
+    match envs_app false (Esnoc Enil j (array l (DfracOwn 1) (replicate (Z.to_nat n) v))) Δ' with
     | Some Δ'' =>
        envs_entails Δ'' (WP fill K (Val $ LitV $ LitLoc l) @ s; E {{ Φ }})
     | None => False
@@ -236,7 +236,7 @@ Qed.
 Lemma tac_twp_allocN Δ s E j K v n Φ :
   (0 < n)%Z →
   (∀ l,
-    match envs_app false (Esnoc Enil j (array l 1 (replicate (Z.to_nat n) v))) Δ with
+    match envs_app false (Esnoc Enil j (array l (DfracOwn 1) (replicate (Z.to_nat n) v))) Δ with
     | Some Δ' =>
        envs_entails Δ' (WP fill K (Val $ LitV $ LitLoc l) @ s; E [{ Φ }])
     | None => False
@@ -314,26 +314,31 @@ Proof.
   apply sep_mono_r, wand_intro_r. rewrite right_id //.
 Qed.
 
-Lemma tac_wp_load Δ Δ' s E i K l q v Φ :
+Lemma tac_wp_load Δ Δ' s E i K b l q v Φ :
   MaybeIntoLaterNEnvs 1 Δ Δ' →
-  envs_lookup i Δ' = Some (false, l ↦{q} v)%I →
+  envs_lookup i Δ' = Some (b, l ↦{q} v)%I →
   envs_entails Δ' (WP fill K (Val v) @ s; E {{ Φ }}) →
   envs_entails Δ (WP fill K (Load (LitV l)) @ s; E {{ Φ }}).
 Proof.
-  rewrite envs_entails_eq=> ???.
+  rewrite envs_entails_eq=> ?? Hi.
   rewrite -wp_bind. eapply wand_apply; first exact: wp_load.
   rewrite into_laterN_env_sound -later_sep envs_lookup_split //; simpl.
-  by apply later_mono, sep_mono_r, wand_mono.
+  apply later_mono.
+  destruct b; simpl.
+  * iIntros "[#$ He]". iIntros "_". iApply Hi. iApply "He". iFrame "#".
+  * by apply sep_mono_r, wand_mono.
 Qed.
-Lemma tac_twp_load Δ s E i K l q v Φ :
-  envs_lookup i Δ = Some (false, l ↦{q} v)%I →
+Lemma tac_twp_load Δ s E i K b l q v Φ :
+  envs_lookup i Δ = Some (b, l ↦{q} v)%I →
   envs_entails Δ (WP fill K (Val v) @ s; E [{ Φ }]) →
   envs_entails Δ (WP fill K (Load (LitV l)) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ??.
+  rewrite envs_entails_eq=> ? Hi.
   rewrite -twp_bind. eapply wand_apply; first exact: twp_load.
   rewrite envs_lookup_split //; simpl.
-  by apply sep_mono_r, wand_mono.
+  destruct b; simpl.
+  - iIntros "[#$ He]". iIntros "_". iApply Hi. iApply "He". iFrame "#".
+  - iIntros "[$ He]". iIntros "Hl". iApply Hi. iApply "He". iFrame "Hl".
 Qed.
 
 Lemma tac_wp_store Δ Δ' s E i K l v v' Φ :
