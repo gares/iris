@@ -25,6 +25,14 @@ Section fractional.
   Implicit Types Φ : Qp → PROP.
   Implicit Types q : Qp.
 
+  Global Instance Fractional_proper :
+    Proper (pointwise_relation _ (≡) ==> iff) (@Fractional PROP).
+  Proof.
+    rewrite /Fractional.
+    intros Φ1 Φ2 Hequiv.
+    by setoid_rewrite Hequiv.
+  Qed.
+
   Lemma fractional_split P P1 P2 Φ q1 q2 :
     AsFractional P Φ (q1 + q2) → AsFractional P1 Φ q1 → AsFractional P2 Φ q2 →
     P ⊣⊢ P1 ∗ P2.

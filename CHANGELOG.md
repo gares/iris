@@ -51,6 +51,8 @@ With this release, we dropped support for Coq 8.9.
   available everywhere without further changes.
 * The authoritative fragment `✓ (◯ b : auth A)` is no longer definitionally
   equal to `✓ b`.
+* Add `mnat_auth`, a wrapper for `auth max_nat`. The result is an authoritative
+  `nat` where a fragment is a lower bound whose ownership is persistent.
 
 **Changes in `proofmode`:**
 
@@ -105,6 +107,9 @@ With this release, we dropped support for Coq 8.9.
   `uPred.discrete_fun_validI` to the new `base_logic.algebra` module. That
   module is exported by `base_logic.base_logic` so these names are now usually
   available everywhere, and no longer inside the `uPred` module.
+* Add an `mnat` library on top of `mnat_auth` that supports ghost state which is
+  an authoritative, monotonically-increasing `nat` with a proposition giving a
+  persistent lower bound. See `base_logic.lib.mnat` for further details.
 
 **Changes in `program_logic`:**
 
