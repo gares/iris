@@ -39,6 +39,18 @@
   N : namespace
   P : iProp Σ
   ============================
+  cinv N γ (<pers> P) ∗ cinv_own γ p ={⊤}=∗ cinv_own γ p ∗ ▷ P
+1 subgoal
+  
+  Σ : gFunctors
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  γ : gname
+  p : Qp
+  N : namespace
+  P : iProp Σ
+  ============================
   _ : cinv N γ (<pers> P)
   "HP" : ▷ <pers> P
   --------------------------------------□
@@ -86,6 +98,20 @@
   |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N))
           ∗ (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
   
+1 subgoal
+  
+  Σ : gFunctors
+  invG0 : invG Σ
+  cinvG0 : cinvG Σ
+  na_invG0 : na_invG Σ
+  t : na_inv_pool_name
+  N : namespace
+  E1, E2 : coPset
+  P : iProp Σ
+  ============================
+  ↑N ⊆ E2
+  → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
+    ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P
 1 subgoal
   
   Σ : gFunctors

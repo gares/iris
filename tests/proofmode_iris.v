@@ -101,6 +101,7 @@ Section iris_tests.
   Lemma test_iInv_2 γ p N P:
     cinv N γ (<pers> P) ∗ cinv_own γ p ={⊤}=∗ cinv_own γ p ∗ ▷ P.
   Proof.
+    Show.
     iIntros "(#?&?)".
     iInv N as "(#HP&Hown)". Show.
     iModIntro. iSplit; auto with iFrame.
@@ -139,6 +140,7 @@ Section iris_tests.
     na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
          ⊢ |={⊤}=> na_own t E1 ∗ na_own t E2  ∗ ▷ P.
   Proof.
+    Show.
     iIntros (?) "(#?&Hown1&Hown2)".
     iInv N as "(#HP&Hown2)" "Hclose". Show.
     iMod ("Hclose" with "[HP Hown2]").
