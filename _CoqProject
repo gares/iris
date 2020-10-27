@@ -40,6 +40,7 @@ theories/algebra/lib/frac_auth.v
 theories/algebra/lib/ufrac_auth.v
 theories/algebra/lib/frac_agree.v
 theories/algebra/lib/gmap_view.v
+theories/algebra/lib/mnat_auth.v
 theories/si_logic/siprop.v
 theories/si_logic/bi.v
 theories/bi/notation.v
@@ -89,6 +90,7 @@ theories/base_logic/lib/gen_inv_heap.v
 theories/base_logic/lib/fancy_updates_from_vs.v
 theories/base_logic/lib/proph_map.v
 theories/base_logic/lib/ghost_var.v
+theories/base_logic/lib/mnat.v
 theories/program_logic/adequacy.v
 theories/program_logic/lifting.v
 theories/program_logic/weakestpre.v
