@@ -126,10 +126,6 @@ Local Notation "l ↦{ q } v" := (mapsto l q v)
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
 Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
 
-Local Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
-  (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
-Local Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
-
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_interp σ.
 Proof.
@@ -174,17 +170,6 @@ Section gen_heap.
     iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
     iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
   Qed.
-
-  Global Instance ex_mapsto_fractional l : Fractional (λ q, l ↦{q} -)%I.
-  Proof.
-    intros p q. iSplit.
-    - iDestruct 1 as (v) "[H1 H2]". iSplitL "H1"; eauto.
-    - iIntros "[H1 H2]". iDestruct "H1" as (v1) "H1". iDestruct "H2" as (v2) "H2".
-      iDestruct (mapsto_agree with "H1 H2") as %->. iExists v2. by iFrame.
-  Qed.
-  Global Instance ex_mapsto_as_fractional l q :
-    AsFractional (l ↦{q} -) (λ q, l ↦{q} -)%I q.
-  Proof. split. done. apply _. Qed.
 
   Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
   Proof.
