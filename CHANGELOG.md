@@ -119,6 +119,10 @@ With this release, we dropped support for Coq 8.9.
   `big_sepL_dup`, `big_sepM_dup`, `big_sepS_dup`. Instead of having `□ (P -∗ P ∗
   P)` as an assumption these lemmas now assume `P` to be an instance of
   `Duplicable`.
+* Remove the `gen_heap` notations `l ↦ -` and `l ↦{q} -`. They were barely used
+  and looked very confusing in context: `l ↦ - ∗ P` looks like a magic wand.
+* Change `gen_inv_heap` notation `l ↦□ I` to `l ↦_I □`, so that `↦□` can be used
+  by `gen_heap`.
 
 **Changes in `program_logic`:**
 
