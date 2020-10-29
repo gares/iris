@@ -7,7 +7,7 @@ This is what we do for option $\maybe\cofe$, product $(M_i)_{i \in I}$ (with $I$
 
 \subsection{Next (Type-Level Later)}
 
-Given a OFE $\cofe$, we define $\latert\cofe$ as follows (using a datatype-like notation to define the type):
+Given an OFE $\cofe$, we define $\latert\cofe$ as follows (using a datatype-like notation to define the type):
 \begin{align*}
   \latert\cofe \eqdef{}& \latertinj(x:\cofe) \\
   \latertinj(x) \nequiv{n} \latertinj(y) \eqdef{}& n = 0 \lor x \nequiv{n-1} y

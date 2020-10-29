@@ -4,7 +4,7 @@
 
 This section describes how to build a program logic for an arbitrary language (\cf \Sref{sec:language}) on top of the base logic.
 So in the following, we assume that some language $\Lang$ was fixed.
-Furthermore, we work in the logic with higher-order ghost state as described in \Sref{sec:composeable-resources}.
+Furthermore, we work in the logic with higher-order ghost state as described in \Sref{sec:composable-resources}.
 
 
 \subsection{World Satisfaction, Invariants, Fancy Updates}
@@ -398,7 +398,7 @@ We use the notation $\namesp.\iname$ for the namespace $[\iname] \dplus \namesp$
 
 The elements of a namespaces are \emph{structured invariant names} (think: Java fully qualified class name).
 They, too, are lists of $\nat$, the same type as namespaces.
-In order to connect this up to the definitions of \Sref{sec:invariants}, we need a way to map structued invariant names to $\InvName$, the type of ``plain'' invariant names.
+In order to connect this up to the definitions of \Sref{sec:invariants}, we need a way to map structured invariant names to $\InvName$, the type of ``plain'' invariant names.
 Any injective mapping $\textlog{namesp\_inj}$ will do; and such a mapping has to exist because $\List(\nat)$ is countable and $\InvName$ is infinite.
 Whenever needed, we (usually implicitly) coerce $\namesp$ to its encoded suffix-closure, \ie to the set of encoded structured invariant names contained in the namespace: \[\namecl\namesp \eqdef \setComp{\iname}{\Exists \namesp'. \iname = \textlog{namesp\_inj}(\namesp' \dplus \namesp)}\]
 
