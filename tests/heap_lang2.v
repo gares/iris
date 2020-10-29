@@ -8,6 +8,10 @@ Set Default Proof Using "Type".
 Section printing_tests.
   Context `{!heapG Σ}.
 
+  Lemma vs_print (P Q : iProp Σ) :
+    P ={⊤}=∗ Q.
+  Proof. Show. Abort.
+
   Lemma wp_print_long_expr (fun1 fun2 fun3 : expr) :
     True -∗ WP let: "val1" := fun1 #() in
        let: "val2" := fun2 "val1" in
@@ -16,5 +20,14 @@ Section printing_tests.
   Proof.
     iIntros "_". Show.
   Abort.
+
+  Lemma texan_triple_long_expr (fun1 fun2 fun3 : expr) :
+    {{{ True }}}
+       let: "val1" := fun1 #() in
+       let: "val2" := fun2 "val1" in
+       let: "val3" := fun3 "val2" in
+       if: "val1" = "val2" then "val" else "val3"
+    {{{ (x y : val) (z : Z), RET (x, y, #z); True }}}.
+  Proof. Show. Abort.
 
 End printing_tests.
