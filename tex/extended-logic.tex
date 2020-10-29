@@ -78,7 +78,7 @@ As already mentioned, the persistence modality is an always-style modality:
   {}{\always\always\prop \provesIff \always\prop}
 \end{mathpar}
 Some further interesting derived rules include:
-\begin{mathparpagebreakable}  
+\begin{mathparpagebreakable}
   \infer{}
   {\always(\prop\land\propB) \provesIff \always\prop \land \always\propB}
 
@@ -300,8 +300,8 @@ The following rules identify the class of timeless propositions:
 \end{mathparpagebreakable}
 
 
-\subsection{Dynamic Composeable Higher-Order Resources}
-\label{sec:composeable-resources}
+\subsection{Dynamic Composable Higher-Order Resources}
+\label{sec:composable-resources}
 
 The base logic described in \Sref{sec:base-logic} works over an arbitrary camera $\monoid$ defining the structure of the resources.
 It turns out that we can generalize this further and permit picking cameras ``$\iFunc(\Prop)$'' that depend on the structure of propositions themselves.
@@ -348,7 +348,7 @@ Effectively, we just defined a way to instantiate the base logic with $\Res$ as 
 We thus obtain all the rules of \Sref{sec:base-logic}, and furthermore, we can use the maps $\wIso$ and $\wIso^{-1}$ \emph{in the logic} to convert between logical propositions $\Sem\Prop$ and the domain $\iPreProp$ which is used in the construction of $\Res$ -- so from elements of $\iPreProp$, we can construct elements of $\Sem{\textlog M}$, which are the elements that can be owned in our logic.
 
 \paragraph{Proof composability.}
-To make our proofs composeable, we \emph{generalize} our proofs over the family of functors.
+To make our proofs composable, we \emph{generalize} our proofs over the family of functors.
 This is possible because we made $\Res$ a \emph{product} of all the cameras picked by the user, and because we can actually work with that product ``pointwise''.
 So instead of picking a \emph{concrete} family, proofs will assume to be given an \emph{arbitrary} family of functors, plus a proof that this family \emph{contains the functors they need}.
 Composing two proofs is then merely a matter of conjoining the assumptions they make about the functors.

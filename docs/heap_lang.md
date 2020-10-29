@@ -114,7 +114,7 @@ all of the redexes reduced.)
 ## Notation and lemmas for derived notions involving a thunk
 
 Sometimes, it is useful to define a derived notion in HeapLang that involves
-thunks.  For example, the parallel composition `e1 ||| e2` is defineable in
+thunks.  For example, the parallel composition `e1 ||| e2` is definable in
 HeapLang, but that requires thunking `e1` and `e2` before passing them to
 `par`. (This is defined in [`par.v`](theories/heap_lang/lib/par.v).)  However,
 this is somewhat subtle because of the distinction between expression lambdas

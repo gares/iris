@@ -81,7 +81,7 @@ Tactic Notation "iStartProof" uconstr(PROP) :=
   lazymatch goal with
   | |- @envs_entails ?PROP' _ _ =>
     (* This cannot be shared with the other [iStartProof], because
-    type_term has a non-negligeable performance impact. *)
+    type_term has a non-negligible performance impact. *)
     let x := type_term (eq_refl : @eq Type PROP PROP') in idtac
 
   (* We eta-expand [as_emp_valid_2], in order to make sure that

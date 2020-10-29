@@ -51,7 +51,7 @@ To obtain a development version, also add the Iris opam repository:
     opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 
 Either way, you can now do `opam install coq-iris`.  To fetch updates later, run
-`opam update && opam upgrade`.  However, notice that we do not guarnatee
+`opam update && opam upgrade`.  However, notice that we do not guarantee
 backwards-compatibility, so upgrading Iris may break your Iris-using
 developments.
 
@@ -87,7 +87,7 @@ followed by `make build-dep`.
   the primitive connectives.  It also contains derived constructions that are
   entirely independent of the choice of resources.
   * The subfolder [lib](theories/base_logic/lib) contains some generally useful
-    derived constructions.  Most importantly, it defines composeable
+    derived constructions.  Most importantly, it defines composable
     dynamic resources and ownership of them; the other constructions depend
     on this setup.
 * The folder [program_logic](theories/program_logic) specializes the base logic
