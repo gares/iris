@@ -125,8 +125,12 @@ Section proof.
     iApply (twp_array_clone with "H"); [auto..|]; iIntros (l') "H HΦ". by iApply "HΦ".
   Qed.
 
-  Local Lemma wp_array_init_loop {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
-          (xs : list A) i n l (f : val) stk E :
+Section array_init.
+  Context {A : Type} (g : A → val) (Q : nat → A → iProp Σ).
+  Implicit Types xs : list A.
+  Implicit Types f : val.
+
+  Local Lemma wp_array_init_loop xs i n l f stk E :
     0 < n →
     length xs = i →
     i ≤ n →
@@ -173,10 +177,9 @@ Section proof.
       rewrite -app_assoc.
       iExists ([x] ++ ys). iFrame. iPureIntro.
       by rewrite app_assoc.
-  Qed.
+    Qed.
 
-  Local Lemma twp_array_init_loop {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
-          (xs : list A) i n l (f : val) stk E :
+  Local Lemma twp_array_init_loop xs i n l f stk E :
     0 < n →
     length xs = i →
     i ≤ n →
@@ -226,8 +229,7 @@ Section proof.
         by rewrite app_assoc.
   Qed.
 
-  Theorem wp_array_init {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
-          n (f : val) stk E :
+  Theorem wp_array_init n f stk E :
     (0 < n)%Z →
     {{{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }} }}}
       array_init #n f @ stk; E
@@ -236,7 +238,7 @@ Section proof.
     intros Hn. iIntros (Φ) "Hf HΦ".
     wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
     wp_pures.
-    iPoseProof (wp_array_init_loop g Q [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
+    iPoseProof (wp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
     { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
@@ -246,8 +248,7 @@ Section proof.
     wp_pures. iApply "HΦ".
     iFrame "Hl HQs". iPureIntro. lia.
   Qed.
-  Theorem twp_array_init {A : Type} (g : A → val) (Q : nat → A → iProp Σ)
-          n (f : val) stk E :
+  Theorem twp_array_init n f stk E :
     (0 < n)%Z →
     [[{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E [{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }] }]]
       array_init #n f @ stk; E
@@ -256,7 +257,7 @@ Section proof.
     intros Hn. iIntros (Φ) "Hf HΦ".
     wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
     wp_pures.
-    iPoseProof (twp_array_init_loop g Q [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
+    iPoseProof (twp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
     { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
     assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
@@ -266,6 +267,8 @@ Section proof.
     wp_pures. iApply "HΦ".
     iFrame "Hl HQs". iPureIntro. lia.
   Qed.
+
+End array_init.
 
   (* Version of [wp_array_init] with the auxiliary type [A] set to
   [val], and with the persistent assumption on the function [f]. *)
