@@ -154,13 +154,13 @@ Section auth.
     ✓ (●{p} a ⋅ ●{q} b) → a = b.
   Proof. by apply view_auth_frac_op_inv_L. Qed.
 
-  Lemma auth_auth_frac_validN n q a : ✓{n} (●{q} a) ↔ ✓{n} q ∧ ✓{n} a.
+  Lemma auth_auth_frac_validN n q a : ✓{n} (●{q} a) ↔ (q ≤ 1)%Qp ∧ ✓{n} a.
   Proof. by rewrite view_auth_frac_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_validN n a : ✓{n} (● a) ↔ ✓{n} a.
   Proof. by rewrite view_auth_validN auth_view_rel_unit. Qed.
 
   Lemma auth_auth_frac_op_validN n q1 q2 a1 a2 :
-    ✓{n} (●{q1} a1 ⋅ ●{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡{n}≡ a2 ∧ ✓{n} a1.
+    ✓{n} (●{q1} a1 ⋅ ●{q2} a2) ↔ (q1 + q2 ≤ 1)%Qp ∧ a1 ≡{n}≡ a2 ∧ ✓{n} a1.
   Proof. by rewrite view_auth_frac_op_validN auth_view_rel_unit. Qed.
   Lemma auth_auth_op_validN n a1 a2 : ✓{n} (● a1 ⋅ ● a2) ↔ False.
   Proof. apply view_auth_op_validN. Qed.
@@ -181,12 +181,12 @@ Section auth.
   Proof. apply auth_frag_op_validN. Qed.
 
   Lemma auth_both_frac_validN n q a b :
-    ✓{n} (●{q} a ⋅ ◯ b) ↔ ✓{n} q ∧ b ≼{n} a ∧ ✓{n} a.
+    ✓{n} (●{q} a ⋅ ◯ b) ↔ (q ≤ 1)%Qp ∧ b ≼{n} a ∧ ✓{n} a.
   Proof. apply view_both_frac_validN. Qed.
   Lemma auth_both_validN n a b : ✓{n} (● a ⋅ ◯ b) ↔ b ≼{n} a ∧ ✓{n} a.
   Proof. apply view_both_validN. Qed.
 
-  Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ ✓ q ∧ ✓ a.
+  Lemma auth_auth_frac_valid q a : ✓ (●{q} a) ↔ (q ≤ 1)%Qp ∧ ✓ a.
   Proof.
     rewrite view_auth_frac_valid !cmra_valid_validN.
     by setoid_rewrite auth_view_rel_unit.
@@ -198,10 +198,10 @@ Section auth.
   Qed.
 
   Lemma auth_auth_frac_op_valid q1 q2 a1 a2 :
-    ✓ (●{q1} a1 ⋅ ●{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡ a2 ∧ ✓ a1.
+    ✓ (●{q1} a1 ⋅ ●{q2} a2) ↔ (q1 + q2 ≤ 1)%Qp ∧ a1 ≡ a2 ∧ ✓ a1.
   Proof.
     rewrite view_auth_frac_op_valid !cmra_valid_validN.
-    by setoid_rewrite auth_view_rel_unit.
+    setoid_rewrite auth_view_rel_unit. done.
   Qed.
   Lemma auth_auth_op_valid a1 a2 : ✓ (● a1 ⋅ ● a2) ↔ False.
   Proof. apply view_auth_op_valid. Qed.
@@ -228,7 +228,7 @@ Section auth.
   single witness for [b ≼ a] from validity, we have to make do with one witness
   per step-index, i.e., [∀ n, b ≼{n} a]. *)
   Lemma auth_both_frac_valid q a b :
-    ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ (∀ n, b ≼{n} a) ∧ ✓ a.
+    ✓ (●{q} a ⋅ ◯ b) ↔ (q ≤ 1)%Qp ∧ (∀ n, b ≼{n} a) ∧ ✓ a.
   Proof.
     rewrite view_both_frac_valid. apply and_iff_compat_l. split.
     - intros Hrel. split.
@@ -238,11 +238,11 @@ Section auth.
   Qed.
   Lemma auth_both_valid a b :
     ✓ (● a ⋅ ◯ b) ↔ (∀ n, b ≼{n} a) ∧ ✓ a.
-  Proof. rewrite auth_both_frac_valid frac_valid'. naive_solver. Qed.
+  Proof. rewrite auth_both_frac_valid. naive_solver. Qed.
 
   (* The reverse direction of the two lemmas below only holds if the camera is
   discrete. *)
-  Lemma auth_both_frac_valid_2 q a b : ✓ q → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
+  Lemma auth_both_frac_valid_2 q a b : (q ≤ 1)%Qp → ✓ a → b ≼ a → ✓ (●{q} a ⋅ ◯ b).
   Proof.
     intros. apply auth_both_frac_valid.
     naive_solver eauto using cmra_included_includedN.
@@ -251,14 +251,14 @@ Section auth.
   Proof. intros ??. by apply auth_both_frac_valid_2. Qed.
 
   Lemma auth_both_frac_valid_discrete `{!CmraDiscrete A} q a b :
-    ✓ (●{q} a ⋅ ◯ b) ↔ ✓ q ∧ b ≼ a ∧ ✓ a.
+    ✓ (●{q} a ⋅ ◯ b) ↔ (q ≤ 1)%Qp ∧ b ≼ a ∧ ✓ a.
   Proof.
     rewrite auth_both_frac_valid. setoid_rewrite <-cmra_discrete_included_iff.
     naive_solver eauto using O.
   Qed.
   Lemma auth_both_valid_discrete `{!CmraDiscrete A} a b :
     ✓ (● a ⋅ ◯ b) ↔ b ≼ a ∧ ✓ a.
-  Proof. rewrite auth_both_frac_valid_discrete frac_valid'. naive_solver. Qed.
+  Proof. rewrite auth_both_frac_valid_discrete. naive_solver. Qed.
 
   (** Inclusion *)
   Lemma auth_auth_frac_includedN n p1 p2 a1 a2 b :

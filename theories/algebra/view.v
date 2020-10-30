@@ -317,18 +317,16 @@ Section cmra.
     ✓ (●V{p1} a1 ⋅ ●V{p2} a2) → a1 = a2.
   Proof. by intros ?%view_auth_frac_op_inv%leibniz_equiv. Qed.
 
-  Lemma view_auth_frac_validN n q a : ✓{n} (●V{q} a) ↔ ✓{n} q ∧ rel n a ε.
+  Lemma view_auth_frac_validN n q a : ✓{n} (●V{q} a) ↔ (q ≤ 1)%Qp ∧ rel n a ε.
   Proof.
     rewrite view_validN_eq /=. apply and_iff_compat_l. split; [|by eauto].
     by intros [? [->%(inj to_agree) ?]].
   Qed.
   Lemma view_auth_validN n a : ✓{n} (●V a) ↔ rel n a ε.
-  Proof.
-    rewrite view_auth_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
-  Qed.
+  Proof. rewrite view_auth_frac_validN. naive_solver. Qed.
 
   Lemma view_auth_frac_op_validN n q1 q2 a1 a2 :
-    ✓{n} (●V{q1} a1 ⋅ ●V{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡{n}≡ a2 ∧ rel n a1 ε.
+    ✓{n} (●V{q1} a1 ⋅ ●V{q2} a2) ↔ (q1 + q2 ≤ 1)%Qp ∧ a1 ≡{n}≡ a2 ∧ rel n a1 ε.
   Proof.
     split.
     - intros Hval. assert (a1 ≡{n}≡ a2) as Ha by eauto using view_auth_frac_op_invN.
@@ -342,30 +340,29 @@ Section cmra.
   Proof. done. Qed.
 
   Lemma view_both_frac_validN n q a b :
-    ✓{n} (●V{q} a ⋅ ◯V b) ↔ ✓{n} q ∧ rel n a b.
+    ✓{n} (●V{q} a ⋅ ◯V b) ↔ (q ≤ 1)%Qp ∧ rel n a b.
   Proof.
     rewrite view_validN_eq /=. apply and_iff_compat_l.
     setoid_rewrite (left_id _ _ b). split; [|by eauto].
     by intros [?[->%(inj to_agree)]].
   Qed.
   Lemma view_both_validN n a b : ✓{n} (●V a ⋅ ◯V b) ↔ rel n a b.
-  Proof.
-    rewrite view_both_frac_validN -cmra_discrete_valid_iff frac_valid'. naive_solver.
-  Qed.
+  Proof. rewrite view_both_frac_validN. naive_solver. Qed.
 
-  Lemma view_auth_frac_valid q a : ✓ (●V{q} a) ↔ ✓ q ∧ ∀ n, rel n a ε.
+  Lemma view_auth_frac_valid q a : ✓ (●V{q} a) ↔ (q ≤ 1)%Qp ∧ ∀ n, rel n a ε.
   Proof.
     rewrite view_valid_eq /=. apply and_iff_compat_l. split; [|by eauto].
     intros H n. by destruct (H n) as [? [->%(inj to_agree) ?]].
   Qed.
   Lemma view_auth_valid a : ✓ (●V a) ↔ ∀ n, rel n a ε.
-  Proof. rewrite view_auth_frac_valid frac_valid'. naive_solver. Qed.
+  Proof. rewrite view_auth_frac_valid. naive_solver. Qed.
 
   Lemma view_auth_frac_op_valid q1 q2 a1 a2 :
-    ✓ (●V{q1} a1 ⋅ ●V{q2} a2) ↔ ✓ (q1 + q2)%Qp ∧ a1 ≡ a2 ∧ ∀ n, rel n a1 ε.
+    ✓ (●V{q1} a1 ⋅ ●V{q2} a2) ↔ (q1 + q2 ≤ 1)%Qp ∧ a1 ≡ a2 ∧ ∀ n, rel n a1 ε.
   Proof.
     rewrite !cmra_valid_validN equiv_dist. setoid_rewrite view_auth_frac_op_validN.
-    setoid_rewrite <-cmra_discrete_valid_iff. naive_solver.
+    split; last naive_solver. intros Hv.
+    split; last naive_solver. apply (Hv 0).
   Qed.
   Lemma view_auth_op_valid a1 a2 : ✓ (●V a1 ⋅ ●V a2) ↔ False.
   Proof. rewrite view_auth_frac_op_valid. naive_solver. Qed.
@@ -373,14 +370,14 @@ Section cmra.
   Lemma view_frag_valid b : ✓ (◯V b) ↔ ∀ n, ∃ a, rel n a b.
   Proof. done. Qed.
 
-  Lemma view_both_frac_valid q a b : ✓ (●V{q} a ⋅ ◯V b) ↔ ✓ q ∧ ∀ n, rel n a b.
+  Lemma view_both_frac_valid q a b : ✓ (●V{q} a ⋅ ◯V b) ↔ (q ≤ 1)%Qp ∧ ∀ n, rel n a b.
   Proof.
     rewrite view_valid_eq /=. apply and_iff_compat_l.
     setoid_rewrite (left_id _ _ b). split; [|by eauto].
     intros H n. by destruct (H n) as [?[->%(inj to_agree)]].
   Qed.
   Lemma view_both_valid a b : ✓ (●V a ⋅ ◯V b) ↔ ∀ n, rel n a b.
-  Proof. rewrite view_both_frac_valid frac_valid'. naive_solver. Qed.
+  Proof. rewrite view_both_frac_valid. naive_solver. Qed.
 
   (** Inclusion *)
   Lemma view_auth_frac_includedN n p1 p2 a1 a2 b :
