@@ -35,7 +35,7 @@ Section dfrac.
   Canonical Structure dfracO := leibnizO dfrac.
 
   Implicit Types p q : Qp.
-  Implicit Types x y : dfrac.
+  Implicit Types dp dq : dfrac.
 
   Global Instance DfracOwn_inj : Inj (=) (=) DfracOwn.
   Proof. by injection 1. Qed.
@@ -43,8 +43,8 @@ Section dfrac.
   Proof. by injection 1. Qed.
 
   (** An element is valid as long as the sum of its content is less than one. *)
-  Instance dfrac_valid : Valid dfrac := λ x,
-    match x with
+  Instance dfrac_valid : Valid dfrac := λ dq,
+    match dq with
     | DfracOwn q => q ≤ 1
     | DfracDiscarded => True
     | DfracBoth q => q < 1
@@ -53,8 +53,8 @@ Section dfrac.
   (** As in the fractional camera the core is undefined for elements denoting
      ownership of a fraction. For elements denoting the knowledge that a fraction has
      been discarded the core is the identity function. *)
-  Instance dfrac_pcore : PCore dfrac := λ x,
-    match x with
+  Instance dfrac_pcore : PCore dfrac := λ dq,
+    match dq with
     | DfracOwn q => None
     | DfracDiscarded => Some DfracDiscarded
     | DfracBoth q => Some DfracDiscarded
@@ -62,8 +62,8 @@ Section dfrac.
 
   (** When elements are combined, ownership is added together and knowledge of
      discarded fractions is combined with the max operation. *)
-  Instance dfrac_op : Op dfrac := λ x y,
-    match x, y with
+  Instance dfrac_op : Op dfrac := λ dq dp,
+    match dq, dp with
     | DfracOwn q, DfracOwn q' => DfracOwn (q + q')
     | DfracOwn q, DfracDiscarded => DfracBoth q
     | DfracOwn q, DfracBoth q' => DfracBoth (q + q')
@@ -97,12 +97,12 @@ Section dfrac.
   Definition dfrac_ra_mixin : RAMixin dfrac.
   Proof.
     split; try apply _.
-    - intros [?| |?] y cx <-; intros [= <-]; eexists _; done.
+    - intros [?| |?] ? dq <-; intros [= <-]; eexists _; done.
     - intros [?| |?] [?| |?] [?| |?];
         rewrite /op /dfrac_op 1?assoc_L 1?assoc_L; done.
     - intros [?| |?] [?| |?];
         rewrite /op /dfrac_op 1?(comm_L Qp_add); done.
-    - intros [?| |?] cx; rewrite /pcore /dfrac_pcore; intros [= <-];
+    - intros [?| |?] dq; rewrite /pcore /dfrac_pcore; intros [= <-];
         rewrite /op /dfrac_op; done.
     - intros [?| |?] ? [= <-]; done.
     - intros [?| |?] [?| |?] ? [[?| |?] [=]] [= <-]; eexists _; split; try done;
