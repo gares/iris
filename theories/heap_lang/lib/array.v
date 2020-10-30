@@ -125,150 +125,150 @@ Section proof.
     iApply (twp_array_clone with "H"); [auto..|]; iIntros (l') "H HΦ". by iApply "HΦ".
   Qed.
 
-Section array_init.
-  Context {A : Type} (g : A → val) (Q : nat → A → iProp Σ).
-  Implicit Types xs : list A.
-  Implicit Types f : val.
+  Section array_init.
+    Context {A : Type} (g : A → val) (Q : nat → A → iProp Σ).
+    Implicit Types xs : list A.
+    Implicit Types f : val.
 
-  Local Lemma wp_array_init_loop xs i n l f stk E :
-    0 < n →
-    length xs = i →
-    i ≤ n →
-    ([∗ list] k↦x∈xs, Q k x) -∗
-    ([∗ list] j ∈ seq i (n-i), WP f #(j : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q j x }}) -∗
-    l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
-    WP array_init_loop #l #i #n f @ stk; E {{ _, ∃ ys,
-       l ↦∗ (g <$> (xs ++ ys)) ∗ ⌜length (xs++ys) = n⌝ ∗ ([∗ list] k↦x∈(xs++ys), Q k x) }}.
-  Proof.
-    iIntros (Hn Hxs Hi) "Hxs Hf Hl". iRevert (Hxs Hi).
-    iLöb as "IH" forall (xs i). iIntros (Hxs Hi).
-    wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
-    - iExists []. iFrame.
-      assert (length xs - length xs = 0) as -> by lia.
-      rewrite !app_nil_r. eauto with iFrame.
-    - wp_bind (f #(length xs)).
-      destruct n as [|n]; first by lia.
-      assert (length xs ≠ S n) by congruence.
-      rewrite Nat.sub_succ_l; last by lia.
-      iSimpl in "Hf". iDestruct "Hf" as "[H Hf]".
-      iApply (wp_wand with "H").
-      iIntros (v). iDestruct 1 as (x) "[-> Hx]".
-      wp_apply (wp_store_offset with "Hl").
-      { apply lookup_lt_is_Some_2.
-        rewrite app_length.
-        assert (S n - length xs > 0) by lia.
-        rewrite fmap_length replicate_length. lia. }
-      iIntros "Hl". wp_pures.
-      assert ((Z.of_nat (length xs) + 1)%Z = Z.of_nat (length xs + 1)) as -> by lia.
-      iSpecialize ("IH" $! (xs++[x]) (length xs + 1) with "[Hx Hxs] [Hf] [Hl] [%] [%]").
-      { rewrite big_sepL_app /= Nat.add_0_r. by iFrame. }
-      { by rewrite Nat.add_1_r Nat.sub_succ. }
-      { assert (length xs = length xs + 0) as Hlen1 by lia.
-        rewrite {1}Hlen1.
-        rewrite -{1}(fmap_length g xs).
-        rewrite insert_app_r fmap_app /=.
-        rewrite app_assoc_reverse /=.
-        by rewrite Nat.add_1_r Nat.sub_succ. }
-      { by rewrite app_length. }
-      { lia. }
-      iApply (wp_wand with "IH").
-      iIntros (_). iDestruct 1 as (ys) "(Hys & Hlen & HQs)".
-      iDestruct "Hlen" as %Hlen.
-      rewrite -app_assoc.
-      iExists ([x] ++ ys). iFrame. iPureIntro.
-      by rewrite app_assoc.
-    Qed.
-
-  Local Lemma twp_array_init_loop xs i n l f stk E :
-    0 < n →
-    length xs = i →
-    i ≤ n →
-    ([∗ list] k↦x∈xs, Q k x) -∗
-    ([∗ list] j ∈ seq i (n-i), WP f #(j : nat) @ stk; E [{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q j x }]) -∗
-    l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
-    WP array_init_loop #l #i #n f @ stk; E [{ _, ∃ ys,
-       l ↦∗ (g <$> (xs ++ ys)) ∗ ⌜length (xs++ys) = n⌝ ∗ ([∗ list] k↦x∈(xs++ys), Q k x) }].
-  Proof.
-    iIntros (Hn Hxs Hi) "Hxs Hf Hl". iRevert (Hxs Hi).
-    remember (n - i) as k. iRevert (Heqk).
-    iInduction k as [|k] "IH" forall (xs i); iIntros (Heqk Hxs Hi).
-    - wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
-      + iExists []. iFrame.
+    Local Lemma wp_array_init_loop xs i n l f stk E :
+      0 < n →
+      length xs = i →
+      i ≤ n →
+      ([∗ list] k↦x∈xs, Q k x) -∗
+      ([∗ list] j ∈ seq i (n-i), WP f #(j : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q j x }}) -∗
+      l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
+      WP array_init_loop #l #i #n f @ stk; E {{ _, ∃ ys,
+         l ↦∗ (g <$> (xs ++ ys)) ∗ ⌜length (xs++ys) = n⌝ ∗ ([∗ list] k↦x∈(xs++ys), Q k x) }}.
+    Proof.
+      iIntros (Hn Hxs Hi) "Hxs Hf Hl". iRevert (Hxs Hi).
+      iLöb as "IH" forall (xs i). iIntros (Hxs Hi).
+      wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
+      - iExists []. iFrame.
+        assert (length xs - length xs = 0) as -> by lia.
         rewrite !app_nil_r. eauto with iFrame.
-      + assert (length xs ≠ n) by congruence. lia.
-    - wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
-      + exfalso. lia.
-      + wp_bind (f #(length xs)).
+      - wp_bind (f #(length xs)).
+        destruct n as [|n]; first by lia.
+        assert (length xs ≠ S n) by congruence.
+        rewrite Nat.sub_succ_l; last by lia.
         iSimpl in "Hf". iDestruct "Hf" as "[H Hf]".
-        iApply (twp_wand with "H").
+        iApply (wp_wand with "H").
         iIntros (v). iDestruct 1 as (x) "[-> Hx]".
-        wp_apply (twp_store_offset with "Hl").
+        wp_apply (wp_store_offset with "Hl").
         { apply lookup_lt_is_Some_2.
-          rewrite app_length /=.
+          rewrite app_length.
           assert (S n - length xs > 0) by lia.
-        rewrite fmap_length replicate_length. lia. }
+          rewrite fmap_length replicate_length. lia. }
         iIntros "Hl". wp_pures.
         assert ((Z.of_nat (length xs) + 1)%Z = Z.of_nat (length xs + 1)) as -> by lia.
-
-        iSpecialize ("IH" $! (xs++[x]) (length xs+1) with "[Hx Hxs] [Hf] [Hl] [%] [%] [%]").
+        iSpecialize ("IH" $! (xs++[x]) (length xs + 1) with "[Hx Hxs] [Hf] [Hl] [%] [%]").
         { rewrite big_sepL_app /= Nat.add_0_r. by iFrame. }
-        { by rewrite Nat.add_1_r. }
+        { by rewrite Nat.add_1_r Nat.sub_succ. }
         { assert (length xs = length xs + 0) as Hlen1 by lia.
           rewrite {1}Hlen1.
-        rewrite -{1}(fmap_length g xs).
-        rewrite insert_app_r fmap_app /=.
-        rewrite app_assoc_reverse /= //. }
-        { lia. }
+          rewrite -{1}(fmap_length g xs).
+          rewrite insert_app_r fmap_app /=.
+          rewrite app_assoc_reverse /=.
+          by rewrite Nat.add_1_r Nat.sub_succ. }
         { by rewrite app_length. }
         { lia. }
-        iApply (twp_wand with "IH").
+        iApply (wp_wand with "IH").
         iIntros (_). iDestruct 1 as (ys) "(Hys & Hlen & HQs)".
         iDestruct "Hlen" as %Hlen.
         rewrite -app_assoc.
         iExists ([x] ++ ys). iFrame. iPureIntro.
         by rewrite app_assoc.
-  Qed.
+      Qed.
 
-  Theorem wp_array_init n f stk E :
-    (0 < n)%Z →
-    {{{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }} }}}
-      array_init #n f @ stk; E
-    {{{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }}}.
-  Proof.
-    intros Hn. iIntros (Φ) "Hf HΦ".
-    wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
-    wp_pures.
-    iPoseProof (wp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
-    { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
-    { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
-    assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
-    assert (Z.of_nat (Z.to_nat n) = n) as -> by lia.
-    wp_apply (wp_wand with "H").
-    iIntros (?). iDestruct 1 as (vs) "(Hl & % & HQs)".
-    wp_pures. iApply "HΦ".
-    iFrame "Hl HQs". iPureIntro. lia.
-  Qed.
-  Theorem twp_array_init n f stk E :
-    (0 < n)%Z →
-    [[{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E [{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }] }]]
-      array_init #n f @ stk; E
-    [[{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }]].
-  Proof.
-    intros Hn. iIntros (Φ) "Hf HΦ".
-    wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
-    wp_pures.
-    iPoseProof (twp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
-    { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
-    { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
-    assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
-    assert (Z.of_nat (Z.to_nat n) = n) as -> by lia.
-    wp_apply (twp_wand with "H").
-    iIntros (?). iDestruct 1 as (vs) "(Hl & % & HQs)".
-    wp_pures. iApply "HΦ".
-    iFrame "Hl HQs". iPureIntro. lia.
-  Qed.
+    Local Lemma twp_array_init_loop xs i n l f stk E :
+      0 < n →
+      length xs = i →
+      i ≤ n →
+      ([∗ list] k↦x∈xs, Q k x) -∗
+      ([∗ list] j ∈ seq i (n-i), WP f #(j : nat) @ stk; E [{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q j x }]) -∗
+      l ↦∗ ((g <$> xs) ++ replicate (n - i) #()) -∗
+      WP array_init_loop #l #i #n f @ stk; E [{ _, ∃ ys,
+         l ↦∗ (g <$> (xs ++ ys)) ∗ ⌜length (xs++ys) = n⌝ ∗ ([∗ list] k↦x∈(xs++ys), Q k x) }].
+    Proof.
+      iIntros (Hn Hxs Hi) "Hxs Hf Hl". iRevert (Hxs Hi).
+      remember (n - i) as k. iRevert (Heqk).
+      iInduction k as [|k] "IH" forall (xs i); iIntros (Heqk Hxs Hi).
+      - wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
+        + iExists []. iFrame.
+          rewrite !app_nil_r. eauto with iFrame.
+        + assert (length xs ≠ n) by congruence. lia.
+      - wp_rec. wp_pures. case_bool_decide; simplify_eq/=; wp_pures.
+        + exfalso. lia.
+        + wp_bind (f #(length xs)).
+          iSimpl in "Hf". iDestruct "Hf" as "[H Hf]".
+          iApply (twp_wand with "H").
+          iIntros (v). iDestruct 1 as (x) "[-> Hx]".
+          wp_apply (twp_store_offset with "Hl").
+          { apply lookup_lt_is_Some_2.
+            rewrite app_length /=.
+            assert (S n - length xs > 0) by lia.
+          rewrite fmap_length replicate_length. lia. }
+          iIntros "Hl". wp_pures.
+          assert ((Z.of_nat (length xs) + 1)%Z = Z.of_nat (length xs + 1)) as -> by lia.
 
-End array_init.
+          iSpecialize ("IH" $! (xs++[x]) (length xs+1) with "[Hx Hxs] [Hf] [Hl] [%] [%] [%]").
+          { rewrite big_sepL_app /= Nat.add_0_r. by iFrame. }
+          { by rewrite Nat.add_1_r. }
+          { assert (length xs = length xs + 0) as Hlen1 by lia.
+            rewrite {1}Hlen1.
+          rewrite -{1}(fmap_length g xs).
+          rewrite insert_app_r fmap_app /=.
+          rewrite app_assoc_reverse /= //. }
+          { lia. }
+          { by rewrite app_length. }
+          { lia. }
+          iApply (twp_wand with "IH").
+          iIntros (_). iDestruct 1 as (ys) "(Hys & Hlen & HQs)".
+          iDestruct "Hlen" as %Hlen.
+          rewrite -app_assoc.
+          iExists ([x] ++ ys). iFrame. iPureIntro.
+          by rewrite app_assoc.
+    Qed.
+
+    Theorem wp_array_init n f stk E :
+      (0 < n)%Z →
+      {{{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }} }}}
+        array_init #n f @ stk; E
+      {{{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }}}.
+    Proof.
+      intros Hn. iIntros (Φ) "Hf HΦ".
+      wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
+      wp_pures.
+      iPoseProof (wp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
+      { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
+      { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
+      assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
+      assert (Z.of_nat (Z.to_nat n) = n) as -> by lia.
+      wp_apply (wp_wand with "H").
+      iIntros (?). iDestruct 1 as (vs) "(Hl & % & HQs)".
+      wp_pures. iApply "HΦ".
+      iFrame "Hl HQs". iPureIntro. lia.
+    Qed.
+    Theorem twp_array_init n f stk E :
+      (0 < n)%Z →
+      [[{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E [{ v, ∃ x : A, ⌜v = g x⌝ ∗ Q i x }] }]]
+        array_init #n f @ stk; E
+      [[{ l xs, RET #l; l ↦∗ (g <$> xs) ∗ ⌜Z.of_nat (length xs) = n⌝ ∗ ([∗ list] k↦x∈xs, Q k x) }]].
+    Proof.
+      intros Hn. iIntros (Φ) "Hf HΦ".
+      wp_rec. wp_pures. wp_alloc l as "Hl"; first done.
+      wp_pures.
+      iPoseProof (twp_array_init_loop [] 0 (Z.to_nat n) with "[//] [Hf] [Hl]") as "H"; try by (simpl; lia).
+      { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
+      { simpl. assert (Z.to_nat n - 0 = Z.to_nat n) as -> by lia. done. }
+      assert (Z.of_nat 0%nat = 0%Z) as -> by lia.
+      assert (Z.of_nat (Z.to_nat n) = n) as -> by lia.
+      wp_apply (twp_wand with "H").
+      iIntros (?). iDestruct 1 as (vs) "(Hl & % & HQs)".
+      wp_pures. iApply "HΦ".
+      iFrame "Hl HQs". iPureIntro. lia.
+    Qed.
+
+  End array_init.
 
   (* Version of [wp_array_init] with the auxiliary type [A] set to
   [val], and with the persistent assumption on the function [f]. *)
