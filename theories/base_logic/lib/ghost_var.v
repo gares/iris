@@ -44,7 +44,7 @@ Section lemmas.
   Proof. iApply own_alloc. done. Qed.
 
   Lemma ghost_var_valid_2 γ a1 q1 a2 q2 :
-    ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜✓ (q1 + q2)%Qp ∧ a1 = a2⌝.
+    ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ a1 = a2⌝.
   Proof.
     iIntros "Hvar1 Hvar2".
     iDestruct (own_valid_2 with "Hvar1 Hvar2") as %[Hq Ha]%frac_agree_op_valid.

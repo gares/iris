@@ -92,9 +92,9 @@ Section frac_auth.
   Proof. done. Qed.
 
   Lemma frac_auth_frag_validN_op_1_l n q a b : ✓{n} (◯F{1} a ⋅ ◯F{q} b) → False.
-  Proof. rewrite -frac_auth_frag_op frac_auth_frag_validN=> -[/exclusiveN_l []]. Qed.
+  Proof. rewrite -frac_auth_frag_op frac_auth_frag_validN=> -[/Qp_not_add_le_l []]. Qed.
   Lemma frac_auth_frag_valid_op_1_l q a b : ✓ (◯F{1} a ⋅ ◯F{q} b) → False.
-  Proof. rewrite -frac_auth_frag_op frac_auth_frag_valid=> -[/exclusive_l []]. Qed.
+  Proof. rewrite -frac_auth_frag_op frac_auth_frag_valid=> -[/Qp_not_add_le_l []]. Qed.
 
   Global Instance frac_auth_is_op (q q1 q2 : frac) (a a1 a2 : A) :
     IsOp q q1 q2 → IsOp a a1 a2 → IsOp' (◯F{q} a) (◯F{q1} a1) (◯F{q2} a2).

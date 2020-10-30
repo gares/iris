@@ -8,21 +8,28 @@ From iris Require Import options.
 Section upred.
 Context {M : ucmraT}.
 
-Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢@{uPredI M} ✓ x.1 ∧ ✓ x.2.
+(* Force implicit argument M *)
+Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
+Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
+
+Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
 Proof. by uPred.unseal. Qed.
 Lemma option_validI {A : cmraT} (mx : option A) :
-  ✓ mx ⊣⊢@{uPredI M} match mx with Some x => ✓ x | None => True : uPred M end.
+  ✓ mx ⊣⊢ match mx with Some x => ✓ x | None => True : uPred M end.
 Proof. uPred.unseal. by destruct mx. Qed.
 Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) :
-  ✓ g ⊣⊢@{uPredI M} ∀ i, ✓ g i.
+  ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. by uPred.unseal. Qed.
+
+Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
+Proof. rewrite uPred.discrete_valid frac_valid' //. Qed.
 
 Section gmap_ofe.
   Context `{Countable K} {A : ofeT}.
   Implicit Types m : gmap K A.
   Implicit Types i : K.
 
-  Lemma gmap_equivI m1 m2 : m1 ≡ m2 ⊣⊢@{uPredI M} ∀ i, m1 !! i ≡ m2 !! i.
+  Lemma gmap_equivI m1 m2 : m1 ≡ m2 ⊣⊢ ∀ i, m1 !! i ≡ m2 !! i.
   Proof. by uPred.unseal. Qed.
 End gmap_ofe.
 
@@ -30,9 +37,9 @@ Section gmap_cmra.
   Context `{Countable K} {A : cmraT}.
   Implicit Types m : gmap K A.
 
-  Lemma gmap_validI m : ✓ m ⊣⊢@{uPredI M} ∀ i, ✓ (m !! i).
+  Lemma gmap_validI m : ✓ m ⊣⊢ ∀ i, ✓ (m !! i).
   Proof. by uPred.unseal. Qed.
-  Lemma singleton_validI i x : ✓ ({[ i := x ]} : gmap K A) ⊣⊢@{uPredI M} ✓ x.
+  Lemma singleton_validI i x : ✓ ({[ i := x ]} : gmap K A) ⊣⊢ ✓ x.
   Proof.
     rewrite gmap_validI. apply: anti_symm.
     - rewrite (bi.forall_elim i) lookup_singleton option_validI. done.
@@ -47,7 +54,7 @@ Section list_ofe.
   Context {A : ofeT}.
   Implicit Types l : list A.
 
-  Lemma list_equivI l1 l2 : l1 ≡ l2 ⊣⊢@{uPredI M} ∀ i, l1 !! i ≡ l2 !! i.
+  Lemma list_equivI l1 l2 : l1 ≡ l2 ⊣⊢ ∀ i, l1 !! i ≡ l2 !! i.
   Proof. uPred.unseal; constructor=> n x ?. apply list_dist_lookup. Qed.
 End list_ofe.
 
@@ -55,7 +62,7 @@ Section list_cmra.
   Context {A : ucmraT}.
   Implicit Types l : list A.
 
-  Lemma list_validI l : ✓ l ⊣⊢@{uPredI M} ∀ i, ✓ (l !! i).
+  Lemma list_validI l : ✓ l ⊣⊢ ∀ i, ✓ (l !! i).
   Proof. uPred.unseal; constructor=> n x ?. apply list_lookup_validN. Qed.
 End list_cmra.
 
@@ -65,7 +72,7 @@ Section excl.
   Implicit Types x y : excl A.
 
   Lemma excl_equivI x y :
-    x ≡ y ⊣⊢@{uPredI M} match x, y with
+    x ≡ y ⊣⊢ match x, y with
                         | Excl a, Excl b => a ≡ b
                         | ExclBot, ExclBot => True
                         | _, _ => False
@@ -74,7 +81,7 @@ Section excl.
     uPred.unseal. do 2 split. by destruct 1. by destruct x, y; try constructor.
   Qed.
   Lemma excl_validI x :
-    ✓ x ⊣⊢@{uPredI M} if x is ExclBot then False else True.
+    ✓ x ⊣⊢ if x is ExclBot then False else True.
   Proof. uPred.unseal. by destruct x. Qed.
 End excl.
 
@@ -83,16 +90,16 @@ Section agree.
   Implicit Types a b : A.
   Implicit Types x y : agree A.
 
-  Lemma agree_equivI a b : to_agree a ≡ to_agree b ⊣⊢@{uPredI M} (a ≡ b).
+  Lemma agree_equivI a b : to_agree a ≡ to_agree b ⊣⊢ (a ≡ b).
   Proof.
     uPred.unseal. do 2 split.
     - intros Hx. exact: (inj to_agree).
     - intros Hx. exact: to_agree_ne.
   Qed.
-  Lemma agree_validI x y : ✓ (x ⋅ y) ⊢@{uPredI M} x ≡ y.
+  Lemma agree_validI x y : ✓ (x ⋅ y) ⊢ x ≡ y.
   Proof. uPred.unseal; split=> r n _ ?; by apply: agree_op_invN. Qed.
 
-  Lemma to_agree_uninjI x : ✓ x ⊢@{uPredI M} ∃ a, to_agree a ≡ x.
+  Lemma to_agree_uninjI x : ✓ x ⊢ ∃ a, to_agree a ≡ x.
   Proof. uPred.unseal. split=> n y _. exact: to_agree_uninjN. Qed.
 End agree.
 
@@ -102,7 +109,7 @@ Section csum_ofe.
   Implicit Types b : B.
 
   Lemma csum_equivI (x y : csum A B) :
-    x ≡ y ⊣⊢@{uPredI M} match x, y with
+    x ≡ y ⊣⊢ match x, y with
                         | Cinl a, Cinl a' => a ≡ a'
                         | Cinr b, Cinr b' => b ≡ b'
                         | CsumBot, CsumBot => True
@@ -120,7 +127,7 @@ Section csum_cmra.
   Implicit Types b : B.
 
   Lemma csum_validI (x : csum A B) :
-    ✓ x ⊣⊢@{uPredI M} match x with
+    ✓ x ⊣⊢ match x with
                       | Cinl a => ✓ a
                       | Cinr b => ✓ b
                       | CsumBot => False
@@ -137,21 +144,21 @@ Section view.
 
   Lemma view_both_frac_validI_1 (relI : uPred M) q a b :
     (∀ n (x : M), rel n a b → relI n x) →
-    ✓ (●V{q} a ⋅ ◯V b : view rel) ⊢ ✓ q ∧ relI.
+    ✓ (●V{q} a ⋅ ◯V b : view rel) ⊢ ⌜q ≤ 1⌝%Qp ∧ relI.
   Proof.
     intros Hrel. uPred.unseal. split=> n x _ /=.
     rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
   Qed.
   Lemma view_both_frac_validI_2 (relI : uPred M) q a b :
     (∀ n (x : M), relI n x → rel n a b) →
-    ✓ q ∧ relI ⊢ ✓ (●V{q} a ⋅ ◯V b : view rel).
+    ⌜q ≤ 1⌝%Qp ∧ relI ⊢ ✓ (●V{q} a ⋅ ◯V b : view rel).
   Proof.
     intros Hrel. uPred.unseal. split=> n x _ /=.
     rewrite /uPred_holds /= view_both_frac_validN. by move=> [? /Hrel].
   Qed.
   Lemma view_both_frac_validI (relI : uPred M) q a b :
     (∀ n (x : M), rel n a b ↔ relI n x) →
-    ✓ (●V{q} a ⋅ ◯V b : view rel) ⊣⊢ ✓ q ∧ relI.
+    ✓ (●V{q} a ⋅ ◯V b : view rel) ⊣⊢ ⌜q ≤ 1⌝%Qp ∧ relI.
   Proof.
     intros. apply (anti_symm _);
       [apply view_both_frac_validI_1|apply view_both_frac_validI_2]; naive_solver.
@@ -165,7 +172,7 @@ Section view.
     (∀ n (x : M), relI n x → rel n a b) →
     relI ⊢ ✓ (●V a ⋅ ◯V b : view rel).
   Proof.
-    intros. rewrite -view_both_frac_validI_2 // uPred.discrete_valid.
+    intros. rewrite -view_both_frac_validI_2 //.
     apply bi.and_intro; [|done]. by apply bi.pure_intro.
   Qed.
   Lemma view_both_validI (relI : uPred M) a b :
@@ -178,7 +185,7 @@ Section view.
 
   Lemma view_auth_frac_validI (relI : uPred M) q a :
     (∀ n (x : M), relI n x ↔ rel n a ε) →
-    ✓ (●V{q} a : view rel) ⊣⊢ ✓ q ∧ relI.
+    ✓ (●V{q} a : view rel) ⊣⊢ ⌜q ≤ 1⌝%Qp ∧ relI.
   Proof.
     intros. rewrite -(right_id ε op (●V{q} a)). by apply view_both_frac_validI.
   Qed.
@@ -189,7 +196,7 @@ Section view.
 
   Lemma view_frag_validI (relI : uPred M) b :
     (∀ n (x : M), relI n x ↔ ∃ a, rel n a b) →
-    ✓ (◯V b : view rel) ⊣⊢@{uPredI M} relI.
+    ✓ (◯V b : view rel) ⊣⊢ relI.
   Proof. uPred.unseal=> Hrel. split=> n x _. by rewrite Hrel. Qed.
 End view.
 
@@ -198,29 +205,29 @@ Section auth.
   Implicit Types a b : A.
   Implicit Types x y : auth A.
 
-  Lemma auth_auth_frac_validI q a : ✓ (●{q} a) ⊣⊢@{uPredI M} ✓ q ∧ ✓ a.
+  Lemma auth_auth_frac_validI q a : ✓ (●{q} a) ⊣⊢ ⌜q ≤ 1⌝%Qp ∧ ✓ a.
   Proof.
     apply view_auth_frac_validI=> n. uPred.unseal; split; [|by intros [??]].
     split; [|done]. apply ucmra_unit_leastN.
   Qed.
-  Lemma auth_auth_validI a : ✓ (● a) ⊣⊢@{uPredI M} ✓ a.
+  Lemma auth_auth_validI a : ✓ (● a) ⊣⊢ ✓ a.
   Proof.
-    by rewrite auth_auth_frac_validI uPred.discrete_valid bi.pure_True // left_id.
+    by rewrite auth_auth_frac_validI bi.pure_True // left_id.
   Qed.
 
-  Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢@{uPredI M} ✓ a.
+  Lemma auth_frag_validI a : ✓ (◯ a) ⊣⊢ ✓ a.
   Proof.
     apply view_frag_validI=> n x.
     rewrite auth_view_rel_exists. by uPred.unseal.
   Qed.
 
   Lemma auth_both_frac_validI q a b :
-    ✓ (●{q} a ⋅ ◯ b) ⊣⊢@{uPredI M} ✓ q ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
+    ✓ (●{q} a ⋅ ◯ b) ⊣⊢ ⌜q ≤ 1⌝%Qp ∧ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
   Proof. apply view_both_frac_validI=> n. by uPred.unseal. Qed.
   Lemma auth_both_validI a b :
-    ✓ (● a ⋅ ◯ b) ⊣⊢@{uPredI M} (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
+    ✓ (● a ⋅ ◯ b) ⊣⊢ (∃ c, a ≡ b ⋅ c) ∧ ✓ a.
   Proof.
-    by rewrite auth_both_frac_validI uPred.discrete_valid bi.pure_True // left_id.
+    by rewrite auth_both_frac_validI bi.pure_True // left_id.
   Qed.
 
 End auth.
@@ -229,7 +236,7 @@ Section excl_auth.
   Context {A : ofeT}.
   Implicit Types a b : A.
 
-  Lemma excl_auth_agreeI a b : ✓ (●E a ⋅ ◯E b) ⊢@{uPredI M} (a ≡ b).
+  Lemma excl_auth_agreeI a b : ✓ (●E a ⋅ ◯E b) ⊢ (a ≡ b).
   Proof.
     rewrite auth_both_validI bi.and_elim_l.
     apply bi.exist_elim=> -[[c|]|];
@@ -242,7 +249,7 @@ Section gmap_view.
   Implicit Types (m : gmap K V) (k : K) (dq : dfrac) (v : V).
 
   Lemma gmap_view_both_validI m k dq v :
-    ✓ (gmap_view_auth 1 m ⋅ gmap_view_frag k dq v) ⊢@{uPredI M}
+    ✓ (gmap_view_auth 1 m ⋅ gmap_view_frag k dq v) ⊢
     ✓ dq ∧ m !! k ≡ Some v.
   Proof.
     rewrite /gmap_view_auth /gmap_view_frag. apply view_both_validI_1.
@@ -250,7 +257,7 @@ Section gmap_view.
   Qed.
 
   Lemma gmap_view_frag_op_validI k dq1 dq2 v1 v2 :
-    ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊣⊢@{uPredI M}
+    ✓ (gmap_view_frag k dq1 v1 ⋅ gmap_view_frag k dq2 v2) ⊣⊢
     ✓ (dq1 ⋅ dq2) ∧ v1 ≡ v2.
   Proof.
     rewrite /gmap_view_frag -view_frag_op. apply view_frag_validI=> n x.
