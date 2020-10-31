@@ -308,7 +308,7 @@ Proof. intros. rewrite /MaybeFrame /=. apply: sep_elim_r. Qed.
 
    The reason for this is that if given an evar, these typeclasses
    would typically try to instantiate this evar with some arbitrary
-   logical constructs such as emp or True. Therefore, we use an Hint
+   logical constructs such as emp or True. Therefore, we use a Hint
    Mode to disable all the instances that would have this behavior. *)
 Class MakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   make_embed : ⎡P⎤ ⊣⊢ Q.

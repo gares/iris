@@ -406,7 +406,7 @@ Spies, and Tej Chajed.  Thanks a lot to everyone involved!
 * Make lemma `Excl_included` a bi-implication.
 * Make `auth_update_core_id` work with any fraction of the authoritative
   element.
-* Add `min_nat`, a RA for natural numbers with `min` as the operation.
+* Add `min_nat`, an RA for natural numbers with `min` as the operation.
 * Add many missing `Proper`/non-expansiveness lemmas for maps and lists.
 * Add `list_singletonM_included` and `list_lookup_singletonM_{lt,gt}` lemmas
   about singletons in the list RA.

@@ -91,11 +91,11 @@ from which we can derive
 
 \subsection{Boxes}
 
-The idea behind the \emph{boxes} is to have an proposition $\prop$ that is actually split into a number of pieces, each of which can be taken out and back in separately.
+The idea behind the \emph{boxes} is to have a proposition $\prop$ that is actually split into a number of pieces, each of which can be taken out and back in separately.
 In some sense, this is a replacement for having an ``authoritative PCM of Iris propositions itself''.
 It is similar to the pattern involving saved propositions that was used for the barrier~\cite{iris2}, but more complicated because there are some operations that we want to perform without a later.
 
-Roughly, the idea is that a \emph{box} is a container for an proposition $\prop$.
+Roughly, the idea is that a \emph{box} is a container for a proposition $\prop$.
 A box consists of a bunch of \emph{slices} which decompose $\prop$ into a separating conjunction of the propositions $\propB_\sname$ governed by the individual slices.
 Each slice is either \emph{full} (it right now contains $\propB_\sname$), or \emph{empty} (it does not contain anything currently).
 The proposition governing the box keeps track of the state of all the slices that make up the box.
