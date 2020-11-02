@@ -1100,7 +1100,8 @@ Section map2.
   Lemma big_sepM2_flip Φ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m2; m1, Φ k y2 y1) ⊣⊢ ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2).
   Proof.
-    rewrite big_sepM2_eq /big_sepM2_def. apply and_proper; [apply pure_proper; naive_solver |].
+    rewrite big_sepM2_eq /big_sepM2_def.
+    apply and_proper; [apply pure_proper; naive_solver |].
     rewrite -map_zip_with_flip map_zip_with_map_zip big_sepM_fmap.
     apply big_sepM_proper. by intros k [b a].
   Qed.
@@ -1265,9 +1266,7 @@ Section map2.
     rewrite !persistent_and_affinely_sep_l /=.
     rewrite (sep_comm  (Φ _ _ _)) -sep_assoc. apply sep_mono.
     { apply affinely_mono, pure_mono. intros Hm k.
-      destruct (decide (i = k)) as [->|].
-      - rewrite !lookup_insert. split; eauto.
-      - rewrite !lookup_insert_ne //. }
+      rewrite !lookup_insert_is_Some. naive_solver. }
     rewrite (big_sepM_insert_2 (λ k xx, Φ k xx.1 xx.2) (map_zip m1 m2) i (x1, x2)).
     rewrite map_insert_zip_with. apply wand_elim_r.
   Qed.
@@ -1340,11 +1339,7 @@ Section map2.
   Proof.
     rewrite big_sepM2_eq /big_sepM2_def. rewrite map_fmap_zip.
     apply and_proper.
-    - apply pure_proper. split.
-      + intros Hm k. specialize (Hm k). revert Hm.
-        by rewrite !lookup_fmap !fmap_is_Some.
-      + intros Hm k. specialize (Hm k). revert Hm.
-        by rewrite !lookup_fmap !fmap_is_Some.
+    - setoid_rewrite lookup_fmap. by setoid_rewrite fmap_is_Some.
     - by rewrite big_sepM_fmap.
   Qed.
 
