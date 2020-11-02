@@ -1782,6 +1782,49 @@ Section gmultiset.
     <pers> ([∗ mset] y ∈ X, Φ y) ⊣⊢ [∗ mset] y ∈ X, <pers> (Φ y).
   Proof. apply (big_opMS_commute _). Qed.
 
+  Lemma big_sepMS_intuitionistically_forall Φ X :
+    □ (∀ x, ⌜x ∈ X⌝ → Φ x) ⊢ [∗ mset] x ∈ X, Φ x.
+  Proof.
+    revert Φ. induction X as [|x X IH] using gmultiset_ind=> Φ.
+    { by rewrite (affine (□ _)%I) big_sepMS_empty. }
+    rewrite intuitionistically_sep_dup big_sepMS_disj_union.
+    rewrite big_sepMS_singleton. f_equiv.
+    - rewrite (forall_elim x) pure_True ?True_impl; last set_solver.
+      by rewrite intuitionistically_elim.
+    - rewrite -IH. f_equiv. apply forall_mono=> y.
+      apply impl_intro_l, pure_elim_l=> ?.
+      by rewrite pure_True ?True_impl; last set_solver.
+  Qed.
+
+  Lemma big_sepMS_forall `{BiAffine PROP} Φ X :
+    (∀ x, Persistent (Φ x)) → ([∗ mset] x ∈ X, Φ x) ⊣⊢ (∀ x, ⌜x ∈ X⌝ → Φ x).
+  Proof.
+    intros. apply (anti_symm _).
+    { apply forall_intro=> x.
+      apply impl_intro_l, pure_elim_l=> ?; by apply: big_sepMS_elem_of. }
+    rewrite -big_sepMS_intuitionistically_forall. setoid_rewrite pure_impl_forall.
+    by rewrite intuitionistic_intuitionistically.
+  Qed.
+
+  Lemma big_sepMS_impl Φ Ψ X :
+    ([∗ mset] x ∈ X, Φ x) -∗
+    □ (∀ x, ⌜x ∈ X⌝ → Φ x -∗ Ψ x) -∗
+    [∗ mset] x ∈ X, Ψ x.
+  Proof.
+    apply wand_intro_l. rewrite big_sepMS_intuitionistically_forall -big_sepMS_sep.
+    by setoid_rewrite wand_elim_l.
+  Qed.
+
+  Lemma big_sepMS_dup P `{!Affine P} X :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ mset] x ∈ X, P.
+  Proof.
+    apply wand_intro_l. induction X as [|x X IH] using gmultiset_ind.
+    { apply: big_sepMS_empty'. }
+    rewrite !big_sepMS_disj_union big_sepMS_singleton.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
   Global Instance big_sepMS_empty_persistent Φ :
     Persistent ([∗ mset] x ∈ ∅, Φ x).
   Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
