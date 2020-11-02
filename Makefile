@@ -1,6 +1,6 @@
 # Default target
 all: Makefile.coq
-	+@make -f Makefile.coq all
+	+@$(MAKE) -f Makefile.coq all
 .PHONY: all
 
 # Permit local customization
@@ -9,12 +9,12 @@ all: Makefile.coq
 # Forward most targets to Coq makefile (with some trick to make this phony)
 %: Makefile.coq phony
 	@#echo "Forwarding $@"
-	+@make -f Makefile.coq $@
+	+@$(MAKE) -f Makefile.coq $@
 phony: ;
 .PHONY: phony
 
 clean: Makefile.coq
-	+@make -f Makefile.coq clean
+	+@$(MAKE) -f Makefile.coq clean
 	find theories tests exercises solutions \( -name "*.d" -o -name "*.vo" -o -name "*.vo[sk]" -o -name "*.aux" -o -name "*.cache" -o -name "*.glob" -o -name "*.vio" \) -print -delete || true
 	rm -f Makefile.coq .lia.cache builddep/*
 .PHONY: clean
