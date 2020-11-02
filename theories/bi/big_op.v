@@ -1384,27 +1384,27 @@ Section map2.
          persistently_pure big_sepM_persistently.
   Qed.
 
- Lemma big_sepM2_forall `{BiAffine PROP} Φ m1 m2 :
-   (∀ k x1 x2, Persistent (Φ k x1 x2)) →
-   ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢
-     ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝
-     ∧ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2).
- Proof.
-   rewrite big_sepM2_eq /big_sepM2_def=> ?. apply and_proper=>//.
-   rewrite big_sepM_forall. apply forall_proper=>k.
-   apply (anti_symm _).
-   - apply forall_intro=> x1. apply forall_intro=> x2.
-     rewrite (forall_elim (x1,x2)).
-     rewrite impl_curry -pure_and. apply impl_mono=>//.
-     apply pure_mono. rewrite map_lookup_zip_with. by intros [-> ->].
-   - apply forall_intro=> [[x1 x2]].
-     rewrite (forall_elim x1) (forall_elim x2).
-     rewrite impl_curry -pure_and. apply impl_mono=>//.
-     apply pure_mono. rewrite map_lookup_zip_with.
-     by destruct (m1 !! k), (m2 !! k)=>/= // ?; simplify_eq.
- Qed.
+  Lemma big_sepM2_forall `{BiAffine PROP} Φ m1 m2 :
+    (∀ k x1 x2, Persistent (Φ k x1 x2)) →
+    ([∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2) ⊣⊢
+      ⌜∀ k : K, is_Some (m1 !! k) ↔ is_Some (m2 !! k)⌝
+      ∧ (∀ k x1 x2, ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2).
+  Proof.
+    rewrite big_sepM2_eq /big_sepM2_def=> ?. apply and_proper=>//.
+    rewrite big_sepM_forall. apply forall_proper=>k.
+    apply (anti_symm _).
+    - apply forall_intro=> x1. apply forall_intro=> x2.
+      rewrite (forall_elim (x1,x2)).
+      rewrite impl_curry -pure_and. apply impl_mono=>//.
+      apply pure_mono. rewrite map_lookup_zip_with. by intros [-> ->].
+    - apply forall_intro=> [[x1 x2]].
+      rewrite (forall_elim x1) (forall_elim x2).
+      rewrite impl_curry -pure_and. apply impl_mono=>//.
+      apply pure_mono. rewrite map_lookup_zip_with.
+      by destruct (m1 !! k), (m2 !! k)=>/= // ?; simplify_eq.
+  Qed.
 
- Lemma big_sepM2_impl Φ Ψ m1 m2 :
+  Lemma big_sepM2_impl Φ Ψ m1 m2 :
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
     □ (∀ k x1 x2,
       ⌜m1 !! k = Some x1⌝ → ⌜m2 !! k = Some x2⌝ → Φ k x1 x2 -∗ Ψ k x1 x2) -∗
