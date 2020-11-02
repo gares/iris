@@ -1704,7 +1704,10 @@ Section gmultiset.
 
   Lemma big_sepMS_subseteq `{BiAffine PROP} Φ X Y :
     Y ⊆ X → ([∗ mset] x ∈ X, Φ x) ⊢ [∗ mset] x ∈ Y, Φ x.
-  Proof. rewrite big_opMS_eq. intros. by apply big_sepL_submseteq, gmultiset_elements_submseteq. Qed.
+  Proof.
+    intros. rewrite big_opMS_eq.
+    by apply big_sepL_submseteq, gmultiset_elements_submseteq.
+  Qed.
 
   (** The lemmas [big_sepMS_mono], [big_sepMS_ne] and [big_sepMS_proper] are more
   generic than the instances as they also give [l !! k = Some y] in the premise. *)
