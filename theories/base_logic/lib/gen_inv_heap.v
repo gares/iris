@@ -201,7 +201,7 @@ Section inv_heap.
     destruct (h !! l) as [v'| ] eqn: Hlookup.
     - (* auth map contains l --> contradiction *)
       iDestruct (big_sepM_lookup with "HsepM") as "[_ Hl']"; first done.
-      by iDestruct (mapsto_valid_2 with "Hl Hl'") as %?.
+      by iDestruct (mapsto_valid_2 with "Hl Hl'") as %[??].
     - iMod (own_update with "H●") as "[H● H◯]".
       { apply lookup_to_inv_heap_None in Hlookup.
         apply (auth_update_alloc _

@@ -291,6 +291,12 @@ Global Instance ex_mapsto_as_fractional l q :
   AsFractional (l ↦{q} -) (λ q, l ↦{q} -)%I q.
 Proof. split. done. apply _. Qed.
 
+Lemma mapsto_valid_2 l q1 q2 v1 v2 :
+  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝.
+Proof.
+  iIntros "H1 H2". iDestruct (mapsto_valid_2 with "H1 H2") as %[? [=?]]. done.
+Qed.
+
 Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
 Proof. iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %[=?]. done. Qed.
 
@@ -303,8 +309,6 @@ Qed.
 
 Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
 Proof. apply mapsto_valid. Qed.
-Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ✓ (q1 + q2)%Qp.
-Proof. apply mapsto_valid_2. Qed.
 Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
   ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
 Proof. apply mapsto_mapsto_ne. Qed.
