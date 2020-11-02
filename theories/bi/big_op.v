@@ -1091,11 +1091,17 @@ Section map2.
   Context `{Countable K} {A B : Type}.
   Implicit Types Φ Ψ : K → A → B → PROP.
 
+  Lemma big_sepM2_lookup_iff Φ m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊢
+    ⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝.
+  Proof. by rewrite big_sepM2_eq /big_sepM2_def and_elim_l. Qed.
+
   Lemma big_sepM2_dom Φ m1 m2 :
-    ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) -∗ ⌜ dom (gset K) m1 = dom (gset K) m2 ⌝.
+    ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊢
+    ⌜ dom (gset K) m1 = dom (gset K) m2 ⌝.
   Proof.
-    rewrite big_sepM2_eq /big_sepM2_def and_elim_l. apply pure_mono=>Hm.
-    set_unfold=>k. by rewrite !elem_of_dom.
+    rewrite big_sepM2_lookup_iff. apply pure_mono=>Hm.
+    apply elem_of_equiv_L=> k. by rewrite !elem_of_dom.
   Qed.
 
   Lemma big_sepM2_flip Φ m1 m2 :
