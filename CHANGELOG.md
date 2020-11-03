@@ -123,8 +123,8 @@ With this release, we dropped support for Coq 8.9.
   and looked very confusing in context: `l ↦ - ∗ P` looks like a magic wand.
 * Change `gen_inv_heap` notation `l ↦□ I` to `l ↦_I □`, so that `↦□` can be used
   by `gen_heap`.
-* Strengthen `mapsto_valid_2` to provide both a bound on the fractions and
-  agreement.
+* Strengthen `mapsto_valid_2` conclusion from `✓ (q1 + q2)%Qp` to
+  `⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝`.
 
 **Changes in `program_logic`:**
 
