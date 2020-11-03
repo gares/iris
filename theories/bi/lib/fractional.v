@@ -75,8 +75,8 @@ Section fractional.
   Global Instance persistent_fractional P :
     Persistent P → Absorbing P → Fractional (λ _, P).
   Proof.
-    (* FIXME: The hint for [persistent_sep_duplicable] should apply here. *)
-    intros ? ? q q'. apply: bi.duplicable_equiv. apply: bi.persistent_sep_duplicable.
+    (* FIXME: The hint for [persistent_duplicable] should apply here. *)
+    intros ? ? q q'. apply: bi.duplicable_equiv. apply: bi.persistent_duplicable.
   Qed.
   Global Instance duplicable_fractional P :
     Duplicable P → Absorbing P → Fractional (λ _, P).

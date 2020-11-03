@@ -221,7 +221,7 @@ Global Instance internal_eq_persistent {A : ofeT} (a b : A) :
 Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
 Global Instance internal_eq_duplicable {A : ofeT} (a b : A) :
   Duplicable (PROP:=PROP) (a ≡ b).
-Proof. apply: persistent_sep_duplicable. Qed.
+Proof. apply: persistent_duplicable. Qed.
 
 (* Equality under a later. *)
 Lemma internal_eq_rewrite_contractive {A : ofeT} a b (Ψ : A → PROP)

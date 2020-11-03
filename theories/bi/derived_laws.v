@@ -1363,7 +1363,7 @@ Proof.
 Qed.
 
 (* Not an instance, see the bottom of this file *)
-Lemma persistent_sep_duplicable P
+Lemma persistent_duplicable P
   `{HP : !TCOr (Affine P) (Absorbing P), !Persistent P} :
   Duplicable P.
 Proof.
@@ -1581,7 +1581,7 @@ Lemma duplicable_and_persistent_r P Q :
 Proof. rewrite comm. apply duplicable_and_persistent_l. Qed.
 
 Global Instance persistently_duplicable P : Duplicable (<pers> P).
-Proof. apply: persistent_sep_duplicable. Qed.
+Proof. apply: persistent_duplicable. Qed.
 Global Instance absorbingly_duplicable P : Duplicable P → Duplicable (<absorb> P).
 Proof. rewrite /bi_absorbingly. apply _. Qed.
 Global Instance absorbingly_if_duplicable p P : Duplicable P → Duplicable (<absorb>?p P).
@@ -1645,14 +1645,14 @@ Global Instance limit_preserving_Persistent {A:ofeT} `{Cofe A} (Φ : A → PROP)
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 End derived.
 
-(* When declared as an actual instance, [persistent_sep_duplicable] will cause
+(* When declared as an actual instance, [persistent_duplicable] will cause
 failing proof searches to take exponential time, as Coq will try to
 apply it the instance at any node in the proof search tree.
 
 To avoid that, we declare it using a [Hint Immediate], so that it will
 only be used at the leaves of the proof search tree, i.e. when the
 premise of the hint can be derived from just the current context. *)
-(* FIXME: This hint does not work due to the [TCOr] in [persistent_sep_duplicable]. *)
-Hint Immediate persistent_sep_duplicable : typeclass_instances.
+(* FIXME: This hint does not work due to the [TCOr] in [persistent_duplicable]. *)
+Hint Immediate persistent_duplicable : typeclass_instances.
 
 End bi.

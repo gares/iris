@@ -78,7 +78,7 @@ Proof.
   intros. rewrite /Persistent -{2}(core_id_core a). apply persistently_ownM_core.
 Qed.
 Global Instance ownM_duplicable a : CoreId a → Duplicable (@uPred_ownM M a).
-Proof. intros. apply: persistent_sep_duplicable. Qed.
+Proof. intros. apply: persistent_duplicable. Qed.
 
 (** For big ops *)
 Global Instance uPred_ownM_sep_homomorphism :
