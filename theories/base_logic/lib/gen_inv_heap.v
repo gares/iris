@@ -67,11 +67,11 @@ Section definitions.
 
 End definitions.
 
-Local Notation "l '↦□' I" := (inv_mapsto l I%stdpp%type)
-  (at level 20, format "l  '↦□'  I") : bi_scope.
-
 Local Notation "l '↦_' I v" := (inv_mapsto_own l v I%stdpp%type)
   (at level 20, I at level 9, format "l  '↦_' I  v") : bi_scope.
+
+Local Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)
+  (at level 20, I at level 9, format "l  '↦_' I  '□'") : bi_scope.
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
@@ -133,7 +133,7 @@ Section inv_heap.
   (** * Helpers *)
 
   Lemma inv_mapsto_lookup_Some l h I :
-    l ↦□ I -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
+    l ↦_I □ -∗ own (inv_heap_name gG) (● to_inv_heap h) -∗
     ⌜∃ v I', h !! l = Some (v, I') ∧ ∀ w, I w ↔ I' w ⌝.
   Proof.
     iIntros "Hl_inv H◯".
@@ -179,10 +179,10 @@ Section inv_heap.
   Global Instance inv_heap_inv_persistent : Persistent (inv_heap_inv L V).
   Proof. apply _. Qed.
 
-  Global Instance inv_mapsto_persistent l I : Persistent (l ↦□ I).
+  Global Instance inv_mapsto_persistent l I : Persistent (l ↦_I □).
   Proof. apply _. Qed.
 
-  Global Instance inv_mapsto_timeless l I : Timeless (l ↦□ I).
+  Global Instance inv_mapsto_timeless l I : Timeless (l ↦_I □).
   Proof. apply _. Qed.
 
   Global Instance inv_mapsto_own_timeless l v I : Timeless (l ↦_I v).
@@ -201,7 +201,7 @@ Section inv_heap.
     destruct (h !! l) as [v'| ] eqn: Hlookup.
     - (* auth map contains l --> contradiction *)
       iDestruct (big_sepM_lookup with "HsepM") as "[_ Hl']"; first done.
-      by iDestruct (mapsto_valid_2 with "Hl Hl'") as %?.
+      by iDestruct (mapsto_valid_2 with "Hl Hl'") as %[??].
     - iMod (own_update with "H●") as "[H● H◯]".
       { apply lookup_to_inv_heap_None in Hlookup.
         apply (auth_update_alloc _
@@ -215,7 +215,7 @@ Section inv_heap.
       + iModIntro. by rewrite /inv_mapsto_own to_inv_heap_singleton.
   Qed.
 
-  Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦□ I.
+  Lemma inv_mapsto_own_inv l v I : l ↦_I v -∗ l ↦_I □.
   Proof.
     apply own_mono, auth_frag_mono. rewrite singleton_included pair_included.
     right. split; [apply: ucmra_unit_least|done].
@@ -266,7 +266,7 @@ Section inv_heap.
 
   Lemma inv_mapsto_acc l I E :
     ↑inv_heapN ⊆ E →
-    inv_heap_inv L V -∗ l ↦□ I ={E, E ∖ ↑inv_heapN}=∗
+    inv_heap_inv L V -∗ l ↦_I □ ={E, E ∖ ↑inv_heapN}=∗
     ∃ v, ⌜I v⌝ ∗ l ↦ v ∗ (l ↦ v ={E ∖ ↑inv_heapN, E}=∗ ⌜True⌝).
   Proof.
     iIntros (HN) "#Hinv Hl_inv".

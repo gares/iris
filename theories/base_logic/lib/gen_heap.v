@@ -126,10 +126,6 @@ Local Notation "l ↦{ q } v" := (mapsto l q v)
   (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
 Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
 
-Local Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
-  (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
-Local Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
-
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_interp σ.
 Proof.
@@ -161,11 +157,23 @@ Section gen_heap.
     AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
   Proof. split. done. apply _. Qed.
 
+  Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
+  Proof.
+    rewrite mapsto_eq. iIntros "Hl".
+    iDestruct (own_valid with "Hl") as %?%gmap_view_frag_valid. done.
+  Qed.
+  Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝.
+  Proof.
+    rewrite mapsto_eq. iIntros "H1 H2".
+    iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_frag_op_valid_L.
+    eauto.
+  Qed.
+  (** Almost all the time, this is all you really need. *)
   Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
   Proof.
-    apply wand_intro_r.
-    rewrite mapsto_eq /mapsto_def -own_op own_valid discrete_valid.
-    apply pure_mono. intros [_ ?]%gmap_view_frag_op_valid_L. done.
+    iIntros "H1 H2".
+    iDestruct (mapsto_valid_2 with "H1 H2") as %[_ ?].
+    done.
   Qed.
 
   Lemma mapsto_combine l q1 q2 v1 v2 :
@@ -175,33 +183,11 @@ Section gen_heap.
     iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
   Qed.
 
-  Global Instance ex_mapsto_fractional l : Fractional (λ q, l ↦{q} -)%I.
-  Proof.
-    intros p q. iSplit.
-    - iDestruct 1 as (v) "[H1 H2]". iSplitL "H1"; eauto.
-    - iIntros "[H1 H2]". iDestruct "H1" as (v1) "H1". iDestruct "H2" as (v2) "H2".
-      iDestruct (mapsto_agree with "H1 H2") as %->. iExists v2. by iFrame.
-  Qed.
-  Global Instance ex_mapsto_as_fractional l q :
-    AsFractional (l ↦{q} -) (λ q, l ↦{q} -)%I q.
-  Proof. split. done. apply _. Qed.
-
-  Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
-  Proof.
-    rewrite mapsto_eq /mapsto_def own_valid !discrete_valid.
-    rewrite gmap_view_frag_valid //.
-  Qed.
-  Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ✓ (q1 + q2)%Qp.
-  Proof.
-    iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %->.
-    iApply (mapsto_valid l _ v2). by iFrame.
-  Qed.
-
   Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
     ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
   Proof.
     iIntros (?) "Hl1 Hl2"; iIntros (->).
-    by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %?.
+    by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %[??].
   Qed.
 
   (** General properties of [meta] and [meta_token] *)
