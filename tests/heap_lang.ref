@@ -121,7 +121,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   I : val → Prop
   Heq : ∀ v : val, I v ↔ I #true
   ============================
-  ⊢ l ↦□ (λ _ : val, I #true)
+  ⊢ l ↦_(λ _ : val, I #true) □
 1 subgoal
   
   Σ : gFunctors

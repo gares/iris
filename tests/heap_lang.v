@@ -234,29 +234,17 @@ Section tests.
   Qed.
 End tests.
 
-Section mapsto_tests.
-  Context `{!heapG Σ}.
-
-  (* Make sure certain tactic sequences can solve certain goals. *)
-  Lemma mapsto_combine l v :
-    l ↦{1/2} - ∗ l ↦{1/2} v -∗ l ↦ -.
-  Proof.
-    iIntros "[Hl1 Hl2]". iFrame. iExists _. done.
-  Qed.
-
-End mapsto_tests.
-
 Section inv_mapsto_tests.
   Context `{!heapG Σ}.
 
   (* Make sure these parse and type-check. *)
   Lemma inv_mapsto_own_test (l : loc) : ⊢ l ↦_(λ _, True) #5. Abort.
-  Lemma inv_mapsto_test (l : loc) : ⊢ l ↦□ (λ _, True). Abort.
+  Lemma inv_mapsto_test (l : loc) : ⊢ l ↦_(λ _, True) □. Abort.
 
   (* Make sure [setoid_rewrite] works. *)
   Lemma inv_mapsto_setoid_rewrite (l : loc) (I : val → Prop) :
     (∀ v, I v ↔ I #true) →
-    ⊢ l ↦□ (λ v, I v).
+    ⊢ l ↦_(λ v, I v) □.
   Proof.
     iIntros (Heq). setoid_rewrite Heq. Show.
   Abort.
