@@ -271,7 +271,7 @@ Lemma except_0_sep P Q : ◇ (P ∗ Q) ⊣⊢ ◇ P ∗ ◇ Q.
 Proof.
   rewrite /bi_except_0. apply (anti_symm _).
   - apply or_elim; last by auto using sep_mono.
-    by rewrite -!or_intro_l -persistently_pure -later_sep -persistently_sep_dup.
+    by rewrite -!or_intro_l -persistently_pure -later_sep -duplicable.
   - rewrite sep_or_r !sep_or_l {1}(later_intro P) {1}(later_intro Q).
     rewrite -!later_sep !left_absorb right_absorb. auto.
 Qed.

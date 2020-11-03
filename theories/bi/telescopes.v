@@ -84,6 +84,9 @@ Section telescopes.
   Global Instance bi_texist_persistent Ψ :
     (∀ x, Persistent (Ψ x)) → Persistent (∃.. x, Ψ x).
   Proof. rewrite bi_texist_exist. apply _. Qed.
+  Global Instance bi_texist_duplicable Ψ :
+    (∀ x, Duplicable (Ψ x)) → Duplicable (∃.. x, Ψ x).
+  Proof. rewrite bi_texist_exist. apply _. Qed.
 
   Global Instance bi_tforall_timeless Ψ :
     (∀ x, Timeless (Ψ x)) → Timeless (∀.. x, Ψ x).
