@@ -37,7 +37,7 @@ Section gset.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma gset_ucmra_mixin : UcmraMixin (gset K).
-  Proof. split. done. intros X. by rewrite gset_op_union left_id_L. done. Qed.
+  Proof. split; [ done | | done ]. intros X. by rewrite gset_op_union left_id_L. Qed.
   Canonical Structure gsetUR := UcmraT (gset K) gset_ucmra_mixin.
 
   Lemma gset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
@@ -50,7 +50,7 @@ Section gset.
   Proof.
     intros (Z&->&?)%subseteq_disjoint_union_L.
     rewrite local_update_unital_discrete=> Z' _ /leibniz_equiv_iff->.
-    split. done. rewrite gset_op_union. set_solver.
+    split; [done|]. rewrite gset_op_union. set_solver.
   Qed.
 
   Global Instance gset_core_id X : CoreId X.
@@ -164,7 +164,7 @@ Section gset_disj.
       (∀ i, i ∉ X → Q (GSet ({[i]} ∪ X))) → GSet X ~~>: Q.
     Proof.
       intro; eapply gset_disj_alloc_updateP_strong with (λ _, True); eauto.
-      intros Y ?; exists (fresh Y). split. apply is_fresh. done.
+      intros Y ?; exists (fresh Y). split; [|done]. apply is_fresh.
     Qed.
     Lemma gset_disj_alloc_updateP' X :
       GSet X ~~>: λ Y, ∃ i, Y = GSet ({[ i ]} ∪ X) ∧ i ∉ X.

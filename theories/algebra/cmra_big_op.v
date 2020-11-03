@@ -8,7 +8,7 @@ Lemma big_opL_None {M : cmraT} {A} (f : nat → A → option M) l :
 Proof.
   revert f. induction l as [|x l IH]=> f //=. rewrite op_None IH. split.
   - intros [??] [|k] y ?; naive_solver.
-  - intros Hl. split. by apply (Hl 0). intros k. apply (Hl (S k)).
+  - intros Hl. split; [by apply (Hl 0)|]. intros k. apply (Hl (S k)).
 Qed.
 Lemma big_opM_None {M : cmraT} `{Countable K} {A} (f : K → A → option M) m :
   ([^op map] k↦x ∈ m, f k x) = None ↔ ∀ k x, m !! k = Some x → f k x = None.

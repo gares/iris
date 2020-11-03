@@ -81,7 +81,7 @@ Qed.
 (** For big ops *)
 Global Instance uPred_ownM_sep_homomorphism :
   MonoidHomomorphism op uPred_sep (≡) (@uPred_ownM M).
-Proof. split; [split; try apply _|]. apply ownM_op. apply ownM_unit'. Qed.
+Proof. split; [split|]; try apply _; [apply ownM_op | apply ownM_unit']. Qed.
 
 (** Consistency/soundness statement *)
 Lemma bupd_plain_soundness P `{!Plain P} : (⊢ |==> P) → ⊢ P.

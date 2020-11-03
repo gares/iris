@@ -170,7 +170,9 @@ Proof.
     intros [Hm Hdisj]; split; first by eauto using cmra_validN_op_l.
     intros i. move: (Hdisj i). rewrite lookup_op.
     case: (m1 !! i)=> [a|]; last auto.
-    move=> []. by case: (m2 !! i). set_solver.
+    move=> [].
+    { by case: (m2 !! i). }
+    set_solver.
   - intros n x y1 y2 ? [??]; simpl in *.
     destruct (cmra_extend n (namespace_map_data_proj x)
       (namespace_map_data_proj y1) (namespace_map_data_proj y2))
@@ -195,7 +197,7 @@ Instance namespace_map_empty : Unit (namespace_map A) := NamespaceMap ε ε.
 Lemma namespace_map_ucmra_mixin : UcmraMixin (namespace_map A).
 Proof.
   split; simpl.
-  - rewrite namespace_map_valid_eq /=. split. apply ucmra_unit_valid. set_solver.
+  - rewrite namespace_map_valid_eq /=. split; [apply ucmra_unit_valid|]. set_solver.
   - split; simpl; [by rewrite left_id|by rewrite left_id_L].
   - do 2 constructor; [apply (core_id_core _)|done].
 Qed.
@@ -209,7 +211,7 @@ Proof. do 2 constructor; simpl; auto. apply core_id_core, _. Qed.
 Lemma namespace_map_data_valid N a : ✓ (namespace_map_data N a) ↔ ✓ a.
 Proof. rewrite namespace_map_valid_eq /= singleton_valid. set_solver. Qed.
 Lemma namespace_map_token_valid E : ✓ (namespace_map_token E).
-Proof. rewrite namespace_map_valid_eq /=. split. done. by left. Qed.
+Proof. rewrite namespace_map_valid_eq /=. split; first done. by left. Qed.
 Lemma namespace_map_data_op N a b :
   namespace_map_data N (a ⋅ b) = namespace_map_data N a ⋅ namespace_map_data N b.
 Proof.

@@ -35,9 +35,9 @@ Implicit Types mP : option PROP.
 Global Instance as_emp_valid_emp_valid P : AsEmpValid0 (⊢ P) P | 0.
 Proof. by rewrite /AsEmpValid. Qed.
 Global Instance as_emp_valid_entails P Q : AsEmpValid0 (P ⊢ Q) (P -∗ Q).
-Proof. split. apply bi.entails_wand. apply bi.wand_entails. Qed.
+Proof. split; [ apply bi.entails_wand | apply bi.wand_entails ]. Qed.
 Global Instance as_emp_valid_equiv P Q : AsEmpValid0 (P ≡ Q) (P ∗-∗ Q).
-Proof. split. apply bi.equiv_wand_iff. apply bi.wand_iff_equiv. Qed.
+Proof. split; [ apply bi.equiv_wand_iff | apply bi.wand_iff_equiv ]. Qed.
 
 Global Instance as_emp_valid_forall {A : Type} (φ : A → Prop) (P : A → PROP) :
   (∀ x, AsEmpValid (φ x) (P x)) → AsEmpValid (∀ x, φ x) (∀ x, P x).

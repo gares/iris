@@ -47,7 +47,7 @@ Section gmultiset.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma gmultiset_ucmra_mixin : UcmraMixin (gmultiset K).
-  Proof. split. done. intros X. by rewrite gmultiset_op_disj_union left_id_L. done. Qed.
+  Proof. split; [done | | done]. intros X. by rewrite gmultiset_op_disj_union left_id_L. Qed.
   Canonical Structure gmultisetUR := UcmraT (gmultiset K) gmultiset_ucmra_mixin.
 
   Global Instance gmultiset_cancelable X : Cancelable X.

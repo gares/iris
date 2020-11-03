@@ -142,8 +142,9 @@ Section cofe.
     {| uPred_holds n x := ∀ n', n' ≤ n → ✓{n'} x → c n' n' x |}.
   Next Obligation.
     move=> /= c n1 n2 x1 x2 HP Hx12 Hn12 n3 Hn23 Hv. eapply uPred_mono.
-    eapply HP, cmra_validN_includedN, cmra_includedN_le=>//; lia.
-    eapply cmra_includedN_le=>//; lia. done.
+    - eapply HP, cmra_validN_includedN, cmra_includedN_le=>//; lia.
+    - eapply cmra_includedN_le=>//; lia.
+    - done.
   Qed.
   Global Program Instance uPred_cofe : Cofe uPredO := {| compl := uPred_compl |}.
   Next Obligation.
@@ -592,7 +593,11 @@ Proof. unseal; split=> n x ??; left; auto. Qed.
 Lemma or_intro_r P Q : Q ⊢ P ∨ Q.
 Proof. unseal; split=> n x ??; right; auto. Qed.
 Lemma or_elim P Q R : (P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R.
-Proof. intros HP HQ; unseal; split=> n x ? [?|?]. by apply HP. by apply HQ. Qed.
+Proof.
+  intros HP HQ; unseal; split=> n x ? [?|?].
+  - by apply HP.
+  - by apply HQ.
+Qed.
 
 Lemma impl_intro_r P Q R : (P ∧ Q ⊢ R) → P ⊢ Q → R.
 Proof.
@@ -820,7 +825,9 @@ Lemma ownM_op (a1 a2 : M) :
 Proof.
   unseal; split=> n x ?; split.
   - intros [z ?]; exists a1, (a2 ⋅ z); split; [by rewrite (assoc op)|].
-    split. by exists (core a1); rewrite cmra_core_r. by exists z.
+    split.
+    + by exists (core a1); rewrite cmra_core_r.
+    + by exists z.
   - intros (y1&y2&Hx&[z1 Hy1]&[z2 Hy2]); exists (z1 ⋅ z2).
     by rewrite (assoc op _ z1) -(comm op z1) (assoc op z1)
       -(assoc op _ a2) (comm op z1) -Hy1 -Hy2.

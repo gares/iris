@@ -298,11 +298,11 @@ Section lemmas.
       { destruct (bf !! k) as [[df' va']|] eqn:Hbf; last done.
         specialize (Hrel _ _ Hbf). destruct Hrel as (v' & _ & _ & Hm).
         exfalso. rewrite Hm in Hfresh. done. }
-      rewrite lookup_singleton Hbf right_id.
+      rewrite lookup_singleton Hbf right_id_L.
       intros [= <- <-]. eexists. do 2 (split; first done).
       rewrite lookup_insert. done.
     - rewrite lookup_singleton_ne; last done.
-      rewrite left_id=>Hbf.
+      rewrite left_id_L=>Hbf.
       specialize (Hrel _ _ Hbf). destruct Hrel as (v' & ? & ? & Hm).
       eexists. do 2 (split; first done).
       rewrite lookup_insert_ne //.
@@ -336,14 +336,14 @@ Section lemmas.
         rewrite Hbf. clear Hbf.
         rewrite -Some_op -pair_op.
         move=>[/= /dfrac_full_exclusive Hdf _]. done. }
-      rewrite Hbf right_id lookup_singleton. clear Hbf.
+      rewrite Hbf right_id_L lookup_singleton. clear Hbf.
       intros [= <- <-].
       eexists. do 2 (split; first done).
       rewrite lookup_insert. done.
     - rewrite lookup_singleton_ne; last done.
-      rewrite left_id=>Hbf.
+      rewrite left_id_L=>Hbf.
       edestruct (Hrel j) as (v'' & ? & ? & Hm).
-      { rewrite lookup_op lookup_singleton_ne // left_id. done. }
+      { rewrite lookup_op lookup_singleton_ne // left_id_L. done. }
       simpl in *. eexists. do 2 (split; first done).
       rewrite lookup_insert_ne //.
   Qed.
@@ -367,9 +367,9 @@ Section lemmas.
         apply cmra_discrete_valid_iff. done.
       + simpl in *. move:Hbf=>[= <- <-]. split; done.
     - rewrite lookup_singleton_ne //.
-      rewrite left_id=>Hbf.
+      rewrite left_id_L=>Hbf.
       edestruct (Hrel j) as (v'' & ? & ? & Hm).
-      { rewrite lookup_op lookup_singleton_ne // left_id. done. }
+      { rewrite lookup_op lookup_singleton_ne // left_id_L. done. }
       simpl in *. eexists. do 2 (split; first done). done.
   Qed.
 

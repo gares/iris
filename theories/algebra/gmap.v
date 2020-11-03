@@ -243,7 +243,11 @@ Implicit Types x y : A.
 
 Global Instance lookup_op_homomorphism i :
   MonoidHomomorphism op op (≡) (lookup i : gmap K A → option A).
-Proof. split; [split|]; try apply _. intros m1 m2; by rewrite lookup_op. done. Qed.
+Proof.
+  split; [split|]; try apply _.
+  - intros m1 m2; by rewrite lookup_op.
+  - done.
+Qed.
 
 Lemma lookup_opM m1 mm2 i : (m1 ⋅? mm2) !! i = m1 !! i ⋅ (mm2 ≫= (.!! i)).
 Proof. destruct mm2; by rewrite /= ?lookup_op ?right_id_L. Qed.
@@ -261,7 +265,7 @@ Lemma singleton_validN n i x : ✓{n} ({[ i := x ]} : gmap K A) ↔ ✓{n} x.
 Proof.
   split.
   - move=>/(_ i); by simplify_map_eq.
-  - intros. apply insert_validN. done. apply: ucmra_unit_validN.
+  - intros. apply insert_validN; first done. apply: ucmra_unit_validN.
 Qed.
 Lemma singleton_valid i x : ✓ ({[ i := x ]} : gmap K A) ↔ ✓ x.
 Proof. rewrite !cmra_valid_validN. by setoid_rewrite singleton_validN. Qed.
@@ -311,7 +315,7 @@ Proof.
   split.
   - move=> [m' /(_ i)]; rewrite lookup_op lookup_singleton=> Hi.
     exists (x ⋅? m' !! i). rewrite -Some_op_opM.
-    split. done. apply cmra_includedN_l.
+    split; first done. apply cmra_includedN_l.
   - intros (y&Hi&[mz Hy]). exists (partial_alter (λ _, mz) i m).
     intros j; destruct (decide (i = j)) as [->|].
     + by rewrite lookup_op lookup_singleton lookup_partial_alter Hi.
@@ -324,7 +328,7 @@ Proof.
   split.
   - move=> [m' /(_ i)]; rewrite lookup_op lookup_singleton.
     exists (x ⋅? m' !! i). rewrite -Some_op_opM.
-    split. done. apply cmra_included_l.
+    split; first done. apply cmra_included_l.
   - intros (y&Hi&[mz Hy]). exists (partial_alter (λ _, mz) i m).
     intros j; destruct (decide (i = j)) as [->|].
     + by rewrite lookup_op lookup_singleton lookup_partial_alter Hi.

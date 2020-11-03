@@ -187,7 +187,7 @@ Section bupd_derived.
 
   Global Instance bupd_homomorphism :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (bupd (PROP:=PROP)).
-  Proof. split; [split|]; try apply _. apply bupd_sep. apply bupd_intro. Qed.
+  Proof. split; [split|]; try apply _; [apply bupd_sep | apply bupd_intro]. Qed.
 
   Lemma big_sepL_bupd {A} (Φ : nat → A → PROP) l :
     ([∗ list] k↦x ∈ l, |==> Φ k x) ⊢ |==> [∗ list] k↦x ∈ l, Φ k x.
@@ -327,7 +327,7 @@ Section fupd_derived.
 
   Global Instance fupd_homomorphism E :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (fupd (PROP:=PROP) E E).
-  Proof. split; [split|]; try apply _. apply fupd_sep. apply fupd_intro. Qed.
+  Proof. split; [split|]; try apply _; [apply fupd_sep | apply fupd_intro]. Qed.
 
   Lemma big_sepL_fupd {A} E (Φ : nat → A → PROP) l :
     ([∗ list] k↦x ∈ l, |={E}=> Φ k x) ={E}=∗ [∗ list] k↦x ∈ l, Φ k x.

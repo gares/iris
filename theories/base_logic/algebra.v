@@ -71,7 +71,9 @@ Section excl.
                         | _, _ => False
                         end.
   Proof.
-    uPred.unseal. do 2 split. by destruct 1. by destruct x, y; try constructor.
+    uPred.unseal. do 2 split.
+    - by destruct 1.
+    - by destruct x, y; try constructor.
   Qed.
   Lemma excl_validI x :
     ✓ x ⊣⊢@{uPredI M} if x is ExclBot then False else True.

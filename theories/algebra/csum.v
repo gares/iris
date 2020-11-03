@@ -349,7 +349,7 @@ Proof.
   intros Hup n mf ? Ha1; simpl in *.
   destruct (Hup n (mf ≫= maybe Cinl)); auto.
   { by destruct mf as [[]|]; inversion_clear Ha1. }
-  split. done. by destruct mf as [[]|]; inversion_clear Ha1; constructor.
+  split; first done. by destruct mf as [[]|]; inversion_clear Ha1; constructor.
 Qed.
 Lemma csum_local_update_r (b1 b2 b1' b2' : B) :
   (b1,b2) ~l~> (b1',b2') → (Cinr b1,Cinr b2) ~l~> (Cinr b1',Cinr b2').
@@ -357,7 +357,7 @@ Proof.
   intros Hup n mf ? Ha1; simpl in *.
   destruct (Hup n (mf ≫= maybe Cinr)); auto.
   { by destruct mf as [[]|]; inversion_clear Ha1. }
-  split. done. by destruct mf as [[]|]; inversion_clear Ha1; constructor.
+  split; first done. by destruct mf as [[]|]; inversion_clear Ha1; constructor.
 Qed.
 End cmra.
 

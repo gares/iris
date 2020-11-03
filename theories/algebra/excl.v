@@ -82,7 +82,7 @@ Proof.
   split; try discriminate.
   - by intros n []; destruct 1; constructor.
   - by destruct 1; intros ?.
-  - intros x; split. done. by move=> /(_ 0).
+  - intros x; split; [done|]. by move=> /(_ 0).
   - intros n [?|]; simpl; auto with lia.
   - by intros [?|] [?|] [?|]; constructor.
   - by intros [?|] [?|]; constructor.
@@ -92,7 +92,7 @@ Qed.
 Canonical Structure exclR := CmraT (excl A) excl_cmra_mixin.
 
 Global Instance excl_cmra_discrete : OfeDiscrete A → CmraDiscrete exclR.
-Proof. split. apply _. by intros []. Qed.
+Proof. split; first apply _. by intros []. Qed.
 
 (** Exclusive *)
 Global Instance excl_exclusive x : Exclusive x.

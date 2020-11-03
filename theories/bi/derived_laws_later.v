@@ -118,7 +118,7 @@ Proof.
 Qed.
 
 Lemma löb_alt_strong : BiLöb PROP ↔ ∀ P, (▷ P → P) ⊢ P.
-Proof. split; intros HLöb P. apply löb. by intros ->%entails_impl_True. Qed.
+Proof. split; intros HLöb P; [apply löb|]. by intros ->%entails_impl_True. Qed.
 
 (** Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
 Their [Ψ] is called [Q] in our proof. *)
@@ -173,7 +173,7 @@ Proof. apply entails_impl, löb. Qed.
 
 (* Iterated later modality *)
 Global Instance laterN_ne m : NonExpansive (@bi_laterN PROP m).
-Proof. induction m; simpl. by intros ???. solve_proper. Qed.
+Proof. induction m; simpl; [by intros ???|]. solve_proper. Qed.
 Global Instance laterN_proper m :
   Proper ((⊣⊢) ==> (⊣⊢)) (@bi_laterN PROP m) := ne_proper _.
 
@@ -405,13 +405,25 @@ Proof. destruct mx; apply _. Qed.
 (* Big op stuff *)
 Global Instance bi_later_monoid_and_homomorphism :
   MonoidHomomorphism bi_and bi_and (≡) (@bi_later PROP).
-Proof. split; [split|]; try apply _. apply later_and. apply later_True. Qed.
+Proof.
+  split; [split|]; try apply _.
+  - apply later_and.
+  - apply later_True.
+Qed.
 Global Instance bi_laterN_and_homomorphism n :
   MonoidHomomorphism bi_and bi_and (≡) (@bi_laterN PROP n).
-Proof. split; [split|]; try apply _. apply laterN_and. apply laterN_True. Qed.
+Proof.
+  split; [split|]; try apply _.
+  - apply laterN_and.
+  - apply laterN_True.
+Qed.
 Global Instance bi_except_0_and_homomorphism :
   MonoidHomomorphism bi_and bi_and (≡) (@bi_except_0 PROP).
-Proof. split; [split|]; try apply _. apply except_0_and. apply except_0_True. Qed.
+Proof.
+  split; [split|]; try apply _.
+  - apply except_0_and.
+  - apply except_0_True.
+Qed.
 
 Global Instance bi_later_monoid_or_homomorphism :
   WeakMonoidHomomorphism bi_or bi_or (≡) (@bi_later PROP).

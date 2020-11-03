@@ -203,7 +203,7 @@ Definition dist_later `{Dist A} (n : nat) (x y : A) : Prop :=
 Arguments dist_later _ _ !_ _ _ /.
 
 Global Instance dist_later_equivalence (A : ofeT) n : Equivalence (@dist_later A _ n).
-Proof. destruct n as [|n]. by split. apply dist_equivalence. Qed.
+Proof. destruct n as [|n]; [by split|]. apply dist_equivalence. Qed.
 
 Lemma dist_dist_later {A : ofeT} n (x y : A) : dist n x y → dist_later n x y.
 Proof. intros Heq. destruct n; first done. exact: dist_S. Qed.
@@ -279,7 +279,10 @@ Section limit_preserving.
   Lemma limit_preserving_and (P1 P2 : A → Prop) :
     LimitPreserving P1 → LimitPreserving P2 →
     LimitPreserving (λ x, P1 x ∧ P2 x).
-  Proof. intros Hlim1 Hlim2 c Hc. split. apply Hlim1, Hc. apply Hlim2, Hc. Qed.
+  Proof.
+    intros Hlim1 Hlim2 c Hc.
+    split; [ apply Hlim1, Hc | apply Hlim2, Hc ].
+  Qed.
 
   Lemma limit_preserving_impl (P1 P2 : A → Prop) :
     Proper (dist 0 ==> impl) P1 → LimitPreserving P2 →
@@ -662,8 +665,9 @@ Section product.
   Global Program Instance prod_cofe `{Cofe A, Cofe B} : Cofe prodO :=
     { compl c := (compl (chain_map fst c), compl (chain_map snd c)) }.
   Next Obligation.
-    intros ?? n c; split. apply (conv_compl n (chain_map fst c)).
-    apply (conv_compl n (chain_map snd c)).
+    intros ?? n c; split.
+    - apply (conv_compl n (chain_map fst c)).
+    - apply (conv_compl n (chain_map snd c)).
   Qed.
 
   Global Instance prod_discrete (x : A * B) :
@@ -1096,7 +1100,9 @@ Section later.
   Proof.
     split.
     - intros x y; unfold equiv, later_equiv; rewrite !equiv_dist.
-      split. intros Hxy [|n]; [done|apply Hxy]. intros Hxy n; apply (Hxy (S n)).
+      split.
+      + intros Hxy [|n]; [done|apply Hxy].
+      + intros Hxy n; apply (Hxy (S n)).
     - split; rewrite /dist /later_dist.
       + by intros [x].
       + by intros [x] [y].

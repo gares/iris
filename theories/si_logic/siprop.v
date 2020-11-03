@@ -222,7 +222,7 @@ Proof. unseal; split=> n ?; left; auto. Qed.
 Lemma or_intro_r P Q : Q ⊢ P ∨ Q.
 Proof. unseal; split=> n ?; right; auto. Qed.
 Lemma or_elim P Q R : (P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R.
-Proof. intros HP HQ. unseal; split=> n [?|?]. by apply HP. by apply HQ. Qed.
+Proof. intros HP HQ. unseal; split=> n [?|?]; [by apply HP | by apply HQ]. Qed.
 
 Lemma impl_intro_r P Q R : (P ∧ Q ⊢ R) → P ⊢ Q → R.
 Proof.

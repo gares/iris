@@ -367,7 +367,7 @@ Proof. by move /cmra_valid_validN /(_ 0) /exclusive0_l. Qed.
 Lemma exclusive_r x `{!Exclusive x} y : ✓ (y ⋅ x) → False.
 Proof. rewrite comm. by apply exclusive_l. Qed.
 Lemma exclusiveN_opM n x `{!Exclusive x} my : ✓{n} (x ⋅? my) → my = None.
-Proof. destruct my as [y|]. move=> /(exclusiveN_l _ x) []. done. Qed.
+Proof. destruct my as [y|]; last done. move=> /(exclusiveN_l _ x) []. Qed.
 Lemma exclusive_includedN n x `{!Exclusive x} y : x ≼{n} y → ✓{n} y → False.
 Proof. intros [? ->]. by apply exclusiveN_l. Qed.
 Lemma exclusive_included x `{!Exclusive x} y : x ≼ y → ✓ y → False.
@@ -747,7 +747,7 @@ End cmra_total.
 
 (** * Properties about morphisms *)
 Instance cmra_morphism_id {A : cmraT} : CmraMorphism (@id A).
-Proof. split=>//=. apply _. intros. by rewrite option_fmap_id. Qed.
+Proof. split=>//=; first apply _. intros. by rewrite option_fmap_id. Qed.
 Instance cmra_morphism_proper {A B : cmraT} (f : A → B) `{!CmraMorphism f} :
   Proper ((≡) ==> (≡)) f := ne_proper _.
 Instance cmra_morphism_compose {A B C : cmraT} (f : A → B) (g : B → C) :
@@ -1018,7 +1018,7 @@ Section discrete.
 
   Instance discrete_cmra_discrete :
     CmraDiscrete (CmraT' A (discrete_ofe_mixin Heq) discrete_cmra_mixin).
-  Proof. split. apply _. done. Qed.
+  Proof. split; first apply _. done. Qed.
 End discrete.
 
 (** A smart constructor for the discrete RA over a carrier [A]. It uses
@@ -1192,7 +1192,7 @@ Section prod.
 
   Global Instance prod_cmra_discrete :
     CmraDiscrete A → CmraDiscrete B → CmraDiscrete prodR.
-  Proof. split. apply _. by intros ? []; split; apply cmra_discrete_valid. Qed.
+  Proof. split; [apply _|]. by intros ? []; split; apply cmra_discrete_valid. Qed.
 
   (* FIXME(Coq #6294): This is not an instance because we need it to use the new
   unification. *)
@@ -1425,7 +1425,7 @@ Section option.
 
   Instance option_unit : Unit (option A) := None.
   Lemma option_ucmra_mixin : UcmraMixin optionR.
-  Proof. split. done. by intros []. done. Qed.
+  Proof. split; [ done | by intros [] | done ]. Qed.
   Canonical Structure optionUR := UcmraT (option A) option_ucmra_mixin.
 
   (** Misc *)
@@ -1456,13 +1456,13 @@ Section option.
 
   Lemma exclusiveN_Some_l n a `{!Exclusive a} mb :
     ✓{n} (Some a ⋅ mb) → mb = None.
-  Proof. destruct mb. move=> /(exclusiveN_l _ a) []. done. Qed.
+  Proof. destruct mb; [|done]. move=> /(exclusiveN_l _ a) []. Qed.
   Lemma exclusiveN_Some_r n a `{!Exclusive a} mb :
     ✓{n} (mb ⋅ Some a) → mb = None.
   Proof. rewrite comm. by apply exclusiveN_Some_l. Qed.
 
   Lemma exclusive_Some_l a `{!Exclusive a} mb : ✓ (Some a ⋅ mb) → mb = None.
-  Proof. destruct mb. move=> /(exclusive_l a) []. done. Qed.
+  Proof. destruct mb; [|done]. move=> /(exclusive_l a) []. Qed.
   Lemma exclusive_Some_r a `{!Exclusive a} mb : ✓ (mb ⋅ Some a) → mb = None.
   Proof. rewrite comm. by apply exclusive_Some_l. Qed.
 
@@ -1474,9 +1474,9 @@ Section option.
   Proof. rewrite Some_included; eauto. Qed.
 
   Lemma Some_includedN_total `{CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
-  Proof. rewrite Some_includedN. split. by intros [->|?]. eauto. Qed.
+  Proof. rewrite Some_includedN. split; [|eauto]. by intros [->|?]. Qed.
   Lemma Some_included_total `{CmraTotal A} a b : Some a ≼ Some b ↔ a ≼ b.
-  Proof. rewrite Some_included. split. by intros [->|?]. eauto. Qed.
+  Proof. rewrite Some_included. split; [|eauto]. by intros [->|?]. Qed.
 
   Lemma Some_includedN_exclusive n a `{!Exclusive a} b :
     Some a ≼{n} Some b → ✓{n} b → a ≡{n}≡ b.
