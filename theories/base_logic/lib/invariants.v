@@ -97,6 +97,9 @@ Section inv.
   Global Instance inv_persistent N P : Persistent (inv N P).
   Proof. rewrite inv_eq. apply _. Qed.
 
+  Global Instance inv_duplicable N P : Duplicable (inv N P).
+  Proof. rewrite inv_eq. apply _. Qed.
+
   Lemma inv_alter N P Q : inv N P -∗ ▷ □ (P -∗ Q ∗ (Q -∗ P)) -∗ inv N Q.
   Proof.
     rewrite inv_eq. iIntros "#HI #HPQ !>" (E H).
@@ -145,13 +148,12 @@ Section inv.
     iMod "Hclose" as %_. iMod ("HcloseQ" with "HQ") as %_. by iApply "HcloseP".
   Qed.
 
-  Lemma inv_combine_dup_l N P Q :
-    □ (P -∗ P ∗ P) -∗
+  Lemma inv_combine_dup_l P `{!Duplicable P} N Q :
     inv N P -∗ inv N Q -∗ inv N (P ∗ Q).
   Proof.
-    rewrite inv_eq. iIntros "#HPdup #HinvP #HinvQ !>" (E ?).
+    rewrite inv_eq. iIntros "#HinvP #HinvQ !>" (E ?).
     iMod ("HinvP" with "[//]") as "[HP HcloseP]".
-    iDestruct ("HPdup" with "HP") as "[$ HP]".
+    iDestruct (duplicable P with "HP") as "[$ HP]".
     iMod ("HcloseP" with "HP") as %_.
     iMod ("HinvQ" with "[//]") as "[$ HcloseQ]".
     iIntros "!> [HP HQ]". by iApply "HcloseQ".

@@ -193,6 +193,8 @@ Global Instance own_timeless γ a : Discrete a → Timeless (own γ a).
 Proof. rewrite !own_eq /own_def. apply _. Qed.
 Global Instance own_core_persistent γ a : CoreId a → Persistent (own γ a).
 Proof. rewrite !own_eq /own_def; apply _. Qed.
+Global Instance own_core_duplicable γ a : CoreId a → Duplicable (own γ a).
+Proof. rewrite !own_eq /own_def; apply _. Qed.
 
 Lemma later_own γ a : ▷ own γ a -∗ ◇ ∃ b, own γ b ∧ ▷ (a ≡ b).
 Proof.

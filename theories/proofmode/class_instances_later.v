@@ -77,6 +77,14 @@ Global Instance from_sep_except_0 P Q1 Q2 :
   FromSep P Q1 Q2 → FromSep (◇ P) (◇ Q1) (◇ Q2).
 Proof. rewrite /FromSep=><-. by rewrite except_0_sep. Qed.
 
+(* Duplicable *)
+Global Instance duplicable_later P : Duplicable P → Duplicable (▷ P).
+Proof. rewrite /Duplicable => {1}->. by rewrite later_sep. Qed.
+Global Instance duplicable_laterN n P : Duplicable P → Duplicable (▷^n P).
+Proof. rewrite /Duplicable => {1}->. by rewrite laterN_sep. Qed.
+Global Instance duplicable_except_0 P : Duplicable P → Duplicable (◇ P).
+Proof. rewrite /Duplicable => {1}->. by rewrite except_0_sep. Qed.
+
 (** IntoAnd *)
 Global Instance into_and_later p P Q1 Q2 :
   IntoAnd p P Q1 Q2 → IntoAnd p (▷ P) (▷ Q1) (▷ Q2).

@@ -489,7 +489,7 @@ Proof.
     destruct rp.
     + rewrite (env_lookup_perm Γp) //= intuitionistically_and.
       by rewrite and_sep_intuitionistically -assoc.
-    + rewrite {1}intuitionistically_sep_dup {1}(env_lookup_perm Γp) //=.
+    + rewrite {1}(duplicable (□ _)) {1}(env_lookup_perm Γp) //=.
       by rewrite intuitionistically_and and_elim_l -assoc.
   - destruct (Γs !! i) eqn:?; simplify_eq/=.
     rewrite pure_True ?left_id; last (destruct Hwf; constructor;

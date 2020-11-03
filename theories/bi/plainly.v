@@ -199,12 +199,10 @@ Qed.
 Lemma plainly_emp_2 : emp ⊢@{PROP} ■ emp.
 Proof. apply plainly_emp_intro. Qed.
 
-Lemma plainly_sep_dup P : ■ P ⊣⊢ ■ P ∗ ■ P.
+Global Instance plainly_sep_duplicable P : Duplicable (■ P).
 Proof.
-  apply (anti_symm _).
-  - rewrite -{1}(idemp bi_and (■ _)%I).
-    by rewrite -{2}(emp_sep (■ _)%I) plainly_and_sep_assoc and_elim_l.
-  - by rewrite plainly_absorb.
+  rewrite /Duplicable. rewrite -{1}(idemp bi_and (■ _)%I).
+  by rewrite -{2}(emp_sep (■ _)%I) plainly_and_sep_assoc and_elim_l.
 Qed.
 
 Lemma plainly_and_sep_l_1 P Q : ■ P ∧ Q ⊢ ■ P ∗ Q.

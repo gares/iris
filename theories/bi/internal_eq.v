@@ -219,6 +219,9 @@ Proof. by rewrite /Absorbing absorbingly_internal_eq. Qed.
 Global Instance internal_eq_persistent {A : ofeT} (a b : A) :
   Persistent (PROP:=PROP) (a ≡ b).
 Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
+Global Instance internal_eq_duplicable {A : ofeT} (a b : A) :
+  Duplicable (PROP:=PROP) (a ≡ b).
+Proof. apply: persistent_sep_duplicable. Qed.
 
 (* Equality under a later. *)
 Lemma internal_eq_rewrite_contractive {A : ofeT} a b (Ψ : A → PROP)
