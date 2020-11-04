@@ -80,6 +80,11 @@ With this release, we dropped support for Coq 8.9.
   interface and factor it into a type class `BiPureForall`.
 * Add notation `¬ P` for `P → False` to `bi_scope`.
 
+**Changes in `bi`:**
+
+* Add big op lemmas `big_op{L,L2,M,M2,S}_intuitionistically_forall` and
+  `big_sepL2_forall`, `big_sepMS_forall`, `big_sepMS_impl`, and `big_sepMS_dup`.
+
 **Changes in `base_logic`:**
 
 * Add a `ghost_var` library that provides (fractional) ownership of a ghost
