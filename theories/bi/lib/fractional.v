@@ -63,24 +63,11 @@ Section fractional.
     AsFractional P Φ q → AsFractional P12 Φ (q/2) →
     P12 -∗ P12 -∗ P.
   Proof. intros. apply bi.wand_intro_r. by rewrite -(fractional_half P). Qed.
-  
-  Lemma fractional_duplicable `{!Fractional Φ} : Duplicable (∃ q, Φ q).
-  Proof.
-    rewrite /Duplicable.
-    apply bi.exist_elim=> q. rewrite -(Qp_div_2 q) {1}fractional.
-    apply bi.sep_mono; apply bi.exist_intro.
-  Qed.
 
   (** Fractional and logical connectives *)
   Global Instance persistent_fractional P :
     Persistent P → Absorbing P → Fractional (λ _, P).
-  Proof.
-    (* FIXME: The hint for [persistent_duplicable] should apply here. *)
-    intros ? ? q q'. apply: bi.duplicable_equiv. apply: bi.persistent_duplicable.
-  Qed.
-  Global Instance duplicable_fractional P :
-    Duplicable P → Absorbing P → Fractional (λ _, P).
-  Proof. intros ? ? q q'. apply: bi.duplicable_equiv. Qed.
+  Proof. intros ?? q q'. by apply bi.persistent_sep_dup. Qed.
 
   Global Instance fractional_sep Φ Ψ :
     Fractional Φ → Fractional Ψ → Fractional (λ q, Φ q ∗ Ψ q)%I.

@@ -19,12 +19,6 @@ Arguments persistent {_} _%I {_}.
 Hint Mode Persistent + ! : typeclass_instances.
 Instance: Params (@Persistent) 1 := {}.
 
-Class Duplicable {PROP : bi} (P : PROP) := duplicable : P ⊢ P ∗ P.
-Arguments Duplicable {_} _%I : simpl never.
-Arguments duplicable {_} _%I {_}.
-Hint Mode Duplicable + ! : typeclass_instances.
-Instance: Params (@Duplicable) 1 := {}.
-
 Definition bi_affinely {PROP : bi} (P : PROP) : PROP := (emp ∧ P)%I.
 Arguments bi_affinely {_} _%I : simpl never.
 Instance: Params (@bi_affinely) 1 := {}.

@@ -110,15 +110,6 @@ With this release, we dropped support for Coq 8.9.
 * Add an `mnat` library on top of `mnat_auth` that supports ghost state which is
   an authoritative, monotonically-increasing `nat` with a proposition giving a
   persistent lower bound. See `base_logic.lib.mnat` for further details.
-* Add a class, `Duplicable`, for duplicable propositions. The lemmas
-  `intuitionistically_sep_dup`, `persistently_sep_dup`,
-  `plainly_sep_duplicable`, and `persistent_sep_dup` are now instances. This
-  means they are now uni-directional; use `duplicable_equiv` to obtain the
-  bidirectional version.
-  A few lemmas are changed to use the new class: `inv_combine_dup_l`,
-  `big_sepL_dup`, `big_sepM_dup`, `big_sepS_dup`. Instead of having `□ (P -∗ P ∗
-  P)` as an assumption these lemmas now assume `P` to be an instance of
-  `Duplicable`.
 * Remove the `gen_heap` notations `l ↦ -` and `l ↦{q} -`. They were barely used
   and looked very confusing in context: `l ↦ - ∗ P` looks like a magic wand.
 * Change `gen_inv_heap` notation `l ↦□ I` to `l ↦_I □`, so that `↦□` can be used
@@ -148,7 +139,6 @@ s/\bauth_both_frac_valid\b/auth_both_frac_valid_discrete/g
 # gen_heap_ctx and proph_map_ctx
 s/\bgen_heap_ctx\b/gen_heap_interp/g
 s/\bproph_map_ctx\b/proph_map_interp/g
-s/\bintuitionistically_sep_dup\b/(duplicable (□ _))/g
 EOF
 ```
 

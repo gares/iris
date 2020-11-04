@@ -201,7 +201,7 @@ Section sep_list.
   Proof.
     apply wand_intro_l. revert Φ Ψ. induction l as [|x l IH]=> Φ Ψ /=.
     { by rewrite sep_elim_r. }
-    rewrite (duplicable (□ _)) -assoc [(□ _ ∗ _)%I]comm -!assoc assoc.
+    rewrite intuitionistically_sep_dup -assoc [(□ _ ∗ _)%I]comm -!assoc assoc.
     apply sep_mono.
     - rewrite (forall_elim 0) (forall_elim x) pure_True // True_impl.
       by rewrite intuitionistically_elim wand_elim_l.
@@ -210,11 +210,13 @@ Section sep_list.
       apply forall_intro=> k. by rewrite (forall_elim (S k)).
   Qed.
 
-  Lemma big_sepL_dup P `{!Affine P, !Duplicable P} l :
-    P -∗ [∗ list] k↦x ∈ l, P.
+  Lemma big_sepL_dup P `{!Affine P} l :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ list] k↦x ∈ l, P.
   Proof.
+    apply wand_intro_l.
     induction l as [|x l IH]=> /=; first by apply: affine.
-    rewrite {1}(duplicable P). apply sep_mono; done.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
   Lemma big_sepL_delete Φ l i x :
@@ -265,16 +267,6 @@ Section sep_list.
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
   Global Instance big_sepL_persistent_id Ps :
     TCForall Persistent Ps → Persistent ([∗] Ps).
-  Proof. induction 1; simpl; apply _. Qed.
-
-  Global Instance big_sepL_nil_duplicable Φ :
-    Duplicable ([∗ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL_duplicable Φ l :
-    (∀ k x, Duplicable (Φ k x)) → Duplicable ([∗ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-  Global Instance big_sepL_duplicable_id Ps :
-    TCForall Duplicable Ps → Duplicable ([∗] Ps).
   Proof. induction 1; simpl; apply _. Qed.
 
   Global Instance big_sepL_nil_affine Φ :
@@ -565,7 +557,7 @@ Section sep_list2.
   Proof.
     apply wand_intro_l. revert Φ Ψ l2.
     induction l1 as [|x1 l1 IH]=> Φ Ψ [|x2 l2] /=; [by rewrite sep_elim_r..|].
-    rewrite (duplicable (□ _)) -assoc [(□ _ ∗ _)%I]comm -!assoc assoc.
+    rewrite intuitionistically_sep_dup -assoc [(□ _ ∗ _)%I]comm -!assoc assoc.
     apply sep_mono.
     - rewrite (forall_elim 0) (forall_elim x1) (forall_elim x2) !pure_True // !True_impl.
       by rewrite intuitionistically_elim wand_elim_l.
@@ -609,14 +601,6 @@ Section sep_list2.
     (∀ k x1 x2, Persistent (Φ k x1 x2)) →
     Persistent ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
   Proof. rewrite big_sepL2_alt. apply _. Qed.
-
-  Global Instance big_sepL2_nil_duplicable Φ :
-    Duplicable ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_sepL2_duplicable Φ l1 l2 :
-    (∀ k x1 x2, Duplicable (Φ k x1 x2)) →
-    Duplicable ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2).
-  Proof. intros. rewrite big_sepL2_alt. apply: duplicable_and_persistent_l. Qed.
 
   Global Instance big_sepL2_nil_affine Φ :
     Affine ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
@@ -750,10 +734,6 @@ Section and_list.
   Global Instance big_andL_persistent Φ l :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∧ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-  Global Instance big_andL_nil_duplicable Φ :
-    Duplicable ([∧ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
 End and_list.
 
 Section or_list.
@@ -864,13 +844,6 @@ Section or_list.
   Proof. simpl; apply _. Qed.
   Global Instance big_orL_persistent Φ l :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∨ list] k↦x ∈ l, Φ k x).
-  Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
-
-  Global Instance big_orL_nil_duplicable Φ :
-    Duplicable ([∨ list] k↦x ∈ [], Φ k x).
-  Proof. simpl; apply _. Qed.
-  Global Instance big_orL_duplicable `{BiAffine PROP} Φ l :
-    (∀ k x, Duplicable (Φ k x)) → Duplicable ([∨ list] k↦x ∈ l, Φ k x).
   Proof. revert Φ. induction l as [|x l IH]=> Φ ? /=; apply _. Qed.
 End or_list.
 
@@ -1055,7 +1028,7 @@ Section map.
   Proof.
     apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
     { by rewrite big_opM_eq sep_elim_r. }
-    rewrite !big_sepM_insert // (duplicable (□ _)).
+    rewrite !big_sepM_insert // intuitionistically_sep_dup.
     rewrite -assoc [(□ _ ∗ _)%I]comm -!assoc assoc. apply sep_mono.
     - rewrite (forall_elim i) (forall_elim x) pure_True ?lookup_insert //.
       by rewrite True_impl intuitionistically_elim wand_elim_l.
@@ -1066,12 +1039,14 @@ Section map.
       by rewrite pure_True // True_impl.
   Qed.
 
-  Lemma big_sepM_dup P `{!Affine P, !Duplicable P} m :
-    P -∗ [∗ map] k↦x ∈ m, P.
+  Lemma big_sepM_dup P `{!Affine P} m :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ map] k↦x ∈ m, P.
   Proof.
-    induction m as [|i x m ? IH] using map_ind.
-    - apply: big_sepM_empty'.
-    - rewrite !big_sepM_insert // {1}(duplicable P). apply sep_mono; done.
+    apply wand_intro_l. induction m as [|i x m ? IH] using map_ind.
+    { apply: big_sepM_empty'. }
+    rewrite !big_sepM_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
   Lemma big_sepM_later `{BiAffine PROP} Φ m :
@@ -1094,13 +1069,6 @@ Section map.
   Global Instance big_sepM_persistent Φ m :
     (∀ k x, Persistent (Φ k x)) → Persistent ([∗ map] k↦x ∈ m, Φ k x).
   Proof. rewrite big_opM_eq. intros. apply big_sepL_persistent=> _ [??]; apply _. Qed.
-
-  Global Instance big_sepM_empty_duplicable Φ :
-    Duplicable ([∗ map] k↦x ∈ ∅, Φ k x).
-  Proof. rewrite big_opM_eq /big_opM_def map_to_list_empty. apply _. Qed.
-  Global Instance big_sepM_duplicable Φ m :
-    (∀ k x, Duplicable (Φ k x)) → Duplicable ([∗ map] k↦x ∈ m, Φ k x).
-  Proof. rewrite big_opM_eq. intros. apply big_sepL_duplicable=> _ [??]; apply _. Qed.
 
   Global Instance big_sepM_empty_affine Φ :
     Affine ([∗ map] k↦x ∈ ∅, Φ k x).
@@ -1484,14 +1452,6 @@ Section map2.
     Persistent ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
   Proof. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 
-  Global Instance big_sepM2_empty_duplicable Φ :
-    Duplicable ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
-  Proof. rewrite big_sepM2_empty. apply _. Qed.
-  Global Instance big_sepM2_duplicable Φ m1 m2 :
-    (∀ k x1 x2, Duplicable (Φ k x1 x2)) →
-    Duplicable ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2).
-  Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply: duplicable_and_persistent_l. Qed.
-
   Global Instance big_sepM2_empty_affine Φ :
     Affine ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
   Proof. rewrite big_sepM2_empty. apply _. Qed.
@@ -1673,7 +1633,7 @@ Section gset.
   Proof.
     apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
     { by rewrite big_opS_eq sep_elim_r. }
-    rewrite !big_sepS_insert // (duplicable (□ _)).
+    rewrite !big_sepS_insert // intuitionistically_sep_dup.
     rewrite -assoc [(□ _ ∗ _)%I]comm -!assoc assoc. apply sep_mono.
     - rewrite (forall_elim x) pure_True; last set_solver.
       by rewrite True_impl intuitionistically_elim wand_elim_l.
@@ -1682,11 +1642,14 @@ Section gset.
       by rewrite pure_True ?True_impl; last set_solver.
   Qed.
 
-  Lemma big_sepS_dup P `{!Affine P, !Duplicable P} X : P -∗ [∗ set] x ∈ X, P.
+  Lemma big_sepS_dup P `{!Affine P} X :
+    □ (P -∗ P ∗ P) -∗ P -∗ [∗ set] x ∈ X, P.
   Proof.
-    induction X as [|x X ? IH] using set_ind_L.
-    - apply: big_sepS_empty'.
-    - rewrite !big_sepS_insert // {1}(duplicable P). apply sep_mono; done.
+    apply wand_intro_l. induction X as [|x X ? IH] using set_ind_L.
+    { apply: big_sepS_empty'. }
+    rewrite !big_sepS_insert //.
+    rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
+    rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
   Lemma big_sepS_later `{BiAffine PROP} Φ X :
@@ -1708,13 +1671,6 @@ Section gset.
   Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
   Global Instance big_sepS_persistent Φ X :
     (∀ x, Persistent (Φ x)) → Persistent ([∗ set] x ∈ X, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
-
-  Global Instance big_sepS_empty_duplicable Φ :
-    Duplicable ([∗ set] x ∈ ∅, Φ x).
-  Proof. rewrite big_opS_eq /big_opS_def elements_empty. apply _. Qed.
-  Global Instance big_sepS_duplicable Φ X :
-    (∀ x, Duplicable (Φ x)) → Duplicable ([∗ set] x ∈ X, Φ x).
   Proof. rewrite big_opS_eq /big_opS_def. apply _. Qed.
 
   Global Instance big_sepS_empty_affine Φ : Affine ([∗ set] x ∈ ∅, Φ x).
@@ -1827,13 +1783,6 @@ Section gmultiset.
   Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
   Global Instance big_sepMS_persistent Φ X :
     (∀ x, Persistent (Φ x)) → Persistent ([∗ mset] x ∈ X, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
-
-  Global Instance big_sepMS_empty_duplicable Φ :
-    Duplicable ([∗ mset] x ∈ ∅, Φ x).
-  Proof. rewrite big_opMS_eq /big_opMS_def gmultiset_elements_empty. apply _. Qed.
-  Global Instance big_sepMS_duplicable Φ X :
-    (∀ x, Duplicable (Φ x)) → Duplicable ([∗ mset] x ∈ X, Φ x).
   Proof. rewrite big_opMS_eq /big_opMS_def. apply _. Qed.
 
   Global Instance big_sepMS_empty_affine Φ : Affine ([∗ mset] x ∈ ∅, Φ x).
