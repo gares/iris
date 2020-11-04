@@ -443,7 +443,7 @@ Proof.
     by rewrite -(exist_intro a).
   - apply exist_elim=> a; apply sep_mono; auto using exist_intro.
 Qed.
-Lemma sep_exist_r {A} (Φ : A → PROP) Q: (∃ a, Φ a) ∗ Q ⊣⊢ ∃ a, Φ a ∗ Q.
+Lemma sep_exist_r {A} (Φ: A → PROP) Q: (∃ a, Φ a) ∗ Q ⊣⊢ ∃ a, Φ a ∗ Q.
 Proof. setoid_rewrite (comm _ _ Q); apply sep_exist_l. Qed.
 Lemma sep_forall_l {A} P (Ψ : A → PROP) : P ∗ (∀ a, Ψ a) ⊢ ∀ a, P ∗ Ψ a.
 Proof. by apply forall_intro=> a; rewrite forall_elim. Qed.
@@ -900,10 +900,13 @@ Proof.
   rewrite persistently_forall_2. auto using persistently_mono, pure_intro.
 Qed.
 
-Global Instance persistently_sep_duplicable P : Duplicable (<pers> P).
+Lemma persistently_sep_dup P : <pers> P ⊣⊢ <pers> P ∗ <pers> P.
 Proof.
-  rewrite /Duplicable -{1}(idemp bi_and (<pers> _)%I).
-  by rewrite -{2}(emp_sep (<pers> _)%I) persistently_and_sep_assoc and_elim_l.
+  apply (anti_symm _).
+  - rewrite -{1}(idemp bi_and (<pers> _)%I).
+    by rewrite -{2}(emp_sep (<pers> _)%I)
+      persistently_and_sep_assoc and_elim_l.
+  - by rewrite persistently_absorbing.
 Qed.
 
 Lemma persistently_and_sep_l_1 P Q : <pers> P ∧ Q ⊢ <pers> P ∗ Q.
@@ -1100,10 +1103,9 @@ Proof.
   by rewrite -persistently_and_intuitionistically_sep_l -affinely_and affinely_and_r.
 Qed.
 
-Global Instance intuitionistically_sep_duplicable P : Duplicable (□ P).
+Lemma intuitionistically_sep_dup P : □ P ⊣⊢ □ P ∗ □ P.
 Proof.
-  by rewrite /Duplicable -persistently_and_intuitionistically_sep_l
-    affinely_and_r idemp.
+  by rewrite -persistently_and_intuitionistically_sep_l affinely_and_r idemp.
 Qed.
 
 Lemma impl_wand_intuitionistically P Q : (<pers> P → Q) ⊣⊢ (□ P -∗ Q).
@@ -1113,11 +1115,12 @@ Proof.
   - apply impl_intro_l. by rewrite persistently_and_intuitionistically_sep_l wand_elim_r.
 Qed.
 
-Lemma intuitionistically_alt_fixpoint P : □ P ⊣⊢ emp ∧ (P ∗ □ P).
+Lemma intuitionistically_alt_fixpoint P :
+  □ P ⊣⊢ emp ∧ (P ∗ □ P).
 Proof.
   apply (anti_symm (⊢)).
   - apply and_intro; first exact: affinely_elim_emp.
-    rewrite {1}(duplicable (□ _)). apply sep_mono; last done.
+    rewrite {1}intuitionistically_sep_dup. apply sep_mono; last done.
     apply intuitionistically_elim.
   - apply and_mono; first done. rewrite /bi_intuitionistically {2}persistently_alt_fixpoint.
     apply sep_mono; first done. apply and_elim_r.
@@ -1362,16 +1365,8 @@ Proof.
   - by rewrite persistent_and_affinely_sep_r_1 affinely_elim.
 Qed.
 
-(* Not an instance, see the bottom of this file *)
-Lemma persistent_duplicable P
-  `{HP : !TCOr (Affine P) (Absorbing P), !Persistent P} :
-  Duplicable P.
-Proof.
-  rewrite /Duplicable. destruct HP.
-  - by rewrite -{1}(intuitionistic_intuitionistically P)
-      intuitionistically_sep_duplicable intuitionistically_elim.
-  - rewrite -(persistent_persistently P). apply: duplicable.
-Qed.
+Lemma persistent_sep_dup P `{!Persistent P, !Absorbing P} : P ⊣⊢ P ∗ P.
+Proof. by rewrite -(persistent_persistently P) -persistently_sep_dup. Qed.
 
 Lemma persistent_entails_l P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ Q ∗ P.
 Proof. intros. rewrite -persistent_and_sep_1; auto. Qed.
@@ -1538,58 +1533,6 @@ Global Instance from_option_persistent {A} P (Ψ : A → PROP) (mx : option A) :
   (∀ x, Persistent (Ψ x)) → Persistent P → Persistent (from_option Ψ P mx).
 Proof. destruct mx; apply _. Qed.
 
-Lemma duplicable_equiv P `{!Duplicable P, !TCOr (Affine P) (Absorbing P)} :
-  P ⊣⊢ P ∗ P.
-Proof. apply (anti_symm _); [done|apply: sep_elim_l]. Qed.
-
-(* Duplicable instances *)
-Global Instance Duplicable_proper : Proper ((⊣⊢) ==> iff) (@Duplicable PROP).
-Proof. solve_proper. Qed.
-
-Global Instance pure_duplicable φ : Duplicable (PROP:=PROP) ⌜φ⌝.
-Proof. rewrite /Duplicable -persistently_pure. apply (duplicable (<pers> _)). Qed.
-Global Instance emp_duplicable : Duplicable (PROP:=PROP) emp.
-Proof. by rewrite /Duplicable left_id. Qed.
-
-Global Instance exist_duplicable {A} (Ψ : A → PROP) :
-  (∀ x, Duplicable (Ψ x)) → Duplicable (∃ x, Ψ x).
-Proof.
-  rewrite /Duplicable. intros Hp.
-  apply exist_elim=> a. rewrite (Hp a). apply sep_mono; apply exist_intro.
-Qed.
-Global Instance or_duplicable P Q :
-  Duplicable P → Duplicable Q → Duplicable (P ∨ Q).
-Proof. intros. rewrite or_alt. apply exist_duplicable. intros [|]; done. Qed.
-
-Global Instance sep_duplicable P Q :
-  Duplicable P → Duplicable Q → Duplicable (P ∗ Q).
-Proof.
-  intros. rewrite /Duplicable assoc (comm _ _ P) assoc -(duplicable P).
-  by rewrite -assoc -(duplicable Q).
-Qed.
-
-Lemma duplicable_and_persistent_l P Q :
-  Persistent P → Absorbing P → Duplicable Q → Duplicable (P ∧ Q).
-Proof.
-  intros. rewrite /Duplicable.
-  rewrite -persistent_and_sep_assoc (comm _ Q) -persistent_and_sep_assoc -duplicable.
-  auto.
-Qed.
-
-Lemma duplicable_and_persistent_r P Q :
-  Persistent Q → Absorbing Q → Duplicable P → Duplicable (P ∧ Q).
-Proof. rewrite comm. apply duplicable_and_persistent_l. Qed.
-
-Global Instance persistently_duplicable P : Duplicable (<pers> P).
-Proof. apply: persistent_duplicable. Qed.
-Global Instance absorbingly_duplicable P : Duplicable P → Duplicable (<absorb> P).
-Proof. rewrite /bi_absorbingly. apply _. Qed.
-Global Instance absorbingly_if_duplicable p P : Duplicable P → Duplicable (<absorb>?p P).
-Proof. destruct p; simpl; apply _. Qed.
-Global Instance from_option_duplicable {A} P (Ψ : A → PROP) (mx : option A) :
-  (∀ x, Duplicable (Ψ x)) → Duplicable P → Duplicable (from_option Ψ P mx).
-Proof. destruct mx; apply _. Qed.
-
 (* For big ops *)
 Global Instance bi_and_monoid : Monoid (@bi_and PROP) :=
   {| monoid_unit := True%I |}.
@@ -1644,15 +1587,5 @@ Global Instance limit_preserving_Persistent {A:ofeT} `{Cofe A} (Φ : A → PROP)
   NonExpansive Φ → LimitPreserving (λ x, Persistent (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 End derived.
-
-(* When declared as an actual instance, [persistent_duplicable] will cause
-failing proof searches to take exponential time, as Coq will try to
-apply it the instance at any node in the proof search tree.
-
-To avoid that, we declare it using a [Hint Immediate], so that it will
-only be used at the leaves of the proof search tree, i.e. when the
-premise of the hint can be derived from just the current context. *)
-(* FIXME: This hint does not work due to the [TCOr] in [persistent_duplicable]. *)
-Hint Immediate persistent_duplicable : typeclass_instances.
 
 End bi.

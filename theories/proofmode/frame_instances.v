@@ -87,7 +87,7 @@ Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
   Frame true R (P1 ∗ P2) Q' | 9.
 Proof.
   rewrite /Frame /MaybeFrame /MakeSep /= => <- <- <-.
-  rewrite {1}(duplicable (□ _)). solve_sep_entails.
+  rewrite {1}(intuitionistically_sep_dup R). solve_sep_entails.
 Qed.
 Global Instance frame_sep_l R P1 P2 Q Q' :
   Frame false R P1 Q → MakeSep Q P2 Q' → Frame false R (P1 ∗ P2) Q' | 9.

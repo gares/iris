@@ -33,8 +33,6 @@ Section definitions.
   Proof. apply _. Qed.
   Global Instance auth_own_core_id a : CoreId a → Persistent (auth_own a).
   Proof. apply _. Qed.
-  Global Instance auth_own_core_id_duplicable a : CoreId a → Duplicable (auth_own a).
-  Proof. apply _. Qed.
 
   Global Instance auth_inv_ne n :
     Proper (pointwise_relation T (dist n) ==>
