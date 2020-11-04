@@ -747,7 +747,13 @@ End cmra_total.
 
 (** * Properties about morphisms *)
 Instance cmra_morphism_id {A : cmraT} : CmraMorphism (@id A).
-Proof. split=>//=; first apply _. intros. by rewrite option_fmap_id. Qed.
+Proof.
+  split => /=.
+  - apply _.
+  - done.
+  - intros. by rewrite option_fmap_id.
+  - done.
+Qed.
 Instance cmra_morphism_proper {A B : cmraT} (f : A → B) `{!CmraMorphism f} :
   Proper ((≡) ==> (≡)) f := ne_proper _.
 Instance cmra_morphism_compose {A B C : cmraT} (f : A → B) (g : B → C) :

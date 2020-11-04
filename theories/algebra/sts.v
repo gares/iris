@@ -321,7 +321,7 @@ Proof.
   - move=>/sts_frag_valid [H _]. apply H, elem_of_up.
   - intros. apply sts_frag_valid; split.
     + by apply closed_up.
-    + set_solver.
+    + set_solver+.
 Qed.
 
 Lemma sts_auth_frag_valid_inv s S T1 T2 :

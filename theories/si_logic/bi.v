@@ -97,11 +97,15 @@ Proof.
   - exact: @later_exist_false.
   - (* ▷ (P ∗ Q) ⊢ ▷ P ∗ ▷ Q *)
     intros P Q.
-    apply and_intro; apply later_mono; [ apply and_elim_l | apply and_elim_r ].
+    apply and_intro; apply later_mono.
+    + apply and_elim_l.
+    + apply and_elim_r.
   - (* ▷ P ∗ ▷ Q ⊢ ▷ (P ∗ Q) *)
     intros P Q.
     trans (siProp_forall (λ b : bool, siProp_later (if b then P else Q))).
-    { apply forall_intro=> -[]; [ apply and_elim_l | apply and_elim_r ]. }
+    { apply forall_intro=> -[].
+      - apply and_elim_l.
+      - apply and_elim_r. }
     etrans; [apply later_forall_2|apply later_mono].
     apply and_intro.
     + refine (forall_elim true).
