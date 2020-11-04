@@ -46,6 +46,7 @@ End nat.
 
 (** ** Natural numbers with [max] as the operation. *)
 Record max_nat := MaxNat { max_nat_car : nat }.
+Add Printing Constructor max_nat.
 
 Canonical Structure max_natO := leibnizO max_nat.
 
@@ -101,6 +102,7 @@ End max_nat.
 
 (** ** Natural numbers with [min] as the operation. *)
 Record min_nat := MinNat { min_nat_car : nat }.
+Add Printing Constructor min_nat.
 
 Canonical Structure min_natO := leibnizO min_nat.
 
