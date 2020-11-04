@@ -70,7 +70,7 @@ Section proof.
     iApply (twp_array_free with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
   Qed.
 
-  Theorem twp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
+  Lemma twp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
     [[{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }]]
       array_copy_to #dst #src #n @ stk; E
@@ -87,7 +87,7 @@ Section proof.
     iIntros "[Hvdst Hvsrc]".
     iApply "HΦ"; by iFrame.
   Qed.
-  Theorem wp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
+  Lemma wp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
     {{{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }}}
       array_copy_to #dst #src #n @ stk; E
@@ -97,7 +97,7 @@ Section proof.
     iApply (twp_array_copy_to with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
   Qed.
 
-  Theorem twp_array_clone stk E l q vl n :
+  Lemma twp_array_clone stk E l q vl n :
     Z.of_nat (length vl) = n →
     (0 < n)%Z →
     [[{ l ↦∗{q} vl }]]
@@ -114,7 +114,7 @@ Section proof.
       wp_pures.
       iApply "HΦ"; by iFrame.
   Qed.
-  Theorem wp_array_clone stk E l q vl n :
+  Lemma wp_array_clone stk E l q vl n :
     Z.of_nat (length vl) = n →
     (0 < n)%Z →
     {{{ l ↦∗{q} vl }}}
