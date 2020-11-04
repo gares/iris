@@ -20,11 +20,8 @@ Definition mnatΣ : gFunctors := #[ GFunctor mnat_authR ].
 Instance subG_mnatΣ Σ : subG mnatΣ Σ → mnatG Σ.
 Proof. solve_inG. Qed.
 
-(** [mnat_own_auth] is the authoritative nat. The definition includes the
-fragment at the same value so that [mnat_get_lb] does not require an
-update modality. *)
 Definition mnat_own_auth `{!mnatG Σ} (γ : gname) (q : Qp) (n : nat) : iProp Σ :=
-  own γ (mnat_auth_auth q n ⋅ mnat_auth_frag n).
+  own γ (mnat_auth_auth q n).
 Definition mnat_own_lb `{!mnatG Σ} (γ : gname) (n : nat): iProp Σ :=
   own γ (mnat_auth_frag n).
 
@@ -40,11 +37,7 @@ Section mnat.
   Proof. apply _. Qed.
 
   Global Instance mnat_own_auth_fractional γ n : Fractional (λ q, mnat_own_auth γ q n).
-  Proof.
-    rewrite /mnat_own_auth. setoid_rewrite own_op.
-    apply fractional_sep; [|apply _].
-    intros p q. rewrite -own_op mnat_auth_auth_frac_op //.
-  Qed.
+  Proof. intros p q. rewrite -own_op mnat_auth_auth_frac_op //. Qed.
 
   Global Instance mnat_own_auth_as_fractional γ q n :
     AsFractional (mnat_own_auth γ q n) (λ q, mnat_own_auth γ q n) q.
@@ -53,15 +46,23 @@ Section mnat.
   Lemma mnat_own_auth_agree γ q1 q2 n1 n2 :
     mnat_own_auth γ q1 n1 -∗ mnat_own_auth γ q2 n2 -∗ ⌜✓ (q1 + q2)%Qp ∧ n1 = n2⌝.
   Proof.
-    iIntros "[H1 _] [H2 _]".
+    iIntros "H1 H2".
     iDestruct (own_valid_2 with "H1 H2") as %?%mnat_auth_frac_op_valid; done.
   Qed.
 
   Lemma mnat_own_auth_exclusive γ n1 n2 :
     mnat_own_auth γ 1 n1 -∗ mnat_own_auth γ 1 n2 -∗ False.
   Proof.
-    iIntros "[H1 _] [H2 _]".
+    iIntros "H1 H2".
     iDestruct (own_valid_2 with "H1 H2") as %[]%mnat_auth_auth_op_valid.
+  Qed.
+
+  Lemma mnat_own_lb_valid γ q n m :
+    mnat_own_auth γ q n -∗ mnat_own_lb γ m -∗ ⌜✓ q ∧ m ≤ n⌝.
+  Proof.
+    iIntros "Hauth Hlb".
+    iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mnat_auth_both_frac_valid.
+    auto.
   Qed.
 
   (** The conclusion of this lemma is persistent; the proofmode will preserve the
@@ -70,44 +71,25 @@ Section mnat.
   "Hauth") as "#Hfrag"]. *)
   Lemma mnat_get_lb γ q n :
     mnat_own_auth γ q n -∗ mnat_own_lb γ n.
-  Proof. iIntros "[_ $]". Qed.
-
-  Lemma mnat_alloc n :
-    ⊢ |==> ∃ γ, mnat_own_auth γ 1 n ∗ mnat_own_lb γ n.
-  Proof.
-    iMod (own_alloc (mnat_auth_auth 1 n ⋅ mnat_auth_frag n)) as (γ) "Hauth".
-    { apply mnat_auth_both_valid; auto. }
-    iModIntro. iExists γ.
-    iDestruct (mnat_get_lb with "Hauth") as "#Hlb".
-    auto.
-  Qed.
-
-  Lemma mnat_own_lb_valid γ q n m :
-    mnat_own_auth γ q n -∗ mnat_own_lb γ m -∗ ⌜✓ q ∧ m ≤ n⌝.
-  Proof.
-    iIntros "[Hauth _] Hlb".
-    iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mnat_auth_both_frac_valid.
-    auto.
-  Qed.
+  Proof. apply own_mono, mnat_auth_included. Qed.
 
   Lemma mnat_own_lb_le γ n n' :
     n' ≤ n →
     mnat_own_lb γ n -∗ mnat_own_lb γ n'.
+  Proof. intros. by apply own_mono, mnat_auth_frag_mono. Qed.
+
+  Lemma mnat_alloc n :
+    ⊢ |==> ∃ γ, mnat_own_auth γ 1 n ∗ mnat_own_lb γ n.
   Proof.
-    intros Hle.
-    rewrite /mnat_own_lb.
-    rewrite (mnat_auth_frag_op_le_l n n') //.
-    iIntros "[$ _]".
+    iMod (own_alloc (mnat_auth_auth 1 n ⋅ mnat_auth_frag n)) as (γ) "[??]".
+    { apply mnat_auth_both_valid; auto. }
+    auto with iFrame.
   Qed.
 
   Lemma mnat_update n' γ n :
     n ≤ n' →
     mnat_own_auth γ 1 n ==∗ mnat_own_auth γ 1 n'.
-  Proof.
-    iIntros (Hlb) "[Hauth _]".
-    iMod (own_update with "Hauth") as "$"; [|done].
-    apply mnat_auth_update; auto.
-  Qed.
+  Proof. intros. by apply own_update, mnat_auth_update. Qed.
 
   Lemma mnat_update_with_lb γ n n' :
     n ≤ n' →
@@ -115,8 +97,7 @@ Section mnat.
   Proof.
     iIntros (Hlb) "Hauth".
     iMod (mnat_update n' with "Hauth") as "Hauth"; auto.
-    iDestruct (mnat_get_lb with "Hauth") as "#Hlb".
-    auto.
+    iDestruct (mnat_get_lb with "Hauth") as "#Hlb"; auto.
   Qed.
 End mnat.
 
