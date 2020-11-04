@@ -50,6 +50,7 @@ iris/algebra/lib/ufrac_auth.v
 iris/algebra/lib/frac_agree.v
 iris/algebra/lib/gmap_view.v
 iris/algebra/lib/mono_nat.v
+iris/algebra/lib/bij_view.v
 iris/si_logic/siprop.v
 iris/si_logic/bi.v
 iris/bi/notation.v
@@ -99,6 +100,7 @@ iris/base_logic/lib/fancy_updates_from_vs.v
 iris/base_logic/lib/proph_map.v
 iris/base_logic/lib/ghost_var.v
 iris/base_logic/lib/mono_nat.v
+iris/base_logic/lib/bij.v
 iris/program_logic/adequacy.v
 iris/program_logic/lifting.v
 iris/program_logic/weakestpre.v
