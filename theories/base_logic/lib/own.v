@@ -346,7 +346,7 @@ Section big_op_instances.
   Lemma big_opL_own_1 {B} γ (f : nat → B → A) (l : list B) :
     own γ ([^op list] k↦x ∈ l, f k x) ⊢ [∗ list] k↦x ∈ l, own γ (f k x).
   Proof. apply (big_opL_commute _). Qed.
-  Lemma big_opM_own_1 `{Countable K, B} γ (g : K → B → A) (m : gmap K B) :
+  Lemma big_opM_own_1 {B} `{Countable K} γ (g : K → B → A) (m : gmap K B) :
     own γ ([^op map] k↦x ∈ m, g k x) ⊢ [∗ map] k↦x ∈ m, own γ (g k x).
   Proof. apply (big_opM_commute _). Qed.
   Lemma big_opS_own_1 `{Countable B} γ (g : B → A) (X : gset B) :
