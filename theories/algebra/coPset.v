@@ -56,7 +56,7 @@ Section coPset.
   Proof.
     intros (Z&->&?)%subseteq_disjoint_union_L.
     rewrite local_update_unital_discrete=> Z' _ /leibniz_equiv_iff->.
-    split; [done|]. rewrite coPset_op_union. set_solver.
+    split; first done. rewrite coPset_op_union. set_solver.
   Qed.
 End coPset.
 

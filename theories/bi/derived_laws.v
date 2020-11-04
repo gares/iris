@@ -1565,19 +1565,19 @@ Qed.
 
 Global Instance bi_persistently_sep_weak_homomorphism `{BiPositive PROP} :
   WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
-Proof. split; try apply _. apply persistently_sep. Qed.
+Proof. split; [by apply _ ..|]. apply persistently_sep. Qed.
 
 Global Instance bi_persistently_sep_homomorphism `{BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
-Proof. split; try apply _. apply persistently_emp. Qed.
+Proof. split; [by apply _ ..|]. apply persistently_emp. Qed.
 
 Global Instance bi_persistently_sep_entails_weak_homomorphism :
   WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_persistently PROP).
-Proof. split; try apply _. intros P Q; by rewrite persistently_sep_2. Qed.
+Proof. split; [by apply _ ..|]. intros P Q; by rewrite persistently_sep_2. Qed.
 
 Global Instance bi_persistently_sep_entails_homomorphism :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_persistently PROP).
-Proof. split; try apply _. simpl. apply persistently_emp_intro. Qed.
+Proof. split; [by apply _ ..|]. simpl. apply persistently_emp_intro. Qed.
 
 (* Limits *)
 Lemma limit_preserving_entails {A : ofeT} `{Cofe A} (Φ Ψ : A → PROP) :

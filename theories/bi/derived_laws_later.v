@@ -118,7 +118,7 @@ Proof.
 Qed.
 
 Lemma löb_alt_strong : BiLöb PROP ↔ ∀ P, (▷ P → P) ⊢ P.
-Proof. split; intros HLöb P; [apply löb|]. by intros ->%entails_impl_True. Qed.
+Proof. split; intros HLöb P; [by apply löb|]. by intros ->%entails_impl_True. Qed.
 
 (** Proof following https://en.wikipedia.org/wiki/L%C3%B6b's_theorem#Proof_of_L%C3%B6b's_theorem.
 Their [Ψ] is called [Q] in our proof. *)

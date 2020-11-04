@@ -1425,7 +1425,7 @@ Section option.
 
   Instance option_unit : Unit (option A) := None.
   Lemma option_ucmra_mixin : UcmraMixin optionR.
-  Proof. split; [ done | by intros [] | done ]. Qed.
+  Proof. split; [done|  |done]. by intros []. Qed.
   Canonical Structure optionUR := UcmraT (option A) option_ucmra_mixin.
 
   (** Misc *)
@@ -1456,13 +1456,13 @@ Section option.
 
   Lemma exclusiveN_Some_l n a `{!Exclusive a} mb :
     ✓{n} (Some a ⋅ mb) → mb = None.
-  Proof. destruct mb; [|done]. move=> /(exclusiveN_l _ a) []. Qed.
+  Proof. destruct mb; last done. move=> /(exclusiveN_l _ a) []. Qed.
   Lemma exclusiveN_Some_r n a `{!Exclusive a} mb :
     ✓{n} (mb ⋅ Some a) → mb = None.
   Proof. rewrite comm. by apply exclusiveN_Some_l. Qed.
 
   Lemma exclusive_Some_l a `{!Exclusive a} mb : ✓ (Some a ⋅ mb) → mb = None.
-  Proof. destruct mb; [|done]. move=> /(exclusive_l a) []. Qed.
+  Proof. destruct mb; last done. move=> /(exclusive_l a) []. Qed.
   Lemma exclusive_Some_r a `{!Exclusive a} mb : ✓ (mb ⋅ Some a) → mb = None.
   Proof. rewrite comm. by apply exclusive_Some_l. Qed.
 
@@ -1474,9 +1474,9 @@ Section option.
   Proof. rewrite Some_included; eauto. Qed.
 
   Lemma Some_includedN_total `{CmraTotal A} n a b : Some a ≼{n} Some b ↔ a ≼{n} b.
-  Proof. rewrite Some_includedN. split; [|eauto]. by intros [->|?]. Qed.
+  Proof. rewrite Some_includedN. split; [|by eauto]. by intros [->|?]. Qed.
   Lemma Some_included_total `{CmraTotal A} a b : Some a ≼ Some b ↔ a ≼ b.
-  Proof. rewrite Some_included. split; [|eauto]. by intros [->|?]. Qed.
+  Proof. rewrite Some_included. split; [|by eauto]. by intros [->|?]. Qed.
 
   Lemma Some_includedN_exclusive n a `{!Exclusive a} b :
     Some a ≼{n} Some b → ✓{n} b → a ≡{n}≡ b.

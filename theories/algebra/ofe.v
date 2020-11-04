@@ -281,7 +281,9 @@ Section limit_preserving.
     LimitPreserving (λ x, P1 x ∧ P2 x).
   Proof.
     intros Hlim1 Hlim2 c Hc.
-    split; [ apply Hlim1, Hc | apply Hlim2, Hc ].
+    split.
+    - apply Hlim1, Hc.
+    - apply Hlim2, Hc.
   Qed.
 
   Lemma limit_preserving_impl (P1 P2 : A → Prop) :

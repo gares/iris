@@ -520,14 +520,20 @@ Qed.
 Lemma monPred_objectively_and P Q : <obj> (P ∧ Q) ⊣⊢ <obj> P ∧ <obj> Q.
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=.
-  - apply bi.and_intro; do 2 f_equiv; [apply bi.and_elim_l | apply bi.and_elim_r ].
+  - apply bi.and_intro; do 2 f_equiv.
+    + apply bi.and_elim_l.
+    + apply bi.and_elim_r.
   - apply bi.forall_intro=>?. by rewrite !bi.forall_elim.
 Qed.
 Lemma monPred_objectively_exist {A} (Φ : A → monPred) :
   (∃ x, <obj> (Φ x)) ⊢ <obj> (∃ x, (Φ x)).
 Proof. apply bi.exist_elim=>?. f_equiv. apply bi.exist_intro. Qed.
 Lemma monPred_objectively_or P Q : <obj> P ∨ <obj> Q ⊢ <obj> (P ∨ Q).
-Proof. apply bi.or_elim; f_equiv; [apply bi.or_intro_l | apply bi.or_intro_r]. Qed.
+Proof.
+  apply bi.or_elim; f_equiv.
+  - apply bi.or_intro_l.
+  - apply bi.or_intro_r.
+Qed.
 
 Lemma monPred_objectively_sep_2 P Q : <obj> P ∗ <obj> Q ⊢ <obj> (P ∗ Q).
 Proof. unseal. split=>i /=. apply bi.forall_intro=>?. by rewrite !bi.forall_elim. Qed.
@@ -554,7 +560,11 @@ Lemma monPred_subjectively_forall {A} (Φ : A → monPred) :
   (<subj> (∀ x, Φ x)) ⊢ ∀ x, <subj> (Φ x).
 Proof. apply bi.forall_intro=>?. f_equiv. apply bi.forall_elim. Qed.
 Lemma monPred_subjectively_and P Q : <subj> (P ∧ Q) ⊢ <subj> P ∧ <subj> Q.
-Proof. apply bi.and_intro; f_equiv; [apply bi.and_elim_l | apply bi.and_elim_r]. Qed.
+Proof.
+  apply bi.and_intro; f_equiv.
+  - apply bi.and_elim_l.
+  - apply bi.and_elim_r.
+Qed.
 Lemma monPred_subjectively_exist {A} (Φ : A → monPred) : <subj> (∃ x, Φ x) ⊣⊢ ∃ x, <subj> (Φ x).
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=;
@@ -564,7 +574,9 @@ Lemma monPred_subjectively_or P Q : <subj> (P ∨ Q) ⊣⊢ <subj> P ∨ <subj> 
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=.
   - apply bi.exist_elim=>?. by rewrite -!bi.exist_intro.
-  - apply bi.or_elim; do 2 f_equiv; [apply bi.or_intro_l | apply bi.or_intro_r].
+  - apply bi.or_elim; do 2 f_equiv.
+    + apply bi.or_intro_l.
+    + apply bi.or_intro_r.
 Qed.
 
 Lemma monPred_subjectively_sep P Q : <subj> (P ∗ Q) ⊢ <subj> P ∗ <subj> Q.
