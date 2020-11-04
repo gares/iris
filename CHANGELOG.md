@@ -54,6 +54,11 @@ With this release, we dropped support for Coq 8.9.
 * Add `mnat_auth`, a wrapper for `auth max_nat`. The result is an authoritative
   `nat` where a fragment is a lower bound whose ownership is persistent.
 
+**Changes in `bi`:**
+
+* Add big op lemmas `big_op{L,L2,M,M2,S}_intuitionistically_forall` and
+  `big_sepL2_forall`, `big_sepMS_forall`, `big_sepMS_impl`, and `big_sepMS_dup`.
+
 **Changes in `proofmode`:**
 
 * The proofmode now preserves user-supplied names for existentials when using
@@ -79,11 +84,6 @@ With this release, we dropped support for Coq 8.9.
 * Remove the laws `pure_forall_2 : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝` from the BI
   interface and factor it into a type class `BiPureForall`.
 * Add notation `¬ P` for `P → False` to `bi_scope`.
-
-**Changes in `bi`:**
-
-* Add big op lemmas `big_op{L,L2,M,M2,S}_intuitionistically_forall` and
-  `big_sepL2_forall`, `big_sepMS_forall`, `big_sepMS_impl`, and `big_sepMS_dup`.
 
 **Changes in `base_logic`:**
 
