@@ -321,7 +321,9 @@ Section gmap.
   Qed.
 
   Lemma big_opM_unit m : ([^o map] k↦y ∈ m, monoid_unit) ≡ (monoid_unit : M).
-  Proof. by induction m using map_ind; rewrite /= ?big_opM_insert ?left_id // big_opM_eq. Qed.
+  Proof.
+    by induction m using map_ind; rewrite /= ?big_opM_insert ?left_id // big_opM_eq.
+  Qed.
 
   Lemma big_opM_fmap {B} (h : A → B) (f : K → B → M) m :
     ([^o map] k↦y ∈ h <$> m, f k y) ≡ ([^o map] k↦y ∈ m, f k (h y)).
@@ -331,7 +333,8 @@ Section gmap.
   Qed.
 
   Lemma big_opM_omap {B} (h : A → option B) (f : K → B → M) m :
-    ([^o map] k↦y ∈ omap h m, f k y) ≡ [^o map] k↦y ∈ m, from_option (f k) monoid_unit (h y).
+    ([^o map] k↦y ∈ omap h m, f k y)
+    ≡ [^o map] k↦y ∈ m, from_option (f k) monoid_unit (h y).
   Proof.
     revert f. induction m as [|i x m Hmi IH] using map_ind=> f.
     { by rewrite omap_empty !big_opM_empty. }
@@ -372,7 +375,8 @@ Section gmap.
 
   Lemma big_opM_union f m1 m2 :
     m1 ##ₘ m2 →
-    ([^o map] k↦y ∈ m1 ∪ m2, f k y) ≡ ([^o map] k↦y ∈ m1, f k y) `o` ([^o map] k↦y ∈ m2, f k y).
+    ([^o map] k↦y ∈ m1 ∪ m2, f k y)
+    ≡ ([^o map] k↦y ∈ m1, f k y) `o` ([^o map] k↦y ∈ m2, f k y).
   Proof.
     intros. induction m1 as [|i x m ? IH] using map_ind.
     { by rewrite big_opM_empty !left_id. }
@@ -385,7 +389,9 @@ Section gmap.
   Lemma big_opM_op f g m :
     ([^o map] k↦x ∈ m, f k x `o` g k x)
     ≡ ([^o map] k↦x ∈ m, f k x) `o` ([^o map] k↦x ∈ m, g k x).
-  Proof. rewrite big_opM_eq /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??]. Qed.
+  Proof.
+    rewrite big_opM_eq /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??].
+  Qed.
 End gmap.
 
 
@@ -479,7 +485,8 @@ End gset.
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
   ([^o map] k↦_ ∈ m, f k) ≡ ([^o set] k ∈ dom _ m, f k).
 Proof.
-  induction m as [|i x ?? IH] using map_ind; [by rewrite big_opM_eq big_opS_eq dom_empty_L|].
+  induction m as [|i x ?? IH] using map_ind.
+  { by rewrite big_opM_eq big_opS_eq dom_empty_L. }
   by rewrite dom_insert_L big_opM_insert // IH big_opS_insert ?not_elem_of_dom.
 Qed.
 
