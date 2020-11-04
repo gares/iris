@@ -594,6 +594,15 @@ Proof.
   intros ??. rewrite !lookup_included=> Hm i.
   rewrite !lookup_fmap. by apply option_fmap_mono.
 Qed.
+
+Lemma big_opM_singletons (m : gmap K A) :
+  ([^op map] k ↦ x ∈ m, {[ k := x ]}) ≡ m.
+Proof.
+  induction m as [|k x m Hk IH] using map_ind.
+  - rewrite big_opM_empty. done.
+  - rewrite big_opM_insert // IH insert_singleton_op //.
+Qed.
+
 End properties.
 
 Section unital_properties.
