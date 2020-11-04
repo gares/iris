@@ -1,5 +1,4 @@
 From iris.bi Require Export bi.
-From iris.bi Require Import tactics.
 From iris.proofmode Require Import base.
 From iris.algebra Require Export base.
 From iris Require Import options.
@@ -510,12 +509,10 @@ Proof.
   rewrite /envs_lookup !of_envs_eq=>Hwf ?.
   rewrite [⌜envs_wf Δ⌝%I]pure_True // left_id.
   destruct Δ as [Γp Γs], (Γp !! i) eqn:?; simplify_eq/=.
-  - rewrite (env_lookup_perm Γp) //= intuitionistically_and
-      and_sep_intuitionistically and_elim_r.
-    cancel [□ P]%I. solve_sep_entails.
+  - by rewrite (env_lookup_perm Γp) //= intuitionistically_and
+      and_sep_intuitionistically and_elim_r assoc.
   - destruct (Γs !! i) eqn:?; simplify_eq/=.
-    rewrite (env_lookup_perm Γs) //= and_elim_r.
-    cancel [P]. solve_sep_entails.
+    by rewrite (env_lookup_perm Γs) //= and_elim_r !assoc (comm _ P).
 Qed.
 
 Lemma envs_lookup_split Δ i p P :
@@ -581,7 +578,7 @@ Proof.
   - apply and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using Esnoc_wf.
       intros j; destruct (ident_beq_reflect j i); naive_solver.
-    + solve_sep_entails.
+    + by rewrite !assoc (comm _ P).
 Qed.
 
 Lemma envs_app_sound Δ Δ' p Γ :
@@ -598,14 +595,14 @@ Proof.
       naive_solver eauto using env_app_fresh.
     + rewrite (env_app_perm _ _ Γp') //.
       rewrite big_opL_app intuitionistically_and and_sep_intuitionistically.
-      solve_sep_entails.
+      by rewrite assoc.
   - destruct (env_app Γ Γp) eqn:Happ,
       (env_app Γ Γs) as [Γs'|] eqn:?; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using env_app_wf.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       naive_solver eauto using env_app_fresh.
-    + rewrite (env_app_perm _ _ Γs') // big_opL_app. solve_sep_entails.
+    + by rewrite (env_app_perm _ _ Γs') // big_opL_app !assoc (comm _ ([∗] Γ)%I).
 Qed.
 
 Lemma envs_app_singleton_sound Δ Δ' p j Q :
@@ -626,14 +623,15 @@ Proof.
       destruct (decide (i = j)); try naive_solver eauto using env_replace_fresh.
     + rewrite (env_replace_perm _ _ Γp') //.
       rewrite big_opL_app intuitionistically_and and_sep_intuitionistically.
-      solve_sep_entails.
+      by rewrite assoc.
   - destruct (env_app Γ Γp) eqn:Happ,
       (env_replace i Γ Γs) as [Γs'|] eqn:?; simplify_eq/=.
     apply wand_intro_l, and_intro; [apply pure_intro|].
     + destruct Hwf; constructor; simpl; eauto using env_replace_wf.
       intros j. apply (env_app_disjoint _ _ _ j) in Happ.
       destruct (decide (i = j)); try naive_solver eauto using env_replace_fresh.
-    + rewrite (env_replace_perm _ _ Γs') // big_opL_app. solve_sep_entails.
+    + rewrite (env_replace_perm _ _ Γs') // big_opL_app.
+      by rewrite !assoc (comm _ ([∗] Γ)%I).
 Qed.
 
 Lemma envs_simple_replace_singleton_sound' Δ Δ' i p j Q :
@@ -769,7 +767,7 @@ Proof.
   destruct (envs_split_go _ _) as [[Δ1' Δ2']|] eqn:HΔ; [|done].
   apply envs_split_go_sound in HΔ as ->; last first.
   { intros j P. by rewrite envs_lookup_envs_clear_spatial=> ->. }
-  destruct d; simplify_eq/=; solve_sep_entails.
+  destruct d; simplify_eq/=; [|done]. by rewrite comm.
 Qed.
 
 Lemma env_to_prop_sound Γ : env_to_prop Γ ⊣⊢ [∗] Γ.
