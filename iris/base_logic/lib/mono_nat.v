@@ -102,17 +102,13 @@ Section mono_nat.
     auto with iFrame.
   Qed.
 
-  Lemma mono_nat_own_update n' γ n :
-    n ≤ n' →
-    mono_nat_auth_own γ 1 n ==∗ mono_nat_auth_own γ 1 n'.
-  Proof. unseal. intros. by apply own_update, mono_nat_update. Qed.
-
-  Lemma mono_nat_own_update_with_lb γ n n' :
+  Lemma mono_nat_own_update γ n n' :
     n ≤ n' →
     mono_nat_auth_own γ 1 n ==∗ mono_nat_auth_own γ 1 n' ∗ mono_nat_lb_own γ n'.
   Proof.
-    iIntros (Hlb) "Hauth".
-    iMod (mono_nat_own_update n' with "Hauth") as "Hauth"; auto.
-    iDestruct (mono_nat_lb_own_get with "Hauth") as "#Hlb"; auto.
+    iIntros (?) "Hauth".
+    iAssert (mono_nat_auth_own γ 1 n') with "[> Hauth]" as "Hauth".
+    { unseal. iApply (own_update with "Hauth"). by apply mono_nat_update. }
+    iModIntro. iSplit; [done|]. by iApply mono_nat_lb_own_get.
   Qed.
 End mono_nat.
