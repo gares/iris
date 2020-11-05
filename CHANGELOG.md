@@ -63,6 +63,8 @@ With this release, we dropped support for Coq 8.9.
   `big_sepL2_forall`, `big_sepMS_forall`, `big_sepMS_impl`, and `big_sepMS_dup`.
 * Remove `bi.tactics` with tactics that predate the proofmode (and that have not
   been working properly for quite some time).
+* Strengthen `persistent_sep_dup` to support propositions that are persistent
+  and either affine or absorbing.
 
 **Changes in `proofmode`:**
 

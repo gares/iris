@@ -729,13 +729,13 @@ Proof.
   rewrite -(absorbing emp) absorbingly_sep_l left_id //.
 Qed.
 
-Lemma sep_elim_l P Q `{H : TCOr (Affine Q) (Absorbing P)} : P ∗ Q ⊢ P.
+Lemma sep_elim_l P Q `{HQP : TCOr (Affine Q) (Absorbing P)} : P ∗ Q ⊢ P.
 Proof.
-  destruct H.
+  destruct HQP.
   - by rewrite (affine Q) right_id.
   - by rewrite (True_intro Q) comm.
 Qed.
-Lemma sep_elim_r P Q `{H : TCOr (Affine P) (Absorbing Q)} : P ∗ Q ⊢ Q.
+Lemma sep_elim_r P Q `{TCOr (Affine P) (Absorbing Q)} : P ∗ Q ⊢ Q.
 Proof. by rewrite comm sep_elim_l. Qed.
 
 Lemma sep_and P Q :
@@ -1365,8 +1365,16 @@ Proof.
   - by rewrite persistent_and_affinely_sep_r_1 affinely_elim.
 Qed.
 
-Lemma persistent_sep_dup P `{!Persistent P, !Absorbing P} : P ⊣⊢ P ∗ P.
-Proof. by rewrite -(persistent_persistently P) -persistently_sep_dup. Qed.
+Lemma persistent_sep_dup P
+    `{HP : !TCOr (Affine P) (Absorbing P), !Persistent P} :
+  P ⊣⊢ P ∗ P.
+Proof.
+  destruct HP; last by rewrite -(persistent_persistently P) -persistently_sep_dup.
+  apply (anti_symm (⊢)).
+  - by rewrite -{1}(intuitionistic_intuitionistically P)
+    intuitionistically_sep_dup intuitionistically_elim.
+  - by rewrite {1}(affine P) left_id.
+Qed.
 
 Lemma persistent_entails_l P Q `{!Persistent Q} : (P ⊢ Q) → P ⊢ Q ∗ P.
 Proof. intros. rewrite -persistent_and_sep_1; auto. Qed.

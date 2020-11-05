@@ -67,7 +67,7 @@ Section fractional.
   (** Fractional and logical connectives *)
   Global Instance persistent_fractional P :
     Persistent P → Absorbing P → Fractional (λ _, P).
-  Proof. intros ?? q q'. by apply bi.persistent_sep_dup. Qed.
+  Proof. intros ?? q q'. apply: bi.persistent_sep_dup. Qed.
 
   Global Instance fractional_sep Φ Ψ :
     Fractional Φ → Fractional Ψ → Fractional (λ q, Φ q ∗ Ψ q)%I.
