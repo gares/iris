@@ -54,7 +54,6 @@ theories/bi/big_op.v
 theories/bi/updates.v
 theories/bi/ascii.v
 theories/bi/bi.v
-theories/bi/tactics.v
 theories/bi/monpred.v
 theories/bi/embedding.v
 theories/bi/weakestpre.v

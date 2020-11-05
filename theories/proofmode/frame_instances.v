@@ -1,5 +1,5 @@
 From stdpp Require Import nat_cancel.
-From iris.bi Require Import bi tactics telescopes.
+From iris.bi Require Import bi telescopes.
 From iris.proofmode Require Import classes.
 From iris Require Import options.
 Import bi.
@@ -87,7 +87,8 @@ Global Instance frame_sep_persistent_l progress R P1 P2 Q1 Q2 Q' :
   Frame true R (P1 ∗ P2) Q' | 9.
 Proof.
   rewrite /Frame /MaybeFrame /MakeSep /= => <- <- <-.
-  rewrite {1}(intuitionistically_sep_dup R). solve_sep_entails.
+  rewrite {1}(intuitionistically_sep_dup R).
+  by rewrite !assoc -(assoc _ _ _ Q1) -(comm _ Q1) assoc -(comm _ Q1).
 Qed.
 Global Instance frame_sep_l R P1 P2 Q Q' :
   Frame false R P1 Q → MakeSep Q P2 Q' → Frame false R (P1 ∗ P2) Q' | 9.
