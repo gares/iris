@@ -15,7 +15,7 @@ From iris.algebra Require Export view gset.
 From iris.algebra Require Import updates.
 From iris.prelude Require Import options.
 
-Section partial_bijection.
+Section gset_bijective.
   Context `{Countable A, Countable B}.
   Implicit Types (a : A) (b : B).
 
@@ -56,139 +56,138 @@ Section partial_bijection.
     L' ⊆ L →
     gset_bijective L'.
   Proof. rewrite /gset_bijective. set_solver. Qed.
+End gset_bijective.
 
-End partial_bijection.
-
-Section bij.
+Section gset_bij_view_rel.
   Context `{Countable A, Countable B}.
   Implicit Types (bijL : gset (A * B)) (L : gsetUR (A * B)).
 
-  Local Definition bij_view_rel_raw (n : nat) bijL L: Prop :=
+  Local Definition gset_bij_view_rel_raw (n : nat) bijL L: Prop :=
     L ⊆ bijL ∧ gset_bijective bijL.
 
-  Local Lemma bij_view_rel_raw_mono n1 n2 bijL1 bijL2 L1 L2 :
-    bij_view_rel_raw n1 bijL1 L1 →
+  Local Lemma gset_bij_view_rel_raw_mono n1 n2 bijL1 bijL2 L1 L2 :
+    gset_bij_view_rel_raw n1 bijL1 L1 →
     bijL1 ≡{n2}≡ bijL2 →
     L2 ≼{n2} L1 →
     n2 ≤ n1 →
-    bij_view_rel_raw n2 bijL2 L2.
+    gset_bij_view_rel_raw n2 bijL2 L2.
   Proof.
     intros [??] <-%(discrete_iff _ _)%leibniz_equiv ?%gset_included _.
     split; [|done]. by trans L1.
   Qed.
 
-  Local Lemma bij_view_rel_raw_valid n bijL L :
-    bij_view_rel_raw n bijL L → ✓{n}L.
+  Local Lemma gset_bij_view_rel_raw_valid n bijL L :
+    gset_bij_view_rel_raw n bijL L → ✓{n}L.
   Proof. by intros _. Qed.
 
-  Local Lemma bij_view_rel_raw_unit n :
-    ∃ bijL, bij_view_rel_raw n bijL ε.
+  Local Lemma gset_bij_view_rel_raw_unit n :
+    ∃ bijL, gset_bij_view_rel_raw n bijL ε.
   Proof. exists ∅. split; eauto using gset_bijective_empty. Qed.
 
-  Canonical Structure bij_view_rel : view_rel (gsetO (A * B)) (gsetUR (A * B)) :=
-    ViewRel bij_view_rel_raw
-            bij_view_rel_raw_mono bij_view_rel_raw_valid bij_view_rel_raw_unit.
+  Canonical Structure gset_bij_view_rel : view_rel (gsetO (A * B)) (gsetUR (A * B)) :=
+    ViewRel gset_bij_view_rel_raw gset_bij_view_rel_raw_mono
+            gset_bij_view_rel_raw_valid gset_bij_view_rel_raw_unit.
 
-  Global Instance bij_view_rel_discrete : ViewRelDiscrete bij_view_rel.
+  Global Instance gset_bij_view_rel_discrete : ViewRelDiscrete gset_bij_view_rel.
   Proof. intros n bijL L [??]. split; auto. Qed.
 
-  Local Lemma bij_view_rel_iff n bijL L :
-    bij_view_rel n bijL L ↔ L ⊆ bijL ∧ gset_bijective bijL.
+  Local Lemma gset_bij_view_rel_iff n bijL L :
+    gset_bij_view_rel n bijL L ↔ L ⊆ bijL ∧ gset_bijective bijL.
   Proof. done. Qed.
-End bij.
+End gset_bij_view_rel.
 
-Definition bij_view A B `{Countable A, Countable B} :=
-  view (bij_view_rel_raw (A:=A) (B:=B)).
-Definition bij_viewO A B `{Countable A, Countable B} : ofeT :=
-  viewO (bij_view_rel (A:=A) (B:=B)).
-Definition bij_viewR A B `{Countable A, Countable B} : cmraT :=
-  viewR (bij_view_rel (A:=A) (B:=B)).
-Definition bij_viewUR A B `{Countable A, Countable B} : ucmraT :=
-  viewUR (bij_view_rel (A:=A) (B:=B)).
+Definition gset_bij A B `{Countable A, Countable B} :=
+  view (gset_bij_view_rel_raw (A:=A) (B:=B)).
+Definition gset_bijO A B `{Countable A, Countable B} : ofeT :=
+  viewO (gset_bij_view_rel (A:=A) (B:=B)).
+Definition gset_bijR A B `{Countable A, Countable B} : cmraT :=
+  viewR (gset_bij_view_rel (A:=A) (B:=B)).
+Definition gset_bijUR A B `{Countable A, Countable B} : ucmraT :=
+  viewUR (gset_bij_view_rel (A:=A) (B:=B)).
 
-Definition bij_auth `{Countable A, Countable B}
-  (q : Qp) (L : gset (A * B)) : bij_view A B := ●V{q} L ⋅ ◯V L.
-Definition bij_elem `{Countable A, Countable B}
-  (a : A) (b : B) : bij_view A B := ◯V {[a, b]}.
+Definition gset_bij_auth `{Countable A, Countable B}
+  (q : Qp) (L : gset (A * B)) : gset_bij A B := ●V{q} L ⋅ ◯V L.
+Definition gset_bij_elem `{Countable A, Countable B}
+  (a : A) (b : B) : gset_bij A B := ◯V {[a, b]}.
 
-Section bij.
+Section gset_bij.
   Context `{Countable A, Countable B}.
   Implicit Types (a:A) (b:B).
   Implicit Types (L : gset (A*B)).
 
-  Global Instance bij_elem_core_id a b : CoreId (bij_elem a b).
+  Global Instance gset_bij_elem_core_id a b : CoreId (gset_bij_elem a b).
   Proof. apply _. Qed.
 
-  Lemma bij_auth_frac_op q1 q2 L :
-    bij_auth q1 L ⋅ bij_auth q2 L ≡ bij_auth (q1 + q2) L.
+  Lemma gset_bij_auth_frac_op q1 q2 L :
+    gset_bij_auth q1 L ⋅ gset_bij_auth q2 L ≡ gset_bij_auth (q1 + q2) L.
   Proof.
-    rewrite /bij_auth view_auth_frac_op.
+    rewrite /gset_bij_auth view_auth_frac_op.
     rewrite (comm _ (●V{q2} _)) -!assoc (assoc _ (◯V _)).
     by rewrite -core_id_dup (comm _ (◯V _)).
   Qed.
 
-  Lemma bij_auth_frac_valid q L : ✓ bij_auth q L ↔ ✓ q ∧ gset_bijective L.
+  Lemma gset_bij_auth_frac_valid q L : ✓ gset_bij_auth q L ↔ ✓ q ∧ gset_bijective L.
   Proof.
-    rewrite /bij_auth view_both_frac_valid.
-    setoid_rewrite bij_view_rel_iff.
+    rewrite /gset_bij_auth view_both_frac_valid.
+    setoid_rewrite gset_bij_view_rel_iff.
     naive_solver eauto using O.
   Qed.
-  Lemma bij_auth_valid L : ✓ bij_auth 1 L ↔ gset_bijective L.
-  Proof. rewrite bij_auth_frac_valid. naive_solver by done. Qed.
+  Lemma gset_bij_auth_valid L : ✓ gset_bij_auth 1 L ↔ gset_bijective L.
+  Proof. rewrite gset_bij_auth_frac_valid. naive_solver by done. Qed.
 
-  Lemma bij_auth_empty_frac_valid q : ✓ bij_auth (A:=A) (B:=B) q ∅ ↔ ✓ q.
+  Lemma gset_bij_auth_empty_frac_valid q : ✓ gset_bij_auth (A:=A) (B:=B) q ∅ ↔ ✓ q.
   Proof.
-    rewrite bij_auth_frac_valid. naive_solver eauto using gset_bijective_empty.
+    rewrite gset_bij_auth_frac_valid. naive_solver eauto using gset_bijective_empty.
   Qed.
-  Lemma bij_auth_empty_valid : ✓ bij_auth (A:=A) (B:=B) 1 ∅.
-  Proof. by apply bij_auth_empty_frac_valid. Qed.
+  Lemma gset_bij_auth_empty_valid : ✓ gset_bij_auth (A:=A) (B:=B) 1 ∅.
+  Proof. by apply gset_bij_auth_empty_frac_valid. Qed.
 
-  Lemma bij_auth_frac_op_valid q1 q2 L1 L2 :
-    ✓ (bij_auth q1 L1 ⋅ bij_auth q2 L2)
+  Lemma gset_bij_auth_frac_op_valid q1 q2 L1 L2 :
+    ✓ (gset_bij_auth q1 L1 ⋅ gset_bij_auth q2 L2)
     ↔ ✓ (q1 + q2)%Qp ∧ L1 = L2 ∧ gset_bijective L1.
   Proof.
-    rewrite /bij_auth (comm _ (●V{q2} _)) -!assoc (assoc _ (◯V _)).
+    rewrite /gset_bij_auth (comm _ (●V{q2} _)) -!assoc (assoc _ (◯V _)).
     rewrite -view_frag_op (comm _ (◯V _)) assoc. split.
     - move=> /cmra_valid_op_l /view_auth_frac_op_valid.
-      setoid_rewrite bij_view_rel_iff. naive_solver eauto using 0.
+      setoid_rewrite gset_bij_view_rel_iff. naive_solver eauto using 0.
     - intros (?&->&?). rewrite -core_id_dup -view_auth_frac_op.
-      apply view_both_frac_valid. setoid_rewrite bij_view_rel_iff. naive_solver.
+      apply view_both_frac_valid. setoid_rewrite gset_bij_view_rel_iff. naive_solver.
   Qed.
-  Lemma bij_auth_op_valid L1 L2 :
-    ✓ (bij_auth 1 L1 ⋅ bij_auth 1 L2) ↔ False.
-  Proof. rewrite bij_auth_frac_op_valid. naive_solver. Qed.
+  Lemma gset_bij_auth_op_valid L1 L2 :
+    ✓ (gset_bij_auth 1 L1 ⋅ gset_bij_auth 1 L2) ↔ False.
+  Proof. rewrite gset_bij_auth_frac_op_valid. naive_solver. Qed.
 
   Lemma bij_both_frac_valid q L a b :
-    ✓ (bij_auth q L ⋅ bij_elem a b) ↔ ✓ q ∧ gset_bijective L ∧ (a, b) ∈ L.
+    ✓ (gset_bij_auth q L ⋅ gset_bij_elem a b) ↔ ✓ q ∧ gset_bijective L ∧ (a, b) ∈ L.
   Proof.
-    rewrite /bij_auth /bij_elem -assoc -view_frag_op view_both_frac_valid.
-    setoid_rewrite bij_view_rel_iff.
+    rewrite /gset_bij_auth /gset_bij_elem -assoc -view_frag_op view_both_frac_valid.
+    setoid_rewrite gset_bij_view_rel_iff.
     set_solver by eauto using O.
   Qed.
   Lemma bij_both_valid L a b :
-    ✓ (bij_auth 1 L ⋅ bij_elem a b) ↔ gset_bijective L ∧ (a, b) ∈ L.
+    ✓ (gset_bij_auth 1 L ⋅ gset_bij_elem a b) ↔ gset_bijective L ∧ (a, b) ∈ L.
   Proof. rewrite bij_both_frac_valid. naive_solver by done. Qed.
 
-  Lemma bij_elem_agree a1 b1 a2 b2 :
-    ✓ (bij_elem a1 b1 ⋅ bij_elem a2 b2) → (a1 = a2 ↔ b1 = b2).
+  Lemma gset_bij_elem_agree a1 b1 a2 b2 :
+    ✓ (gset_bij_elem a1 b1 ⋅ gset_bij_elem a2 b2) → (a1 = a2 ↔ b1 = b2).
   Proof.
-    rewrite /bij_elem -view_frag_op gset_op_union view_frag_valid.
-    setoid_rewrite bij_view_rel_iff. intros. apply gset_bijective_pair.
+    rewrite /gset_bij_elem -view_frag_op gset_op_union view_frag_valid.
+    setoid_rewrite gset_bij_view_rel_iff. intros. apply gset_bijective_pair.
     naive_solver eauto using subseteq_gset_bijective, O.
   Qed.
 
-  Lemma bij_view_included q L a b : (a,b) ∈ L → bij_elem a b ≼ bij_auth q L.
+  Lemma bij_view_included q L a b : (a,b) ∈ L → gset_bij_elem a b ≼ gset_bij_auth q L.
   Proof.
     intros. etrans; [|apply cmra_included_r].
     apply view_frag_mono, gset_included. set_solver.
   Qed.
 
-  Lemma bij_auth_extend L a b :
+  Lemma gset_bij_auth_extend L a b :
     (∀ b', (a, b') ∉ L) → (∀ a', (a', b) ∉ L) →
-    bij_auth 1 L ~~> bij_auth 1 ({[(a, b)]} ∪ L).
+    gset_bij_auth 1 L ~~> gset_bij_auth 1 ({[(a, b)]} ∪ L).
   Proof.
     intros. apply view_update=> n bijL.
-    rewrite !bij_view_rel_iff gset_op_union.
+    rewrite !gset_bij_view_rel_iff gset_op_union.
     set_solver by eauto using gset_bijective_extend.
   Qed.
-End bij.
+End gset_bij.
