@@ -58,7 +58,8 @@ With this release, we dropped support for Coq 8.9.
 
 * Add big op lemmas `big_op{L,L2,M,M2,S}_intuitionistically_forall` and
   `big_sepL2_forall`, `big_sepMS_forall`, `big_sepMS_impl`, and `big_sepMS_dup`.
-* Remove `bi.tactics` with tactics that predate the proofmode.
+* Remove `bi.tactics` with tactics that predate the proofmode (and that have not
+  been working properly for quite some time).
 
 **Changes in `proofmode`:**
 
