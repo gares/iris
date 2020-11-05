@@ -44,8 +44,8 @@ Section proofs.
     AsFractional (cinv_own γ q) (cinv_own γ) q.
   Proof. split. done. apply _. Qed.
 
-  Lemma cinv_own_valid γ q1 q2 : cinv_own γ q1 -∗ cinv_own γ q2 -∗ ✓ (q1 + q2)%Qp.
-  Proof. apply (own_valid_2 γ q1 q2). Qed.
+  Lemma cinv_own_valid γ q1 q2 : cinv_own γ q1 -∗ cinv_own γ q2 -∗ ⌜q1 + q2 ≤ 1⌝%Qp.
+  Proof. rewrite -frac_validI. apply (own_valid_2 γ q1 q2). Qed.
 
   Lemma cinv_own_1_l γ q : cinv_own γ 1 -∗ cinv_own γ q -∗ False.
   Proof.

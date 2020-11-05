@@ -29,7 +29,7 @@ Definition ufrac_authUR (A : cmraT) : ucmraT :=
 [q : Qp] instead of [q : ufrac]. This way, the API does not expose that [ufrac]
 is used internally. This is quite important, as there are two canonical camera
 instances with carrier [Qp], namely [fracR] and [ufracR]. When writing things
-like [ufrac_auth_auth q a ∧ ✓{q}] we want Coq to infer the type of [q] as [Qp]
+like [ufrac_auth_auth q a ∧ ✓ q] we want Coq to infer the type of [q] as [Qp]
 such that the [✓] of the default [fracR] camera is used, and not the [✓] of
 the [ufracR] camera. *)
 Definition ufrac_auth_auth {A : cmraT} (q : Qp) (x : A) : ufrac_authR A :=

@@ -31,18 +31,18 @@ Section lemmas.
 
   Lemma frac_agree_op_valid q1 a1 q2 a2 :
     ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
-    ✓ (q1 + q2)%Qp ∧ a1 ≡ a2.
+    (q1 + q2 ≤ 1)%Qp ∧ a1 ≡ a2.
   Proof.
     intros [Hq Ha]%pair_valid. simpl in *. split; first done.
     apply to_agree_op_inv. done.
   Qed.
   Lemma frac_agree_op_valid_L `{!LeibnizEquiv A} q1 a1 q2 a2 :
     ✓ (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
-    ✓ (q1 + q2)%Qp ∧ a1 = a2.
+    (q1 + q2 ≤ 1)%Qp ∧ a1 = a2.
   Proof. unfold_leibniz. apply frac_agree_op_valid. Qed.
   Lemma frac_agree_op_validN q1 a1 q2 a2 n :
     ✓{n} (to_frac_agree q1 a1 ⋅ to_frac_agree q2 a2) →
-    ✓ (q1 + q2)%Qp ∧ a1 ≡{n}≡ a2.
+    (q1 + q2 ≤ 1)%Qp ∧ a1 ≡{n}≡ a2.
   Proof.
     intros [Hq Ha]%pair_validN. simpl in *. split; first done.
     apply to_agree_op_invN. done.

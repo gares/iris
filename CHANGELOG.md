@@ -53,6 +53,9 @@ With this release, we dropped support for Coq 8.9.
   equal to `✓ b`.
 * Add `mnat_auth`, a wrapper for `auth max_nat`. The result is an authoritative
   `nat` where a fragment is a lower bound whose ownership is persistent.
+* Change `*_valid` lemma statements involving fractions to use `Qp` addition and
+  inequality instead of RA composition and validity (also in `base_logic` and
+  the higher layers).
 
 **Changes in `bi`:**
 

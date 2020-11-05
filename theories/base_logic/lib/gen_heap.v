@@ -157,12 +157,12 @@ Section gen_heap.
     AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
   Proof. split. done. apply _. Qed.
 
-  Lemma mapsto_valid l q v : l ↦{q} v -∗ ✓ q.
+  Lemma mapsto_valid l q v : l ↦{q} v -∗ ⌜q ≤ 1⌝%Qp.
   Proof.
     rewrite mapsto_eq. iIntros "Hl".
     iDestruct (own_valid with "Hl") as %?%gmap_view_frag_valid. done.
   Qed.
-  Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝.
+  Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ v1 = v2⌝.
   Proof.
     rewrite mapsto_eq. iIntros "H1 H2".
     iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_frag_op_valid_L.
@@ -184,7 +184,7 @@ Section gen_heap.
   Qed.
 
   Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
-    ¬ ✓(q1 + q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+    ¬ (q1 + q2 ≤ 1)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
   Proof.
     iIntros (?) "Hl1 Hl2"; iIntros (->).
     by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %[??].

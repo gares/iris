@@ -43,7 +43,7 @@ Section mnat_auth.
   Proof. intros. rewrite mnat_auth_frag_op Nat.max_r //. Qed.
 
   Lemma mnat_auth_frac_op_valid q1 q2 n1 n2 :
-    ✓ (mnat_auth_auth q1 n1 ⋅ mnat_auth_auth q2 n2) ↔ ✓ (q1 + q2)%Qp ∧ n1 = n2.
+    ✓ (mnat_auth_auth q1 n1 ⋅ mnat_auth_auth q2 n2) ↔ (q1 + q2 ≤ 1)%Qp ∧ n1 = n2.
   Proof.
     rewrite /mnat_auth_auth (comm _ (●{q2} _)) -!assoc (assoc _ (◯ _)).
     rewrite -auth_frag_op (comm _ (◯ _)) assoc. split.
@@ -57,7 +57,7 @@ Section mnat_auth.
   Proof. rewrite mnat_auth_frac_op_valid. naive_solver. Qed.
 
   Lemma mnat_auth_both_frac_valid q n m :
-    ✓ (mnat_auth_auth q n ⋅ mnat_auth_frag m) ↔ ✓ q ∧ m ≤ n.
+    ✓ (mnat_auth_auth q n ⋅ mnat_auth_frag m) ↔ (q ≤ 1)%Qp ∧ m ≤ n.
   Proof.
     rewrite /mnat_auth_auth /mnat_auth_frag -assoc -auth_frag_op.
     rewrite auth_both_frac_valid_discrete max_nat_included /=.
@@ -66,7 +66,7 @@ Section mnat_auth.
 
   Lemma mnat_auth_both_valid n m :
     ✓ (mnat_auth_auth 1 n ⋅ mnat_auth_frag m) ↔ m ≤ n.
-  Proof. rewrite mnat_auth_both_frac_valid frac_valid'. naive_solver. Qed.
+  Proof. rewrite mnat_auth_both_frac_valid. naive_solver. Qed.
 
   Lemma mnat_auth_frag_mono n1 n2 : n1 ≤ n2 → mnat_auth_frag n1 ≼ mnat_auth_frag n2.
   Proof. intros. by apply auth_frag_mono, max_nat_included. Qed.

@@ -44,7 +44,7 @@ Section mnat.
   Proof. split; [auto|apply _]. Qed.
 
   Lemma mnat_own_auth_agree γ q1 q2 n1 n2 :
-    mnat_own_auth γ q1 n1 -∗ mnat_own_auth γ q2 n2 -∗ ⌜✓ (q1 + q2)%Qp ∧ n1 = n2⌝.
+    mnat_own_auth γ q1 n1 -∗ mnat_own_auth γ q2 n2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ n1 = n2⌝.
   Proof.
     iIntros "H1 H2".
     iDestruct (own_valid_2 with "H1 H2") as %?%mnat_auth_frac_op_valid; done.
@@ -58,7 +58,7 @@ Section mnat.
   Qed.
 
   Lemma mnat_own_lb_valid γ q n m :
-    mnat_own_auth γ q n -∗ mnat_own_lb γ m -∗ ⌜✓ q ∧ m ≤ n⌝.
+    mnat_own_auth γ q n -∗ mnat_own_lb γ m -∗ ⌜(q ≤ 1)%Qp ∧ m ≤ n⌝.
   Proof.
     iIntros "Hauth Hlb".
     iDestruct (own_valid_2 with "Hauth Hlb") as %Hvalid%mnat_auth_both_frac_valid.
