@@ -151,7 +151,11 @@ Proof.
 Qed.
 
 Lemma sig_equivI {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
-Proof. apply (anti_symm _). apply sig_equivI_1. apply f_equivI, _. Qed.
+Proof.
+  apply (anti_symm _).
+  - apply sig_equivI_1.
+  - apply f_equivI, _.
+Qed.
 
 Section sigT_equivI.
 Import EqNotations.

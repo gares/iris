@@ -62,7 +62,10 @@ Section cmra.
 
   Global Instance discrete_fun_singleton_ne x :
     NonExpansive (discrete_fun_singleton x : B x → _).
-  Proof. intros n y1 y2 ?; apply discrete_fun_insert_ne. done. by apply equiv_dist. Qed.
+  Proof.
+    intros n y1 y2 ?; apply discrete_fun_insert_ne; [done|].
+    by apply equiv_dist.
+  Qed.
   Global Instance discrete_fun_singleton_proper x :
     Proper ((≡) ==> (≡)) (discrete_fun_singleton x) := ne_proper _.
 

@@ -321,7 +321,11 @@ Proof.
 Qed.
 
 Lemma entails_equiv_and P Q : (P ⊣⊢ Q ∧ P) ↔ (P ⊢ Q).
-Proof. split. by intros ->; auto. intros; apply (anti_symm _); auto. Qed.
+Proof.
+  split.
+  - intros ->; auto.
+  - intros; apply (anti_symm _); auto.
+Qed.
 
 Global Instance iff_ne : NonExpansive2 (@bi_iff PROP).
 Proof. unfold bi_iff; solve_proper. Qed.
@@ -1002,7 +1006,9 @@ Section persistently_affine_bi.
 
   Lemma impl_wand_persistently P Q : (<pers> P → Q) ⊣⊢ (<pers> P -∗ Q).
   Proof.
-    apply (anti_symm (⊢)). by rewrite -impl_wand_1. apply impl_wand_persistently_2.
+    apply (anti_symm (⊢)).
+    - by rewrite -impl_wand_1.
+    - apply impl_wand_persistently_2.
   Qed.
 
   Lemma wand_alt P Q : (P -∗ Q) ⊣⊢ ∃ R, R ∗ <pers> (P ∗ R → Q).
@@ -1552,30 +1558,34 @@ Global Instance bi_sep_monoid : Monoid (@bi_sep PROP) :=
 Global Instance bi_persistently_and_homomorphism :
   MonoidHomomorphism bi_and bi_and (≡) (@bi_persistently PROP).
 Proof.
-  split; [split|]; try apply _. apply persistently_and. apply persistently_pure.
+  split; [split|]; try apply _.
+  - apply persistently_and.
+  - apply persistently_pure.
 Qed.
 
 Global Instance bi_persistently_or_homomorphism :
   MonoidHomomorphism bi_or bi_or (≡) (@bi_persistently PROP).
 Proof.
-  split; [split|]; try apply _. apply persistently_or. apply persistently_pure.
+  split; [split|]; try apply _.
+  - apply persistently_or.
+  - apply persistently_pure.
 Qed.
 
 Global Instance bi_persistently_sep_weak_homomorphism `{BiPositive PROP} :
   WeakMonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
-Proof. split; try apply _. apply persistently_sep. Qed.
+Proof. split; [by apply _ ..|]. apply persistently_sep. Qed.
 
 Global Instance bi_persistently_sep_homomorphism `{BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@bi_persistently PROP).
-Proof. split. apply _. apply persistently_emp. Qed.
+Proof. split; [by apply _ ..|]. apply persistently_emp. Qed.
 
 Global Instance bi_persistently_sep_entails_weak_homomorphism :
   WeakMonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_persistently PROP).
-Proof. split; try apply _. intros P Q; by rewrite persistently_sep_2. Qed.
+Proof. split; [by apply _ ..|]. intros P Q; by rewrite persistently_sep_2. Qed.
 
 Global Instance bi_persistently_sep_entails_homomorphism :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@bi_persistently PROP).
-Proof. split. apply _. simpl. apply persistently_emp_intro. Qed.
+Proof. split; [by apply _ ..|]. simpl. apply persistently_emp_intro. Qed.
 
 (* Limits *)
 Lemma limit_preserving_entails {A : ofeT} `{Cofe A} (Φ Ψ : A → PROP) :

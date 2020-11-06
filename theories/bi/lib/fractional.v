@@ -117,14 +117,14 @@ Section fractional.
   Instance mul_as_fractional_l P Φ p q :
     AsFractional P Φ (q * p) → AsFractional P (λ q, Φ (q * p)%Qp) q.
   Proof.
-    intros H. split. apply H. eapply (mul_fractional_l _ Φ p).
-    split. done. apply H.
+    intros H. split; first apply H. eapply (mul_fractional_l _ Φ p).
+    split; first done. apply H.
   Qed.
   Instance mul_as_fractional_r P Φ p q :
     AsFractional P Φ (p * q) → AsFractional P (λ q, Φ (p * q)%Qp) q.
   Proof.
-    intros H. split. apply H. eapply (mul_fractional_r _ Φ p).
-    split. done. apply H.
+    intros H. split; first apply H. eapply (mul_fractional_r _ Φ p).
+    split; first done. apply H.
   Qed.
 
   (** Proof mode instances *)

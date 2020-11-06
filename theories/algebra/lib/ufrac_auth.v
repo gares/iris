@@ -96,15 +96,24 @@ Section ufrac_auth.
   Lemma ufrac_auth_auth_validN n q a : ✓{n} (●U{q} a) ↔ ✓{n} a.
   Proof.
     rewrite auth_auth_frac_validN Some_validN. split.
-    by intros [?[]]. intros. by split.
+    - by intros [?[]].
+    - intros. by split.
   Qed.
   Lemma ufrac_auth_auth_valid q a : ✓ (●U{q} a) ↔ ✓ a.
   Proof. rewrite !cmra_valid_validN. by setoid_rewrite ufrac_auth_auth_validN. Qed.
 
   Lemma ufrac_auth_frag_validN n q a : ✓{n} (◯U{q} a) ↔ ✓{n} a.
-  Proof. rewrite auth_frag_validN. split. by intros [??]. by split. Qed.
+  Proof.
+    rewrite auth_frag_validN. split.
+    - by intros [??].
+    - by split.
+  Qed.
   Lemma ufrac_auth_frag_valid q a : ✓ (◯U{q} a) ↔ ✓ a.
-  Proof. rewrite auth_frag_valid. split. by intros [??]. by split. Qed.
+  Proof.
+    rewrite auth_frag_valid. split.
+    - by intros [??].
+    - by split.
+  Qed.
 
   Lemma ufrac_auth_frag_op q1 q2 a1 a2 : ◯U{q1+q2} (a1 ⋅ a2) ≡ ◯U{q1} a1 ⋅ ◯U{q2} a2.
   Proof. done. Qed.

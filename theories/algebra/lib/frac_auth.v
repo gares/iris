@@ -78,7 +78,8 @@ Section frac_auth.
   Lemma frac_auth_auth_validN n a : ✓{n} (●F a) ↔ ✓{n} a.
   Proof.
     rewrite auth_auth_frac_validN Some_validN. split.
-    by intros [?[]]. intros. by split.
+    - by intros [?[]].
+    - intros. by split.
   Qed.
   Lemma frac_auth_auth_valid a : ✓ (●F a) ↔ ✓ a.
   Proof. rewrite !cmra_valid_validN. by setoid_rewrite frac_auth_auth_validN. Qed.

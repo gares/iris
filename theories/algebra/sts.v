@@ -319,7 +319,9 @@ Lemma sts_frag_up_valid s T : ✓ sts_frag_up s T ↔ tok s ## T.
 Proof.
   split.
   - move=>/sts_frag_valid [H _]. apply H, elem_of_up.
-  - intros. apply sts_frag_valid; split. by apply closed_up. set_solver.
+  - intros. apply sts_frag_valid; split.
+    + by apply closed_up.
+    + set_solver+.
 Qed.
 
 Lemma sts_auth_frag_valid_inv s S T1 T2 :
@@ -377,8 +379,12 @@ Proof.
   rewrite /sts_frag=> HC HS HT. apply validity_update.
   inversion 3 as [|? S ? Tf|]; simplify_eq/=;
     (destruct HC as (? & ? & ?); first by destruct_and?).
-  - split_and!. done. set_solver. constructor; set_solver.
-  - split_and!. done. set_solver. constructor; set_solver.
+  - split_and!; first done.
+    + set_solver.
+    + constructor; set_solver.
+  - split_and!; first done.
+    + set_solver.
+    + constructor; set_solver.
 Qed.
 
 Lemma sts_update_frag_up s1 S2 T1 T2 :
@@ -393,7 +399,9 @@ Lemma sts_up_set_intersection S1 Sf Tf :
   closed Sf Tf → S1 ∩ Sf ≡ S1 ∩ up_set (S1 ∩ Sf) Tf.
 Proof.
   intros Hclf. apply (anti_symm (⊆)).
-  - move=>s [HS1 HSf]. split. by apply HS1. by apply subseteq_up_set.
+  - move=>s [HS1 HSf]. split.
+    + by apply HS1.
+    + by apply subseteq_up_set.
   - move=>s [HS1 [s' [/elem_of_PropSet Hsup Hs']]]. split; first done.
     eapply closed_steps, Hsup; first done. set_solver +Hs'.
 Qed.

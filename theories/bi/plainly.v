@@ -301,7 +301,9 @@ Section plainly_affine_bi.
 
   Lemma impl_wand_plainly P Q : (■ P → Q) ⊣⊢ (■ P -∗ Q).
   Proof.
-    apply (anti_symm (⊢)). by rewrite -impl_wand_1. by rewrite impl_wand_plainly_2.
+    apply (anti_symm (⊢)).
+    - by rewrite -impl_wand_1.
+    - by rewrite impl_wand_plainly_2.
   Qed.
 End plainly_affine_bi.
 
@@ -393,17 +395,17 @@ Global Instance plainly_sep_entails_weak_homomorphism :
 Proof. split; try apply _. intros P Q; by rewrite plainly_sep_2. Qed.
 Global Instance plainly_sep_entails_homomorphism `{!BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@plainly PROP _).
-Proof. split. apply _. simpl. rewrite plainly_emp. done. Qed.
+Proof. split; try apply _. simpl. rewrite plainly_emp. done. Qed.
 
 Global Instance plainly_sep_homomorphism `{BiAffine PROP} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@plainly PROP _).
-Proof. split. apply _. apply plainly_emp. Qed.
+Proof. split; try apply _. apply plainly_emp. Qed.
 Global Instance plainly_and_homomorphism :
   MonoidHomomorphism bi_and bi_and (≡) (@plainly PROP _).
-Proof. split; [split|]; try apply _. apply plainly_and. apply plainly_pure. Qed.
+Proof. split; [split|]; try apply _; [apply plainly_and | apply plainly_pure]. Qed.
 Global Instance plainly_or_homomorphism `{!BiPlainlyExist PROP} :
   MonoidHomomorphism bi_or bi_or (≡) (@plainly PROP _).
-Proof. split; [split|]; try apply _. apply plainly_or. apply plainly_pure. Qed.
+Proof. split; [split|]; try apply _; [apply plainly_or | apply plainly_pure]. Qed.
 
 Lemma big_sepL_plainly `{!BiAffine PROP} {A} (Φ : nat → A → PROP) l :
   ■ ([∗ list] k↦x ∈ l, Φ k x) ⊣⊢ [∗ list] k↦x ∈ l, ■ (Φ k x).

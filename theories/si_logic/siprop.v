@@ -215,14 +215,23 @@ Proof. unseal; by split=> n [??]. Qed.
 Lemma and_elim_r P Q : P ∧ Q ⊢ Q.
 Proof. unseal; by split=> n [??]. Qed.
 Lemma and_intro P Q R : (P ⊢ Q) → (P ⊢ R) → P ⊢ Q ∧ R.
-Proof. intros HQ HR; unseal; split=> n ?; by split; [apply HQ|apply HR]. Qed.
+Proof.
+  intros HQ HR; unseal; split=> n ?.
+  split.
+  - by apply HQ.
+  - by apply HR.
+Qed.
 
 Lemma or_intro_l P Q : P ⊢ P ∨ Q.
 Proof. unseal; split=> n ?; left; auto. Qed.
 Lemma or_intro_r P Q : Q ⊢ P ∨ Q.
 Proof. unseal; split=> n ?; right; auto. Qed.
 Lemma or_elim P Q R : (P ⊢ R) → (Q ⊢ R) → P ∨ Q ⊢ R.
-Proof. intros HP HQ. unseal; split=> n [?|?]. by apply HP. by apply HQ. Qed.
+Proof.
+  intros HP HQ. unseal; split=> n [?|?].
+  - by apply HP.
+  - by apply HQ.
+Qed.
 
 Lemma impl_intro_r P Q R : (P ∧ Q ⊢ R) → P ⊢ Q → R.
 Proof.

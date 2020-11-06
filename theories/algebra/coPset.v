@@ -43,7 +43,7 @@ Section coPset.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma coPset_ucmra_mixin : UcmraMixin coPset.
-  Proof. split. done. intros X. by rewrite coPset_op_union left_id_L. done. Qed.
+  Proof. split; [done | | done]. intros X. by rewrite coPset_op_union left_id_L. Qed.
   Canonical Structure coPsetUR := UcmraT coPset coPset_ucmra_mixin.
 
   Lemma coPset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
@@ -56,7 +56,7 @@ Section coPset.
   Proof.
     intros (Z&->&?)%subseteq_disjoint_union_L.
     rewrite local_update_unital_discrete=> Z' _ /leibniz_equiv_iff->.
-    split. done. rewrite coPset_op_union. set_solver.
+    split; first done. rewrite coPset_op_union. set_solver.
   Qed.
 End coPset.
 

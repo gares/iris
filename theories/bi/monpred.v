@@ -309,8 +309,9 @@ Proof.
   - intros P Q. split=> i. by apply bi.later_sep_2.
   - intros P. split=> i. by apply bi.later_persistently_1.
   - intros P. split=> i. by apply bi.later_persistently_2.
-  - intros P. split=> i /=. rewrite -bi.forall_intro. apply bi.later_false_em.
-    intros j. rewrite bi.pure_impl_forall. apply bi.forall_intro=> Hij. by rewrite Hij.
+  - intros P. split=> i /=. rewrite -bi.forall_intro.
+    + apply bi.later_false_em.
+    + intros j. rewrite bi.pure_impl_forall. apply bi.forall_intro=> Hij. by rewrite Hij.
 Qed.
 
 Canonical Structure monPredI : bi :=
@@ -519,14 +520,20 @@ Qed.
 Lemma monPred_objectively_and P Q : <obj> (P ∧ Q) ⊣⊢ <obj> P ∧ <obj> Q.
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=.
-  - apply bi.and_intro; do 2 f_equiv. apply bi.and_elim_l. apply bi.and_elim_r.
+  - apply bi.and_intro; do 2 f_equiv.
+    + apply bi.and_elim_l.
+    + apply bi.and_elim_r.
   - apply bi.forall_intro=>?. by rewrite !bi.forall_elim.
 Qed.
 Lemma monPred_objectively_exist {A} (Φ : A → monPred) :
   (∃ x, <obj> (Φ x)) ⊢ <obj> (∃ x, (Φ x)).
 Proof. apply bi.exist_elim=>?. f_equiv. apply bi.exist_intro. Qed.
 Lemma monPred_objectively_or P Q : <obj> P ∨ <obj> Q ⊢ <obj> (P ∨ Q).
-Proof. apply bi.or_elim; f_equiv. apply bi.or_intro_l. apply bi.or_intro_r. Qed.
+Proof.
+  apply bi.or_elim; f_equiv.
+  - apply bi.or_intro_l.
+  - apply bi.or_intro_r.
+Qed.
 
 Lemma monPred_objectively_sep_2 P Q : <obj> P ∗ <obj> Q ⊢ <obj> (P ∗ Q).
 Proof. unseal. split=>i /=. apply bi.forall_intro=>?. by rewrite !bi.forall_elim. Qed.
@@ -538,7 +545,8 @@ Qed.
 Lemma monPred_objectively_embed (P : PROP) : <obj> ⎡P⎤ ⊣⊢ ⎡P⎤.
 Proof.
   apply bi.equiv_spec; split; unseal; split=>i /=.
-  by rewrite (bi.forall_elim inhabitant). by apply bi.forall_intro.
+  - by rewrite (bi.forall_elim inhabitant).
+  - by apply bi.forall_intro.
 Qed.
 Lemma monPred_objectively_emp : <obj> (emp : monPred) ⊣⊢ emp.
 Proof. rewrite monPred_emp_unfold. apply monPred_objectively_embed. Qed.
@@ -552,7 +560,11 @@ Lemma monPred_subjectively_forall {A} (Φ : A → monPred) :
   (<subj> (∀ x, Φ x)) ⊢ ∀ x, <subj> (Φ x).
 Proof. apply bi.forall_intro=>?. f_equiv. apply bi.forall_elim. Qed.
 Lemma monPred_subjectively_and P Q : <subj> (P ∧ Q) ⊢ <subj> P ∧ <subj> Q.
-Proof. apply bi.and_intro; f_equiv. apply bi.and_elim_l. apply bi.and_elim_r. Qed.
+Proof.
+  apply bi.and_intro; f_equiv.
+  - apply bi.and_elim_l.
+  - apply bi.and_elim_r.
+Qed.
 Lemma monPred_subjectively_exist {A} (Φ : A → monPred) : <subj> (∃ x, Φ x) ⊣⊢ ∃ x, <subj> (Φ x).
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=;
@@ -562,7 +574,9 @@ Lemma monPred_subjectively_or P Q : <subj> (P ∨ Q) ⊣⊢ <subj> P ∨ <subj> 
 Proof.
   unseal. split=>i. apply bi.equiv_spec; split=>/=.
   - apply bi.exist_elim=>?. by rewrite -!bi.exist_intro.
-  - apply bi.or_elim; do 2 f_equiv. apply bi.or_intro_l. apply bi.or_intro_r.
+  - apply bi.or_elim; do 2 f_equiv.
+    + apply bi.or_intro_l.
+    + apply bi.or_intro_r.
 Qed.
 
 Lemma monPred_subjectively_sep P Q : <subj> (P ∗ Q) ⊢ <subj> P ∗ <subj> Q.
@@ -656,13 +670,13 @@ Qed.
 (** Big op *)
 Global Instance monPred_at_monoid_and_homomorphism i :
   MonoidHomomorphism bi_and bi_and (≡) (flip monPred_at i).
-Proof. split; [split|]; try apply _. apply monPred_at_and. apply monPred_at_pure. Qed.
+Proof. split; [split|]; try apply _; [apply monPred_at_and | apply monPred_at_pure]. Qed.
 Global Instance monPred_at_monoid_or_homomorphism i :
   MonoidHomomorphism bi_or bi_or (≡) (flip monPred_at i).
-Proof. split; [split|]; try apply _. apply monPred_at_or. apply monPred_at_pure. Qed.
+Proof. split; [split|]; try apply _; [apply monPred_at_or | apply monPred_at_pure]. Qed.
 Global Instance monPred_at_monoid_sep_homomorphism i :
   MonoidHomomorphism bi_sep bi_sep (≡) (flip monPred_at i).
-Proof. split; [split|]; try apply _. apply monPred_at_sep. apply monPred_at_emp. Qed.
+Proof. split; [split|]; try apply _; [apply monPred_at_sep | apply monPred_at_emp]. Qed.
 
 Lemma monPred_at_big_sepL {A} i (Φ : nat → A → monPred) l :
   ([∗ list] k↦x ∈ l, Φ k x) i ⊣⊢ [∗ list] k↦x ∈ l, Φ k x i.
@@ -680,20 +694,23 @@ Proof. apply (big_opMS_commute (flip monPred_at i)). Qed.
 Global Instance monPred_objectively_monoid_and_homomorphism :
   MonoidHomomorphism bi_and bi_and (≡) (@monPred_objectively I PROP).
 Proof.
-  split; [split|]; try apply _. apply monPred_objectively_and.
-  apply monPred_objectively_pure.
+  split; [split|]; try apply _.
+  - apply monPred_objectively_and.
+  - apply monPred_objectively_pure.
 Qed.
 Global Instance monPred_objectively_monoid_sep_entails_homomorphism :
   MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (@monPred_objectively I PROP).
 Proof.
-  split; [split|]; try apply _. apply monPred_objectively_sep_2.
-  by rewrite monPred_objectively_emp.
+  split; [split|]; try apply _.
+  - apply monPred_objectively_sep_2.
+  - by rewrite monPred_objectively_emp.
 Qed.
 Global Instance monPred_objectively_monoid_sep_homomorphism `{BiIndexBottom bot} :
   MonoidHomomorphism bi_sep bi_sep (≡) (@monPred_objectively I PROP).
 Proof.
-  split; [split|]; try apply _. apply monPred_objectively_sep.
-  by rewrite monPred_objectively_emp.
+  split; [split|]; try apply _.
+  - apply monPred_objectively_sep.
+  - by rewrite monPred_objectively_emp.
 Qed.
 
 Lemma monPred_objectively_big_sepL_entails {A} (Φ : nat → A → monPred) l :
