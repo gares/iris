@@ -595,12 +595,27 @@ Proof.
   rewrite !lookup_fmap. by apply option_fmap_mono.
 Qed.
 
-Lemma big_opM_singletons (m : gmap K A) :
-  ([^op map] k ↦ x ∈ m, {[ k := x ]}) ≡ m.
+Lemma big_opM_singletons m :
+  ([^op map] k ↦ x ∈ m, {[ k := x ]}) = m.
 Proof.
-  induction m as [|k x m Hk IH] using map_ind.
-  - rewrite big_opM_empty. done.
-  - rewrite big_opM_insert // IH insert_singleton_op //.
+  rewrite big_opM_eq /big_opM_def.
+  remember (map_to_list m) as l eqn:Heql.
+  assert (map_to_list m ≡ₚ l) as Hl by by rewrite Heql.
+  clear Heql. revert m Hl. induction l as [|kx l IH].
+  - intros m ->%map_to_list_empty_inv_alt.
+    rewrite big_opL_nil. done.
+  - destruct kx as [k x].
+    intros m Hl.
+    rewrite big_opL_cons.
+    assert (NoDup ((k, x) :: l).*1) as Hnodup.
+    { rewrite -Hl. apply NoDup_fst_map_to_list. }
+    rewrite (IH (list_to_map l)).
+    + rewrite (map_to_list_insert_inv _ _ _ _ Hl).
+      rewrite insert_singleton_op //.
+      apply not_elem_of_list_to_map_1.
+      apply NoDup_cons_11 in Hnodup. done.
+    + apply map_to_list_to_map.
+      eapply NoDup_cons_12. done.
 Qed.
 
 End properties.
