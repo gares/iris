@@ -33,7 +33,7 @@ constructor).
 ## Notation
 
 Notation for writing HeapLang terms is defined in
-[`notation.v`](theories/heap_lang/notation.v).  There are two scopes, `%E` for
+[`notation.v`](../theories/heap_lang/notation.v).  There are two scopes, `%E` for
 expressions and `%V` for values.  For example, `(a, b)%E` is an expression pair
 and `(a, b)%V` a value pair.  The `e` of a `WP e {{ Q }}` is implicitly in `%E`
 scope.
