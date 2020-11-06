@@ -88,7 +88,11 @@ Proof.
 Qed.
 
 Lemma bupd_alt_bupd_iff {M} (P : uPred M) : bupd_alt P ⊣⊢ |==> P.
-Proof. apply (anti_symm _). apply bupd_alt_bupd. apply bupd_bupd_alt. Qed.
+Proof.
+  apply (anti_symm _).
+  - apply bupd_alt_bupd.
+  - apply bupd_bupd_alt.
+Qed.
 
 (** The law about the interaction between [uPred_ownM] and plainly holds. *)
 Lemma ownM_updateP {M : ucmraT} x (Φ : M → Prop) (R : uPred M) :

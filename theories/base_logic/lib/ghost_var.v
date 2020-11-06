@@ -33,7 +33,7 @@ Section lemmas.
   Proof. intros q1 q2. rewrite /ghost_var -own_op -frac_agree_op //. Qed.
   Global Instance ghost_var_as_fractional γ a q :
     AsFractional (ghost_var γ q a) (λ q, ghost_var γ q a) q.
-  Proof. split. done. apply _. Qed.
+  Proof. split; [done|]. apply _. Qed.
 
   Lemma ghost_var_alloc_strong a (P : gname → Prop) :
     pred_infinite P →

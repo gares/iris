@@ -183,7 +183,8 @@ Proof.
   iIntros (?) "HQ Hbox".
   iMod (slice_insert_empty with "Hbox") as (γ ?) "[#Hslice Hbox]".
   iExists γ. iFrame "%#". iMod (slice_fill with "Hslice HQ Hbox"); first done.
-  by apply lookup_insert. by rewrite insert_insert.
+  - by apply lookup_insert.
+  - by rewrite insert_insert.
 Qed.
 
 Lemma slice_delete_full E q f P Q γ :

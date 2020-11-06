@@ -78,13 +78,14 @@ Section proofs.
     iIntros "HP".
     iMod (own_unit (prodUR coPset_disjUR (gset_disjUR positive)) p) as "Hempty".
     iMod (own_updateP with "Hempty") as ([m1 m2]) "[Hm Hown]".
-    { apply prod_updateP'. apply cmra_updateP_id, (reflexivity (R:=eq)).
-      apply (gset_disj_alloc_empty_updateP_strong' (λ i, i ∈ (↑N:coPset))).
-      intros Ef. exists (coPpick (↑ N ∖ gset_to_coPset Ef)).
-      rewrite -elem_of_gset_to_coPset comm -elem_of_difference.
-      apply coPpick_elem_of=> Hfin.
-      eapply nclose_infinite, (difference_finite_inv _ _), Hfin.
-      apply gset_to_coPset_finite. }
+    { apply prod_updateP'.
+      - apply cmra_updateP_id, (reflexivity (R:=eq)).
+      - apply (gset_disj_alloc_empty_updateP_strong' (λ i, i ∈ (↑N:coPset))).
+        intros Ef. exists (coPpick (↑ N ∖ gset_to_coPset Ef)).
+        rewrite -elem_of_gset_to_coPset comm -elem_of_difference.
+        apply coPpick_elem_of=> Hfin.
+        eapply nclose_infinite, (difference_finite_inv _ _), Hfin.
+        apply gset_to_coPset_finite. }
     simpl. iDestruct "Hm" as %(<- & i & -> & ?).
     rewrite /na_inv.
     iMod (inv_alloc N with "[-]"); last (iModIntro; iExists i; eauto).
