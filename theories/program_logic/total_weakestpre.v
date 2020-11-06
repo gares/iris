@@ -204,7 +204,8 @@ Proof.
   { destruct s; eauto using reducible_no_obs_reducible. }
   iIntros (e2 σ2 efs) "Hstep". iMod ("H" with "Hstep") as (->) "(Hσ & H & Hfork)".
   iApply step_fupd_intro; [set_solver+|]. iNext.
-  iFrame "Hσ". iSplitL "H". by iApply "IH".
+  iFrame "Hσ". iSplitL "H".
+  { by iApply "IH". }
   iApply (@big_sepL_impl with "Hfork").
   iIntros "!>" (k ef _) "H". by iApply "IH".
 Qed.

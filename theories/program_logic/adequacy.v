@@ -174,7 +174,11 @@ Lemma adequate_alt {Λ} s e1 σ1 (φ : val Λ → state Λ → Prop) :
     rtc erased_step ([e1], σ1) (t2, σ2) →
       (∀ v2 t2', t2 = of_val v2 :: t2' → φ v2 σ2) ∧
       (∀ e2, s = NotStuck → e2 ∈ t2 → not_stuck e2 σ2).
-Proof. split. intros []; naive_solver. constructor; naive_solver. Qed.
+Proof.
+  split.
+  - intros []; naive_solver.
+  - constructor; naive_solver.
+Qed.
 
 Theorem adequate_tp_safe {Λ} (e1 : expr Λ) t2 σ1 σ2 φ :
   adequate NotStuck e1 σ1 φ →
