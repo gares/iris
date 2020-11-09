@@ -56,7 +56,7 @@ Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
 Ltac wp_expr_simpl := wp_expr_eval simpl.
 
 Ltac wp_value_head :=
-  first [eapply tac_wp_value || eapply tac_twp_value].
+  first [eapply tac_wp_value | eapply tac_twp_value].
 
 Ltac wp_finish :=
   wp_expr_simpl;      (* simplify occurences of subst/fill *)
