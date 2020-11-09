@@ -107,8 +107,10 @@ Tactic Notation "wp_pure" open_constr(efoc) :=
 (* TODO: do this in one go, without [repeat]. *)
 Ltac wp_pures :=
   iStartProof;
-  repeat (wp_pure _; []). (* The `;[]` makes sure that no side-condition
-                             magically spawns. *)
+  first [ (* The `;[]` makes sure that no side-condition magically spawns. *)
+          progress repeat (wp_pure _; [])
+        | wp_finish (* In case wp_pure never ran, make sure we do the usual cleanup. *)
+        ].
 
 (** Unlike [wp_pures], the tactics [wp_rec] and [wp_lam] should also reduce
 lambdas/recs that are hidden behind a definition, i.e. they should use

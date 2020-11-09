@@ -142,6 +142,10 @@ Section tests.
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
 
+  Lemma wp_pures_val (b : bool) :
+    ⊢ WP #b {{ _, True }}.
+  Proof. wp_pures. done. Qed.
+
   Lemma wp_cmpxchg l v :
     val_is_unboxed v →
     l ↦ v -∗ WP CmpXchg #l v v {{ _, True }}.
