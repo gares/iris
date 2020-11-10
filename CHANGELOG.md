@@ -128,6 +128,8 @@ With this release, we dropped support for Coq 8.9.
   by `gen_heap`.
 * Strengthen `mapsto_valid_2` conclusion from `✓ (q1 + q2)%Qp` to
   `⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝`.
+* Change `gen_heap_init` to also return ownership of the points-to facts for the
+  initial heap.
 
 **Changes in `program_logic`:**
 
