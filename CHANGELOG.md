@@ -41,21 +41,23 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   `auth_auth_valid*`, `auth_frag_valid*`, or `auth_both_valid*` instead.
 * Rename `auth_update_core_id` into `auth_update_frac_alloc`.
 * Add the camera of discardable fractions `dfrac`. This is a generalization of
-  the normal fractional camera. See `theories/algebra/dfrac.v` for further information.
+  the normal fractional camera.
+  See [algebra.dfrac](iris/algebra/dfrac.v) for further information.
 * Rename `cmra_monotone_valid` into `cmra_morphism_valid` (this rename was
   forgotten in !56).
 * Add `gmap_view`, a camera providing a "view of a `gmap`". The authoritative
   element is any `gmap`; the fragment provides fractional ownership of a single
   key, including support for persistent read-only ownership through `dfrac`.
-  See `theories/algebra/lib/gmap_view.v` for further information.
+  See [algebra.lib.gmap_view](iris/algebra/lib/gmap_view.v) for further information.
   NOTE: The API surface for `gmap_view` is experimental and subject to change.
 * Move the `*_validI` and `*_equivI` lemmas to a new module, `base_logic.algebra`.
   That module is exported by `base_logic.base_logic` so it should usually be
   available everywhere without further changes.
 * The authoritative fragment `✓ (◯ b : auth A)` is no longer definitionally
   equal to `✓ b`.
-* Add `mnat_auth`, a wrapper for `auth max_nat`. The result is an authoritative
+* Add `mono_nat`, a wrapper for `auth max_nat`. The result is an authoritative
   `nat` where a fragment is a lower bound whose ownership is persistent.
+  See [algebra.lib.mono_nat](iris/algebra/lib/mono_nat.v) for further information.
 * Change `*_valid` lemma statements involving fractions to use `Qp` addition and
   inequality instead of RA composition and validity (also in `base_logic` and
   the higher layers).
@@ -123,9 +125,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   `uPred.discrete_fun_validI` to the new `base_logic.algebra` module. That
   module is exported by `base_logic.base_logic` so these names are now usually
   available everywhere, and no longer inside the `uPred` module.
-* Add an `mnat` library on top of `mnat_auth` that supports ghost state which is
-  an authoritative, monotonically-increasing `nat` with a proposition giving a
-  persistent lower bound. See `base_logic.lib.mnat` for further details.
+* Define a ghost state library on top of the `mono_nat` resource algebra.
+  See [base_logic.lib.mono_nat](iris/base_logic/lib/mono_nat.v) for further
+  information.
 * Remove the `gen_heap` notations `l ↦ -` and `l ↦{q} -`. They were barely used
   and looked very confusing in context: `l ↦ - ∗ P` looks like a magic wand.
 * Change `gen_inv_heap` notation `l ↦□ I` to `l ↦_I □`, so that `↦□` can be used
