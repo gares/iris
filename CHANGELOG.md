@@ -138,6 +138,8 @@ With this release, we dropped support for Coq 8.9.
 **Changes in `heap_lang`:**
 
 * `wp_pures` now turns goals of the form `WP v {{ Φ }}` into `Φ v`.
+* Fix `wp_bind` in case of a NOP (i.e., when the given expression pattern is
+  already at the top level).
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).

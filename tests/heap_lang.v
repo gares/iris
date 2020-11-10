@@ -142,6 +142,9 @@ Section tests.
   Lemma wp_bind_nop (e : expr) :
     ⊢ WP e + #0 {{ _, True }}.
   Proof. wp_bind (e + #0)%E. Abort.
+  Lemma wp_bind_nop (e : expr) :
+    ⊢ WP e + #0 [{ _, True }].
+  Proof. wp_bind (e + #0)%E. Abort.
 
   Lemma wp_apply_evar e P :
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
