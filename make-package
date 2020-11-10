@@ -9,6 +9,11 @@ shift
 COQFILE="_CoqProject.$PROJECT"
 MAKEFILE="Makefile.package.$PROJECT"
 
+if ! egrep -q "^$PROJECT/" _CoqProject; then
+    echo "No files in $PROJECT/ found in _CoqProject; this does not seem to be a valid project name."
+    exit 1
+fi
+
 # Generate _CoqProject file and Makefile
 rm -f "$COQFILE"
 # Get the right "-Q" line.

@@ -7,6 +7,9 @@ bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
 
 synopsis: "HeapLang is the canonical example language for Iris"
+description: """
+This package provides the iris.heap_lang Coq module.
+"""
 
 depends: [
   "coq-iris" {= version}

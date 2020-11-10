@@ -5,6 +5,23 @@ Iris development.  This is for contributing to Iris itself; see
 [the README](README.md#further-resources) for resources helpful for all Iris
 users.
 
+To work on Iris itself, you need to install its build-dependencies.  Again we
+recommend you do that with opam (2.0.0 or newer).  This requires the following
+two repositories:
+
+    opam repo add coq-released https://coq.inria.fr/opam/released
+    opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
+
+Once you got opam set up, run `make build-dep` to install the right versions
+of the dependencies.
+
+Run `make -jN` to build the full development, where `N` is the number of your
+CPU cores.
+
+To update Iris, do `git pull`.  After an update, the development may fail to
+compile because of outdated dependencies.  To fix that, please run `opam update`
+followed by `make build-dep`.
+
 ## How to submit a merge request
 
 To contribute code, you need an [MPI-SWS GitLab account][account] (use the
@@ -47,6 +64,20 @@ Coq-8.8-specific `.ref` file).  If you change one of these, remember to update
 *all* the `.ref` files.
 
 If you want to compile without tests run `make NO_TEST=1`.
+
+## How to build/install only one package
+
+Iris is split into multiple packages that can be installed separately via opam.
+You can invoke the Makefile of a particular package by doing `./make-package
+$PACKAGE $MAKE_ARGS`, where `$MAKE_ARGS` are passed to `make` (so you can use
+the usual `-jN`, `install`, ...).  This should only rarely be necessary. For
+example, if you are not using opam and you want to install only the `iris`
+package (without HeapLang, to avoid waiting on that part of the build), you can
+do `./make-package iris install`.  (If you are using opam, you can achieve the
+same by pinning `coq-iris` to your Iris checkout.)
+
+Note that `./make-package` will never run the test suite, so please always do a
+regular `make -jN` before submitting an MR.
 
 ## How to measure the timing effect on a reverse dependency
 

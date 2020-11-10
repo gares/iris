@@ -50,34 +50,24 @@ To obtain a development version, also add the Iris opam repository:
 
     opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 
-Either way, you can now do `opam install coq-iris`.  To fetch updates later, run
-`opam update && opam upgrade`.  However, notice that we do not guarantee
-backwards-compatibility, so upgrading Iris may break your Iris-using
-developments.
+Either way, you can now install Iris:
+- `opam install coq-iris` will install the libraries making up the Iris logic,
+  but leave it up to you to instantiate the `program_logic.language` interface
+  to define a programming language for Iris to reason about.
+- `opam install coq-iris-heap-lang` will additionally install HeapLang, the
+  default language used by various Iris projects.
 
-The development version of Iris is regularly subject to breaking changes.  If
-you want to be notified of such changes, please let us know your account name on
-the [MPI-SWS GitLab](https://gitlab.mpi-sws.org/) so we can add you to the
+To fetch updates later, run `opam update && opam upgrade`.  However, notice that
+we do not guarantee backwards-compatibility, so upgrading Iris may break your
+Iris-using developments.  If you want to be notified of breaking changes, please
+let us know your account name on the
+[MPI-SWS GitLab](https://gitlab.mpi-sws.org/) so we can add you to the
 notification group.
 
 ### Working *on* Iris
 
-To work on Iris itself, you need to install its build-dependencies.  Again we
-recommend you do that with opam (2.0.0 or newer).  This requires the following
-two repositories:
-
-    opam repo add coq-released https://coq.inria.fr/opam/released
-    opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
-
-Once you got opam set up, run `make build-dep` to install the right versions
-of the dependencies.
-
-Run `make -jN` to build the full development, where `N` is the number of your
-CPU cores.
-
-To update Iris, do `git pull`.  After an update, the development may fail to
-compile because of outdated dependencies.  To fix that, please run `opam update`
-followed by `make build-dep`.
+See the [contribution guide](CONTRIBUTING.md) for information on how to work on
+the Iris development itself.
 
 ## Directory Structure
 
