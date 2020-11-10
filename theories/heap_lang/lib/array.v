@@ -137,7 +137,8 @@ Section proof.
       }}}
         array_init_loop #l #i #n f @ stk; E
       {{{ vs, RET #();
-         ⌜ length vs = k ⌝ ∗ (l +ₗ i) ↦∗ vs ∗ [∗ list] j↦v ∈ vs, Q (i + j) v }}}.
+        ⌜ length vs = k ⌝ ∗ (l +ₗ i) ↦∗ vs ∗ [∗ list] j↦v ∈ vs, Q (i + j) v
+      }}}.
     Proof.
       iIntros (Hn Φ) "[Hl Hf] HΦ".
       iInduction k as [|k] "IH" forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
@@ -163,7 +164,8 @@ Section proof.
       }]]
         array_init_loop #l #i #n f @ stk; E
       [[{ vs, RET #();
-         ⌜ length vs = k ⌝ ∗ (l +ₗ i) ↦∗ vs ∗ [∗ list] j↦v ∈ vs, Q (i + j) v }]].
+        ⌜ length vs = k ⌝ ∗ (l +ₗ i) ↦∗ vs ∗ [∗ list] j↦v ∈ vs, Q (i + j) v
+      }]].
     Proof.
       iIntros (Hn Φ) "[Hl Hf] HΦ".
       iInduction k as [|k] "IH" forall (i Hn); simplify_eq/=; wp_rec; wp_pures.
@@ -184,10 +186,13 @@ Section proof.
 
     Lemma wp_array_init stk E n f :
       (0 < n)%Z →
-      {{{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ Q i }} }}}
+      {{{
+        [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E {{ Q i }}
+      }}}
         array_init #n f @ stk; E
       {{{ l vs, RET #l;
-        ⌜Z.of_nat (length vs) = n⌝ ∗ l ↦∗ vs ∗ [∗ list] k↦v ∈ vs, Q k v }}}.
+        ⌜Z.of_nat (length vs) = n⌝ ∗ l ↦∗ vs ∗ [∗ list] k↦v ∈ vs, Q k v
+      }}}.
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
       wp_apply (wp_array_init_loop _ _ _ 0 n (Z.to_nat n)
@@ -199,10 +204,13 @@ Section proof.
     Qed.
     Lemma twp_array_init stk E n f :
       (0 < n)%Z →
-      [[{ [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E [{ Q i }] }]]
+      [[{
+        [∗ list] i ∈ seq 0 (Z.to_nat n), WP f #(i : nat) @ stk; E [{ Q i }]
+      }]]
         array_init #n f @ stk; E
       [[{ l vs, RET #l;
-        ⌜Z.of_nat (length vs) = n⌝ ∗ l ↦∗ vs ∗ [∗ list] k↦v ∈ vs, Q k v }]].
+        ⌜Z.of_nat (length vs) = n⌝ ∗ l ↦∗ vs ∗ [∗ list] k↦v ∈ vs, Q k v
+      }]].
     Proof.
       iIntros (Hn Φ) "Hf HΦ". wp_lam. wp_alloc l as "Hl"; first done.
       wp_apply (twp_array_init_loop _ _ _ 0 n (Z.to_nat n)
@@ -231,11 +239,14 @@ Section proof.
 
     Lemma wp_array_init_fmap stk E n f :
       (0 < n)%Z →
-      {{{ [∗ list] i ∈ seq 0 (Z.to_nat n),
-            WP f #(i : nat) @ stk; E {{ v, ∃ x, ⌜v = g x⌝ ∗ Q i x }} }}}
+      {{{
+        [∗ list] i ∈ seq 0 (Z.to_nat n),
+          WP f #(i : nat) @ stk; E {{ v, ∃ x, ⌜v = g x⌝ ∗ Q i x }}
+      }}}
         array_init #n f @ stk; E
       {{{ l xs, RET #l;
-        ⌜Z.of_nat (length xs) = n⌝ ∗ l ↦∗ (g <$> xs) ∗ [∗ list] k↦x ∈ xs, Q k x }}}.
+        ⌜Z.of_nat (length xs) = n⌝ ∗ l ↦∗ (g <$> xs) ∗ [∗ list] k↦x ∈ xs, Q k x
+      }}}.
     Proof.
       iIntros (Hn Φ) "Hf HΦ". iApply (wp_array_init with "Hf"); first done.
       iIntros "!>" (l vs). iDestruct 1 as (<-) "[Hl Hvs]".
@@ -244,11 +255,14 @@ Section proof.
     Qed.
     Lemma twp_array_init_fmap stk E n f :
       (0 < n)%Z →
-      [[{ [∗ list] i ∈ seq 0 (Z.to_nat n),
-            WP f #(i : nat) @ stk; E [{ v, ∃ x, ⌜v = g x⌝ ∗ Q i x }] }]]
+      [[{
+        [∗ list] i ∈ seq 0 (Z.to_nat n),
+          WP f #(i : nat) @ stk; E [{ v, ∃ x, ⌜v = g x⌝ ∗ Q i x }]
+      }]]
         array_init #n f @ stk; E
       [[{ l xs, RET #l;
-        ⌜Z.of_nat (length xs) = n⌝ ∗ l ↦∗ (g <$> xs) ∗ [∗ list] k↦x ∈ xs, Q k x }]].
+        ⌜Z.of_nat (length xs) = n⌝ ∗ l ↦∗ (g <$> xs) ∗ [∗ list] k↦x ∈ xs, Q k x
+      }]].
     Proof.
       iIntros (Hn Φ) "Hf HΦ". iApply (twp_array_init with "Hf"); first done.
       iIntros (l vs). iDestruct 1 as (<-) "[Hl Hvs]".
