@@ -15,22 +15,24 @@ Definition ghost_varΣ (A : Type) : gFunctors := #[ GFunctor (frac_agreeR $ leib
 Instance subG_ghost_varΣ Σ A : subG (ghost_varΣ A) Σ → ghost_varG Σ A.
 Proof. solve_inG. Qed.
 
-Section definitions.
-  Context `{!ghost_varG Σ A} (γ : gname).
+Definition ghost_var_def `{!ghost_varG Σ A} (γ : gname) (q : Qp) (a : A) : iProp Σ :=
+  own γ (to_frac_agree (A:=leibnizO A) q a).
+Definition ghost_var_aux : seal (@ghost_var_def). Proof. by eexists. Qed.
+Definition ghost_var := ghost_var_aux.(unseal).
+Definition ghost_var_eq : @ghost_var = @ghost_var_def := ghost_var_aux.(seal_eq).
+Arguments ghost_var {Σ A _} γ q a.
 
-  Definition ghost_var (q : Qp) (a : A) : iProp Σ :=
-    own γ (to_frac_agree (A:=leibnizO A) q a).
-End definitions.
+Local Ltac unseal := rewrite ?ghost_var_eq /ghost_var_def.
 
 Section lemmas.
   Context `{!ghost_varG Σ A}.
   Implicit Types (a : A) (q : Qp).
 
   Global Instance ghost_var_timeless γ q a : Timeless (ghost_var γ q a).
-  Proof. apply _. Qed.
+  Proof. unseal. apply _. Qed.
 
   Global Instance ghost_var_fractional γ a : Fractional (λ q, ghost_var γ q a).
-  Proof. intros q1 q2. rewrite /ghost_var -own_op -frac_agree_op //. Qed.
+  Proof. intros q1 q2. unseal. rewrite -own_op -frac_agree_op //. Qed.
   Global Instance ghost_var_as_fractional γ a q :
     AsFractional (ghost_var γ q a) (λ q, ghost_var γ q a) q.
   Proof. split; [done|]. apply _. Qed.
@@ -38,15 +40,15 @@ Section lemmas.
   Lemma ghost_var_alloc_strong a (P : gname → Prop) :
     pred_infinite P →
     ⊢ |==> ∃ γ, ⌜P γ⌝ ∗ ghost_var γ 1 a.
-  Proof. intros. iApply own_alloc_strong; done. Qed.
+  Proof. unseal. intros. iApply own_alloc_strong; done. Qed.
   Lemma ghost_var_alloc a :
     ⊢ |==> ∃ γ, ghost_var γ 1 a.
-  Proof. iApply own_alloc. done. Qed.
+  Proof. unseal. iApply own_alloc. done. Qed.
 
   Lemma ghost_var_valid_2 γ a1 q1 a2 q2 :
     ghost_var γ q1 a1 -∗ ghost_var γ q2 a2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ a1 = a2⌝.
   Proof.
-    iIntros "Hvar1 Hvar2".
+    unseal. iIntros "Hvar1 Hvar2".
     iDestruct (own_valid_2 with "Hvar1 Hvar2") as %[Hq Ha]%frac_agree_op_valid.
     done.
   Qed.
@@ -67,7 +69,7 @@ Section lemmas.
   Lemma ghost_var_update b γ a :
     ghost_var γ 1 a ==∗ ghost_var γ 1 b.
   Proof.
-    iApply own_update. apply cmra_update_exclusive. done.
+    unseal. iApply own_update. apply cmra_update_exclusive. done.
   Qed.
   Lemma ghost_var_update_2 b γ a1 q1 a2 q2 :
     (q1 + q2 = 1)%Qp →
@@ -86,5 +88,3 @@ Section lemmas.
   Proof. iApply ghost_var_update_2. apply Qp_half_half. Qed.
 
 End lemmas.
-
-Typeclasses Opaque ghost_var.
