@@ -138,6 +138,14 @@ Section tests.
     by replace (S n - 1)%Z with (n:Z) by lia.
   Qed.
 
+  (* Make sure [wp_bind] works even when it changes nothing. *)
+  Lemma wp_bind_nop (e : expr) :
+    ⊢ WP e + #0 {{ _, True }}.
+  Proof. wp_bind (e + #0)%E. Abort.
+  Lemma wp_bind_nop (e : expr) :
+    ⊢ WP e + #0 [{ _, True }].
+  Proof. wp_bind (e + #0)%E. Abort.
+
   Lemma wp_apply_evar e P :
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
