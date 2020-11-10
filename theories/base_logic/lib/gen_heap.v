@@ -265,7 +265,7 @@ Section gen_heap.
     rewrite !dom_insert_L. set_solver.
   Qed.
 
-  Lemma gen_heap_alloc_gen σ σ' :
+  Lemma gen_heap_alloc_big σ σ' :
     σ' ##ₘ σ →
     gen_heap_interp σ ==∗
     gen_heap_interp (σ' ∪ σ) ∗ ([∗ map] l ↦ v ∈ σ', l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ', meta_token l ⊤).
