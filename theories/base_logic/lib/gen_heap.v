@@ -300,7 +300,7 @@ Proof.
   { exact: gmap_view_auth_valid. }
   pose (gen_heap := GenHeapG L V Σ _ _ _ _ _ γh γm).
   iExists gen_heap.
-  iAssert (gen_heap_interp ∅) with "[Hh Hm]" as "Hinterp".
+  iAssert (gen_heap_interp (hG:=gen_heap) ∅) with "[Hh Hm]" as "Hinterp".
   { iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L. }
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
