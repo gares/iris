@@ -135,6 +135,10 @@ With this release, we dropped support for Coq 8.9.
   threads instead of only a single thread. The derived adequacy lemmas
   are unchanged.
 
+**Changes in `heap_lang`:**
+
+* `wp_pures` now turns goals of the form `WP v {{ Φ }}` into `Φ v`.
+
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
 Note that the script is not idempotent, do not run it twice.
