@@ -53,7 +53,7 @@ When you are writing a module that exports some Iris term for others to use
 (e.g., `join_handle` in the [spawn module](../theories/heap_lang/lib/spawn.v)), be
 sure to mark these terms as opaque for type class search at the *end* of your
 module (and outside any section):
-```
+```coq
 Typeclasses Opaque join_handle.
 ```
 This makes sure that the proof mode does not "look into" your definition when it
@@ -66,7 +66,7 @@ parameters, it is convenient to add those to the `libG` class that the library
 will likely need anyway (see the [resource algebra docs](resource_algebras.md)
 for further details on `libG` classes).  For example, the STS library is
 parameterized by an STS and assumes that the STS state space is inhabited:
-```
+```coq
 Class stsG Σ (sts : stsT) := {
   sts_inG :> inG Σ (stsR sts);
   sts_inhabited :> Inhabited (sts.state sts);
@@ -74,7 +74,7 @@ Class stsG Σ (sts : stsT) := {
 ```
 In this case, the `Instance` for this `libG` class has more than just a `subG`
 assumption:
-```
+```coq
 Instance subG_stsΣ Σ sts :
   subG (stsΣ sts) Σ → Inhabited (sts.state sts) → stsG Σ sts.
 Proof. solve_inG. Qed.
@@ -119,7 +119,6 @@ For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extension
 * j
 * k
 * l
-* m : M : cmraT = RA/Camera ("monoid") element
 * m* = prefix for option ("maybe")
 * n
 * o

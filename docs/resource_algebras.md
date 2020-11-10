@@ -12,7 +12,7 @@ This is expressed via the `inG Σ R` typeclass, which roughly says that `R ∈ �
 Libraries typically bundle the `inG` they need in a `libG` typeclass, so they do
 not have to expose to clients what exactly their resource algebras are. For
 example, in the [one-shot example](../tests/one_shot.v), we have:
-```
+```coq
 Class one_shotG Σ := { one_shot_inG :> inG Σ one_shotR }.
 ```
 The `:>` means that the projection `one_shot_inG` is automatically registered as
@@ -26,7 +26,7 @@ your resource algebra refers to `Σ`, the definition becomes recursive.  That is
 actually legal under some conditions (see "Camera functors" below), but for now
 we will ignore that case.  We have to define a list that contains all the
 resource algebras we need:
-```
+```coq
 Definition one_shotΣ : gFunctors := #[GFunctor one_shotR].
 ```
 This time, there is no `Σ` in the context, so we cannot accidentally introduce a
@@ -37,7 +37,7 @@ other; together with a coercion from a single functor to a singleton list, this
 means lists can be nested arbitrarily.)
 
 Now we can define the one and only instance that our type class will ever need:
-```
+```coq
 Instance subG_one_shotΣ {Σ} : subG one_shotΣ Σ → one_shotG Σ.
 Proof. solve_inG. Qed.
 ```
@@ -48,7 +48,7 @@ uses internally) can trivially be satisfied by picking the right `Σ`.
 
 Now you can add `one_shotG` as an assumption to all your module definitions and
 proofs.  We typically use a section for this:
-```
+```coq
 Section proof.
 Context `{!heapG Σ, !one_shotG Σ}.
 ```
@@ -74,7 +74,7 @@ the algebra laws would be quite cumbersome, so instead Iris provides a rich set
 of resource algebra combinators that one can use to build up the desired
 resource algebras. For example, `one_shotR` is defined as follows:
 
-```
+```coq
 Definition one_shotR := csumR (exclR unitO) (agreeR ZO).
 ```
 
@@ -91,7 +91,7 @@ To obtain a closed Iris proof, i.e., a proof that does not make assumptions like
 and if your proof relies on some singleton (most do, at least indirectly; also
 see the next section), you have to call the respective initialization or
 adequacy lemma.  [For example](tests/one_shot.v):
-```
+```coq
 Section client.
   Context `{!heapG Σ, !one_shotG Σ, !spawnG Σ}.
 
@@ -114,7 +114,7 @@ Some Iris modules involve a form of "global state".  For example, defining the
 physical heap.  The `gname` of that ghost state must be picked once when the
 proof starts, and then globally known everywhere.  Hence it is added to
 `gen_heapG`, the type class for the generalized heap module:
-```
+```coq
 Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_inG :> inG Σ (authR (gen_heapUR L V));
   gen_heap_name : gname
@@ -126,21 +126,21 @@ of their type class.  For example, the initialization for `heapG` is happening
 as part of [`heap_adequacy`](theories/heap_lang/adequacy.v); this in turn uses
 the initialization lemma for `gen_heapG` from
 [`gen_heap_init`](theories/base_logic/lib/gen_heap.v):
-```
+```coq
 Lemma gen_heap_init `{gen_heapPreG L V Σ} σ :
   (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
 ```
 These lemmas themselves only make assumptions the way normal modules (those
 without global state) do, which are typically collected in a `somethingPreG`
 type class (such as `gen_heapPreG`):
-```
+```coq
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V))
 }.
 ```
 Just like in the normal case, `somethingPreG` type classes have an `Instance`
 showing that a `subG` is enough to instantiate them:
-```
+```coq
 Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
   subG (gen_heapΣ L V) Σ → gen_heapPreG L V Σ.
 Proof. solve_inG. Qed.
@@ -166,7 +166,7 @@ recursively refers to `iProp`.
 into the model of Iris. In Iris, the type of propositions `iProp` is described
 by the solution to the recursive domain equation:
 
-```
+```coq
 iProp ≅ uPred (F (iProp))
 ```
 
@@ -179,7 +179,7 @@ algebras). Having just a single fixed `F` would however be rather inconvenient,
 so instead we have a list `Σ`, and then we define the global functor `F_global`
 roughly as follows:
 
-```
+```coq
 F_global X := Π_{F ∈ Σ} gmap nat (F X)
 ```
 
@@ -195,7 +195,7 @@ would not hold for `F`).  To mitigate this, we instead work with "bifunctors":
 functors that take two arguments, `X` and `X⁻`, where `X⁻` is used for
 negative positions.  This leads us to the following domain equation:
 
-```
+```coq
 iProp ≅ uPred (F_global (iProp,iProp))
 F_global (X,X⁻) := Π_{F ∈ Σ} gmap nat (F (X,X⁻))
 ```
@@ -213,7 +213,7 @@ let us say you would like to have ghost state of type `gmap K (agree (nat *
 later iProp))`, using the "type-level" `later` operator which ensures
 contractivity.  Then you will have to define a functor such as:
 
-```
+```coq
 F (X,X⁻) := gmap K (agree (nat * ▶ X))
 ```
 
@@ -246,7 +246,7 @@ that that functor is used in a negative position.
 Using these combinators, one can easily construct bigger functors in point-free
 style and automatically infer their contractivity, e.g:
 
-```
+```coq
 F := gmaURF K (agreeRF (prodOF (constOF natO) (laterOF idOF)))
 ```
 
@@ -258,7 +258,7 @@ the constant functors (`constOF`, `constRF`, and `constURF`) a coercion, and
 provide the usual notation for products, etc. So the above functor can be
 written as follows:
 
-```
+```coq
 F := gmapRF K (agreeRF (natO * ▶ ∙))
 ```
 
@@ -270,7 +270,7 @@ working with functors, and the desired recursive `iProp` is replaced by the
 Putting it all together, the `libG` typeclass and `libΣ` list of functors for
 your example would look as follows:
 
-```
+```coq
 Class libG Σ := { lib_inG :> inG Σ (gmapR K (agreeR (prodO natO (laterO (iPropO Σ))))) }.
 Definition libΣ : gFunctors := #[GFunctor (gmapRF K (agreeRF (natO * ▶ ∙)))].
 Instance subG_libΣ {Σ} : subG libΣ Σ → libG Σ.
