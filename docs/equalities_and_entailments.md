@@ -21,10 +21,11 @@ Leibniz) equality `=`, and setoid equality `equiv` / `≡` (defined in `stdpp`).
 Both of these are metalogic connectives from the perspective of Iris, and as
 such are declared in Coq scope `stdpp_scope`.
 
-Setoid equality for a type `A` is defined by the instance of `Equiv A`; this
-allows defining quotient setoids. To deal with setoids, we use Coq's
-[generalized
-rewriting](https://coq.inria.fr/refman/addendum/generalized-rewriting.html)
+Setoid equality for a type `A` is defined by the instance of `Equiv A`.  This
+should be accompanied by an `Equivalence` instance which proves that the given
+relation indeed is an equivalence relation.  The handling of setoidsis based on
+Coq's
+[generalized rewriting](https://coq.inria.fr/refman/addendum/generalized-rewriting.html)
 facilities.
 
 Setoid equality can coincide with Leibniz equality, which is reflected by the
@@ -70,7 +71,8 @@ possible as it requires the caller to specifically package up function and proof
 When an OFE structure on a function type is required but the domain is discrete,
 one can use the type `A -d> B`.  This has the advantage of not bundling any
 proofs, i.e., this is notation for a plain Coq function type. See the
-`discrete_fun` documentation in `iris.algebra.ofe` for further details.
+`discrete_fun` documentation in [`iris.algebra.ofe`](../theories/algebra/ofe.v)
+for further details.
 
 In both OFE function spaces (`A -n> B` and `A -d> B`), setoid equality is
 defined to be pointwise equality, so that functional extensionality holds for `≡`.
@@ -85,10 +87,8 @@ variants of Iris entailments.
 
 The Iris logic has an internal concept of equality: if `a` and `b` are Iris
 terms of type `A`, then their internal equality is written (on paper) "a =_A b";
-in Coq, that's written `(a ≡ b)%I` (notation for `bi_internal_eq` in scope
-`bi_scope`). The type annotation on paper only exist for the purpose of being
-fully explicit; it can be omitted as is common for other notions of equality and
-it is inferred in Coq.
+in Coq, that's written `(a ≡@{A} b)%I` (notation for `bi_internal_eq` in scope
+`bi_scope`). You can leave away the `@{A}` to let Coq infer the type.
 
 As shown in the Iris appendix, an internal equality `(a ≡ b)%I` is interpreted using
 OFE distance at the current step-index. Many types have `_equivI` lemmas
@@ -116,7 +116,7 @@ resources (see for instance Sec. 2.1 of the MoSEL paper).
 
 In the metalogic, Iris defines the entailment relation between uniform
 predicates: intuitively, `P` entails `Q` (written `P ⊢ Q`) means that `P`
-implies `Q` on _every_ resource (for details see Iris appendix [Sec. 6]).
+implies `Q` on _every_ resource and at all step-indices (for details see Iris appendix [Sec. 6]).
 Entailment `P ⊢ Q` is distinct from the magic wand, `(P -∗ Q)%I`: the former is
 a Coq-level statement of type `Prop`, the latter an Iris-level statement of type
 `iProp`.  However, the two are closely related: `P ⊢ Q` is equivalent to `emp ⊢
@@ -139,9 +139,12 @@ Inside the logic, we can use internal equality `(≡)%I` on any type, including
 propositions themselves.  However, there is a pitfall here: internal equality
 `≡` is in general strictly stronger than `∗-∗` (the bidirectional version of the
 magic wand), because `Q1 ≡ Q2` means that `Q1` and `Q2` are equivalent
-_independently of the available resources_.  The two notions of internal
-equivalence and equality of propositions are related by the following law of
-propositional extensionality:
+_independently of the available resources_. This makes `≡` even stronger than `□
+(_ ∗-∗ _)`, because `□` does permit the usage of some resources (namely, the RA
+core of the available resources can still be used).
+
+The two notions of internal equivalence and equality of propositions are related
+by the following law of propositional extensionality:
 ```coq
 Lemma prop_ext P Q : P ≡ Q ⊣⊢ ■ (P ∗-∗ Q).
 ```
