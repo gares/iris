@@ -145,6 +145,9 @@ Section tests.
   Lemma wp_pures_val (b : bool) :
     ⊢ WP #b {{ _, True }}.
   Proof. wp_pures. done. Qed.
+  Lemma twp_pures_val (b : bool) :
+    ⊢ WP #b [{ _, True }].
+  Proof. wp_pures. done. Qed.
 
   Lemma wp_cmpxchg l v :
     val_is_unboxed v →
