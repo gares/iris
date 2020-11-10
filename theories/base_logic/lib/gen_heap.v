@@ -310,5 +310,5 @@ Proof.
   iMod (gen_heap_init ∅) as (gen_heap) "Hinterp". iExists gen_heap.
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
-  rewrite right_id. done.
+  rewrite right_id_L. done.
 Qed.
