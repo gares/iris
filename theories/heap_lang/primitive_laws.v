@@ -294,9 +294,11 @@ Proof.
   iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
 Qed.
 
-Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
+Lemma mapsto_frac_ne l1 l2 q1 q2 v1 v2 :
   ¬ (q1 + q2 ≤ 1)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
-Proof. apply mapsto_mapsto_ne. Qed.
+Proof. apply mapsto_frac_ne. Qed.
+Lemma mapsto_ne l1 l2 q2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+Proof. apply mapsto_ne. Qed.
 
 Global Instance inv_mapsto_own_proper l v :
   Proper (pointwise_relation _ iff ==> (≡)) (inv_mapsto_own l v).

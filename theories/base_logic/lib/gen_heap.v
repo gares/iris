@@ -172,12 +172,14 @@ Section gen_heap.
     iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
   Qed.
 
-  Lemma mapsto_mapsto_ne l1 l2 q1 q2 v1 v2 :
+  Lemma mapsto_frac_ne l1 l2 q1 q2 v1 v2 :
     ¬ (q1 + q2 ≤ 1)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
   Proof.
     iIntros (?) "Hl1 Hl2"; iIntros (->).
     by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %[??].
   Qed.
+  Lemma mapsto_ne l1 l2 q2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+  Proof. apply mapsto_frac_ne, Qp_not_add_le_l. Qed.
 
   (** General properties of [meta] and [meta_token] *)
   Global Instance meta_token_timeless l N : Timeless (meta_token l N).

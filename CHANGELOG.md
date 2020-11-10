@@ -130,6 +130,8 @@ With this release, we dropped support for Coq 8.9.
   `⌜✓ (q1 + q2)%Qp ∧ v1 = v2⌝`.
 * Change `gen_heap_init` to also return ownership of the points-to facts for the
   initial heap.
+* Rename `mapsto_mapsto_ne` to `mapsto_frac_ne`, and add a simpler
+  `mapsto_ne` that does not require reasoning about fractions.
 
 **Changes in `program_logic`:**
 
@@ -159,6 +161,8 @@ s/\bauth_both_frac_valid\b/auth_both_frac_valid_discrete/g
 # gen_heap_ctx and proph_map_ctx
 s/\bgen_heap_ctx\b/gen_heap_interp/g
 s/\bproph_map_ctx\b/proph_map_interp/g
+# other gen_heap changes
+s/\bmapsto_mapsto_ne\b/mapsto_frac_ne/g
 EOF
 ```
 
