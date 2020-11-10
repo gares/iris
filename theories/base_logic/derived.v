@@ -1,5 +1,5 @@
-From iris.bi Require Export bi.
 From iris.algebra Require Import frac.
+From iris.bi Require Export bi.
 From iris.base_logic Require Export bi.
 From iris Require Import options.
 Import bi.bi base_logic.bi.uPred.

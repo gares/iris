@@ -1,5 +1,5 @@
-From iris.bi Require Import derived_laws_later big_op internal_eq.
 From iris.algebra Require Import monoid.
+From iris.bi Require Import derived_laws_later big_op internal_eq.
 From iris Require Import options.
 Import interface.bi derived_laws.bi derived_laws_later.bi.
 

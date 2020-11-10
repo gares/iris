@@ -2,8 +2,8 @@
 the Iris lifting lemmas. *)
 
 From stdpp Require Import fin_maps.
-From iris.proofmode Require Import tactics.
 From iris.algebra Require Import auth gmap.
+From iris.proofmode Require Import tactics.
 From iris.bi.lib Require Import fractional.
 From iris.base_logic.lib Require Export gen_heap proph_map gen_inv_heap.
 From iris.program_logic Require Export weakestpre total_weakestpre.

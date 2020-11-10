@@ -1,7 +1,7 @@
 From stdpp Require Export namespaces.
+From iris.algebra Require Import gmap_view namespace_map agree frac.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import gmap_view namespace_map agree frac.
 From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 Import uPred.

@@ -1,5 +1,5 @@
-From iris.bi Require Export derived_laws.
 From iris.algebra Require Import monoid.
+From iris.bi Require Export derived_laws.
 From iris Require Import options.
 
 Module bi.

@@ -8,9 +8,9 @@ lower-bound at [m] imply that [m ≤ n], and [mnat_update], which allows to
 increase the auth element. At any time the auth nat can be "snapshotted" with
 [mnat_get_lb] to produce a persistent lower-bound proposition. *)
 
-From iris.proofmode Require Import tactics.
 From iris.algebra.lib Require Import mnat_auth.
 From iris.bi.lib Require Import fractional.
+From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 

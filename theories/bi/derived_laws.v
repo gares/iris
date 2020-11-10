@@ -1,5 +1,5 @@
-From iris.bi Require Export derived_connectives.
 From iris.algebra Require Import monoid.
+From iris.bi Require Export derived_connectives.
 From iris Require Import options.
 
 (* The sections add [BiAffine] and the like, which is only picked up with [Type*]. *)

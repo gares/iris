@@ -1,6 +1,6 @@
+From iris.algebra Require Export base.
 From iris.bi Require Export bi.
 From iris.proofmode Require Import base.
-From iris.algebra Require Export base.
 From iris Require Import options.
 Import bi.
 

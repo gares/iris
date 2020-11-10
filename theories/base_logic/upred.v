@@ -1,6 +1,6 @@
 From stdpp Require Import finite.
-From iris.bi Require Import notation.
 From iris.algebra Require Export cmra updates.
+From iris.bi Require Import notation.
 From iris Require Import options.
 Local Hint Extern 1 (_ ≼ _) => etrans; [eassumption|] : core.
 Local Hint Extern 1 (_ ≼ _) => etrans; [|eassumption] : core.
