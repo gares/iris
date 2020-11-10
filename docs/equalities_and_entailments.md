@@ -7,7 +7,7 @@ This is not a general introduction to Iris: instead, we discuss the different
 Iris equalities and the interface to their Coq implementation. In particular, we
 discuss:
 - Equality ("=") in the *on-paper* Iris metatheory
-- Coq equality (`=`) and setoid equivalence (`≡`);
+- Coq's Leibniz equality (`=`) and std++'s setoid equivalence (`≡`);
 - N-equivalence on OFEs (`≡{n}≡`);
 - Iris internal equality (`≡` in `bi_scope`);
 - Iris entailment and bi-entailment (`⊢`, `⊣⊢`).
@@ -122,7 +122,7 @@ a Coq-level statement of type `Prop`, the latter an Iris-level statement of type
 `iProp`.  However, the two are closely related: `P ⊢ Q` is equivalent to `emp ⊢
 P -∗ Q` (per Iris lemmas `entails_wand` and `wand_entails`).  Iris also defines
 a "unary" form of entailment, `⊢ P`, which is short for `emp ⊢ P`.
-We can also use bi-entailment `P ⊣⊢ Q` to express that both `P ⊢ Q` and `Q ⊢ P` gold.
+We can also use bi-entailment `P ⊣⊢ Q` to express that both `P ⊢ Q` and `Q ⊢ P` hold.
 
 On paper, uniform predicates are defined by quotienting by an equivalence
 relation ([Iris appendix, Sec. 3.3]); in Coq, that relation is chosen as the
