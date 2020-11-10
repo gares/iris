@@ -290,24 +290,18 @@ Section gen_heap.
   Qed.
 End gen_heap.
 
-(** This lemma drops ownership of the initial [σ] on the floor; see
-[gen_heap_init_big] for a version of the lemma that preserves this ownership. *)
 Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
-  ⊢ |==> ∃ _ : gen_heapG L V Σ, gen_heap_interp σ.
-Proof.
-  iMod (own_alloc (gmap_view_auth 1 (σ : gmap L (leibnizO V)))) as (γh) "Hh".
-  { exact: gmap_view_auth_valid. }
-  iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L gnameO))) as (γm) "Hm".
-  { exact: gmap_view_auth_valid. }
-  iModIntro. iExists (GenHeapG L V Σ _ _ _ _ _ γh γm).
-  iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L.
-Qed.
-
-Lemma gen_heap_init_big `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ _ : gen_heapG L V Σ,
     gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
 Proof.
-  iMod (gen_heap_init ∅) as (gen_heap) "Hinterp". iExists gen_heap.
+  iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L (leibnizO V)))) as (γh) "Hh".
+  { exact: gmap_view_auth_valid. }
+  iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L gnameO))) as (γm) "Hm".
+  { exact: gmap_view_auth_valid. }
+  pose (gen_heap := GenHeapG L V Σ _ _ _ _ _ γh γm).
+  iExists gen_heap.
+  iAssert (gen_heap_interp ∅) with "[Hh Hm]" as "Hinterp".
+  { iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L. }
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
   rewrite right_id_L. done.
