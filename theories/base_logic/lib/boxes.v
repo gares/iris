@@ -1,5 +1,5 @@
-From iris.proofmode Require Import tactics.
 From iris.algebra Require Import lib.excl_auth gmap agree.
+From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export invariants.
 From iris Require Import options.
 Import uPred.

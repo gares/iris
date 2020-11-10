@@ -1,5 +1,5 @@
-From iris.bi Require Export notation.
 From iris.algebra Require Export ofe.
+From iris.bi Require Export notation.
 From iris Require Import options.
 Set Primitive Projections.
 

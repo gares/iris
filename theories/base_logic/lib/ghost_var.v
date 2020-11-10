@@ -1,8 +1,8 @@
 (** A simple "ghost variable" of arbitrary type with fractional ownership.
 Can be mutated when fully owned. *)
+From iris.algebra Require Import frac_agree.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
-From iris.algebra Require Import frac_agree.
 From iris.base_logic.lib Require Export own.
 From iris Require Import options.
 

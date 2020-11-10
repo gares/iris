@@ -1,6 +1,6 @@
 From stdpp Require Export coPset.
-From iris.proofmode Require Import tactics.
 From iris.algebra Require Import gmap auth agree gset coPset.
+From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export own.
 From iris.base_logic.lib Require Import wsat.
 From iris Require Import options.

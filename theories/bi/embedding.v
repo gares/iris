@@ -1,6 +1,6 @@
+From iris.algebra Require Import monoid.
 From iris.bi Require Import interface derived_laws_later big_op.
 From iris.bi Require Import plainly updates internal_eq.
-From iris.algebra Require Import monoid.
 From iris Require Import options.
 
 (* The sections add extra BI assumptions, which is only picked up with [Type*]. *)

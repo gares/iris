@@ -1,5 +1,4 @@
 From iris.bi Require Import interface derived_connectives updates.
-From iris.algebra Require Export ofe.
 From iris Require Import options.
 
 Notation "P |- Q" := (P ⊢ Q)
