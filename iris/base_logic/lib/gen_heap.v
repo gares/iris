@@ -81,6 +81,10 @@ Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_meta_data_preG_inG :> inG Σ (namespace_mapR (agreeR positiveO));
 }.
 
+Definition gen_heapG_from_preG (L V : Type) (Σ : gFunctors) `{gen_heapPreG L V Σ}
+    (γh γm : gname) : gen_heapG L V Σ :=
+  GenHeapG L V Σ _ _ _ _ _ γh γm.
+
 Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
   GFunctor (gmap_viewR L (leibnizO V));
   GFunctor (gmap_viewR L gnameO);
@@ -308,19 +312,28 @@ Section gen_heap.
   Qed.
 End gen_heap.
 
-Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
-  ⊢ |==> ∃ _ : gen_heapG L V Σ,
+Lemma gen_heap_init_names `{Countable L, !gen_heapPreG L V Σ} σ :
+  ⊢ |==> ∃ γh γm : gname,
+    let hG := gen_heapG_from_preG L V Σ γh γm in
     gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
 Proof.
   iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L (leibnizO V)))) as (γh) "Hh".
   { exact: gmap_view_auth_valid. }
   iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L gnameO))) as (γm) "Hm".
   { exact: gmap_view_auth_valid. }
-  pose (gen_heap := GenHeapG L V Σ _ _ _ _ _ γh γm).
-  iExists gen_heap.
-  iAssert (gen_heap_interp (hG:=gen_heap) ∅) with "[Hh Hm]" as "Hinterp".
+  iExists γh, γm.
+  iAssert (gen_heap_interp (hG:=gen_heapG_from_preG _ _ _ γh γm) ∅) with "[Hh Hm]" as "Hinterp".
   { iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L. }
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
   rewrite right_id_L. done.
+Qed.
+
+Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
+  ⊢ |==> ∃ _ : gen_heapG L V Σ,
+    gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
+Proof.
+  iMod (gen_heap_init_names σ) as (γh γm) "Hinit".
+  iExists (gen_heapG_from_preG _ _ _ γh γm).
+  done.
 Qed.
