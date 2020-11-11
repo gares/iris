@@ -410,15 +410,13 @@ Proof.
 Qed.
 
 (* Test for issue #288 *)
-(* FIXME: Restore once we drop support for Coq 8.8 and Coq 8.9.
-Lemma test_iExists_unused : (∃ P : PROP, ∃ x : nat, P)%I.
+Lemma test_iExists_unused : ⊢ ∃ P : PROP, ∃ x : nat, P.
 Proof.
   iExists _.
   iExists 10.
   iAssert emp%I as "H"; first done.
   iExact "H".
 Qed.
-*)
 
 (* Check coercions *)
 Lemma test_iExist_coercion (P : Z → PROP) : (∀ x, P x) -∗ ∃ x, P x.
