@@ -19,11 +19,11 @@ Tactic Notation "wp_expr_eval" tactic3(t) :=
   iStartProof;
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
-    eapply tac_wp_expr_eval;
-      [let x := fresh in intros x; t; unfold x; reflexivity|]
+    notypeclasses refine (tac_wp_expr_eval _ _ _ _ e _ _ _);
+      [let x := fresh in intros x; t; unfold x; notypeclasses refine eq_refl|]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
-    eapply tac_twp_expr_eval;
-      [let x := fresh in intros x; t; unfold x; reflexivity|]
+    notypeclasses refine (tac_twp_expr_eval _ _ _ _ e _ _ _);
+      [let x := fresh in intros x; t; unfold x; notypeclasses refine eq_refl|]
   | _ => fail "wp_expr_eval: not a 'wp'"
   end.
 
