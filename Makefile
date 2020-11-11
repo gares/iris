@@ -15,7 +15,8 @@ phony: ;
 
 clean: Makefile.coq
 	+@$(MAKE) -f Makefile.coq clean
-	find theories tests exercises solutions \( -name "*.d" -o -name "*.vo" -o -name "*.vo[sk]" -o -name "*.aux" -o -name "*.cache" -o -name "*.glob" -o -name "*.vio" \) -print -delete || true
+	@# Make sure not to enter the `_opam` folder.
+	find [a-z]*/ \( -name "*.d" -o -name "*.vo" -o -name "*.vo[sk]" -o -name "*.aux" -o -name "*.cache" -o -name "*.glob" -o -name "*.vio" \) -print -delete || true
 	rm -f Makefile.coq .lia.cache builddep/*
 .PHONY: clean
 
