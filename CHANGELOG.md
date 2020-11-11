@@ -7,6 +7,9 @@ lemma.
 
 With this release, we dropped support for Coq 8.9.
 
+We also split Iris into multiple opam packages: `coq-iris` no longer contains
+HeapLang, which is now in a separate package `coq-iris-heap-lang`.
+
 **Changes in `algebra`:**
 
 * Rename `agree_op_inv'` to `to_agree_op_inv`,

@@ -7,11 +7,15 @@ bug-reports: "https://gitlab.mpi-sws.org/iris/iris/issues"
 dev-repo: "git+https://gitlab.mpi-sws.org/iris/iris.git"
 
 synopsis: "Iris is a Higher-Order Concurrent Separation Logic Framework with support for interactive proofs"
+description: """
+This package provides the following Coq modules:
+iris.prelude, iris.algebra, iris.si_logic, iris.bi, iris.proofmode, iris.base_logic, iris.program_logic.
+"""
 
 depends: [
   "coq" { (>= "8.10.2" & < "8.13~") | (= "dev") }
   "coq-stdpp" { (= "dev.2020-10-30.0.402f2d6a") | (= "dev") }
 ]
 
-build: [make "-j%{jobs}%"]
-install: [make "install"]
+build: ["./make-package" "iris" "-j%{jobs}%"]
+install: ["./make-package" "iris" "install"]
