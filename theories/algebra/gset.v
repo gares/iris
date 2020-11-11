@@ -1,6 +1,6 @@
 From stdpp Require Export sets gmap mapset.
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import updates local_updates.
+From iris.algebra Require Import updates local_updates big_op.
 From iris Require Import options.
 
 (* The union CMRA *)
@@ -55,6 +55,15 @@ Section gset.
 
   Global Instance gset_core_id X : CoreId X.
   Proof. by apply core_id_total; rewrite gset_core_self. Qed.
+
+  Lemma big_opS_singletons X :
+    ([^op set] x ∈ X, {[ x ]}) = X.
+  Proof.
+    induction X as [|x X Hx IH] using set_ind_L.
+    - rewrite big_opS_empty. done.
+    - unfold_leibniz. rewrite big_opS_insert // IH //.
+  Qed.
+
 End gset.
 
 Arguments gsetO _ {_ _}.

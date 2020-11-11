@@ -598,6 +598,22 @@ Proof.
   intros ??. rewrite !lookup_included=> Hm i.
   rewrite !lookup_fmap. by apply option_fmap_mono.
 Qed.
+
+Lemma big_opM_singletons m :
+  ([^op map] k ↦ x ∈ m, {[ k := x ]}) = m.
+Proof.
+  (* We are breaking the big_opM abstraction here. The reason is that [map_ind]
+     is too weak: we need an induction principle that visits all the keys in the
+     right order, namely the order in which they appear in map_to_list.  Here,
+     we achieve this by unfolding [big_opM] and doing induction over that list
+     instead. *)
+  rewrite big_opM_eq /big_opM_def -{2}(list_to_map_to_list m).
+  assert (NoDup (map_to_list m).*1) as Hnodup by apply NoDup_fst_map_to_list.
+  revert Hnodup. induction (map_to_list m) as [|[k x] l IH]; csimpl; first done.
+  intros [??]%NoDup_cons. rewrite IH //.
+  rewrite insert_singleton_op ?not_elem_of_list_to_map_1 //.
+Qed.
+
 End properties.
 
 Section unital_properties.

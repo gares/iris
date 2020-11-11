@@ -1,6 +1,6 @@
 From stdpp Require Export sets gmultiset countable.
 From iris.algebra Require Export cmra.
-From iris.algebra Require Import updates local_updates.
+From iris.algebra Require Import updates local_updates big_op.
 From iris Require Import options.
 
 (* The multiset union CMRA *)
@@ -84,6 +84,15 @@ Section gmultiset.
     repeat (rewrite multiplicity_difference || rewrite multiplicity_disj_union).
     lia.
   Qed.
+
+  Lemma big_opMS_singletons X :
+    ([^op mset] x ∈ X, {[ x ]}) = X.
+  Proof.
+    induction X as [|x X IH] using gmultiset_ind.
+    - rewrite big_opMS_empty. done.
+    - unfold_leibniz. rewrite big_opMS_disj_union // big_opMS_singleton IH //.
+  Qed.
+
 End gmultiset.
 
 Arguments gmultisetO _ {_ _}.
