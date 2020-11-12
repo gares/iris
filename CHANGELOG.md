@@ -59,6 +59,7 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Change `*_valid` lemma statements involving fractions to use `Qp` addition and
   inequality instead of RA composition and validity (also in `base_logic` and
   the higher layers).
+* Move `algebra.base` module to `prelude.prelude`.
 
 **Changes in `bi`:**
 
