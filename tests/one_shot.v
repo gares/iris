@@ -84,7 +84,7 @@ Proof.
     iDestruct (own_valid_2 with "Hγ Hγ'") as %?%to_agree_op_inv_L; subst.
     iModIntro. iSplitL "Hl".
     { iNext; iRight; by eauto. }
-    wp_apply wp_assert. wp_pures. by case_bool_decide.
+    wp_smart_apply wp_assert. wp_pures. by case_bool_decide.
 Qed.
 
 Lemma ht_one_shot (Φ : val → iProp Σ) :
@@ -95,8 +95,8 @@ Lemma ht_one_shot (Φ : val → iProp Σ) :
     }}.
 Proof.
   iIntros "!> _". iApply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]"; iSplit.
-  - iIntros (n) "!> _". wp_apply "Hf1".
-  - iIntros "!> _". wp_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
+  - iIntros (n) "!> _". wp_smart_apply "Hf1".
+  - iIntros "!> _". wp_smart_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
 Qed.
 End proof.
 
@@ -111,8 +111,8 @@ Section client.
   Lemma client_safe : ⊢ WP client {{ _, True }}.
   Proof using Type*.
     rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2) "[#Hf1 #Hf2]".
-    wp_let. wp_apply wp_par.
-    - wp_apply "Hf1".
+    wp_let. wp_smart_apply wp_par.
+    - wp_smart_apply "Hf1".
     - wp_proj. wp_bind (f2 _)%E. iApply wp_wand; first by iExact "Hf2".
       iIntros (check) "Hcheck". wp_pures. iApply "Hcheck".
     - auto.

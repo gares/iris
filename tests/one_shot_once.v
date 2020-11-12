@@ -113,8 +113,8 @@ Lemma ht_one_shot (Φ : val → iProp Σ) :
 Proof.
   iIntros "!> _". iApply wp_one_shot. iIntros (f1 f2 T) "(HT & #Hf1 & #Hf2)".
   iExists T. iFrame "HT". iSplit.
-  - iIntros (n) "!> HT". wp_apply "Hf1". done.
-  - iIntros "!> _". wp_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
+  - iIntros (n) "!> HT". wp_smart_apply "Hf1". done.
+  - iIntros "!> _". wp_smart_apply (wp_wand with "Hf2"). by iIntros (v) "#? !> _".
 Qed.
 End proof.
 
@@ -129,8 +129,8 @@ Section client.
   Lemma client_safe : ⊢ WP client {{ _, True }}.
   Proof using Type*.
     rewrite /client. wp_apply wp_one_shot. iIntros (f1 f2 T) "(HT & #Hf1 & #Hf2)".
-    wp_let. wp_apply (wp_par with "[HT]").
-    - wp_apply "Hf1". done.
+    wp_let. wp_smart_apply (wp_par with "[HT]").
+    - wp_smart_apply "Hf1". done.
     - wp_proj. wp_bind (f2 _)%E. iApply wp_wand; first by iExact "Hf2".
       iIntros (check) "Hcheck". wp_pures. iApply "Hcheck".
     - auto.

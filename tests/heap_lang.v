@@ -115,14 +115,14 @@ Section tests.
   Proof.
     iIntros "HΦ". wp_lam.
     wp_op. case_bool_decide.
-    - wp_apply FindPred_spec; first lia. wp_pures.
+    - wp_smart_apply FindPred_spec; first lia. wp_pures.
       by replace (n - 1)%Z with (- (-n + 2 - 1))%Z by lia.
-    - wp_apply FindPred_spec; eauto with lia.
+    - wp_smart_apply FindPred_spec; eauto with lia.
   Qed.
 
   Lemma Pred_user E :
     ⊢ WP let: "x" := Pred #42 in Pred "x" @ E [{ v, ⌜v = #40⌝ }].
-  Proof. iIntros "". wp_apply Pred_spec. by wp_apply Pred_spec. Qed.
+  Proof. iIntros "". wp_apply Pred_spec. by wp_smart_apply Pred_spec. Qed.
 
   Definition Id : val :=
     rec: "go" "x" :=

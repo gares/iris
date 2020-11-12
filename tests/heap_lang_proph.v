@@ -47,7 +47,7 @@ Section tests.
       Resolve (Resolve (#n - #n) ((λ: "x", "x") #p2) (#0 + #2)) ((λ: "x", "x") #p1) (#0 + #1) @ s; E
     {{{ RET #0 ; ∃ vs1' vs2', ⌜vs1 = (#0, #1)::vs1' ∧ vs2 = (#0, #2)::vs2'⌝ ∗ proph p1 vs1' ∗ proph p2 vs2' }}}.
   Proof.
-    iIntros (Φ) "[Hp1 Hp2] HΦ".
+    iIntros (Φ) "[Hp1 Hp2] HΦ". wp_pures.
     wp_apply (wp_resolve with "Hp1"); first done.
     wp_apply (wp_resolve with "Hp2"); first done.
     wp_op.
