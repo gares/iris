@@ -89,7 +89,6 @@ build-iris.dev:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.9.0   coq-iris.dev git git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature"
-    TIMING_CONF: "coq-8.9.0"
   tags:
   - fp-timing
 ```
