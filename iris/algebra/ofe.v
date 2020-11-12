@@ -1,4 +1,4 @@
-From iris.algebra Require Export base.
+From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
 Set Primitive Projections.
 

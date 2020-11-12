@@ -15,6 +15,7 @@
 -arg -w -arg -redundant-canonical-projection
 
 iris/prelude/options.v
+iris/prelude/prelude.v
 iris/algebra/monoid.v
 iris/algebra/cmra.v
 iris/algebra/big_op.v
@@ -25,7 +26,6 @@ iris/algebra/view.v
 iris/algebra/auth.v
 iris/algebra/gmap.v
 iris/algebra/ofe.v
-iris/algebra/base.v
 iris/algebra/dra.v
 iris/algebra/cofe_solver.v
 iris/algebra/agree.v

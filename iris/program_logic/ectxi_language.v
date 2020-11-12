@@ -1,6 +1,6 @@
 (** An axiomatization of languages based on evaluation context items, including
     a proof that these are instances of general ectx-based languages. *)
-From iris.algebra Require Export base.
+From iris.prelude Require Export prelude.
 From iris.program_logic Require Import language ectx_language.
 From iris.prelude Require Import options.
 

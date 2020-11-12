@@ -1,6 +1,6 @@
 From Coq Require Export Ascii.
 From stdpp Require Export strings.
-From iris.algebra Require Export base.
+From iris.prelude Require Export prelude.
 From iris.prelude Require Import options.
 
 (** * Utility definitions used by the proofmode *)
