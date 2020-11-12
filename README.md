@@ -71,36 +71,38 @@ the Iris development itself.
 
 ## Directory Structure
 
-* The folder [algebra](theories/algebra) contains the COFE and CMRA
+* The folder [prelude](iris/prelude) contains modules imported everywhere in
+  Iris.
+* The folder [algebra](iris/algebra) contains the COFE and CMRA
   constructions as well as the solver for recursive domain equations.
-* The folder [base_logic](theories/base_logic) defines the Iris base logic and
+* The folder [base_logic](iris/base_logic) defines the Iris base logic and
   the primitive connectives.  It also contains derived constructions that are
   entirely independent of the choice of resources.
-  * The subfolder [lib](theories/base_logic/lib) contains some generally useful
+  * The subfolder [lib](iris/base_logic/lib) contains some generally useful
     derived constructions.  Most importantly, it defines composable
     dynamic resources and ownership of them; the other constructions depend
     on this setup.
-* The folder [program_logic](theories/program_logic) specializes the base logic
+* The folder [program_logic](iris/program_logic) specializes the base logic
   to build Iris, the program logic.   This includes weakest preconditions that
   are defined for any language satisfying some generic axioms, and some derived
   constructions that work for any such language.
-* The folder [bi](theories/bi) contains the BI++ laws, as well as derived
+* The folder [bi](iris/bi) contains the BI++ laws, as well as derived
   connectives, laws and constructions that are applicable for general BIS.
-* The folder [proofmode](theories/proofmode) contains
+* The folder [proofmode](iris/proofmode) contains
   [MoSeL](http://iris-project.org/mosel/), which extends Coq with contexts for
   intuitionistic and spatial BI++ assertions. It also contains tactics for
   interactive proofs. Documentation can be found in
   [proof_mode.md](docs/proof_mode.md).
-* The folder [heap_lang](theories/heap_lang) defines the ML-like concurrent heap
+* The folder [heap_lang](iris_heap_lang) defines the ML-like concurrent heap
   language
-  * The subfolder [lib](theories/heap_lang/lib) contains a few derived
+  * The subfolder [lib](iris_heap_lang/lib) contains a few derived
     constructions within this language, e.g., parallel composition.
     For more examples of using Iris and heap_lang, have a look at the
     [Iris Examples](https://gitlab.mpi-sws.org/iris/examples).
-* The folder [tests](theories/tests) contains modules we use to test our
+* The folder [tests](tests) contains modules we use to test our
   infrastructure. Users of the Iris Coq library should *not* depend on these
   modules; they may change or disappear without any notice.
-* The folder [si_logic](theories/si_logic) defines a "plain" step-indexed logic
+* The folder [si_logic](iris/si_logic) defines a "plain" step-indexed logic
   and shows that it is an instance of the BI interface.
 
 ## Case Studies

@@ -123,9 +123,9 @@ Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := {
 
 Such modules always need some kind of "initialization" to create an instance
 of their type class.  For example, the initialization for `heapG` is happening
-as part of [`heap_adequacy`](theories/heap_lang/adequacy.v); this in turn uses
+as part of [`heap_adequacy`](iris_heap_lang/adequacy.v); this in turn uses
 the initialization lemma for `gen_heapG` from
-[`gen_heap_init`](theories/base_logic/lib/gen_heap.v):
+[`gen_heap_init`](iris/base_logic/lib/gen_heap.v):
 ```coq
 Lemma gen_heap_init `{gen_heapPreG L V Σ} σ :
   (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
@@ -220,9 +220,9 @@ F (X,X⁻) := gmap K (agree (nat * ▶ X))
 To make it convenient to construct such functors and prove their contractivity,
 we provide a number of abstractions:
 
-- [`cFunctor`](theories/algebra/ofe.v): functors from COFEs to OFEs.
-- [`rFunctor`](theories/algebra/cmra.v): functors from COFEs to cameras.
-- [`urFunctor`](theories/algebra/cmra.v): functors from COFEs to unital
+- [`cFunctor`](iris/algebra/ofe.v): functors from COFEs to OFEs.
+- [`rFunctor`](iris/algebra/cmra.v): functors from COFEs to cameras.
+- [`urFunctor`](iris/algebra/cmra.v): functors from COFEs to unital
   cameras.
 
 Besides, there are the classes `cFunctorContractive`, `rFunctorContractive`, and

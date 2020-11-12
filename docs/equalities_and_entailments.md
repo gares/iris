@@ -71,7 +71,7 @@ possible as it requires the caller to specifically package up function and proof
 When an OFE structure on a function type is required but the domain is discrete,
 one can use the type `A -d> B`.  This has the advantage of not bundling any
 proofs, i.e., this is notation for a plain Coq function type. See the
-`discrete_fun` documentation in [`iris.algebra.ofe`](../theories/algebra/ofe.v)
+`discrete_fun` documentation in [`iris.algebra.ofe`](../iris/algebra/ofe.v)
 for further details.
 
 In both OFE function spaces (`A -n> B` and `A -d> B`), setoid equality is
