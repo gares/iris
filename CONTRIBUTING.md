@@ -12,7 +12,7 @@ two repositories:
     opam repo add coq-released https://coq.inria.fr/opam/released
     opam repo add iris-dev https://gitlab.mpi-sws.org/iris/opam.git
 
-Once you got opam set up, run `make build-dep` to install the right versions
+Once you got opam set up, run `make builddep` to install the right versions
 of the dependencies.
 
 Run `make -jN` to build the full development, where `N` is the number of your
@@ -20,7 +20,7 @@ CPU cores.
 
 To update Iris, do `git pull`.  After an update, the development may fail to
 compile because of outdated dependencies.  To fix that, please run `opam update`
-followed by `make build-dep`.
+followed by `make builddep`.
 
 ## How to submit a merge request
 
@@ -45,7 +45,7 @@ a feature branch instead.
 * In Iris, change the `opam` file to depend on the new version.
   (In case you do not use opam yourself, you can see recently published versions
   [in this repository](https://gitlab.mpi-sws.org/iris/opam/commits/master).)
-* Run `make build-dep` (in Iris) to install the new version of std++.
+* Run `make builddep` (in Iris) to install the new version of std++.
   You may have to do `make clean` as Coq will likely complain about .vo file
   mismatches.
 
