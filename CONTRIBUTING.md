@@ -88,7 +88,7 @@ or the [examples].  To do this, check out the respective project and change its
 build-iris.dev:
   <<: *template
   variables:
-    OPAM_PINS: "coq version 8.9.0   coq-iris.dev git git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature   coq-iris-heap-lang.dev git git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature"
+    OPAM_PINS: "coq version 8.12.0   coq-iris.dev git git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature   coq-iris-heap-lang.dev git git+https://gitlab.mpi-sws.org/iris/iris.git#yourname/feature"
   tags:
   - fp-timing
 ```
