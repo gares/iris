@@ -787,7 +787,7 @@ Proof. destruct 1; inversion 1; naive_solver. Qed.
 Lemma irreducible_resolve e v1 v2 σ :
   irreducible e σ → irreducible (Resolve e (Val v1) (Val v2)) σ.
 Proof.
-  intros H κs ** [Ks e1' e2' Hfill -> step]. simpl in *.
+  intros H κs ? σ' efs [Ks e1' e2' Hfill -> step]. simpl in *.
   induction Ks as [|K Ks _] using rev_ind; simpl in Hfill.
   - subst e1'. inversion step. eapply H. by apply head_prim_step.
   - rewrite fill_app /= in Hfill.
@@ -796,6 +796,6 @@ Proof.
         (assert (to_val (fill Ks e) = Some v) as HEq by rewrite -H //);
         apply to_val_fill_some in HEq; destruct HEq as [-> ->]; inversion step
       end).
-    apply (H κs (fill_item K (foldl (flip fill_item) e2' Ks)) σ' efs).
-    econstructor 1 with (K := Ks ++ [K]); last done; simpl; by rewrite fill_app.
+    eapply (H κs (fill_item _ (foldl (flip fill_item) e2' Ks)) σ' efs).
+    eapply (Ectx_step _ _ _ _ _ _ (Ks ++ [_])); last done; simpl; by rewrite fill_app.
 Qed.

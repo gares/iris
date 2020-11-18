@@ -283,7 +283,7 @@ Section lemmas.
     - split; first done. split.
       + apply (Hm 0%nat).
       + apply equiv_dist=>n. apply Hm.
-    - split; first done. split.
+    - split; first done. intros n. split.
       + apply Hm.
       + revert n. apply equiv_dist. apply Hm.
   Qed.
