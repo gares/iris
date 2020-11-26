@@ -35,7 +35,7 @@ Section mono_proof.
   Lemma newcounter_mono_spec :
     {{{ True }}} newcounter #() {{{ l, RET #l; mcounter l 0 }}}.
   Proof.
-    iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
+    iIntros (Φ) "_ HΦ". rewrite /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (● (MaxNat O) ⋅ ◯ (MaxNat O))) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid_discrete.
     iMod (inv_alloc N _ (mcounter_inv γ l) with "[Hl Hγ]").
@@ -114,7 +114,7 @@ Section contrib_spec.
     {{{ True }}} newcounter #()
     {{{ γ l, RET #l; ccounter_ctx γ l ∗ ccounter γ 1 0 }}}.
   Proof.
-    iIntros (Φ) "_ HΦ". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
+    iIntros (Φ) "_ HΦ". rewrite /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (●F O ⋅ ◯F 0)) as (γ) "[Hγ Hγ']";
       first by apply auth_both_valid_discrete.
     iMod (inv_alloc N _ (ccounter_inv γ l) with "[Hl Hγ]").

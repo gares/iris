@@ -82,7 +82,7 @@ Section proof.
   Lemma newlock_spec (R : iProp Σ) :
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}}.
   Proof.
-    iIntros (Φ) "HR HΦ". rewrite -wp_fupd. wp_lam.
+    iIntros (Φ) "HR HΦ". wp_lam.
     wp_alloc ln as "Hln". wp_alloc lo as "Hlo".
     iMod (own_alloc (● (Excl' 0, GSet ∅) ⋅ ◯ (Excl' 0, GSet ∅))) as (γ) "[Hγ Hγ']".
     { by apply auth_both_valid_discrete. }

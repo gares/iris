@@ -204,7 +204,7 @@ Section counter_proof.
   Lemma newcounter_spec :
     ⊢ {{ True }} newcounter #() {{ v, ∃ l, ⌜v = #l⌝ ∧ C l 0 }}.
   Proof.
-    iIntros "!> _ /=". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
+    iIntros "!> _ /=". rewrite /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (Auth 0)) as (γ) "Hγ"; first done.
     rewrite (auth_frag_op 0 0) //; iDestruct "Hγ" as "[Hγ Hγf]".
     set (N:= nroot .@ "counter").
