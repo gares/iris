@@ -35,6 +35,8 @@ Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E K e1 e2 φ n Φ :
   envs_entails Δ (WP (fill K e1) @ s; E {{ Φ }}).
 Proof.
   rewrite envs_entails_eq=> ??? HΔ'. rewrite into_laterN_env_sound /=.
+  (* We want [pure_exec_fill] to be available to TC search locally. *)
+  pose proof @pure_exec_fill.
   rewrite HΔ' -lifting.wp_pure_step_later //.
 Qed.
 Lemma tac_twp_pure `{!heapG Σ} Δ s E K e1 e2 φ n Φ :
@@ -43,7 +45,10 @@ Lemma tac_twp_pure `{!heapG Σ} Δ s E K e1 e2 φ n Φ :
   envs_entails Δ (WP (fill K e2) @ s; E [{ Φ }]) →
   envs_entails Δ (WP (fill K e1) @ s; E [{ Φ }]).
 Proof.
-  rewrite envs_entails_eq=> ?? ->. rewrite -total_lifting.twp_pure_step //.
+  rewrite envs_entails_eq=> ?? ->.
+  (* We want [pure_exec_fill] to be available to TC search locally. *)
+  pose proof @pure_exec_fill.
+  rewrite -total_lifting.twp_pure_step //.
 Qed.
 
 Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
