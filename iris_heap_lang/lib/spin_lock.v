@@ -85,7 +85,7 @@ Section proof.
   Proof.
     iIntros (Φ) "#Hl HΦ". iLöb as "IH". wp_rec.
     wp_apply (try_acquire_spec with "Hl"). iIntros ([]).
-    - iIntros "[Hlked HR]". wp_if. iApply "HΦ"; iFrame.
+    - iIntros "[Hlked HR]". wp_if. iApply "HΦ"; auto with iFrame.
     - iIntros "_". wp_if. iApply ("IH" with "[HΦ]"). auto.
   Qed.
 

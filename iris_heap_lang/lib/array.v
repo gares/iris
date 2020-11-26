@@ -79,7 +79,7 @@ Section proof.
     iIntros (Hvdst Hvsrc Φ) "[Hdst Hsrc] HΦ".
     iInduction vdst as [|v1 vdst] "IH" forall (n dst src vsrc Hvdst Hvsrc);
       destruct vsrc as [|v2 vsrc]; simplify_eq/=; try lia; wp_rec; wp_pures.
-    { iApply "HΦ". iFrame. }
+    { iApply "HΦ". auto with iFrame. }
     iDestruct (array_cons with "Hdst") as "[Hv1 Hdst]".
     iDestruct (array_cons with "Hsrc") as "[Hv2 Hsrc]".
     wp_load; wp_store.
@@ -199,7 +199,7 @@ Section proof.
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite loc_add_0. }
       iIntros "!>" (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
-      iApply ("HΦ" $! _ vs). iSplit.
+      iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
       rewrite loc_add_0. iFrame.
     Qed.
@@ -218,7 +218,7 @@ Section proof.
       { by rewrite /= Z2Nat.id; last lia. }
       { by rewrite loc_add_0. }
       iIntros (vs). iDestruct 1 as (Hlen) "[Hl Hvs]". wp_pures.
-      iApply ("HΦ" $! _ vs). iSplit.
+      iApply ("HΦ" $! _ vs). iModIntro. iSplit.
       { iPureIntro. by rewrite Hlen Z2Nat.id; last lia. }
       rewrite loc_add_0. iFrame.
     Qed.

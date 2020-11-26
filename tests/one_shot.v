@@ -74,7 +74,7 @@ Proof.
       + Show. iSplit. iLeft; by iSplitL "Hl". eauto.
       + iSplit. iRight; iExists m; by iSplitL "Hl". eauto. }
     iSplitL "Hinv"; first by eauto.
-    iModIntro. wp_pures. iIntros "!>". wp_lam.
+    iModIntro. wp_pures. iIntros "!> !>". wp_lam.
     iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']";
       subst; wp_match; [done|].
     wp_bind (! _)%E.

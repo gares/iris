@@ -90,10 +90,8 @@ Proof.
   by repeat (f_contractive || f_equiv).
 Qed.
 
-Lemma wp_value' s E Φ v : Φ v ⊢ WP of_val v @ s; E {{ Φ }}.
-Proof. iIntros "HΦ". rewrite wp_unfold /wp_pre to_of_val. auto. Qed.
-Lemma wp_value_inv' s E Φ v : WP of_val v @ s; E {{ Φ }} ={E}=∗ Φ v.
-Proof. by rewrite wp_unfold /wp_pre to_of_val. Qed.
+Lemma wp_value_fupd' s E Φ v : WP of_val v @ s; E {{ Φ }} ⊣⊢ |={E}=> Φ v.
+Proof. rewrite wp_unfold /wp_pre to_of_val. auto. Qed.
 
 Lemma wp_strong_mono s1 s2 E1 E2 e Φ Ψ :
   s1 ⊑ s2 → E1 ⊆ E2 →
@@ -138,8 +136,8 @@ Proof.
     + iMod ("H" $! _ [] with "[$]") as "[H _]". iDestruct "H" as %(? & ? & ? & ? & ?).
       by edestruct (atomic _ _ _ _ _ Hstep).
   - destruct (atomic _ _ _ _ _ Hstep) as [v <-%of_to_val].
-    iMod (wp_value_inv' with "H") as ">H".
-    iModIntro. iFrame "Hσ Hefs". by iApply wp_value'.
+    rewrite wp_value_fupd'. iMod "H" as ">H".
+    iModIntro. iFrame "Hσ Hefs". by iApply wp_value_fupd'.
 Qed.
 
 Lemma wp_step_fupd s E1 E2 e P Φ :
@@ -207,15 +205,12 @@ Global Instance wp_flip_mono' s E e :
   Proper (pointwise_relation _ (flip (⊢)) ==> (flip (⊢))) (wp (PROP:=iProp Σ) s E e).
 Proof. by intros Φ Φ' ?; apply wp_mono. Qed.
 
+Lemma wp_value_fupd s E Φ e v : IntoVal e v → WP e @ s; E {{ Φ }} ⊣⊢ |={E}=> Φ v.
+Proof. intros <-. by apply wp_value_fupd'. Qed.
+Lemma wp_value' s E Φ v : Φ v ⊢ WP (of_val v) @ s; E {{ Φ }}.
+Proof. rewrite wp_value_fupd'. auto. Qed.
 Lemma wp_value s E Φ e v : IntoVal e v → Φ v ⊢ WP e @ s; E {{ Φ }}.
-Proof. intros <-. by apply wp_value'. Qed.
-Lemma wp_value_fupd' s E Φ v : (|={E}=> Φ v) ⊢ WP of_val v @ s; E {{ Φ }}.
-Proof. intros. by rewrite -wp_fupd -wp_value'. Qed.
-Lemma wp_value_fupd s E Φ e v `{!IntoVal e v} :
-  (|={E}=> Φ v) ⊢ WP e @ s; E {{ Φ }}.
-Proof. intros. rewrite -wp_fupd -wp_value //. Qed.
-Lemma wp_value_inv s E Φ e v : IntoVal e v → WP e @ s; E {{ Φ }} ={E}=∗ Φ v.
-Proof. intros <-. by apply wp_value_inv'. Qed.
+Proof. intros <-. apply wp_value'. Qed.
 
 Lemma wp_frame_l s E e Φ R : R ∗ WP e @ s; E {{ Φ }} ⊢ WP e @ s; E {{ v, R ∗ Φ v }}.
 Proof. iIntros "[? H]". iApply (wp_strong_mono with "H"); auto with iFrame. Qed.

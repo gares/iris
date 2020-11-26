@@ -63,7 +63,7 @@ Section proof.
       rewrite !prophecy_to_bool_of_bool.
       wp_seq.
       iApply "HΦ".
-      rewrite /coin; eauto with iFrame.
+      rewrite /coin; eauto 10 with iFrame.
   Qed.
 
 End proof.

@@ -46,17 +46,40 @@ Proof.
   rewrite envs_entails_eq=> ?? ->. rewrite -total_lifting.twp_pure_step //.
 Qed.
 
-Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_wp_value_nofupd `{!heapG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by apply wp_value. Qed.
-Lemma tac_twp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_twp_value_nofupd `{!heapG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
+
+Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+  envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
+Proof. rewrite envs_entails_eq=> ->. by rewrite wp_value_fupd. Qed.
+Lemma tac_twp_value `{!heapG Σ} Δ s E Φ v :
+  envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
+Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
 
 Ltac wp_expr_simpl := wp_expr_eval simpl.
 
 Ltac wp_value_head :=
-  first [eapply tac_wp_value | eapply tac_twp_value].
+  lazymatch goal with
+  (* If the postcondition already allows a fupd, do not add a second one.
+     But otherwise, *do* add a fupd. This ensures that all the lemmas applied
+     here are bidirectional, so we never will make a goal unprovable. *)
+  | |- envs_entails _ (wp ?s ?E (Val _) (fun _ => fupd ?E _ _)) =>
+      eapply tac_wp_value_nofupd
+  | |- envs_entails _ (wp ?s ?E (Val _) (fun _ => wp _ ?E _ _)) =>
+      eapply tac_wp_value_nofupd
+  | |- envs_entails _ (wp ?s ?E (Val _) _) =>
+      eapply tac_wp_value
+  | |- envs_entails _ (twp ?s ?E (Val _) (fun _ => fupd ?E _ _)) =>
+      eapply tac_twp_value_nofupd
+  | |- envs_entails _ (twp ?s ?E (Val _) (fun _ => twp _ ?E _ _)) =>
+      eapply tac_twp_value_nofupd
+  | |- envs_entails _ (twp ?s ?E (Val _) _) =>
+      eapply tac_twp_value
+  end.
 
 Ltac wp_finish :=
   wp_expr_simpl;      (* simplify occurences of subst/fill *)
