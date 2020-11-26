@@ -184,6 +184,12 @@ Section bupd_derived.
   Proof. by rewrite bupd_frame_r wand_elim_r. Qed.
   Lemma bupd_sep P Q : (|==> P) ∗ (|==> Q) ==∗ P ∗ Q.
   Proof. by rewrite bupd_frame_r bupd_frame_l bupd_trans. Qed.
+  Lemma bupd_idemp P : (|==> |==> P) ⊣⊢ |==> P.
+  Proof.
+    apply: anti_symm.
+    - apply bupd_trans.
+    - apply bupd_intro.
+  Qed.
 
   Global Instance bupd_homomorphism :
     MonoidHomomorphism bi_sep bi_sep (flip (⊢)) (bupd (PROP:=PROP)).
@@ -245,6 +251,12 @@ Section fupd_derived.
   Proof. exact: fupd_intro_mask. Qed.
   Lemma fupd_except_0 E1 E2 P : (|={E1,E2}=> ◇ P) ={E1,E2}=∗ P.
   Proof. by rewrite {1}(fupd_intro E2 P) except_0_fupd fupd_trans. Qed.
+  Lemma fupd_idemp E P : (|={E}=> |={E}=> P) ⊣⊢ |={E}=> P.
+  Proof.
+    apply: anti_symm.
+    - apply fupd_trans.
+    - apply fupd_intro.
+  Qed.
 
   Lemma fupd_frame_l E1 E2 R Q : (R ∗ |={E1,E2}=> Q) ={E1,E2}=∗ R ∗ Q.
   Proof. rewrite !(comm _ R); apply fupd_frame_r. Qed.
