@@ -298,7 +298,12 @@ Section ectx_language.
     - intros σ1 κ e2' σ2 efs ?%head_reducible_prim_step; eauto using head_reducible_no_obs_reducible.
   Qed.
 
-  Global Instance pure_exec_fill K φ n e1 e2 :
+  (** This is not an instance because HeapLang's [wp_pure] tactic already takes
+      care of handling the evaluation context.  So the instance is redundant.
+      If you are defining your own language and your [wp_pure] works
+      differently, you might want to specialize this lemma to your language and
+      register that as an instance. *)
+  Lemma pure_exec_fill K φ n e1 e2 :
     PureExec φ n e1 e2 →
     PureExec φ n (fill K e1) (fill K e2).
   Proof. apply: pure_exec_ctx. Qed.
