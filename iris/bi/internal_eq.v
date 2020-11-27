@@ -9,7 +9,7 @@ can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
 Class InternalEq (PROP : bi) :=
   internal_eq : ∀ {A : ofeT}, A → A → PROP.
 Arguments internal_eq {_ _ _} _ _ : simpl never.
-Hint Mode InternalEq ! : typeclass_instances.
+Global Hint Mode InternalEq ! : typeclass_instances.
 Instance: Params (@internal_eq) 3 := {}.
 Infix "≡" := internal_eq : bi_scope.
 Infix "≡@{ A }" := (internal_eq (A := A)) (only parsing) : bi_scope.
@@ -40,7 +40,7 @@ Class BiInternalEq (PROP : bi) := {
   bi_internal_eq_internal_eq :> InternalEq PROP;
   bi_internal_eq_mixin : BiInternalEqMixin PROP bi_internal_eq_internal_eq;
 }.
-Hint Mode BiInternalEq ! : typeclass_instances.
+Global Hint Mode BiInternalEq ! : typeclass_instances.
 Arguments bi_internal_eq_internal_eq : simpl never.
 
 Section internal_eq_laws.

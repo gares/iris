@@ -53,7 +53,7 @@ End cofe.
 (** logical entailement *)
 Inductive siProp_entails (P Q : siProp) : Prop :=
   { siProp_in_entails : ∀ n, P n → Q n }.
-Hint Resolve siProp_closed : siProp_def.
+Global Hint Resolve siProp_closed : siProp_def.
 
 (** logical connectives *)
 Program Definition siProp_pure_def (φ : Prop) : siProp :=

@@ -20,7 +20,7 @@ Arguments inG_apply {_ _} _ _ {_}.
 (** We use the mode [-] for [Σ] since there is always a unique [Σ]. We use the
 mode [!] for [A] since we can have multiple [inG]s for different [A]s, so we do
 not want Coq to pick one arbitrarily. *)
-Hint Mode inG - ! : typeclass_instances.
+Global Hint Mode inG - ! : typeclass_instances.
 
 Lemma subG_inG Σ (F : gFunctor) : subG F Σ → inG Σ (rFunctor_apply F (iPropO Σ)).
 Proof. move=> /(_ 0%fin) /= [j ->]. by exists j. Qed.

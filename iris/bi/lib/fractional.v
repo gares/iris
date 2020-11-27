@@ -14,10 +14,10 @@ Arguments AsFractional {_} _%I _%I _%Qp.
 
 Arguments fractional {_ _ _} _ _.
 
-Hint Mode AsFractional - + - - : typeclass_instances.
+Global Hint Mode AsFractional - + - - : typeclass_instances.
 (* To make [as_fractional_fractional] a useful instance, we have to
 allow [q] to be an evar. *)
-Hint Mode AsFractional - - + - : typeclass_instances.
+Global Hint Mode AsFractional - - + - : typeclass_instances.
 
 Section fractional.
   Context {PROP : bi}.

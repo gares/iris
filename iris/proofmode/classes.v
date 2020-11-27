@@ -9,25 +9,25 @@ Class FromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   from_assumption : □?p P ⊢ Q.
 Arguments FromAssumption {_} _ _%I _%I : simpl never.
 Arguments from_assumption {_} _ _%I _%I {_}.
-Hint Mode FromAssumption + + - - : typeclass_instances.
+Global Hint Mode FromAssumption + + - - : typeclass_instances.
 
 Class KnownLFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   knownl_from_assumption :> FromAssumption p P Q.
 Arguments KnownLFromAssumption {_} _ _%I _%I : simpl never.
 Arguments knownl_from_assumption {_} _ _%I _%I {_}.
-Hint Mode KnownLFromAssumption + + ! - : typeclass_instances.
+Global Hint Mode KnownLFromAssumption + + ! - : typeclass_instances.
 
 Class KnownRFromAssumption {PROP : bi} (p : bool) (P Q : PROP) :=
   knownr_from_assumption :> FromAssumption p P Q.
 Arguments KnownRFromAssumption {_} _ _%I _%I : simpl never.
 Arguments knownr_from_assumption {_} _ _%I _%I {_}.
-Hint Mode KnownRFromAssumption + + - ! : typeclass_instances.
+Global Hint Mode KnownRFromAssumption + + - ! : typeclass_instances.
 
 Class IntoPure {PROP : bi} (P : PROP) (φ : Prop) :=
   into_pure : P ⊢ ⌜φ⌝.
 Arguments IntoPure {_} _%I _%type_scope : simpl never.
 Arguments into_pure {_} _%I _%type_scope {_}.
-Hint Mode IntoPure + ! - : typeclass_instances.
+Global Hint Mode IntoPure + ! - : typeclass_instances.
 
 (* [IntoPureT] is a variant of [IntoPure] with the argument in [Type] to avoid
 some shortcoming of unification in Coq's type class search. An example where we
@@ -53,7 +53,7 @@ Class IntoPureT {PROP : bi} (P : PROP) (φ : Type) :=
   into_pureT : ∃ ψ : Prop, φ = ψ ∧ IntoPure P ψ.
 Lemma into_pureT_hint {PROP : bi} (P : PROP) (φ : Prop) : IntoPure P φ → IntoPureT P φ.
 Proof. by exists φ. Qed.
-Hint Extern 0 (IntoPureT _ _) =>
+Global Hint Extern 0 (IntoPureT _ _) =>
   notypeclasses refine (into_pureT_hint _ _ _) : typeclass_instances.
 
 (** [FromPure a P φ] is used when introducing a pure assertion. It is used by
@@ -69,27 +69,27 @@ Class FromPure {PROP : bi} (a : bool) (P : PROP) (φ : Prop) :=
   from_pure : <affine>?a ⌜φ⌝ ⊢ P.
 Arguments FromPure {_} _ _%I _%type_scope : simpl never.
 Arguments from_pure {_} _ _%I _%type_scope {_}.
-Hint Mode FromPure + - ! - : typeclass_instances.
+Global Hint Mode FromPure + - ! - : typeclass_instances.
 
 Class FromPureT {PROP : bi} (a : bool) (P : PROP) (φ : Type) :=
   from_pureT : ∃ ψ : Prop, φ = ψ ∧ FromPure a P ψ.
 Lemma from_pureT_hint {PROP : bi} (a : bool) (P : PROP) (φ : Prop) :
   FromPure a P φ → FromPureT a P φ.
 Proof. by exists φ. Qed.
-Hint Extern 0 (FromPureT _ _ _) =>
+Global Hint Extern 0 (FromPureT _ _ _) =>
   notypeclasses refine (from_pureT_hint _ _ _ _) : typeclass_instances.
 
 Class IntoInternalEq `{BiInternalEq PROP} {A : ofeT} (P : PROP) (x y : A) :=
   into_internal_eq : P ⊢ x ≡ y.
 Arguments IntoInternalEq {_ _ _} _%I _%type_scope _%type_scope : simpl never.
 Arguments into_internal_eq {_ _ _} _%I _%type_scope _%type_scope {_}.
-Hint Mode IntoInternalEq + - - ! - - : typeclass_instances.
+Global Hint Mode IntoInternalEq + - - ! - - : typeclass_instances.
 
 Class IntoPersistent {PROP : bi} (p : bool) (P Q : PROP) :=
   into_persistent : <pers>?p P ⊢ <pers> Q.
 Arguments IntoPersistent {_} _ _%I _%I : simpl never.
 Arguments into_persistent {_} _ _%I _%I {_}.
-Hint Mode IntoPersistent + + ! - : typeclass_instances.
+Global Hint Mode IntoPersistent + + ! - : typeclass_instances.
 
 (** The [FromModal M sel P Q] class is used by the [iModIntro] tactic to transform
 a goal [P] into a modality [M] and proposition [Q].
@@ -112,7 +112,7 @@ Class FromModal {PROP1 PROP2 : bi} {A}
   from_modal : M Q ⊢ P.
 Arguments FromModal {_ _ _} _ _%I _%I _%I : simpl never.
 Arguments from_modal {_ _ _} _ _ _%I _%I {_}.
-Hint Mode FromModal - + - - - ! - : typeclass_instances.
+Global Hint Mode FromModal - + - - - ! - : typeclass_instances.
 
 (** The [FromAffinely P Q] class is used to add an [<affine>] modality to the
 proposition [Q].
@@ -122,7 +122,7 @@ Class FromAffinely {PROP : bi} (P Q : PROP) :=
   from_affinely : <affine> Q ⊢ P.
 Arguments FromAffinely {_} _%I _%I : simpl never.
 Arguments from_affinely {_} _%I _%I {_}.
-Hint Mode FromAffinely + - ! : typeclass_instances.
+Global Hint Mode FromAffinely + - ! : typeclass_instances.
 
 (** The [IntoAbsorbingly P Q] class is used to add an [<absorb>] modality to
 the proposition [Q].
@@ -132,7 +132,7 @@ Class IntoAbsorbingly {PROP : bi} (P Q : PROP) :=
   into_absorbingly : P ⊢ <absorb> Q.
 Arguments IntoAbsorbingly {_} _%I _%I.
 Arguments into_absorbingly {_} _%I _%I {_}.
-Hint Mode IntoAbsorbingly + - ! : typeclass_instances.
+Global Hint Mode IntoAbsorbingly + - ! : typeclass_instances.
 
 (** Converting an assumption [R] into a wand [P -∗ Q] is done in three stages:
 
@@ -146,86 +146,86 @@ Class IntoWand {PROP : bi} (p q : bool) (R P Q : PROP) :=
   into_wand : □?p R ⊢ □?q P -∗ Q.
 Arguments IntoWand {_} _ _ _%I _%I _%I : simpl never.
 Arguments into_wand {_} _ _ _%I _%I _%I {_}.
-Hint Mode IntoWand + + + ! - - : typeclass_instances.
+Global Hint Mode IntoWand + + + ! - - : typeclass_instances.
 
 Class IntoWand' {PROP : bi} (p q : bool) (R P Q : PROP) :=
   into_wand' : IntoWand p q R P Q.
 Arguments IntoWand' {_} _ _ _%I _%I _%I : simpl never.
-Hint Mode IntoWand' + + + ! ! - : typeclass_instances.
-Hint Mode IntoWand' + + + ! - ! : typeclass_instances.
+Global Hint Mode IntoWand' + + + ! ! - : typeclass_instances.
+Global Hint Mode IntoWand' + + + ! - ! : typeclass_instances.
 
 Class FromWand {PROP : bi} (P Q1 Q2 : PROP) := from_wand : (Q1 -∗ Q2) ⊢ P.
 Arguments FromWand {_} _%I _%I _%I : simpl never.
 Arguments from_wand {_} _%I _%I _%I {_}.
-Hint Mode FromWand + ! - - : typeclass_instances.
+Global Hint Mode FromWand + ! - - : typeclass_instances.
 
 Class FromImpl {PROP : bi} (P Q1 Q2 : PROP) := from_impl : (Q1 → Q2) ⊢ P.
 Arguments FromImpl {_} _%I _%I _%I : simpl never.
 Arguments from_impl {_} _%I _%I _%I {_}.
-Hint Mode FromImpl + ! - - : typeclass_instances.
+Global Hint Mode FromImpl + ! - - : typeclass_instances.
 
 Class FromSep {PROP : bi} (P Q1 Q2 : PROP) := from_sep : Q1 ∗ Q2 ⊢ P.
 Arguments FromSep {_} _%I _%I _%I : simpl never.
 Arguments from_sep {_} _%I _%I _%I {_}.
-Hint Mode FromSep + ! - - : typeclass_instances.
-Hint Mode FromSep + - ! ! : typeclass_instances. (* For iCombine *)
+Global Hint Mode FromSep + ! - - : typeclass_instances.
+Global Hint Mode FromSep + - ! ! : typeclass_instances. (* For iCombine *)
 
 Class FromAnd {PROP : bi} (P Q1 Q2 : PROP) := from_and : Q1 ∧ Q2 ⊢ P.
 Arguments FromAnd {_} _%I _%I _%I : simpl never.
 Arguments from_and {_} _%I _%I _%I {_}.
-Hint Mode FromAnd + ! - - : typeclass_instances.
-Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
+Global Hint Mode FromAnd + ! - - : typeclass_instances.
+Global Hint Mode FromAnd + - ! ! : typeclass_instances. (* For iCombine *)
 
 Class IntoAnd {PROP : bi} (p : bool) (P Q1 Q2 : PROP) :=
   into_and : □?p P ⊢ □?p (Q1 ∧ Q2).
 Arguments IntoAnd {_} _ _%I _%I _%I : simpl never.
 Arguments into_and {_} _ _%I _%I _%I {_}.
-Hint Mode IntoAnd + + ! - - : typeclass_instances.
+Global Hint Mode IntoAnd + + ! - - : typeclass_instances.
 
 Class IntoSep {PROP : bi} (P Q1 Q2 : PROP) :=
   into_sep : P ⊢ Q1 ∗ Q2.
 Arguments IntoSep {_} _%I _%I _%I : simpl never.
 Arguments into_sep {_} _%I _%I _%I {_}.
-Hint Mode IntoSep + ! - - : typeclass_instances.
+Global Hint Mode IntoSep + ! - - : typeclass_instances.
 
 Class FromOr {PROP : bi} (P Q1 Q2 : PROP) := from_or : Q1 ∨ Q2 ⊢ P.
 Arguments FromOr {_} _%I _%I _%I : simpl never.
 Arguments from_or {_} _%I _%I _%I {_}.
-Hint Mode FromOr + ! - - : typeclass_instances.
+Global Hint Mode FromOr + ! - - : typeclass_instances.
 
 Class IntoOr {PROP : bi} (P Q1 Q2 : PROP) := into_or : P ⊢ Q1 ∨ Q2.
 Arguments IntoOr {_} _%I _%I _%I : simpl never.
 Arguments into_or {_} _%I _%I _%I {_}.
-Hint Mode IntoOr + ! - - : typeclass_instances.
+Global Hint Mode IntoOr + ! - - : typeclass_instances.
 
 Class FromExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
   from_exist : (∃ x, Φ x) ⊢ P.
 Arguments FromExist {_ _} _%I _%I : simpl never.
 Arguments from_exist {_ _} _%I _%I {_}.
-Hint Mode FromExist + - ! - : typeclass_instances.
+Global Hint Mode FromExist + - ! - : typeclass_instances.
 
 Class IntoExist {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :=
   into_exist : P ⊢ ∃ x, Φ x.
 Arguments IntoExist {_ _} _%I _%I _ : simpl never.
 Arguments into_exist {_ _} _%I _%I _ {_}.
-Hint Mode IntoExist + - ! - - : typeclass_instances.
+Global Hint Mode IntoExist + - ! - - : typeclass_instances.
 
 Class IntoForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :=
   into_forall : P ⊢ ∀ x, Φ x.
 Arguments IntoForall {_ _} _%I _%I : simpl never.
 Arguments into_forall {_ _} _%I _%I {_}.
-Hint Mode IntoForall + - ! - : typeclass_instances.
+Global Hint Mode IntoForall + - ! - : typeclass_instances.
 
 Class FromForall {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :=
   from_forall : (∀ x, Φ x) ⊢ P.
 Arguments FromForall {_ _} _%I _%I _ : simpl never.
 Arguments from_forall {_ _} _%I _%I _ {_}.
-Hint Mode FromForall + - ! - - : typeclass_instances.
+Global Hint Mode FromForall + - ! - - : typeclass_instances.
 
 Class IsExcept0 {PROP : bi} (Q : PROP) := is_except_0 : ◇ Q ⊢ Q.
 Arguments IsExcept0 {_} _%I : simpl never.
 Arguments is_except_0 {_} _%I {_}.
-Hint Mode IsExcept0 + ! : typeclass_instances.
+Global Hint Mode IsExcept0 + ! : typeclass_instances.
 
 (** The [ElimModal φ p p' P P' Q Q'] class is used by the [iMod] tactic.
 
@@ -250,7 +250,7 @@ Class ElimModal {PROP : bi} (φ : Prop) (p p' : bool) (P P' : PROP) (Q Q' : PROP
   elim_modal : φ → □?p P ∗ (□?p' P' -∗ Q') ⊢ Q.
 Arguments ElimModal {_} _ _ _ _%I _%I _%I _%I : simpl never.
 Arguments elim_modal {_} _ _ _ _%I _%I _%I _%I {_}.
-Hint Mode ElimModal + - ! - ! - ! - : typeclass_instances.
+Global Hint Mode ElimModal + - ! - ! - ! - : typeclass_instances.
 
 (* Used by the specialization pattern [ > ] in [iSpecialize] and [iAssert] to
 add a modality to the goal corresponding to a premise/asserted proposition. *)
@@ -258,7 +258,7 @@ Class AddModal {PROP : bi} (P P' : PROP) (Q : PROP) :=
   add_modal : P ∗ (P' -∗ Q) ⊢ Q.
 Arguments AddModal {_} _%I _%I _%I : simpl never.
 Arguments add_modal {_} _%I _%I _%I {_}.
-Hint Mode AddModal + - ! ! : typeclass_instances.
+Global Hint Mode AddModal + - ! ! : typeclass_instances.
 
 Lemma add_modal_id {PROP : bi} (P Q : PROP) : AddModal P P Q.
 Proof. by rewrite /AddModal wand_elim_r. Qed.
@@ -279,7 +279,7 @@ Proof. done. Qed.
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.
 Arguments Frame {_} _ _%I _%I _%I.
 Arguments frame {_} _ _%I _%I _%I {_}.
-Hint Mode Frame + + ! ! - : typeclass_instances.
+Global Hint Mode Frame + + ! ! - : typeclass_instances.
 
 (* The boolean [progress] indicates whether actual framing has been performed.
 If it is [false], then the default instance [maybe_frame_default] below has been
@@ -288,7 +288,7 @@ Class MaybeFrame {PROP : bi} (p : bool) (R P Q : PROP) (progress : bool) :=
   maybe_frame : □?p R ∗ Q ⊢ P.
 Arguments MaybeFrame {_} _ _%I _%I _%I _.
 Arguments maybe_frame {_} _ _%I _%I _%I _ {_}.
-Hint Mode MaybeFrame + + ! - - - : typeclass_instances.
+Global Hint Mode MaybeFrame + + ! - - - : typeclass_instances.
 
 Instance maybe_frame_frame {PROP : bi} p (R P Q : PROP) :
   Frame p R P Q → MaybeFrame p R P Q true.
@@ -313,106 +313,106 @@ Proof. intros. rewrite /MaybeFrame /=. apply: sep_elim_r. Qed.
 Class MakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   make_embed : ⎡P⎤ ⊣⊢ Q.
 Arguments MakeEmbed {_ _ _} _%I _%I.
-Hint Mode MakeEmbed + + + - - : typeclass_instances.
+Global Hint Mode MakeEmbed + + + - - : typeclass_instances.
 Class KnownMakeEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP) (Q : PROP') :=
   known_make_embed :> MakeEmbed P Q.
 Arguments KnownMakeEmbed {_ _ _} _%I _%I.
-Hint Mode KnownMakeEmbed + + + ! - : typeclass_instances.
+Global Hint Mode KnownMakeEmbed + + + ! - : typeclass_instances.
 
 Class MakeSep {PROP : bi} (P Q PQ : PROP) := make_sep : P ∗ Q ⊣⊢ PQ .
 Arguments MakeSep {_} _%I _%I _%I.
-Hint Mode MakeSep + - - - : typeclass_instances.
+Global Hint Mode MakeSep + - - - : typeclass_instances.
 Class KnownLMakeSep {PROP : bi} (P Q PQ : PROP) :=
   knownl_make_sep :> MakeSep P Q PQ.
 Arguments KnownLMakeSep {_} _%I _%I _%I.
-Hint Mode KnownLMakeSep + ! - - : typeclass_instances.
+Global Hint Mode KnownLMakeSep + ! - - : typeclass_instances.
 Class KnownRMakeSep {PROP : bi} (P Q PQ : PROP) :=
   knownr_make_sep :> MakeSep P Q PQ.
 Arguments KnownRMakeSep {_} _%I _%I _%I.
-Hint Mode KnownRMakeSep + - ! - : typeclass_instances.
+Global Hint Mode KnownRMakeSep + - ! - : typeclass_instances.
 
 Class MakeAnd {PROP : bi} (P Q PQ : PROP) :=  make_and_l : P ∧ Q ⊣⊢ PQ.
 Arguments MakeAnd {_} _%I _%I _%I.
-Hint Mode MakeAnd + - - - : typeclass_instances.
+Global Hint Mode MakeAnd + - - - : typeclass_instances.
 Class KnownLMakeAnd {PROP : bi} (P Q PQ : PROP) :=
   knownl_make_and :> MakeAnd P Q PQ.
 Arguments KnownLMakeAnd {_} _%I _%I _%I.
-Hint Mode KnownLMakeAnd + ! - - : typeclass_instances.
+Global Hint Mode KnownLMakeAnd + ! - - : typeclass_instances.
 Class KnownRMakeAnd {PROP : bi} (P Q PQ : PROP) :=
   knownr_make_and :> MakeAnd P Q PQ.
 Arguments KnownRMakeAnd {_} _%I _%I _%I.
-Hint Mode KnownRMakeAnd + - ! - : typeclass_instances.
+Global Hint Mode KnownRMakeAnd + - ! - : typeclass_instances.
 
 Class MakeOr {PROP : bi} (P Q PQ : PROP) := make_or_l : P ∨ Q ⊣⊢ PQ.
 Arguments MakeOr {_} _%I _%I _%I.
-Hint Mode MakeOr + - - - : typeclass_instances.
+Global Hint Mode MakeOr + - - - : typeclass_instances.
 Class KnownLMakeOr {PROP : bi} (P Q PQ : PROP) :=
   knownl_make_or :> MakeOr P Q PQ.
 Arguments KnownLMakeOr {_} _%I _%I _%I.
-Hint Mode KnownLMakeOr + ! - - : typeclass_instances.
+Global Hint Mode KnownLMakeOr + ! - - : typeclass_instances.
 Class KnownRMakeOr {PROP : bi} (P Q PQ : PROP) := knownr_make_or :> MakeOr P Q PQ.
 Arguments KnownRMakeOr {_} _%I _%I _%I.
-Hint Mode KnownRMakeOr + - ! - : typeclass_instances.
+Global Hint Mode KnownRMakeOr + - ! - : typeclass_instances.
 
 Class MakeAffinely {PROP : bi} (P Q : PROP) :=
   make_affinely : <affine> P ⊣⊢ Q.
 Arguments MakeAffinely {_} _%I _%I.
-Hint Mode MakeAffinely + - - : typeclass_instances.
+Global Hint Mode MakeAffinely + - - : typeclass_instances.
 Class KnownMakeAffinely {PROP : bi} (P Q : PROP) :=
   known_make_affinely :> MakeAffinely P Q.
 Arguments KnownMakeAffinely {_} _%I _%I.
-Hint Mode KnownMakeAffinely + ! - : typeclass_instances.
+Global Hint Mode KnownMakeAffinely + ! - : typeclass_instances.
 
 Class MakeIntuitionistically {PROP : bi} (P Q : PROP) :=
   make_intuitionistically : □ P ⊣⊢ Q.
 Arguments MakeIntuitionistically {_} _%I _%I.
-Hint Mode MakeIntuitionistically + - - : typeclass_instances.
+Global Hint Mode MakeIntuitionistically + - - : typeclass_instances.
 Class KnownMakeIntuitionistically {PROP : bi} (P Q : PROP) :=
   known_make_intuitionistically :> MakeIntuitionistically P Q.
 Arguments KnownMakeIntuitionistically {_} _%I _%I.
-Hint Mode KnownMakeIntuitionistically + ! - : typeclass_instances.
+Global Hint Mode KnownMakeIntuitionistically + ! - : typeclass_instances.
 
 Class MakeAbsorbingly {PROP : bi} (P Q : PROP) :=
   make_absorbingly : <absorb> P ⊣⊢ Q.
 Arguments MakeAbsorbingly {_} _%I _%I.
-Hint Mode MakeAbsorbingly + - - : typeclass_instances.
+Global Hint Mode MakeAbsorbingly + - - : typeclass_instances.
 Class KnownMakeAbsorbingly {PROP : bi} (P Q : PROP) :=
   known_make_absorbingly :> MakeAbsorbingly P Q.
 Arguments KnownMakeAbsorbingly {_} _%I _%I.
-Hint Mode KnownMakeAbsorbingly + ! - : typeclass_instances.
+Global Hint Mode KnownMakeAbsorbingly + ! - : typeclass_instances.
 
 Class MakePersistently {PROP : bi} (P Q : PROP) :=
   make_persistently : <pers> P ⊣⊢ Q.
 Arguments MakePersistently {_} _%I _%I.
-Hint Mode MakePersistently + - - : typeclass_instances.
+Global Hint Mode MakePersistently + - - : typeclass_instances.
 Class KnownMakePersistently {PROP : bi} (P Q : PROP) :=
   known_make_persistently :> MakePersistently P Q.
 Arguments KnownMakePersistently {_} _%I _%I.
-Hint Mode KnownMakePersistently + ! - : typeclass_instances.
+Global Hint Mode KnownMakePersistently + ! - : typeclass_instances.
 
 Class MakeLaterN {PROP : bi} (n : nat) (P lP : PROP) :=
   make_laterN : ▷^n P ⊣⊢ lP.
 Arguments MakeLaterN {_} _%nat _%I _%I.
-Hint Mode MakeLaterN + + - - : typeclass_instances.
+Global Hint Mode MakeLaterN + + - - : typeclass_instances.
 Class KnownMakeLaterN {PROP : bi} (n : nat) (P lP : PROP) :=
   known_make_laterN :> MakeLaterN n P lP.
 Arguments KnownMakeLaterN {_} _%nat _%I _%I.
-Hint Mode KnownMakeLaterN + + ! - : typeclass_instances.
+Global Hint Mode KnownMakeLaterN + + ! - : typeclass_instances.
 
 Class MakeExcept0 {PROP : bi} (P Q : PROP) :=
   make_except_0 : ◇ P ⊣⊢ Q.
 Arguments MakeExcept0 {_} _%I _%I.
-Hint Mode MakeExcept0 + - - : typeclass_instances.
+Global Hint Mode MakeExcept0 + - - : typeclass_instances.
 Class KnownMakeExcept0 {PROP : bi} (P Q : PROP) :=
   known_make_except_0 :> MakeExcept0 P Q.
 Arguments KnownMakeExcept0 {_} _%I _%I.
-Hint Mode KnownMakeExcept0 + ! - : typeclass_instances.
+Global Hint Mode KnownMakeExcept0 + ! - : typeclass_instances.
 
 Class IntoExcept0 {PROP : bi} (P Q : PROP) := into_except_0 : P ⊢ ◇ Q.
 Arguments IntoExcept0 {_} _%I _%I : simpl never.
 Arguments into_except_0 {_} _%I _%I {_}.
-Hint Mode IntoExcept0 + ! - : typeclass_instances.
-Hint Mode IntoExcept0 + - ! : typeclass_instances.
+Global Hint Mode IntoExcept0 + ! - : typeclass_instances.
+Global Hint Mode IntoExcept0 + - ! : typeclass_instances.
 
 (* The class [MaybeIntoLaterN] has only two instances:
 
@@ -452,12 +452,12 @@ Class MaybeIntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   maybe_into_laterN : P ⊢ ▷^n Q.
 Arguments MaybeIntoLaterN {_} _ _%nat_scope _%I _%I.
 Arguments maybe_into_laterN {_} _ _%nat_scope _%I _%I {_}.
-Hint Mode MaybeIntoLaterN + + + - - : typeclass_instances.
+Global Hint Mode MaybeIntoLaterN + + + - - : typeclass_instances.
 
 Class IntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
   into_laterN :> MaybeIntoLaterN only_head n P Q.
 Arguments IntoLaterN {_} _ _%nat_scope _%I _%I.
-Hint Mode IntoLaterN + + + ! - : typeclass_instances.
+Global Hint Mode IntoLaterN + + + ! - : typeclass_instances.
 
 Instance maybe_into_laterN_default {PROP : bi} only_head n (P : PROP) :
   MaybeIntoLaterN only_head n P P | 1000.
@@ -477,7 +477,7 @@ Class IntoEmbed {PROP PROP' : bi} `{BiEmbed PROP PROP'} (P : PROP') (Q : PROP) :
   into_embed : P ⊢ ⎡Q⎤.
 Arguments IntoEmbed {_ _ _} _%I _%I.
 Arguments into_embed {_ _ _} _%I _%I {_}.
-Hint Mode IntoEmbed + + + ! -  : typeclass_instances.
+Global Hint Mode IntoEmbed + + + ! -  : typeclass_instances.
 
 (* We use two type classes for [AsEmpValid], in order to avoid loops in
    typeclass search. Indeed, the [as_emp_valid_embed] instance would try
@@ -510,7 +510,7 @@ Proof. by apply as_emp_valid. Qed.
    Extracts the namespace associated with an invariant assertion. Used for [iInv]. *)
 Class IntoInv {PROP : bi} (P: PROP) (N: namespace).
 Arguments IntoInv {_} _%I _.
-Hint Mode IntoInv + ! - : typeclass_instances.
+Global Hint Mode IntoInv + ! - : typeclass_instances.
 
 (** Accessors.
     This definition only exists for the purpose of the proof mode; a truly
@@ -533,7 +533,7 @@ Class ElimAcc {PROP : bi} {X : Type} (M1 M2 : PROP → PROP)
   elim_acc : ((∀ x, α x -∗ Q' x) -∗ accessor M1 M2 α β mγ -∗ Q).
 Arguments ElimAcc {_} {_} _%I _%I _%I _%I _%I _%I : simpl never.
 Arguments elim_acc {_} {_} _%I _%I _%I _%I _%I _%I {_}.
-Hint Mode ElimAcc + ! ! ! ! ! ! ! - : typeclass_instances.
+Global Hint Mode ElimAcc + ! ! ! ! ! ! ! - : typeclass_instances.
 
 (* Turn [P] into an accessor.
    Inputs:
@@ -550,7 +550,7 @@ Class IntoAcc {PROP : bi} {X : Type} (Pacc : PROP) (φ : Prop) (Pin : PROP)
   into_acc : φ → Pacc -∗ Pin -∗ accessor M1 M2 α β mγ.
 Arguments IntoAcc {_} {_} _%I _ _%I _%I _%I _%I _%I _%I : simpl never.
 Arguments into_acc {_} {_} _%I _ _%I _%I _%I _%I _%I _%I {_} : simpl never.
-Hint Mode IntoAcc + - ! - - - - - - - : typeclass_instances.
+Global Hint Mode IntoAcc + - ! - - - - - - - : typeclass_instances.
 
 (* The typeclass used for the [iInv] tactic.
    Input: [Pinv]
@@ -578,7 +578,7 @@ Class ElimInv {PROP : bi} {X : Type} (φ : Prop)
   elim_inv : φ → Pinv ∗ Pin ∗ (∀ x, Pout x ∗ (default (λ _, emp) mPclose) x -∗ Q' x) ⊢ Q.
 Arguments ElimInv {_} {_} _ _%I _%I _%I _%I _%I _%I : simpl never.
 Arguments elim_inv {_} {_} _ _%I _%I _%I _%I _%I _%I {_}.
-Hint Mode ElimInv + - - ! - - ! ! - : typeclass_instances.
+Global Hint Mode ElimInv + - - ! - - ! ! - : typeclass_instances.
 
 (** We make sure that tactics that perform actions on *specific* hypotheses or
 parts of the goal look through the [tc_opaque] connective, which is used to make

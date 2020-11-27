@@ -14,7 +14,7 @@ created for example when solving [FromAssumption p ?P ?Q] where both [?P] and
 [?Q] are evars. See [test_iApply_evar] in [tests/proofmode] for an example. *)
 Lemma from_assumption_exact {PROP : bi} p (P : PROP) : FromAssumption p P P.
 Proof. by rewrite /FromAssumption /= intuitionistically_if_elim. Qed.
-Hint Extern 0 (FromAssumption _ _ _) =>
+Global Hint Extern 0 (FromAssumption _ _ _) =>
   notypeclasses refine (from_assumption_exact _ _); shelve : typeclass_instances.
 
 (* FIXME(Coq #6294): needs new unification *)
@@ -23,7 +23,7 @@ enable the better unification algorithm.
 See https://gitlab.mpi-sws.org/iris/iris/issues/288 *)
 Lemma from_exist_exist {PROP : bi} {A} (Φ : A → PROP) : FromExist (∃ a, Φ a) Φ.
 Proof. by rewrite /FromExist. Qed.
-Hint Extern 0 (FromExist _ _) =>
+Global Hint Extern 0 (FromExist _ _) =>
   notypeclasses refine (from_exist_exist _) : typeclass_instances.
 
 Section class_instances.

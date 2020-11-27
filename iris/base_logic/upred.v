@@ -245,7 +245,7 @@ Qed.
 (** logical entailement *)
 Inductive uPred_entails {M} (P Q : uPred M) : Prop :=
   { uPred_in_entails : ∀ n x, ✓{n} x → P n x → Q n x }.
-Hint Resolve uPred_mono : uPred_def.
+Global Hint Resolve uPred_mono : uPred_def.
 
 (** logical connectives *)
 Program Definition uPred_pure_def {M} (φ : Prop) : uPred M :=

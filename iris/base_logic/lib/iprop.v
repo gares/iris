@@ -88,7 +88,7 @@ search is only triggered if the arguments of [subG] do not contain evars. Since
 instance search for [subG] is restrained, instances should persistently have [subG] as
 their first parameter to avoid loops. For example, the instances [subG_authΣ]
 and [auth_discrete] otherwise create a cycle that pops up arbitrarily. *)
-Hint Mode subG ! + : typeclass_instances.
+Global Hint Mode subG ! + : typeclass_instances.
 
 Lemma subG_inv Σ1 Σ2 Σ : subG (gFunctors.app Σ1 Σ2) Σ → subG Σ1 Σ * subG Σ2 Σ.
 Proof.

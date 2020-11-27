@@ -19,8 +19,8 @@ Notation "x ≡{ n }≡ y" := (dist n x y)
 Notation "x ≡{ n }@{ A }≡ y" := (dist (A:=A) n x y)
   (at level 70, n at next level, only parsing).
 
-Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
-Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
+Global Hint Extern 0 (_ ≡{_}≡ _) => reflexivity : core.
+Global Hint Extern 0 (_ ≡{_}≡ _) => symmetry; assumption : core.
 Notation NonExpansive f := (∀ n, Proper (dist n ==> dist n) f).
 Notation NonExpansive2 f := (∀ n, Proper (dist n ==> dist n ==> dist n) f).
 
@@ -52,8 +52,8 @@ Structure ofeT := OfeT {
 }.
 Arguments OfeT _ {_ _} _.
 Add Printing Constructor ofeT.
-Hint Extern 0 (Equiv _) => eapply (@ofe_equiv _) : typeclass_instances.
-Hint Extern 0 (Dist _) => eapply (@ofe_dist _) : typeclass_instances.
+Global Hint Extern 0 (Equiv _) => eapply (@ofe_equiv _) : typeclass_instances.
+Global Hint Extern 0 (Dist _) => eapply (@ofe_dist _) : typeclass_instances.
 Arguments ofe_car : simpl never.
 Arguments ofe_equiv : simpl never.
 Arguments ofe_dist : simpl never.
@@ -96,12 +96,12 @@ Section ofe_mixin.
   Proof. apply (mixin_dist_S _ (ofe_mixin A)). Qed.
 End ofe_mixin.
 
-Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
+Global Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 
 (** Discrete OFEs and discrete OFE elements *)
 Class Discrete {A : ofeT} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.
 Arguments discrete {_} _ {_} _ _.
-Hint Mode Discrete + ! : typeclass_instances.
+Global Hint Mode Discrete + ! : typeclass_instances.
 Instance: Params (@Discrete) 1 := {}.
 
 Class OfeDiscrete (A : ofeT) := ofe_discrete_discrete (x : A) :> Discrete x.
@@ -125,7 +125,7 @@ Class Cofe (A : ofeT) := {
   conv_compl n c : compl c ≡{n}≡ c n;
 }.
 Arguments compl : simpl never.
-Hint Mode Cofe ! : typeclass_instances.
+Global Hint Mode Cofe ! : typeclass_instances.
 
 Lemma compl_chain_map `{Cofe A, Cofe B} (f : A → B) c `(NonExpansive f) :
   compl (chain_map f c) ≡ f (compl c).
@@ -258,7 +258,7 @@ Ltac solve_contractive :=
 (** Limit preserving predicates *)
 Class LimitPreserving `{!Cofe A} (P : A → Prop) : Prop :=
   limit_preserving (c : chain A) : (∀ n, P (c n)) → P (compl c).
-Hint Mode LimitPreserving + + ! : typeclass_instances.
+Global Hint Mode LimitPreserving + + ! : typeclass_instances.
 
 Section limit_preserving.
   Context `{Cofe A}.
@@ -716,7 +716,7 @@ Bind Scope oFunctor_scope with oFunctor.
 Class oFunctorContractive (F : oFunctor) :=
   oFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@oFunctor_map F A1 _ A2 _ B1 _ B2 _).
-Hint Mode oFunctorContractive ! : typeclass_instances.
+Global Hint Mode oFunctorContractive ! : typeclass_instances.
 
 (** Not a coercion due to the [Cofe] type class argument, and to avoid
 ambiguous coercion paths, see https://gitlab.mpi-sws.org/iris/iris/issues/240. *)

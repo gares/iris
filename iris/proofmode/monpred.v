@@ -10,13 +10,13 @@ Arguments MakeMonPredAt {_ _} _ _%I _%I.
 (** Since [MakeMonPredAt] is used by [AsEmpValid] to import lemmas into the
 proof mode, the index [I] and BI [PROP] often contain evars. Hence, it is
 important to use the mode [!] also for the first two arguments. *)
-Hint Mode MakeMonPredAt ! ! - ! - : typeclass_instances.
+Global Hint Mode MakeMonPredAt ! ! - ! - : typeclass_instances.
 
 Class IsBiIndexRel {I : biIndex} (i j : I) := is_bi_index_rel : i ⊑ j.
-Hint Mode IsBiIndexRel + - - : typeclass_instances.
+Global Hint Mode IsBiIndexRel + - - : typeclass_instances.
 Instance is_bi_index_rel_refl {I : biIndex} (i : I) : IsBiIndexRel i i | 0.
 Proof. by rewrite /IsBiIndexRel. Qed.
-Hint Extern 1 (IsBiIndexRel _ _) => unfold IsBiIndexRel; assumption
+Global Hint Extern 1 (IsBiIndexRel _ _) => unfold IsBiIndexRel; assumption
             : typeclass_instances.
 
 (** Frame [𝓡] into the goal [monPred_at P i] and determine the remainder [𝓠].
@@ -25,7 +25,7 @@ Class FrameMonPredAt {I : biIndex} {PROP : bi} (p : bool) (i : I)
       (𝓡 : PROP) (P : monPred I PROP) (𝓠 : PROP) :=
   frame_monPred_at : □?p 𝓡 ∗ 𝓠 -∗ P i.
 Arguments FrameMonPredAt {_ _} _ _ _%I _%I _%I.
-Hint Mode FrameMonPredAt + + + - ! ! - : typeclass_instances.
+Global Hint Mode FrameMonPredAt + + + - ! ! - : typeclass_instances.
 
 Section modalities.
   Context {I : biIndex} {PROP : bi}.
@@ -537,17 +537,17 @@ End bi.
 
    As a result, depending on P and Q being evars, we use a different
    version of [into_wand_monPred_at_xx_xx]. *)
-Hint Extern 3 (IntoWand _ _ (monPred_at _ _) ?P ?Q) =>
+Global Hint Extern 3 (IntoWand _ _ (monPred_at _ _) ?P ?Q) =>
      is_evar P; is_evar Q;
      eapply @into_wand_monPred_at_unknown_unknown
      : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) ?P (monPred_at ?Q _)) =>
+Global Hint Extern 2 (IntoWand _ _ (monPred_at _ _) ?P (monPred_at ?Q _)) =>
      eapply @into_wand_monPred_at_unknown_known
      : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
+Global Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
      eapply @into_wand_monPred_at_known_unknown_le
      : typeclass_instances.
-Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
+Global Hint Extern 2 (IntoWand _ _ (monPred_at _ _) (monPred_at ?P _) ?Q) =>
      eapply @into_wand_monPred_at_known_unknown_ge
      : typeclass_instances.
 
