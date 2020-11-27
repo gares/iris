@@ -142,6 +142,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * `wp_strong_adequacy` now applies to an initial state with multiple
   threads instead of only a single thread. The derived adequacy lemmas
   are unchanged.
+* `pure_exec_fill` is no longer registered as an instance for `PureExec`, to
+  avoid TC search attempting to apply this instance all the time.
 
 **Changes in `heap_lang`:**
 
