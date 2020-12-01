@@ -247,7 +247,7 @@ Lemma slice_iff E q f P Q Q' γ b :
 Proof.
   iIntros (??) "#HQQ' #Hs Hb". destruct b.
   - iMod (slice_delete_full with "Hs Hb") as (P') "(HQ & Heq & Hb)"; try done.
-    iDestruct ("HQQ'" with "HQ") as "HQ'".
+    iPoseProof ("HQQ'" with "HQ") as "HQ'".
     iMod (slice_insert_full with "HQ' Hb") as (γ' ?) "[#Hs' Hb]"; try done.
     iExists γ', _. iIntros "{$∗ $# $%} !>". do 2 iNext. iRewrite "Heq".
     iIntros "!>". by iSplit; iIntros "[? $]"; iApply "HQQ'".
