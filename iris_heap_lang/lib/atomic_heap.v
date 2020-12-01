@@ -47,13 +47,8 @@ Arguments atomic_heap _ {_}.
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 Module notation.
-Notation "l ↦{ q } v" := (mapsto l q%dfrac v)
-  (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
-Notation "l ↦ v" := (mapsto l (DfracOwn 1) v) (at level 20) : bi_scope.
-
-Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
-  (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
-Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
+otation "l ↦ dq v" := (mapsto l dq v)
+  (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
 Notation "'ref' e" := (alloc e) : expr_scope.
 Notation "! e" := (load e) : expr_scope.

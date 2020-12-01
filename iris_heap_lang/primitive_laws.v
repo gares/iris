@@ -28,10 +28,10 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 
 (** Since we use an [option val] instance of [gen_heap], we need to overwrite
 the notations.  That also helps for scopes and coercions. *)
-Notation "l ↦{ q } v" := (mapsto (L:=loc) (V:=option val) l q%dfrac (Some v%V))
-  (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
 Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V))
   (at level 20) : bi_scope.
+Notation "l ↦ dq v" := (mapsto (L:=loc) (V:=option val) l dq (Some v%V))
+  (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
 (** Same for [gen_inv_heap], except that these are higher-order notations so to
 make setoid rewriting in the predicate [I] work we need actual definitions
@@ -277,30 +277,30 @@ Qed.
 (** We need to adjust the [gen_heap] and [gen_inv_heap] lemmas because of our
 value type being [option val]. *)
 
-Lemma mapsto_valid l q v : l ↦{q} v -∗ ⌜✓ q⌝%Qp.
+Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
 Proof. apply mapsto_valid. Qed.
-Lemma mapsto_valid_2 l q1 q2 v1 v2 :
-  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜✓ (q1 ⋅ q2) ∧ v1 = v2⌝.
+Lemma mapsto_valid_2 l dq1 dq2 v1 v2 :
+  l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
 Proof.
   iIntros "H1 H2". iDestruct (mapsto_valid_2 with "H1 H2") as %[? [=?]]. done.
 Qed.
-Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
+Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
 Proof. iIntros "H1 H2". iDestruct (mapsto_agree with "H1 H2") as %[=?]. done. Qed.
 
-Lemma mapsto_combine l q1 q2 v1 v2 :
-  l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 ⋅ q2} v1 ∗ ⌜v1 = v2⌝.
+Lemma mapsto_combine l dq1 dq2 v1 v2 :
+  l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
 Proof.
   iIntros "Hl1 Hl2". iDestruct (mapsto_combine with "Hl1 Hl2") as "[$ Heq]".
   by iDestruct "Heq" as %[= ->].
 Qed.
 
-Lemma mapsto_frac_ne l1 l2 q1 q2 v1 v2 :
-  ¬ ✓(q1 ⋅ q2)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
+  ¬ ✓(dq1 ⋅ dq2) → l1 ↦{dq1} v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
 Proof. apply mapsto_frac_ne. Qed.
-Lemma mapsto_ne l1 l2 q2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+Lemma mapsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
 Proof. apply mapsto_ne. Qed.
 
-Lemma mapsto_persist l q v : l ↦{#q} v ==∗ l ↦{#□} v.
+Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
 Proof. apply mapsto_persist. Qed.
 
 Global Instance inv_mapsto_own_proper l v :
@@ -449,16 +449,16 @@ Proof.
   iApply (twp_free with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
-Lemma twp_load s E l q v :
-  [[{ l ↦{q} v }]] Load (Val $ LitV $ LitLoc l) @ s; E [[{ RET v; l ↦{q} v }]].
+Lemma twp_load s E l dq v :
+  [[{ l ↦{dq} v }]] Load (Val $ LitV $ LitLoc l) @ s; E [[{ RET v; l ↦{dq} v }]].
 Proof.
   iIntros (Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
   iSplit; first by eauto. iIntros (κ v2 σ2 efs Hstep); inv_head_step.
   iModIntro; iSplit=> //. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
-Lemma wp_load s E l q v :
-  {{{ ▷ l ↦{q} v }}} Load (Val $ LitV $ LitLoc l) @ s; E {{{ RET v; l ↦{q} v }}}.
+Lemma wp_load s E l dq v :
+  {{{ ▷ l ↦{dq} v }}} Load (Val $ LitV $ LitLoc l) @ s; E {{{ RET v; l ↦{dq} v }}}.
 Proof.
   iIntros (Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_load with "H"). iIntros "H HΦ". by iApply "HΦ".
@@ -482,10 +482,10 @@ Proof.
   iApply (twp_store with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
-Lemma twp_cmpxchg_fail s E l q v' v1 v2 :
+Lemma twp_cmpxchg_fail s E l dq v' v1 v2 :
   v' ≠ v1 → vals_compare_safe v' v1 →
-  [[{ l ↦{q} v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  [[{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }]].
+  [[{ l ↦{dq} v' }]] CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  [[{ RET PairV v' (LitV $ LitBool false); l ↦{dq} v' }]].
 Proof.
   iIntros (?? Φ) "Hl HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 κs n) "[Hσ Hκs] !>". iDestruct (@gen_heap_valid with "Hσ Hl") as %?.
@@ -493,10 +493,10 @@ Proof.
   rewrite bool_decide_false //.
   iModIntro; iSplit=> //. iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
-Lemma wp_cmpxchg_fail s E l q v' v1 v2 :
+Lemma wp_cmpxchg_fail s E l dq v' v1 v2 :
   v' ≠ v1 → vals_compare_safe v' v1 →
-  {{{ ▷ l ↦{q} v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
-  {{{ RET PairV v' (LitV $ LitBool false); l ↦{q} v' }}}.
+  {{{ ▷ l ↦{dq} v' }}} CmpXchg (Val $ LitV $ LitLoc l) (Val v1) (Val v2) @ s; E
+  {{{ RET PairV v' (LitV $ LitBool false); l ↦{dq} v' }}}.
 Proof.
   iIntros (?? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_cmpxchg_fail with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".

@@ -70,11 +70,11 @@ Section proof.
     iApply (twp_array_free with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
   Qed.
 
-  Lemma twp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
+  Lemma twp_array_copy_to stk E (dst src : loc) vdst vsrc dq (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
-    [[{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }]]
+    [[{ dst ↦∗ vdst ∗ src ↦∗{dq} vsrc }]]
       array_copy_to #dst #src #n @ stk; E
-    [[{ RET #(); dst ↦∗ vsrc ∗ src ↦∗{q} vsrc }]].
+    [[{ RET #(); dst ↦∗ vsrc ∗ src ↦∗{dq} vsrc }]].
   Proof.
     iIntros (Hvdst Hvsrc Φ) "[Hdst Hsrc] HΦ".
     iInduction vdst as [|v1 vdst] "IH" forall (n dst src vsrc Hvdst Hvsrc);
@@ -87,22 +87,22 @@ Section proof.
     iIntros "[Hvdst Hvsrc]".
     iApply "HΦ"; by iFrame.
   Qed.
-  Lemma wp_array_copy_to stk E (dst src : loc) vdst vsrc q (n : Z) :
+  Lemma wp_array_copy_to stk E (dst src : loc) vdst vsrc dq (n : Z) :
     Z.of_nat (length vdst) = n → Z.of_nat (length vsrc) = n →
-    {{{ dst ↦∗ vdst ∗ src ↦∗{q} vsrc }}}
+    {{{ dst ↦∗ vdst ∗ src ↦∗{dq} vsrc }}}
       array_copy_to #dst #src #n @ stk; E
-    {{{ RET #(); dst ↦∗ vsrc ∗ src ↦∗{q} vsrc }}}.
+    {{{ RET #(); dst ↦∗ vsrc ∗ src ↦∗{dq} vsrc }}}.
   Proof.
     iIntros (? ? Φ) "H HΦ". iApply (twp_wp_step with "HΦ").
     iApply (twp_array_copy_to with "H"); [auto..|]; iIntros "H HΦ". by iApply "HΦ".
   Qed.
 
-  Lemma twp_array_clone stk E l q vl n :
+  Lemma twp_array_clone stk E l dq vl n :
     Z.of_nat (length vl) = n →
     (0 < n)%Z →
-    [[{ l ↦∗{q} vl }]]
+    [[{ l ↦∗{dq} vl }]]
       array_clone #l #n @ stk; E
-    [[{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{q} vl }]].
+    [[{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{dq} vl }]].
   Proof.
     iIntros (Hvl Hn Φ) "Hvl HΦ".
     wp_lam.
@@ -114,12 +114,12 @@ Section proof.
       wp_pures.
       iApply "HΦ"; by iFrame.
   Qed.
-  Lemma wp_array_clone stk E l q vl n :
+  Lemma wp_array_clone stk E l dq vl n :
     Z.of_nat (length vl) = n →
     (0 < n)%Z →
-    {{{ l ↦∗{q} vl }}}
+    {{{ l ↦∗{dq} vl }}}
       array_clone #l #n @ stk; E
-    {{{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{q} vl }}}.
+    {{{ l', RET #l'; l' ↦∗ vl ∗ l ↦∗{dq} vl }}}.
   Proof.
     iIntros (? ? Φ) "H HΦ". iApply (twp_wp_step with "HΦ").
     iApply (twp_array_clone with "H"); [auto..|]; iIntros (l') "H HΦ". by iApply "HΦ".
