@@ -93,32 +93,6 @@ Lemma test_iDestruct_intuitionistic_2 P Q `{!Persistent P, !Affine P}:
   Q ∗ (Q -∗ P) -∗ P.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". done. Qed.
 
-Lemma test_iDestruct_specialize_wand P Q :
-  Q ∗ □(Q -∗ P) -∗ P.
-Proof.
-  iIntros "[HQ #HQP]".
-  (* iDestruct specializes, consuming the hypothesis *)
-  iDestruct ("HQP" with "HQ") as "HQP". done.
-Qed.
-
-Lemma test_iPoseProof_copy_wand P Q :
-  Q ∗ □(Q -∗ P) -∗ P ∗ (Q -∗ P).
-Proof.
-  iIntros "[HQ #HQP]".
-  (* in contrast with [iDestruct], [iPoseProof] leaves "HQP" alone *)
-  iPoseProof ("HQP" with "HQ") as "HP".
-  iFrame "HP HQP".
-Qed.
-
-Lemma test_iDestruct_pose_forall (Φ: nat → PROP) :
-  □(∀ (x:nat), Φ x) -∗ Φ 0 ∗ Φ 1.
-Proof.
-  iIntros "#H".
-  (* iDestruct does not consume "H" because it's a [∀] *)
-  iDestruct ("H" $! 0) as "$".
-  iDestruct ("H" $! 1) as "$".
-Qed.
-
 Lemma test_iDestruct_intuitionistic_affine_bi `{!BiAffine PROP} P Q `{!Persistent P}:
   Q ∗ (Q -∗ P) -∗ P ∗ Q.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.

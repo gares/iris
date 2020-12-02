@@ -1992,12 +1992,6 @@ Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15) "" with tac.
 
 (** * Destruct tactic *)
-
-(** [CopyDestruct] is an internal class used by the [iDestruct] tactic to
-identify universally quantified hypotheses that should be copied and not be
-consumed when they are specialized in proofmode terms.
-
-Not intended for user extensibility. *)
 Class CopyDestruct {PROP : bi} (P : PROP).
 Arguments CopyDestruct {_} _%I.
 Hint Mode CopyDestruct + ! : typeclass_instances.
@@ -2019,8 +2013,8 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
     | string => constr:(Some (INamed lem))
     | iTrm =>
        lazymatch lem with
-       | @ITrm ident _ _?H _ _ => constr:(Some H)
-       | @ITrm string _ _ ?H _ _ => constr:(Some (INamed H))
+       | @iTrm ident ?H _ _ => constr:(Some H)
+       | @iTrm string ?H _ _ => constr:(Some (INamed H))
        | _ => constr:(@None ident)
        end
     | _ => constr:(@None ident)
