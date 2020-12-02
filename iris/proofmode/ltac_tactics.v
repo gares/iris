@@ -1991,34 +1991,30 @@ Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
     ident(x12) ident(x13) ident(x14) ident(x15) ")" "with" tactic3(tac):=
   iRevertIntros (x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15) "" with tac.
 
-(** * Destruct tactic *)
-Class CopyDestruct {PROP : bi} (P : PROP).
-Arguments CopyDestruct {_} _%I.
-Global Hint Mode CopyDestruct + ! : typeclass_instances.
+(** * Destruct and PoseProof tactics *)
+(** The tactics [iDestruct] and [iPoseProof] are similar, but there are some
+subtle differences:
 
-Instance copy_destruct_forall {PROP : bi} {A} (Φ : A → PROP) : CopyDestruct (∀ x, Φ x) := {}.
-Instance copy_destruct_impl {PROP : bi} (P Q : PROP) :
-  CopyDestruct Q → CopyDestruct (P → Q) := {}.
-Instance copy_destruct_wand {PROP : bi} (P Q : PROP) :
-  CopyDestruct Q → CopyDestruct (P -∗ Q) := {}.
-Instance copy_destruct_affinely {PROP : bi} (P : PROP) :
-  CopyDestruct P → CopyDestruct (<affine> P) := {}.
-Instance copy_destruct_persistently {PROP : bi} (P : PROP) :
-  CopyDestruct P → CopyDestruct (<pers> P) := {}.
+1. The [iDestruct] tactic can be called with a natural number [n] instead of a
+   hypothesis/lemma, i.e., [iDestruct n as ...]. This introduces [n] hypotheses,
+   and then calls [iDestruct] on the last introduced hypothesis. The
+   [iPoseProof] tactic does not support this feature.
+2. When the argument [lem] of [iDestruct lem as ...] is a proof mode identifier
+   (instead of a proof mode term, i.e., no quantifiers or wands/implications are
+   eliminated), then the original hypothesis will always be removed. For
+   example, calling [iDestruct "H" as ...] on ["H" : P ∨ Q] will remove ["H"].
+   Conversely, [iPoseProof] always tries to keep the hypothesis. For example,
+   calling [iPoseProof "H" as ...] on ["H" : P ∨ Q] will keep ["H"] if it
+   resides in the intuitionistic context.
 
+These differences are also present in Coq's [destruct] and [pose proof] tactics.
+However, Coq's [destruct lem as ...] is more eager on removing the original
+hypothesis, it might also remove the original hypothesis if [lem] is not an
+identifier, but an applied term. For example, calling [destruct (H HP) as ...]
+on [H : P → Q] and [HP : P] will remove [H]. The [iDestruct] does not do this
+because it could lead to information loss if [H] resides in the intuitionistic
+context and [HP] resides in the spatial context. *)
 Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
-  let ident :=
-    lazymatch type of lem with
-    | ident => constr:(Some lem)
-    | string => constr:(Some (INamed lem))
-    | iTrm =>
-       lazymatch lem with
-       | @iTrm ident ?H _ _ => constr:(Some H)
-       | @iTrm string ?H _ _ => constr:(Some (INamed H))
-       | _ => constr:(@None ident)
-       end
-    | _ => constr:(@None ident)
-    end in
   let intro_destruct n :=
     let rec go n' :=
       lazymatch n' with
@@ -2029,32 +2025,14 @@ Tactic Notation "iDestructCore" open_constr(lem) "as" constr(p) tactic3(tac) :=
     intros; go n in
   lazymatch type of lem with
   | nat => intro_destruct lem
-  | Z => (* to make it work in Z_scope. We should just be able to bind
-     tactic notation arguments to notation scopes. *)
+  | Z =>
+     (** This case is used to make the tactic work in [Z_scope]. It would be
+     better if we could bind tactic notation arguments to notation scopes, but
+     that is not supported by Ltac. *)
      let n := eval compute in (Z.to_nat lem) in intro_destruct n
-  | _ =>
-     (* Only copy the hypothesis in case there is a [CopyDestruct] instance.
-     Also, rule out cases in which it does not make sense to copy, namely when
-     destructing a lemma (instead of a hypothesis) or a spatial hypothesis
-     (which cannot be kept). *)
-     iStartProof;
-     lazymatch ident with
-     | None => iPoseProofCore lem as p tac
-     | Some ?H =>
-        lazymatch iTypeOf H with
-        | None =>
-          let H := pretty_ident H in
-          fail "iDestruct:" H "not found"
-        | Some (true, ?P) =>
-           (* intuitionistic hypothesis, check for a CopyDestruct instance *)
-           tryif (let dummy := constr:(_ : CopyDestruct P) in idtac)
-           then (iPoseProofCore lem as p tac)
-           else (iSpecializeCore lem as p; [..| tac H])
-        | Some (false, ?P) =>
-           (* spatial hypothesis, cannot copy *)
-           iSpecializeCore lem as p; [..| tac H ]
-        end
-     end
+  | ident => tac lem
+  | string => tac constr:(INamed lem)
+  | _ => iPoseProofCore lem as p tac
   end.
 
 Tactic Notation "iDestruct" open_constr(lem) "as" constr(pat) :=

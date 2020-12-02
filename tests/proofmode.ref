@@ -534,7 +534,7 @@ Tactic failure: iModIntro: spatial context is non-empty.
 "iDestruct_bad_name"
      : string
 The command has indeed failed with message:
-Tactic failure: iDestruct: "HQ" not found.
+Tactic failure: iRename: "HQ" not found.
 "iIntros_dup_name"
      : string
 The command has indeed failed with message:
