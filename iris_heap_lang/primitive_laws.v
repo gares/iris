@@ -28,8 +28,6 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 
 (** Since we use an [option val] instance of [gen_heap], we need to overwrite
 the notations.  That also helps for scopes and coercions. *)
-Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V))
-  (at level 20) : bi_scope.
 Notation "l ↦ dq v" := (mapsto (L:=loc) (V:=option val) l dq (Some v%V))
   (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
@@ -277,7 +275,7 @@ Qed.
 (** We need to adjust the [gen_heap] and [gen_inv_heap] lemmas because of our
 value type being [option val]. *)
 
-Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
+Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝.
 Proof. apply mapsto_valid. Qed.
 Lemma mapsto_valid_2 l dq1 dq2 v1 v2 :
   l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.

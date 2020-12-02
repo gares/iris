@@ -47,7 +47,7 @@ Arguments atomic_heap _ {_}.
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 Module notation.
-otation "l ↦ dq v" := (mapsto l dq v)
+Notation "l ↦ dq v" := (mapsto l dq v)
   (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 
 Notation "'ref' e" := (alloc e) : expr_scope.

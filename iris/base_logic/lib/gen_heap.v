@@ -123,12 +123,6 @@ Section definitions.
 End definitions.
 Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
-Declare Custom Entry dfrac.
-Notation "{ dq }" := (dq) (in custom dfrac at level 1, dq constr).
-Notation "□" := DfracDiscarded (in custom dfrac).
-Notation "{# q }" := (DfracOwn q) (in custom dfrac at level 1, q constr).
-Notation "" := (DfracOwn 1) (in custom dfrac).
-
 Local Notation "l ↦ dq v" := (mapsto l dq v)
   (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
 

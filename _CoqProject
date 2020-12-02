@@ -9,7 +9,9 @@
 -Q iris/program_logic iris.program_logic
 -Q iris_heap_lang iris.heap_lang
 # We sometimes want to locally override notation, and there is no good way to do that with scopes.
--arg -w -arg -notation-overridden
+-arg -w -arg -notation-overridden 
+# Coq emits warnings when a custom entry is reimported, this is too noisy.
+-arg -w -arg -custom-entry-overriden
 # Cannot use non-canonical projections as it causes massive unification failures
 # (https://github.com/coq/coq/issues/6294).
 -arg -w -arg -redundant-canonical-projection

@@ -32,6 +32,12 @@ Inductive dfrac :=
   | DfracDiscarded : dfrac
   | DfracBoth : Qp → dfrac.
 
+Declare Custom Entry dfrac.
+Notation "{ dq }" := (dq) (in custom dfrac at level 1, dq constr).
+Notation "□" := DfracDiscarded (in custom dfrac).
+Notation "{# q }" := (DfracOwn q) (in custom dfrac at level 1, q constr).
+Notation "" := (DfracOwn 1) (in custom dfrac).
+
 Section dfrac.
   Canonical Structure dfracO := leibnizO dfrac.
 
