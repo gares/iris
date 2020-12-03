@@ -17,14 +17,14 @@ Implicit Types A : Type.
 Notation "P ⊢ Q" := (P ⊢@{PROP} Q).
 Notation "P ⊣⊢ Q" := (P ⊣⊢@{PROP} Q).
 
-Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
-Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
+Local Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
+Local Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
 
 Global Instance later_proper :
   Proper ((⊣⊢) ==> (⊣⊢)) (@bi_later PROP) := ne_proper _.
 
 (* Later derived *)
-Hint Resolve later_mono : core.
+Local Hint Resolve later_mono : core.
 Global Instance later_mono' : Proper ((⊢) ==> (⊢)) (@bi_later PROP).
 Proof. intros P Q; apply later_mono. Qed.
 Global Instance later_flip_mono' :

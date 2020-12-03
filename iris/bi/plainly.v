@@ -110,9 +110,9 @@ Section plainly_derived.
 Context `{BiPlainly PROP}.
 Implicit Types P : PROP.
 
-Hint Resolve pure_intro forall_intro : core.
-Hint Resolve or_elim or_intro_l' or_intro_r' : core.
-Hint Resolve and_intro and_elim_l' and_elim_r' : core.
+Local Hint Resolve pure_intro forall_intro : core.
+Local Hint Resolve or_elim or_intro_l' or_intro_r' : core.
+Local Hint Resolve and_intro and_elim_l' and_elim_r' : core.
 
 Global Instance plainly_proper :
   Proper ((⊣⊢) ==> (⊣⊢)) (@plainly PROP _) := ne_proper _.

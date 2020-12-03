@@ -54,12 +54,12 @@ Definition up_set (S : states sts) (T : tokens sts) : states sts :=
   S ≫= λ s, up s T.
 
 (** Tactic setup *)
-Hint Resolve Step : core.
-Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
-Hint Extern 50 (¬equiv (A:=propset _) _ _) => set_solver : sts.
-Hint Extern 50 (_ ∈ _) => set_solver : sts.
-Hint Extern 50 (_ ⊆ _) => set_solver : sts.
-Hint Extern 50 (_ ## _) => set_solver : sts.
+Local Hint Resolve Step : core.
+Local Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
+Local Hint Extern 50 (¬equiv (A:=propset _) _ _) => set_solver : sts.
+Local Hint Extern 50 (_ ∈ _) => set_solver : sts.
+Local Hint Extern 50 (_ ⊆ _) => set_solver : sts.
+Local Hint Extern 50 (_ ## _) => set_solver : sts.
 
 (** ** Setoids *)
 Instance frame_step_mono : Proper (flip (⊆) ==> (=) ==> (=) ==> impl) frame_step.
@@ -221,11 +221,11 @@ Instance sts_op : Op (car sts) := λ x1 x2,
   | auth s T1, auth _ T2 => auth s (T1 ∪ T2)(* never happens *)
   end.
 
-Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
-Hint Extern 50 (∃ s : state sts, _) => set_solver : sts.
-Hint Extern 50 (_ ∈ _) => set_solver : sts.
-Hint Extern 50 (_ ⊆ _) => set_solver : sts.
-Hint Extern 50 (_ ## _) => set_solver : sts.
+Local Hint Extern 50 (equiv (A:=propset _) _ _) => set_solver : sts.
+Local Hint Extern 50 (∃ s : state sts, _) => set_solver : sts.
+Local Hint Extern 50 (_ ∈ _) => set_solver : sts.
+Local Hint Extern 50 (_ ⊆ _) => set_solver : sts.
+Local Hint Extern 50 (_ ## _) => set_solver : sts.
 
 Global Instance auth_proper s : Proper ((≡) ==> (≡)) (@auth sts s).
 Proof. by constructor. Qed.

@@ -85,10 +85,10 @@ Global Instance internal_eq_proper (A : ofeT) :
   Proper ((≡) ==> (≡) ==> (⊣⊢)) (@internal_eq PROP _ A) := ne_proper_2 _.
 
 (* Equality *)
-Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
-Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
-Hint Resolve internal_eq_refl : core.
-Hint Extern 100 (NonExpansive _) => solve_proper : core.
+Local Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
+Local Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
+Local Hint Resolve internal_eq_refl : core.
+Local Hint Extern 100 (NonExpansive _) => solve_proper : core.
 
 Lemma equiv_internal_eq {A : ofeT} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
 Proof. intros ->. auto. Qed.
