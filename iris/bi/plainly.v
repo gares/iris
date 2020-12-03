@@ -8,7 +8,7 @@ Set Default Proof Using "Type*".
 
 Class Plainly (A : Type) := plainly : A → A.
 Arguments plainly {A}%type_scope {_} _%I.
-Hint Mode Plainly ! : typeclass_instances.
+Global Hint Mode Plainly ! : typeclass_instances.
 Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.
 
@@ -42,7 +42,7 @@ Class BiPlainly (PROP : bi) := {
   bi_plainly_plainly :> Plainly PROP;
   bi_plainly_mixin : BiPlainlyMixin PROP bi_plainly_plainly;
 }.
-Hint Mode BiPlainly ! : typeclass_instances.
+Global Hint Mode BiPlainly ! : typeclass_instances.
 Arguments bi_plainly_plainly : simpl never.
 
 Class BiPlainlyExist `{!BiPlainly PROP} :=
@@ -51,14 +51,14 @@ Class BiPlainlyExist `{!BiPlainly PROP} :=
 Arguments BiPlainlyExist : clear implicits.
 Arguments BiPlainlyExist _ {_}.
 Arguments plainly_exist_1 _ {_ _} _.
-Hint Mode BiPlainlyExist ! - : typeclass_instances.
+Global Hint Mode BiPlainlyExist ! - : typeclass_instances.
 
 Class BiPropExt `{!BiPlainly PROP, !BiInternalEq PROP} :=
   prop_ext_2 (P Q : PROP) : ■ (P ∗-∗ Q) ⊢ P ≡ Q.
 Arguments BiPropExt : clear implicits.
 Arguments BiPropExt _ {_ _}.
 Arguments prop_ext_2 _ {_ _ _} _.
-Hint Mode BiPropExt ! - - : typeclass_instances.
+Global Hint Mode BiPropExt ! - - : typeclass_instances.
 
 Section plainly_laws.
   Context `{BiPlainly PROP}.
@@ -94,7 +94,7 @@ End plainly_laws.
 Class Plain `{BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
 Arguments Plain {_ _} _%I : simpl never.
 Arguments plain {_ _} _%I {_}.
-Hint Mode Plain + - ! : typeclass_instances.
+Global Hint Mode Plain + - ! : typeclass_instances.
 Instance: Params (@Plain) 1 := {}.
 
 Definition plainly_if `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
@@ -110,9 +110,9 @@ Section plainly_derived.
 Context `{BiPlainly PROP}.
 Implicit Types P : PROP.
 
-Hint Resolve pure_intro forall_intro : core.
-Hint Resolve or_elim or_intro_l' or_intro_r' : core.
-Hint Resolve and_intro and_elim_l' and_elim_r' : core.
+Local Hint Resolve pure_intro forall_intro : core.
+Local Hint Resolve or_elim or_intro_l' or_intro_r' : core.
+Local Hint Resolve and_intro and_elim_l' and_elim_r' : core.
 
 Global Instance plainly_proper :
   Proper ((⊣⊢) ==> (⊣⊢)) (@plainly PROP _) := ne_proper _.
@@ -644,11 +644,11 @@ apply it the instance at any node in the proof search tree.
 To avoid that, we declare it using a [Hint Immediate], so that it will
 only be used at the leaves of the proof search tree, i.e. when the
 premise of the hint can be derived from just the current context. *)
-Hint Immediate plain_persistent : typeclass_instances.
+Global Hint Immediate plain_persistent : typeclass_instances.
 
 (* Not defined using an ordinary [Instance] because the default
 [class_apply @impl_persistent] shelves the [BiPlainly] premise, making proof
 search for the other premises fail. See the proof of [coreP_persistent] for an
 example where it would fail with a regular [Instance].*)
-Hint Extern 4 (Persistent _) =>
+Global Hint Extern 4 (Persistent _) =>
   notypeclasses refine (impl_persistent _ _ _ _ _) : typeclass_instances.

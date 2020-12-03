@@ -9,7 +9,7 @@ Implicit Types P : iProp Σ.
 Implicit Types Φ : val Λ → iProp Σ.
 Implicit Types v : val Λ.
 Implicit Types e : expr Λ.
-Hint Resolve head_prim_reducible_no_obs head_reducible_prim_step
+Local Hint Resolve head_prim_reducible_no_obs head_reducible_prim_step
   head_reducible_no_obs_reducible : core.
 
 Lemma twp_lift_head_step {s E Φ} e1 :

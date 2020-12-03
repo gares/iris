@@ -217,7 +217,7 @@ Arguments bi_wand {PROP} _%I _%I : simpl never, rename.
 Arguments bi_persistently {PROP} _%I : simpl never, rename.
 Arguments bi_later {PROP} _%I : simpl never, rename.
 
-Hint Extern 0 (bi_entails _ _) => reflexivity : core.
+Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
 Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
 Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 

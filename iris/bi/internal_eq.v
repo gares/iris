@@ -9,7 +9,7 @@ can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
 Class InternalEq (PROP : bi) :=
   internal_eq : ∀ {A : ofeT}, A → A → PROP.
 Arguments internal_eq {_ _ _} _ _ : simpl never.
-Hint Mode InternalEq ! : typeclass_instances.
+Global Hint Mode InternalEq ! : typeclass_instances.
 Instance: Params (@internal_eq) 3 := {}.
 Infix "≡" := internal_eq : bi_scope.
 Infix "≡@{ A }" := (internal_eq (A := A)) (only parsing) : bi_scope.
@@ -40,7 +40,7 @@ Class BiInternalEq (PROP : bi) := {
   bi_internal_eq_internal_eq :> InternalEq PROP;
   bi_internal_eq_mixin : BiInternalEqMixin PROP bi_internal_eq_internal_eq;
 }.
-Hint Mode BiInternalEq ! : typeclass_instances.
+Global Hint Mode BiInternalEq ! : typeclass_instances.
 Arguments bi_internal_eq_internal_eq : simpl never.
 
 Section internal_eq_laws.
@@ -85,10 +85,10 @@ Global Instance internal_eq_proper (A : ofeT) :
   Proper ((≡) ==> (≡) ==> (⊣⊢)) (@internal_eq PROP _ A) := ne_proper_2 _.
 
 (* Equality *)
-Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
-Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
-Hint Resolve internal_eq_refl : core.
-Hint Extern 100 (NonExpansive _) => solve_proper : core.
+Local Hint Resolve or_elim or_intro_l' or_intro_r' True_intro False_elim : core.
+Local Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
+Local Hint Resolve internal_eq_refl : core.
+Local Hint Extern 100 (NonExpansive _) => solve_proper : core.
 
 Lemma equiv_internal_eq {A : ofeT} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
 Proof. intros ->. auto. Qed.

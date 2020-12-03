@@ -7,7 +7,7 @@ Class Laterable {PROP : bi} (P : PROP) := laterable :
   P -∗ ∃ Q, ▷ Q ∗ □ (▷ Q -∗ ◇ P).
 Arguments Laterable {_} _%I : simpl never.
 Arguments laterable {_} _%I {_}.
-Hint Mode Laterable + ! : typeclass_instances.
+Global Hint Mode Laterable + ! : typeclass_instances.
 
 Section instances.
   Context {PROP : bi}.

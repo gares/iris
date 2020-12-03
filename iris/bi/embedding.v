@@ -12,8 +12,8 @@ Notation "⎡ P ⎤" := (embed P) : bi_scope.
 Instance: Params (@embed) 3 := {}.
 Typeclasses Opaque embed.
 
-Hint Mode Embed ! - : typeclass_instances.
-Hint Mode Embed - ! : typeclass_instances.
+Global Hint Mode Embed ! - : typeclass_instances.
+Global Hint Mode Embed - ! : typeclass_instances.
 
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiEmbedMixin (PROP1 PROP2 : bi) `(Embed PROP1 PROP2) := {
@@ -47,43 +47,43 @@ Class BiEmbed (PROP1 PROP2 : bi) := {
   bi_embed_embed :> Embed PROP1 PROP2;
   bi_embed_mixin : BiEmbedMixin PROP1 PROP2 bi_embed_embed;
 }.
-Hint Mode BiEmbed ! - : typeclass_instances.
-Hint Mode BiEmbed - ! : typeclass_instances.
+Global Hint Mode BiEmbed ! - : typeclass_instances.
+Global Hint Mode BiEmbed - ! : typeclass_instances.
 Arguments bi_embed_embed : simpl never.
 
 Class BiEmbedEmp (PROP1 PROP2 : bi) `{!BiEmbed PROP1 PROP2} :=
   embed_emp_1 : ⎡ emp : PROP1 ⎤ ⊢ emp.
-Hint Mode BiEmbedEmp ! - - : typeclass_instances.
-Hint Mode BiEmbedEmp - ! - : typeclass_instances.
+Global Hint Mode BiEmbedEmp ! - - : typeclass_instances.
+Global Hint Mode BiEmbedEmp - ! - : typeclass_instances.
 
 Class BiEmbedLater (PROP1 PROP2 : bi) `{!BiEmbed PROP1 PROP2} :=
   embed_later P : ⎡▷ P⎤ ⊣⊢@{PROP2} ▷ ⎡P⎤.
-Hint Mode BiEmbedLater ! - - : typeclass_instances.
-Hint Mode BiEmbedLater - ! - : typeclass_instances.
+Global Hint Mode BiEmbedLater ! - - : typeclass_instances.
+Global Hint Mode BiEmbedLater - ! - : typeclass_instances.
 
 Class BiEmbedInternalEq (PROP1 PROP2 : bi)
     `{!BiEmbed PROP1 PROP2, !BiInternalEq PROP1, !BiInternalEq PROP2} :=
   embed_internal_eq_1 (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊢@{PROP2} x ≡ y.
-Hint Mode BiEmbedInternalEq ! - - - - : typeclass_instances.
-Hint Mode BiEmbedInternalEq - ! - - - : typeclass_instances.
+Global Hint Mode BiEmbedInternalEq ! - - - - : typeclass_instances.
+Global Hint Mode BiEmbedInternalEq - ! - - - : typeclass_instances.
 
 Class BiEmbedBUpd (PROP1 PROP2 : bi)
     `{!BiEmbed PROP1 PROP2, !BiBUpd PROP1, !BiBUpd PROP2} :=
   embed_bupd P : ⎡|==> P⎤ ⊣⊢@{PROP2} |==> ⎡P⎤.
-Hint Mode BiEmbedBUpd - ! - - - : typeclass_instances.
-Hint Mode BiEmbedBUpd ! - - - - : typeclass_instances.
+Global Hint Mode BiEmbedBUpd - ! - - - : typeclass_instances.
+Global Hint Mode BiEmbedBUpd ! - - - - : typeclass_instances.
 
 Class BiEmbedFUpd (PROP1 PROP2 : bi)
     `{!BiEmbed PROP1 PROP2, !BiFUpd PROP1, !BiFUpd PROP2} :=
   embed_fupd E1 E2 P : ⎡|={E1,E2}=> P⎤ ⊣⊢@{PROP2} |={E1,E2}=> ⎡P⎤.
-Hint Mode BiEmbedFUpd - ! - - - : typeclass_instances.
-Hint Mode BiEmbedFUpd ! - - - - : typeclass_instances.
+Global Hint Mode BiEmbedFUpd - ! - - - : typeclass_instances.
+Global Hint Mode BiEmbedFUpd ! - - - - : typeclass_instances.
 
 Class BiEmbedPlainly (PROP1 PROP2 : bi)
     `{!BiEmbed PROP1 PROP2, !BiPlainly PROP1, !BiPlainly PROP2} :=
   embed_plainly (P : PROP1) : ⎡■ P⎤ ⊣⊢@{PROP2} ■ ⎡P⎤.
-Hint Mode BiEmbedPlainly - ! - - - : typeclass_instances.
-Hint Mode BiEmbedPlainly ! - - - - : typeclass_instances.
+Global Hint Mode BiEmbedPlainly - ! - - - : typeclass_instances.
+Global Hint Mode BiEmbedPlainly ! - - - - : typeclass_instances.
 
 Section embed_laws.
   Context `{BiEmbed PROP1 PROP2}.
@@ -315,4 +315,5 @@ End embed.
 [class_apply @bi_embed_plainly] shelves the [BiPlainly] premise, making proof
 search for the other premises fail. See the proof of [monPred_objectively_plain]
 for an example where it would fail with a regular [Instance].*)
-Hint Extern 4 (Plain _) => notypeclasses refine (embed_plain _ _) : typeclass_instances.
+Global Hint Extern 4 (Plain _) =>
+  notypeclasses refine (embed_plain _ _) : typeclass_instances.

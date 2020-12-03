@@ -3,11 +3,11 @@ From iris.algebra Require Export ofe monoid.
 From iris.prelude Require Import options.
 
 Class PCore (A : Type) := pcore : A → option A.
-Hint Mode PCore ! : typeclass_instances.
+Global Hint Mode PCore ! : typeclass_instances.
 Instance: Params (@pcore) 2 := {}.
 
 Class Op (A : Type) := op : A → A → A.
-Hint Mode Op ! : typeclass_instances.
+Global Hint Mode Op ! : typeclass_instances.
 Instance: Params (@op) 2 := {}.
 Infix "⋅" := op (at level 50, left associativity) : stdpp_scope.
 Notation "(⋅)" := op (only parsing) : stdpp_scope.
@@ -20,17 +20,17 @@ Notation "(⋅)" := op (only parsing) : stdpp_scope.
 Definition included `{Equiv A, Op A} (x y : A) := ∃ z, y ≡ x ⋅ z.
 Infix "≼" := included (at level 70) : stdpp_scope.
 Notation "(≼)" := included (only parsing) : stdpp_scope.
-Hint Extern 0 (_ ≼ _) => reflexivity : core.
+Global Hint Extern 0 (_ ≼ _) => reflexivity : core.
 Instance: Params (@included) 3 := {}.
 
 Class ValidN (A : Type) := validN : nat → A → Prop.
-Hint Mode ValidN ! : typeclass_instances.
+Global Hint Mode ValidN ! : typeclass_instances.
 Instance: Params (@validN) 3 := {}.
 Notation "✓{ n } x" := (validN n x)
   (at level 20, n at next level, format "✓{ n }  x").
 
 Class Valid (A : Type) := valid : A → Prop.
-Hint Mode Valid ! : typeclass_instances.
+Global Hint Mode Valid ! : typeclass_instances.
 Instance: Params (@valid) 2 := {}.
 Notation "✓ x" := (valid x) (at level 20) : stdpp_scope.
 
@@ -38,7 +38,7 @@ Definition includedN `{Dist A, Op A} (n : nat) (x y : A) := ∃ z, y ≡{n}≡ x
 Notation "x ≼{ n } y" := (includedN n x y)
   (at level 70, n at next level, format "x  ≼{ n }  y") : stdpp_scope.
 Instance: Params (@includedN) 4 := {}.
-Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
+Global Hint Extern 0 (_ ≼{_} _) => reflexivity : core.
 
 Section mixin.
   Local Set Primitive Projections.
@@ -93,10 +93,10 @@ Arguments cmra_validN : simpl never.
 Arguments cmra_ofe_mixin : simpl never.
 Arguments cmra_mixin : simpl never.
 Add Printing Constructor cmraT.
-Hint Extern 0 (PCore _) => eapply (@cmra_pcore _) : typeclass_instances.
-Hint Extern 0 (Op _) => eapply (@cmra_op _) : typeclass_instances.
-Hint Extern 0 (Valid _) => eapply (@cmra_valid _) : typeclass_instances.
-Hint Extern 0 (ValidN _) => eapply (@cmra_validN _) : typeclass_instances.
+Global Hint Extern 0 (PCore _) => eapply (@cmra_pcore _) : typeclass_instances.
+Global Hint Extern 0 (Op _) => eapply (@cmra_op _) : typeclass_instances.
+Global Hint Extern 0 (Valid _) => eapply (@cmra_valid _) : typeclass_instances.
+Global Hint Extern 0 (ValidN _) => eapply (@cmra_validN _) : typeclass_instances.
 Coercion cmra_ofeO (A : cmraT) : ofeT := OfeT A (cmra_ofe_mixin A).
 Canonical Structure cmra_ofeO.
 
@@ -145,32 +145,32 @@ Infix "⋅?" := opM (at level 50, left associativity) : stdpp_scope.
 (** * CoreId elements *)
 Class CoreId {A : cmraT} (x : A) := core_id : pcore x ≡ Some x.
 Arguments core_id {_} _ {_}.
-Hint Mode CoreId + ! : typeclass_instances.
+Global Hint Mode CoreId + ! : typeclass_instances.
 Instance: Params (@CoreId) 1 := {}.
 
 (** * Exclusive elements (i.e., elements that cannot have a frame). *)
 Class Exclusive {A : cmraT} (x : A) := exclusive0_l y : ✓{0} (x ⋅ y) → False.
 Arguments exclusive0_l {_} _ {_} _ _.
-Hint Mode Exclusive + ! : typeclass_instances.
+Global Hint Mode Exclusive + ! : typeclass_instances.
 Instance: Params (@Exclusive) 1 := {}.
 
 (** * Cancelable elements. *)
 Class Cancelable {A : cmraT} (x : A) :=
   cancelableN n y z : ✓{n}(x ⋅ y) → x ⋅ y ≡{n}≡ x ⋅ z → y ≡{n}≡ z.
 Arguments cancelableN {_} _ {_} _ _ _ _.
-Hint Mode Cancelable + ! : typeclass_instances.
+Global Hint Mode Cancelable + ! : typeclass_instances.
 Instance: Params (@Cancelable) 1 := {}.
 
 (** * Identity-free elements. *)
 Class IdFree {A : cmraT} (x : A) :=
   id_free0_r y : ✓{0}x → x ⋅ y ≡{0}≡ x → False.
 Arguments id_free0_r {_} _ {_} _ _.
-Hint Mode IdFree + ! : typeclass_instances.
+Global Hint Mode IdFree + ! : typeclass_instances.
 Instance: Params (@IdFree) 1 := {}.
 
 (** * CMRAs whose core is total *)
 Class CmraTotal (A : cmraT) := cmra_total (x : A) : is_Some (pcore x).
-Hint Mode CmraTotal ! : typeclass_instances.
+Global Hint Mode CmraTotal ! : typeclass_instances.
 
 (** The function [core] returns a dummy when used on CMRAs without total
 core. We only ever use this for [CmraTotal] CMRAs, but it is more convenient
@@ -215,7 +215,7 @@ Arguments ucmra_ofe_mixin : simpl never.
 Arguments ucmra_cmra_mixin : simpl never.
 Arguments ucmra_mixin : simpl never.
 Add Printing Constructor ucmraT.
-Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
+Global Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
 Coercion ucmra_ofeO (A : ucmraT) : ofeT := OfeT A (ucmra_ofe_mixin A).
 Canonical Structure ucmra_ofeO.
 Coercion ucmra_cmraR (A : ucmraT) : cmraT :=
@@ -239,7 +239,7 @@ Class CmraDiscrete (A : cmraT) := {
   cmra_discrete_ofe_discrete :> OfeDiscrete A;
   cmra_discrete_valid (x : A) : ✓{0} x → ✓ x
 }.
-Hint Mode CmraDiscrete ! : typeclass_instances.
+Global Hint Mode CmraDiscrete ! : typeclass_instances.
 
 (** * Morphisms *)
 Class CmraMorphism {A B : cmraT} (f : A → B) := {
@@ -653,7 +653,7 @@ Section ucmra.
   Global Instance cmra_monoid : Monoid (@op A _) := {| monoid_unit := ε |}.
 End ucmra.
 
-Hint Immediate cmra_unit_cmra_total : core.
+Global Hint Immediate cmra_unit_cmra_total : core.
 
 (** * Properties about CMRAs with Leibniz equality *)
 Section cmra_leibniz.
@@ -1222,7 +1222,8 @@ Section prod.
 End prod.
 
 (* Registering as [Hint Extern] with new unification. *)
-Hint Extern 4 (CoreId _) => notypeclasses refine (pair_core_id _ _ _ _) : typeclass_instances.
+Global Hint Extern 4 (CoreId _) =>
+  notypeclasses refine (pair_core_id _ _ _ _) : typeclass_instances.
 
 Arguments prodR : clear implicits.
 

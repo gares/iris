@@ -16,7 +16,7 @@ Infix "∗-∗" := bi_wand_iff : bi_scope.
 Class Persistent {PROP : bi} (P : PROP) := persistent : P ⊢ <pers> P.
 Arguments Persistent {_} _%I : simpl never.
 Arguments persistent {_} _%I {_}.
-Hint Mode Persistent + ! : typeclass_instances.
+Global Hint Mode Persistent + ! : typeclass_instances.
 Instance: Params (@Persistent) 1 := {}.
 
 Definition bi_affinely {PROP : bi} (P : PROP) : PROP := (emp ∧ P)%I.
@@ -28,15 +28,15 @@ Notation "'<affine>' P" := (bi_affinely P) : bi_scope.
 Class Affine {PROP : bi} (Q : PROP) := affine : Q ⊢ emp.
 Arguments Affine {_} _%I : simpl never.
 Arguments affine {_} _%I {_}.
-Hint Mode Affine + ! : typeclass_instances.
+Global Hint Mode Affine + ! : typeclass_instances.
 
 Class BiAffine (PROP : bi) := absorbing_bi (Q : PROP) : Affine Q.
-Hint Mode BiAffine ! : typeclass_instances.
+Global Hint Mode BiAffine ! : typeclass_instances.
 Existing Instance absorbing_bi | 0.
 
 Class BiPositive (PROP : bi) :=
   bi_positive (P Q : PROP) : <affine> (P ∗ Q) ⊢ <affine> P ∗ Q.
-Hint Mode BiPositive ! : typeclass_instances.
+Global Hint Mode BiPositive ! : typeclass_instances.
 
 Definition bi_absorbingly {PROP : bi} (P : PROP) : PROP := (True ∗ P)%I.
 Arguments bi_absorbingly {_} _%I : simpl never.
@@ -47,7 +47,7 @@ Notation "'<absorb>' P" := (bi_absorbingly P) : bi_scope.
 Class Absorbing {PROP : bi} (P : PROP) := absorbing : <absorb> P ⊢ P.
 Arguments Absorbing {_} _%I : simpl never.
 Arguments absorbing {_} _%I.
-Hint Mode Absorbing + ! : typeclass_instances.
+Global Hint Mode Absorbing + ! : typeclass_instances.
 
 Definition bi_persistently_if {PROP : bi} (p : bool) (P : PROP) : PROP :=
   (if p then <pers> P else P)%I.
@@ -103,7 +103,7 @@ Typeclasses Opaque bi_except_0.
 Class Timeless {PROP : bi} (P : PROP) := timeless : ▷ P ⊢ ◇ P.
 Arguments Timeless {_} _%I : simpl never.
 Arguments timeless {_} _%I {_}.
-Hint Mode Timeless + ! : typeclass_instances.
+Global Hint Mode Timeless + ! : typeclass_instances.
 Instance: Params (@Timeless) 1 := {}.
 
 (** An optional precondition [mP] to [Q].
@@ -128,7 +128,7 @@ The internal/"strong" version of Löb [(▷ P → P) ⊢ P] is derivable from [B
 It is provided by the lemma [löb] in [derived_laws_later]. *)
 Class BiLöb (PROP : bi) :=
   löb_weak (P : PROP) : (▷ P ⊢ P) → (True ⊢ P).
-Hint Mode BiLöb ! : typeclass_instances.
+Global Hint Mode BiLöb ! : typeclass_instances.
 Arguments löb_weak {_ _} _ _.
 
 Notation BiLaterContractive PROP :=

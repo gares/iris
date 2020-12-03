@@ -10,7 +10,7 @@ Set Default Proof Using "Type*".
 bundle these operational type classes with the laws. *)
 Class BUpd (PROP : Type) : Type := bupd : PROP → PROP.
 Instance : Params (@bupd) 2 := {}.
-Hint Mode BUpd ! : typeclass_instances.
+Global Hint Mode BUpd ! : typeclass_instances.
 Arguments bupd {_}%type_scope {_} _%bi_scope.
 
 Notation "|==> Q" := (bupd Q) : bi_scope.
@@ -19,7 +19,7 @@ Notation "P ==∗ Q" := (P -∗ |==> Q)%I : bi_scope.
 
 Class FUpd (PROP : Type) : Type := fupd : coPset → coPset → PROP → PROP.
 Instance: Params (@fupd) 4 := {}.
-Hint Mode FUpd ! : typeclass_instances.
+Global Hint Mode FUpd ! : typeclass_instances.
 Arguments fupd {_}%type_scope {_} _ _ _%bi_scope.
 
 Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q) : bi_scope.
@@ -82,23 +82,23 @@ Class BiBUpd (PROP : bi) := {
   bi_bupd_bupd :> BUpd PROP;
   bi_bupd_mixin : BiBUpdMixin PROP bi_bupd_bupd;
 }.
-Hint Mode BiBUpd ! : typeclass_instances.
+Global Hint Mode BiBUpd ! : typeclass_instances.
 Arguments bi_bupd_bupd : simpl never.
 
 Class BiFUpd (PROP : bi) := {
   bi_fupd_fupd :> FUpd PROP;
   bi_fupd_mixin : BiFUpdMixin PROP bi_fupd_fupd;
 }.
-Hint Mode BiFUpd ! : typeclass_instances.
+Global Hint Mode BiFUpd ! : typeclass_instances.
 Arguments bi_fupd_fupd : simpl never.
 
 Class BiBUpdFUpd (PROP : bi) `{BiBUpd PROP, BiFUpd PROP} :=
   bupd_fupd E (P : PROP) : (|==> P) ={E}=∗ P.
-Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
+Global Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
 
 Class BiBUpdPlainly (PROP : bi) `{!BiBUpd PROP, !BiPlainly PROP} :=
   bupd_plainly (P : PROP) : (|==> ■ P) -∗ P.
-Hint Mode BiBUpdPlainly ! - - : typeclass_instances.
+Global Hint Mode BiBUpdPlainly ! - - : typeclass_instances.
 
 (** These rules for the interaction between the [■] and [|={E1,E2=>] modalities
 only make sense for affine logics. From the axioms below, one could derive
@@ -123,7 +123,7 @@ Class BiFUpdPlainly (PROP : bi) `{!BiFUpd PROP, !BiPlainly PROP} := {
   fupd_plainly_forall_2 E {A} (Φ : A → PROP) :
     (∀ x, |={E}=> ■ Φ x) ⊢ |={E}=> ∀ x, Φ x
 }.
-Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
+Global Hint Mode BiBUpdFUpd ! - - : typeclass_instances.
 
 Section bupd_laws.
   Context `{BiBUpd PROP}.

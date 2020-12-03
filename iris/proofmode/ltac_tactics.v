@@ -1994,7 +1994,7 @@ Tactic Notation "iRevertIntros" "(" ident(x1) ident(x2) ident(x3) ident(x4)
 (** * Destruct tactic *)
 Class CopyDestruct {PROP : bi} (P : PROP).
 Arguments CopyDestruct {_} _%I.
-Hint Mode CopyDestruct + ! : typeclass_instances.
+Global Hint Mode CopyDestruct + ! : typeclass_instances.
 
 Instance copy_destruct_forall {PROP : bi} {A} (Φ : A → PROP) : CopyDestruct (∀ x, Φ x) := {}.
 Instance copy_destruct_impl {PROP : bi} (P Q : PROP) :
@@ -3261,54 +3261,54 @@ Tactic Notation "iAccu" :=
   iStartProof; eapply tac_accu; [pm_reflexivity || fail "iAccu: not an evar"].
 
 (** Automation *)
-Hint Extern 0 (_ ⊢ _) => iStartProof : core.
-Hint Extern 0 (⊢ _) => iStartProof : core.
+Global Hint Extern 0 (_ ⊢ _) => iStartProof : core.
+Global Hint Extern 0 (⊢ _) => iStartProof : core.
 
 (* Make sure that by and done solve trivial things in proof mode *)
-Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.
-Hint Extern 0 (envs_entails _ ?Q) =>
+Global Hint Extern 0 (envs_entails _ _) => iPureIntro; try done : core.
+Global Hint Extern 0 (envs_entails _ ?Q) =>
   first [is_evar Q; fail 1|iAssumption] : core.
-Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
+Global Hint Extern 0 (envs_entails _ emp) => iEmpIntro : core.
 
 (* TODO: look for a more principled way of adding trivial hints like those
 below; see the discussion in !75 for further details. *)
-Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
+Global Hint Extern 0 (envs_entails _ (_ ≡ _)) =>
   rewrite envs_entails_eq; apply internal_eq_refl : core.
-Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_opL _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepL_nil' _) : core.
-Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_sepL2 _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepL2_nil' _) : core.
-Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_opM _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepM_empty' _) : core.
-Hint Extern 0 (envs_entails _ (big_sepM2 _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_sepM2 _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepM2_empty' _) : core.
-Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_opS _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepS_empty' _) : core.
-Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>
+Global Hint Extern 0 (envs_entails _ (big_opMS _ _ _)) =>
   rewrite envs_entails_eq; apply (big_sepMS_empty' _) : core.
 
 (* These introduce as much as possible at once, for better performance. *)
-Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros : core.
-Hint Extern 0 (envs_entails _ (_ → _)) => iIntros : core.
-Hint Extern 0 (envs_entails _ (_ -∗ _)) => iIntros : core.
+Global Hint Extern 0 (envs_entails _ (∀ _, _)) => iIntros : core.
+Global Hint Extern 0 (envs_entails _ (_ → _)) => iIntros : core.
+Global Hint Extern 0 (envs_entails _ (_ -∗ _)) => iIntros : core.
 (* Multi-intro doesn't work for custom binders. *)
-Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?) : core.
+Global Hint Extern 0 (envs_entails _ (∀.. _, _)) => iIntros (?) : core.
 
-Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit : core.
-Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit : core.
-Hint Extern 1 (envs_entails _ (_ ∗-∗ _)) => iSplit : core.
-Hint Extern 1 (envs_entails _ (▷ _)) => iNext : core.
-Hint Extern 1 (envs_entails _ (■ _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (<pers> _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (<affine> _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (□ _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (∃ _, _)) => iExists _ : core.
-Hint Extern 1 (envs_entails _ (∃.. _, _)) => iExists _ : core.
-Hint Extern 1 (envs_entails _ (◇ _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (_ ∨ _)) => iLeft : core.
-Hint Extern 1 (envs_entails _ (_ ∨ _)) => iRight : core.
-Hint Extern 1 (envs_entails _ (|==> _)) => iModIntro : core.
-Hint Extern 1 (envs_entails _ (<absorb> _)) => iModIntro : core.
-Hint Extern 2 (envs_entails _ (|={_}=> _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (_ ∧ _)) => iSplit : core.
+Global Hint Extern 1 (envs_entails _ (_ ∗ _)) => iSplit : core.
+Global Hint Extern 1 (envs_entails _ (_ ∗-∗ _)) => iSplit : core.
+Global Hint Extern 1 (envs_entails _ (▷ _)) => iNext : core.
+Global Hint Extern 1 (envs_entails _ (■ _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (<pers> _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (<affine> _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (□ _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (∃ _, _)) => iExists _ : core.
+Global Hint Extern 1 (envs_entails _ (∃.. _, _)) => iExists _ : core.
+Global Hint Extern 1 (envs_entails _ (◇ _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (_ ∨ _)) => iLeft : core.
+Global Hint Extern 1 (envs_entails _ (_ ∨ _)) => iRight : core.
+Global Hint Extern 1 (envs_entails _ (|==> _)) => iModIntro : core.
+Global Hint Extern 1 (envs_entails _ (<absorb> _)) => iModIntro : core.
+Global Hint Extern 2 (envs_entails _ (|={_}=> _)) => iModIntro : core.
 
-Hint Extern 2 (envs_entails _ (_ ∗ _)) => progress iFrame : iFrame.
+Global Hint Extern 2 (envs_entails _ (_ ∗ _)) => progress iFrame : iFrame.

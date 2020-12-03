@@ -37,4 +37,4 @@ Ltac solve_as_ident_name :=
   | _ => notypeclasses refine (to_ident_name __unknown)
   end.
 
-Hint Extern 1 (AsIdentName _ _) => solve_as_ident_name : typeclass_instances.
+Global Hint Extern 1 (AsIdentName _ _) => solve_as_ident_name : typeclass_instances.

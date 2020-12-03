@@ -245,7 +245,7 @@ Qed.
 (** logical entailement *)
 Inductive uPred_entails {M} (P Q : uPred M) : Prop :=
   { uPred_in_entails : ∀ n x, ✓{n} x → P n x → Q n x }.
-Hint Resolve uPred_mono : uPred_def.
+Global Hint Resolve uPred_mono : uPred_def.
 
 (** logical connectives *)
 Program Definition uPred_pure_def {M} (φ : Prop) : uPred M :=
@@ -429,7 +429,7 @@ Implicit Types φ : Prop.
 Implicit Types P Q : uPred M.
 Implicit Types A : Type.
 Arguments uPred_holds {_} !_ _ _ /.
-Hint Immediate uPred_in_entails : core.
+Local Hint Immediate uPred_in_entails : core.
 
 Notation "P ⊢ Q" := (@uPred_entails M P%I Q%I) : stdpp_scope.
 Notation "(⊢)" := (@uPred_entails M) (only parsing) : stdpp_scope.

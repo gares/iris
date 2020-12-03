@@ -10,6 +10,10 @@ Export Set Suggest Proof Using. (* also warns about forgotten [Proof.] *)
 that bullets and curly braces must be used to structure the proof. *)
 Export Set Default Goal Selector "!".
 
+(* We always annotate hints with locality ([Global] or [Local]). This enforces
+that at least global hints are annotated. *)
+Export Set Warnings "+deprecated-hint-without-locality".
+
 (* "Fake" import to whitelist this file for the check that ensures we import
 this file everywhere.
 From iris.prelude Require Import options.

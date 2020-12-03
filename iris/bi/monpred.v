@@ -121,7 +121,7 @@ Implicit Types P Q : monPred.
 
 Inductive monPred_entails (P1 P2 : monPred) : Prop :=
   { monPred_in_entails i : P1 i ⊢ P2 i }.
-Hint Immediate monPred_in_entails : core.
+Local Hint Immediate monPred_in_entails : core.
 
 Program Definition monPred_upclosed (Φ : I → PROP) : monPred :=
   MonPred (λ i, (∀ j, ⌜i ⊑ j⌝ → Φ j)%I) _.
@@ -323,7 +323,7 @@ Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
   objective_at i j : P i -∗ P j.
 Arguments Objective {_ _} _%I.
 Arguments objective_at {_ _} _%I {_}.
-Hint Mode Objective + + ! : typeclass_instances.
+Global Hint Mode Objective + + ! : typeclass_instances.
 Instance: Params (@Objective) 2 := {}.
 
 (** Primitive facts that cannot be deduced from the BI structure. *)

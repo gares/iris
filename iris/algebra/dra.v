@@ -141,11 +141,11 @@ Proof.
   intros; symmetry; rewrite dra_comm; eauto using dra_disjoint_rl.
   apply dra_disjoint_move_l; auto; by rewrite dra_comm.
 Qed.
-Hint Immediate dra_disjoint_move_l dra_disjoint_move_r : core.
+Local Hint Immediate dra_disjoint_move_l dra_disjoint_move_r : core.
 
 Lemma validity_valid_car_valid z : ✓ z → ✓ validity_car z.
 Proof. apply validity_prf. Qed.
-Hint Resolve validity_valid_car_valid : core.
+Local Hint Resolve validity_valid_car_valid : core.
 Program Instance validity_pcore : PCore (validity A) := λ x,
   Some (Validity (core (validity_car x)) (✓ x) _).
 Solve Obligations with naive_solver eauto using dra_core_valid.

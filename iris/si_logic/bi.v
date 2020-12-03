@@ -163,7 +163,7 @@ Global Instance siProp_affine : BiAffine siPropI | 0.
 Proof. intros P. exact: pure_intro. Qed.
 (* Also add this to the global hint database, otherwise [eauto] won't work for
 many lemmas that have [BiAffine] as a premise. *)
-Hint Immediate siProp_affine : core.
+Global Hint Immediate siProp_affine : core.
 
 Global Instance siProp_plain (P : siProp) : Plain P | 0.
 Proof. done. Qed.
