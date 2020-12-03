@@ -32,6 +32,10 @@ Inductive dfrac :=
   | DfracDiscarded : dfrac
   | DfracBoth : Qp → dfrac.
 
+(* This notation is intended to be used as a component in other notations that
+   include discardable fractions. The notation provides shorthands for the
+   constructors and the commonly used full fraction. For and example
+   demonstrating how this can be used see the notation in [gen_heap.v]. *)
 Declare Custom Entry dfrac.
 Notation "{ dq }" := (dq) (in custom dfrac at level 1, dq constr).
 Notation "□" := DfracDiscarded (in custom dfrac).
