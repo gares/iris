@@ -57,12 +57,26 @@ Either way, you can now install Iris:
 - `opam install coq-iris-heap-lang` will additionally install HeapLang, the
   default language used by various Iris projects.
 
-To fetch updates later, run `opam update && opam upgrade`.  However, notice that
-we do not guarantee backwards-compatibility, so upgrading Iris may break your
+To fetch updates later, run `opam update && opam upgrade`.
+
+#### Be notified of breaking changes
+
+We do not guarantee backwards-compatibility, so upgrading Iris may break your
 Iris-using developments.  If you want to be notified of breaking changes, please
 let us know your account name on the
 [MPI-SWS GitLab](https://gitlab.mpi-sws.org/) so we can add you to the
 notification group.
+
+#### Use of Iris in submitted artifacts
+
+If you are using Iris as part of an artifact submitted for publication with a
+paper, we recommend you make the artifact self-contained so that it can be built
+in the future without relying in any other server to still exist. However, if
+that is for some reason not possible, and if you are using opam to obtain the
+right version of Iris and you used a `dev.*` version, please let us know which
+exact Iris version you artifact relies on so that we can
+[add it to this wiki page](https://gitlab.mpi-sws.org/iris/iris/-/wikis/Pinned-Iris-package-versions)
+and avoid removing it from our opam repository in the future.
 
 ### Working *on* Iris
 
