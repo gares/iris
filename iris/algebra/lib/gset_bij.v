@@ -176,13 +176,14 @@ Section gset_bij.
     naive_solver eauto using subseteq_gset_bijective, O.
   Qed.
 
-  Lemma bij_view_included q L a b : (a,b) ∈ L → gset_bij_elem a b ≼ gset_bij_auth q L.
+  Lemma bij_view_included q L a b :
+    (a,b) ∈ L → gset_bij_elem a b ≼ gset_bij_auth q L.
   Proof.
     intros. etrans; [|apply cmra_included_r].
     apply view_frag_mono, gset_included. set_solver.
   Qed.
 
-  Lemma gset_bij_auth_extend L a b :
+  Lemma gset_bij_auth_extend {L} a b :
     (∀ b', (a, b') ∉ L) → (∀ a', (a', b) ∉ L) →
     gset_bij_auth 1 L ~~> gset_bij_auth 1 ({[(a, b)]} ∪ L).
   Proof.

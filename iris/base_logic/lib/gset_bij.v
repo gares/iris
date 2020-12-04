@@ -35,7 +35,8 @@ Global Instance subG_gset_bijΣ `{Countable A, Countable B} Σ :
 Proof. solve_inG. Qed.
 
 Definition gset_bij_own_auth_def `{gset_bijG A B Σ} (γ : gname)
-  (q : Qp) (L : gset (A * B)) : iProp Σ := own γ (gset_bij_auth q L).
+    (q : Qp) (L : gset (A * B)) : iProp Σ :=
+  own γ (gset_bij_auth q L).
 Definition gset_bij_own_auth_aux : seal (@gset_bij_own_auth_def). Proof. by eexists. Qed.
 Definition gset_bij_own_auth := unseal gset_bij_own_auth_aux.
 Definition gset_bij_own_auth_eq :
@@ -102,18 +103,18 @@ Section gset_bij.
     by iDestruct (own_valid_2 with "Hel1 Hel2") as %?%gset_bij_elem_agree.
   Qed.
 
-  Lemma bij_get_elem γ q L a b :
+  Lemma gset_bij_own_elem_get {γ q L} a b :
     (a, b) ∈ L →
     gset_bij_own_auth γ q L -∗ gset_bij_own_elem γ a b.
   Proof.
     intros. rewrite gset_bij_own_auth_eq gset_bij_own_elem_eq.
     by apply own_mono, bij_view_included.
   Qed.
-  Lemma bij_get_big_sepS_elem γ q L :
+  Lemma gset_bij_own_elem_get_big γ q L :
     gset_bij_own_auth γ q L -∗ [∗ set] ab ∈ L, gset_bij_own_elem γ ab.1 ab.2.
   Proof.
     iIntros "Hauth". iApply big_sepS_forall. iIntros ([a b] ?) "/=".
-    by iApply bij_get_elem.
+    by iApply gset_bij_own_elem_get.
   Qed.
 
   Lemma gset_bij_own_alloc L :
@@ -122,13 +123,14 @@ Section gset_bij.
   Proof.
     intro. iAssert (∃ γ, gset_bij_own_auth γ 1 L)%I with "[>]" as (γ) "Hauth".
     { rewrite gset_bij_own_auth_eq. iApply own_alloc. by apply gset_bij_auth_valid. }
-    iExists γ. iModIntro. iSplit; [done|]. by iApply bij_get_big_sepS_elem.
- Qed.
+    iExists γ. iModIntro. iSplit; [done|].
+    by iApply gset_bij_own_elem_get_big.
+  Qed.
   Lemma gset_bij_own_alloc_empty :
     ⊢ |==> ∃ γ, gset_bij_own_auth γ 1 ∅.
   Proof. iMod (gset_bij_own_alloc ∅) as (γ) "[Hauth _]"; by auto. Qed.
 
-  Lemma gset_bij_own_extend γ L a b :
+  Lemma gset_bij_own_extend {γ L} a b :
     (∀ b', (a, b') ∉ L) → (∀ a', (a', b) ∉ L) →
     gset_bij_own_auth γ 1 L ==∗
     gset_bij_own_auth γ 1 ({[(a, b)]} ∪ L) ∗ gset_bij_own_elem γ a b.
@@ -137,10 +139,11 @@ Section gset_bij.
     iAssert (gset_bij_own_auth γ 1 ({[a, b]} ∪ L)) with "[> Hauth]" as "Hauth".
     { rewrite gset_bij_own_auth_eq. iApply (own_update with "Hauth").
       by apply gset_bij_auth_extend. }
-    iModIntro. iSplit; [done|]. iApply (bij_get_elem with "Hauth"). set_solver.
+    iModIntro. iSplit; [done|].
+    iApply (gset_bij_own_elem_get with "Hauth"). set_solver.
   Qed.
 
-  Lemma gset_bij_own_extend_internal γ L a b :
+  Lemma gset_bij_own_extend_internal {γ L} a b :
     (∀ b', gset_bij_own_elem γ a b' -∗ False) -∗
     (∀ a', gset_bij_own_elem γ a' b -∗ False) -∗
     gset_bij_own_auth γ 1 L ==∗
@@ -148,9 +151,9 @@ Section gset_bij.
   Proof.
     iIntros "Ha Hb HL".
     iAssert ⌜∀ b', (a, b') ∉ L⌝%I as %?.
-    { iIntros (b' ?). iApply ("Ha" $! b'). by iApply bij_get_elem. }
+    { iIntros (b' ?). iApply ("Ha" $! b'). by iApply gset_bij_own_elem_get. }
     iAssert ⌜∀ a', (a', b) ∉ L⌝%I as %?.
-    { iIntros (a' ?). iApply ("Hb" $! a'). by iApply bij_get_elem. }
+    { iIntros (a' ?). iApply ("Hb" $! a'). by iApply gset_bij_own_elem_get. }
     by iApply (gset_bij_own_extend with "HL").
   Qed.
 End gset_bij.
