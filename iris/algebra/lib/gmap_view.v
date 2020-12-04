@@ -1,6 +1,6 @@
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export view gmap dfrac.
-From iris.algebra Require Import local_updates proofmode_classes.
+From iris.algebra Require Import local_updates proofmode_classes big_op.
 From iris.prelude Require Import options.
 
 (** * CMRA for a "view of a gmap".
@@ -321,6 +321,21 @@ Section lemmas.
       specialize (Hrel _ _ Hbf). destruct Hrel as (v' & ? & ? & Hm).
       eexists. do 2 (split; first done).
       rewrite lookup_insert_ne //.
+  Qed.
+
+  Lemma gmap_view_alloc_big m m' dq :
+    m' ##ₘ m →
+    ✓ dq →
+    gmap_view_auth 1 m ~~>
+      gmap_view_auth 1 (m' ∪ m) ⋅ ([^op map] k↦v ∈ m', gmap_view_frag k dq v).
+  Proof.
+    intros. induction m' as [|k v m' ? IH] using map_ind; decompose_map_disjoint.
+    { rewrite big_opM_empty left_id_L right_id. done. }
+    etrans; first by apply IH.
+    rewrite big_opM_insert // assoc.
+    apply cmra_update_op; last done.
+    rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); last done.
+    by apply lookup_union_None.
   Qed.
 
   Lemma gmap_view_delete m k v :
