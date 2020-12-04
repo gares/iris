@@ -18,9 +18,11 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   (* -- mapsto properties -- *)
   mapsto_timeless l q v :> Timeless (mapsto l q v);
   mapsto_fractional l v :> Fractional (λ (q : Qp), mapsto l (DfracOwn q) v);
+  mapsto_persistent l v :> Persistent (mapsto l DfracDiscarded v);
   mapsto_as_fractional l q v :>
     AsFractional (mapsto l (DfracOwn q) v) (λ q, mapsto l (DfracOwn q) v) q;
-  mapsto_agree l q1 q2 v1 v2 : mapsto l q1 v1 -∗ mapsto l q2 v2 -∗ ⌜v1 = v2⌝;
+  mapsto_agree l dq1 dq2 v1 v2 : mapsto l dq1 v1 -∗ mapsto l dq2 v2 -∗ ⌜v1 = v2⌝;
+  mapsto_persist l dq v : mapsto l dq v ==∗ mapsto l DfracDiscarded v;
   (* -- operation specs -- *)
   alloc_spec (v : val) :
     {{{ True }}} alloc v {{{ l, RET #l; mapsto l (DfracOwn 1) v }}};
@@ -144,4 +146,5 @@ Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
      cmpxchg_spec := primitive_cmpxchg_spec;
+     mapsto_persist := primitive_laws.mapsto_persist;
      mapsto_agree := primitive_laws.mapsto_agree |}.
