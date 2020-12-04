@@ -248,8 +248,8 @@ Iris
 ----
 
 - `iInv H as (x1 ... xn) "ipat"` : open an invariant in hypothesis H. The result
-   is destructed using the Coq intro patterns `x1 ... xn` (for existential
-   quantifiers) and then the proof mode [introduction pattern][ipat] `ipat`.
+  is destructed using the Coq intro patterns `x1 ... xn` (for existential
+  quantifiers) and then the proof mode [introduction pattern][ipat] `ipat`.
   + `iInv H with "selpat" as (x1 ... xn) "ipat" "Hclose"` : generate an update
   for closing the invariant and put it in a hypothesis named `Hclose`.
   + `iInv H with "selpat" as (x1 ... xn) "ipat"` : supply a selection pattern
