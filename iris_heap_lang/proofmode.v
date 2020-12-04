@@ -58,10 +58,10 @@ Lemma tac_twp_value_nofupd `{!heapG Σ} Δ s E Φ v :
   envs_entails Δ (Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by apply twp_value. Qed.
 
-Lemma tac_wp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_wp_value `{!heapG Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E {{ Φ }}).
 Proof. rewrite envs_entails_eq=> ->. by rewrite wp_value_fupd. Qed.
-Lemma tac_twp_value `{!heapG Σ} Δ s E Φ v :
+Lemma tac_twp_value `{!heapG Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
 
