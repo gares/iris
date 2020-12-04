@@ -62,20 +62,21 @@ Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
 
 Ltac wp_expr_simpl := wp_expr_eval simpl.
 
+(** Simplify the goal if it is [WP] of a value.
+  If the postcondition already allows a fupd, do not add a second one.
+  But otherwise, *do* add a fupd. This ensures that all the lemmas applied
+  here are bidirectional, so we never will make a goal unprovable. *)
 Ltac wp_value_head :=
   lazymatch goal with
-  (* If the postcondition already allows a fupd, do not add a second one.
-     But otherwise, *do* add a fupd. This ensures that all the lemmas applied
-     here are bidirectional, so we never will make a goal unprovable. *)
-  | |- envs_entails _ (wp ?s ?E (Val _) (fun _ => fupd ?E _ _)) =>
+  | |- envs_entails _ (wp ?s ?E (Val _) (λ _, fupd ?E _ _)) =>
       eapply tac_wp_value_nofupd
-  | |- envs_entails _ (wp ?s ?E (Val _) (fun _ => wp _ ?E _ _)) =>
+  | |- envs_entails _ (wp ?s ?E (Val _) (λ _, wp _ ?E _ _)) =>
       eapply tac_wp_value_nofupd
   | |- envs_entails _ (wp ?s ?E (Val _) _) =>
       eapply tac_wp_value
-  | |- envs_entails _ (twp ?s ?E (Val _) (fun _ => fupd ?E _ _)) =>
+  | |- envs_entails _ (twp ?s ?E (Val _) (λ _, fupd ?E _ _)) =>
       eapply tac_twp_value_nofupd
-  | |- envs_entails _ (twp ?s ?E (Val _) (fun _ => twp _ ?E _ _)) =>
+  | |- envs_entails _ (twp ?s ?E (Val _) (λ _, twp _ ?E _ _)) =>
       eapply tac_twp_value_nofupd
   | |- envs_entails _ (twp ?s ?E (Val _) _) =>
       eapply tac_twp_value
