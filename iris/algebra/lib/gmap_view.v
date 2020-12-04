@@ -1,6 +1,5 @@
 From Coq.QArith Require Import Qcanon.
-From iris.algebra Require Import view updates dfrac.
-From iris.algebra Require Export gmap dfrac.
+From iris.algebra Require Export view gmap dfrac.
 From iris.algebra Require Import local_updates proofmode_classes.
 From iris.prelude Require Import options.
 
