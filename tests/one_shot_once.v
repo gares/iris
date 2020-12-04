@@ -61,7 +61,7 @@ Lemma wp_one_shot (Φ : val → iProp Σ) :
   ⊢ WP one_shot_example #() {{ Φ }}.
 Proof.
   iIntros "Hf /=". pose proof (nroot .@ "N") as N.
-  rewrite -wp_fupd. wp_lam. wp_alloc l as "Hl".
+  wp_lam. wp_alloc l as "Hl".
   iMod (own_alloc (Pending 1%Qp)) as (γ) "Hγ"; first done.
   iDestruct (pending_split with "Hγ") as "[Hγ1 Hγ2]".
   iMod (inv_alloc N _ (one_shot_inv γ l) with "[Hl Hγ2]") as "#HN".
@@ -90,7 +90,7 @@ Proof.
       + Show. iSplit. iLeft; by iSplitL "Hl". eauto.
       + iSplit. iRight; iExists m; by iSplitL "Hl". eauto. }
     iSplitL "Hinv"; first by eauto.
-    iModIntro. wp_pures. iIntros "!>". wp_lam. wp_bind (! _)%E.
+    iModIntro. wp_pures. iIntros "!> !>". wp_lam. wp_bind (! _)%E.
     iInv N as "Hinv".
     iDestruct "Hv" as "[%|Hv]"; last iDestruct "Hv" as (m) "[% Hγ']"; subst.
     + iDestruct "Hinv" as "[[Hl >Hγ]|H]"; last iDestruct "H" as (m') "[Hl Hγ]";

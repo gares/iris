@@ -1,3 +1,5 @@
+"heap_e_spec"
+     : string
 1 subgoal
   
   Σ : gFunctors
@@ -18,6 +20,8 @@
   --------------------------------------∗
   WP #l <- #1 + #1;; ! #l @ E {{ v, ⌜v = #2⌝ }}
   
+"heap_e2_spec"
+     : string
 1 subgoal
   
   Σ : gFunctors
@@ -29,6 +33,18 @@
   --------------------------------------∗
   WP let: "x" := #l in let: "y" := ref #1 in "x" <- ! "x" + #1;; ! "x"
   @ E [{ v, ⌜v = #2⌝ }]
+  
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  E : coPset
+  l, l' : loc
+  ============================
+  "Hl" : l ↦ #1
+  _ : l' ↦ #1
+  --------------------------------------∗
+  WP #l <- #1 + #1;; ! #l @ E [{ v, ⌜v = #2⌝ }]
   
 "heap_e7_spec"
      : string
@@ -50,7 +66,7 @@
   ============================
   _ : l ↦ #1
   --------------------------------------∗
-  l ↦ #1
+  |={⊤}=> l ↦ #1
   
 1 subgoal
   
@@ -61,7 +77,7 @@
   "Hl1" : l ↦{1 / 2} #0
   "Hl2" : l ↦{1 / 2} #0
   --------------------------------------∗
-  True
+  |={⊤}=> True
   
 1 subgoal
   
@@ -70,7 +86,7 @@
   l : loc
   ============================
   --------------------------------------∗
-  True
+  |={⊤}=> True
   
 "wp_nonclosed_value"
      : string
@@ -97,7 +113,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   "HΦ" : ∀ l0 : loc, l0 ↦∗ replicate (Z.to_nat n) #0 -∗ Φ #l0
   _ : l ↦∗ replicate (Z.to_nat n) #0
   --------------------------------------∗
-  Φ #l
+  |={⊤}=> Φ #l
   
 "test_array_fraction_destruct"
      : string
@@ -112,6 +128,28 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   "Hl2" : l ↦∗{1 / 2} vs
   --------------------------------------∗
   l ↦∗{1 / 2} vs ∗ l ↦∗{1 / 2} vs
+  
+"test_wp_finish_fupd"
+     : string
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  v : val
+  ============================
+  --------------------------------------∗
+  |={⊤}=> True
+  
+"test_twp_finish_fupd"
+     : string
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  v : val
+  ============================
+  --------------------------------------∗
+  |={⊤}=> True
   
 1 subgoal
   

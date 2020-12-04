@@ -15,7 +15,7 @@ Section tests.
       {{ v, ⌜v = (#n, #true)%V⌝ ∗ ∃vs, proph p vs ∗ l ↦ #(n+1) }}.
   Proof.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
-    wp_cmpxchg_suc. iIntros (ws ->) "Hp". eauto with iFrame.
+    wp_cmpxchg_suc. iIntros "!>" (ws ->) "Hp". eauto with iFrame.
   Restart.
     iIntros "Hl Hp". wp_pures. wp_apply (wp_resolve_cmpxchg_suc with "[$Hp $Hl]"); first by left.
     iIntros "Hpost". iDestruct "Hpost" as (ws ->) "Hp". eauto with iFrame.
@@ -26,7 +26,7 @@ Section tests.
     WP Resolve (#n + #m - (#n + #m)) #p #() @ E {{ v, ⌜v = #0⌝ ∗ ∃vs, proph p vs }}.
   Proof.
     iIntros "Hp". wp_pures. wp_apply (wp_resolve with "Hp"); first done.
-    wp_pures. iIntros (ws ->) "Hp". rewrite Z.sub_diag. eauto with iFrame.
+    wp_pures. iIntros "!>" (ws ->) "Hp". rewrite Z.sub_diag. eauto with iFrame.
   Qed.
 
   Lemma test_resolve3 s E (p1 p2 : proph_id) (vs1 vs2 : list (val * val)) (n : Z) :
@@ -38,7 +38,7 @@ Section tests.
     wp_apply (wp_resolve with "Hp1"); first done.
     wp_apply (wp_resolve with "Hp2"); first done.
     wp_op.
-    iIntros (vs2' ->) "Hp2". iIntros (vs1' ->) "Hp1". rewrite Z.sub_diag.
+    iIntros "!>" (vs2' ->) "Hp2". iIntros (vs1' ->) "Hp1". rewrite Z.sub_diag.
     iApply "HΦ". iExists vs1', vs2'. eauto with iFrame.
   Qed.
 
@@ -51,7 +51,7 @@ Section tests.
     wp_apply (wp_resolve with "Hp1"); first done.
     wp_apply (wp_resolve with "Hp2"); first done.
     wp_op.
-    iIntros (vs2' ->) "Hp2". iIntros (vs1' ->) "Hp1". rewrite Z.sub_diag.
+    iIntros "!>" (vs2' ->) "Hp2". iIntros (vs1' ->) "Hp1". rewrite Z.sub_diag.
     iApply "HΦ". iExists vs1', vs2'. eauto with iFrame.
   Qed.
 

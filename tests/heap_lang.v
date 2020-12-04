@@ -25,10 +25,11 @@ Section tests.
   Definition heap_e : expr :=
     let: "x" := ref #1 in "x" <- !"x" + #1 ;; !"x".
 
+  Check "heap_e_spec".
   Lemma heap_e_spec E : ⊢ WP heap_e @ E {{ v, ⌜v = #2⌝ }}.
   Proof.
     iIntros "". rewrite /heap_e. Show.
-    wp_alloc l as "?". wp_load. Show.
+    wp_alloc l as "?". wp_pures. wp_bind (!_)%E. wp_load. Show. (* No fupd was added *)
     wp_store. by wp_load.
   Qed.
 
@@ -37,11 +38,13 @@ Section tests.
     let: "y" := ref #1 in
     "x" <- !"x" + #1 ;; !"x".
 
+  Check "heap_e2_spec".
   Lemma heap_e2_spec E : ⊢ WP heap_e2 @ E [{ v, ⌜v = #2⌝ }].
   Proof.
     iIntros "". rewrite /heap_e2.
     wp_alloc l as "Hl". Show. wp_alloc l'.
-    wp_load. wp_store. wp_load. done.
+    wp_pures. wp_bind (!_)%E. wp_load. Show. (* No fupd was added *)
+    wp_store. wp_load. done.
   Qed.
 
   Definition heap_e3 : expr :=
@@ -235,7 +238,6 @@ Section tests.
     iIntros "[$ _]". (* splits the fraction, not the app *)
   Qed.
 
-
   Lemma test_wp_free l v :
     {{{ l ↦ v }}} Free #l {{{ RET #(); True }}}.
   Proof.
@@ -247,6 +249,20 @@ Section tests.
   Proof.
     iIntros (Φ) "Hl HΦ". wp_free. iApply "HΦ". done.
   Qed.
+
+  Check "test_wp_finish_fupd".
+  Lemma test_wp_finish_fupd (v : val) :
+    ⊢ WP v {{ v, |={⊤}=> True }}.
+  Proof.
+    wp_pures. Show. (* No second fupd was added. *)
+  Abort.
+
+  Check "test_twp_finish_fupd".
+  Lemma test_twp_finish_fupd (v : val) :
+    ⊢ WP v [{ v, |={⊤}=> True }].
+  Proof.
+    wp_pures. Show. (* No second fupd was added. *)
+  Abort.
 End tests.
 
 Section inv_mapsto_tests.

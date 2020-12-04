@@ -99,7 +99,7 @@ Proof.
   iApply (big_sepL2_impl with "Hwp").
   iIntros "!#" (? e Φ ??) "Hwp".
   destruct (to_val e) as [v2|] eqn:He2'; last done.
-  apply of_to_val in He2' as <-. iApply (wp_value_inv' with "Hwp").
+  apply of_to_val in He2' as <-. simpl. iApply wp_value_fupd'. done.
 Qed.
 End adequacy.
 

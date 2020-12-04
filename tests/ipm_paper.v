@@ -204,7 +204,7 @@ Section counter_proof.
   Lemma newcounter_spec :
     ⊢ {{ True }} newcounter #() {{ v, ∃ l, ⌜v = #l⌝ ∧ C l 0 }}.
   Proof.
-    iIntros "!> _ /=". rewrite -wp_fupd /newcounter /=. wp_lam. wp_alloc l as "Hl".
+    iIntros "!> _ /=". rewrite /newcounter /=. wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (Auth 0)) as (γ) "Hγ"; first done.
     rewrite (auth_frag_op 0 0) //; iDestruct "Hγ" as "[Hγ Hγf]".
     set (N:= nroot .@ "counter").
@@ -220,7 +220,7 @@ Section counter_proof.
     iDestruct "Hl" as (N γ) "[#Hinv Hγf]".
     wp_bind (! _)%E. iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c) "[Hl Hγ]".
-    wp_load. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
+    wp_load. iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     wp_let. wp_op.
     wp_bind (CmpXchg _ _ _). iApply wp_inv_open; last iFrame "Hinv"; auto.
     iDestruct 1 as (c') ">[Hl Hγ]".
@@ -229,11 +229,11 @@ Section counter_proof.
       iDestruct (own_valid with "Hγ") as %?%auth_frag_valid; rewrite -auth_frag_op //.
       iMod (own_update with "Hγ") as "Hγ"; first apply M_update.
       rewrite (auth_frag_op (S n) (S c)); last lia; iDestruct "Hγ" as "[Hγ Hγf]".
-      wp_cmpxchg_suc. iSplitL "Hl Hγ".
+      wp_cmpxchg_suc. iModIntro. iSplitL "Hl Hγ".
       { iNext. iExists (S c). rewrite Nat2Z.inj_succ Z.add_1_l. by iFrame. }
       wp_pures. rewrite {3}/C; eauto 10.
     - wp_cmpxchg_fail; first (intros [=]; abstract lia).
-      iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
+      iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c'; by iFrame|].
       wp_pures. iApply ("IH" with "[Hγf]"). rewrite {3}/C; eauto 10.
   Qed.
 
@@ -247,7 +247,7 @@ Section counter_proof.
     iDestruct (own_valid γ (Frag n ⋅ Auth c) with "[-]") as % ?%auth_frag_valid.
     { iApply own_op. by iFrame. }
     rewrite (auth_frag_op c c); last lia; iDestruct "Hγ" as "[Hγ Hγf']".
-    iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
+    iModIntro. iSplitL "Hl Hγ"; [iNext; iExists c; by iFrame|].
     rewrite /C; eauto 10 with lia.
   Qed.
 End counter_proof.

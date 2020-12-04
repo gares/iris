@@ -59,7 +59,7 @@ Section proof.
   Lemma newlock_spec (R : iProp Σ):
     {{{ R }}} newlock #() {{{ lk γ, RET lk; is_lock γ lk R }}}.
   Proof.
-    iIntros (Φ) "HR HΦ". rewrite -wp_fupd /newlock /=.
+    iIntros (Φ) "HR HΦ". rewrite /newlock /=.
     wp_lam. wp_alloc l as "Hl".
     iMod (own_alloc (Excl ())) as (γ) "Hγ"; first done.
     iMod (inv_alloc N _ (lock_inv γ l R) with "[-HΦ]") as "#?".
@@ -85,7 +85,7 @@ Section proof.
   Proof.
     iIntros (Φ) "#Hl HΦ". iLöb as "IH". wp_rec.
     wp_apply (try_acquire_spec with "Hl"). iIntros ([]).
-    - iIntros "[Hlked HR]". wp_if. iApply "HΦ"; iFrame.
+    - iIntros "[Hlked HR]". wp_if. iApply "HΦ"; auto with iFrame.
     - iIntros "_". wp_if. iApply ("IH" with "[HΦ]"). auto.
   Qed.
 
