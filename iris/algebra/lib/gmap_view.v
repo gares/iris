@@ -329,22 +329,13 @@ Section lemmas.
     gmap_view_auth 1 m ~~>
       gmap_view_auth 1 (m' ∪ m) ⋅ ([^op map] k↦v ∈ m', gmap_view_frag k dq v).
   Proof.
-    revert m. induction m' as [|k v m'] using map_ind.
-    { intros m _. rewrite big_opM_empty left_id right_id. done. }
-    intros m Hdisj. etrans.
-    { apply IHm'; last done. eapply map_disjoint_weaken_l; first done.
-      apply insert_subseteq. done. }
-    etrans.
-    - eapply cmra_update_op; last reflexivity.
-      eapply (gmap_view_alloc _ k dq); last done.
-      apply lookup_union_None. split; first done.
-      eapply map_disjoint_Some_l; first done.
-      rewrite lookup_insert. done.
-    - (* Turn goal into "L ≡ R". *)
-      eapply cmra_update_proper; [reflexivity| |reflexivity].
-      rewrite -assoc. f_equiv.
-      + rewrite insert_union_l. done.
-      + rewrite big_opM_insert; last done. done.
+    intros. induction m' as [|k v m' ? IH] using map_ind; decompose_map_disjoint.
+    { rewrite big_opM_empty left_id_L right_id. done. }
+    etrans; first by apply IH.
+    rewrite big_opM_insert // assoc.
+    apply cmra_update_op; last done.
+    rewrite -insert_union_l. apply (gmap_view_alloc _ k dq); last done.
+    by apply lookup_union_None.
   Qed.
 
   Lemma gmap_view_delete m k v :
