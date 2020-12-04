@@ -89,7 +89,7 @@ Section mono_nat.
     mono_nat_auth_own γ q n -∗ mono_nat_lb_own γ n.
   Proof. unseal. apply own_mono, mono_nat_included. Qed.
 
-  Lemma mono_nat_lb_own_le γ n n' :
+  Lemma mono_nat_lb_own_le {γ n} n' :
     n' ≤ n →
     mono_nat_lb_own γ n -∗ mono_nat_lb_own γ n'.
   Proof. unseal. intros. by apply own_mono, mono_nat_lb_mono. Qed.
@@ -102,7 +102,7 @@ Section mono_nat.
     auto with iFrame.
   Qed.
 
-  Lemma mono_nat_own_update γ n n' :
+  Lemma mono_nat_own_update {γ n} n' :
     n ≤ n' →
     mono_nat_auth_own γ 1 n ==∗ mono_nat_auth_own γ 1 n' ∗ mono_nat_lb_own γ n'.
   Proof.
