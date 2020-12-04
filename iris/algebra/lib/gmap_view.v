@@ -1,6 +1,6 @@
 From Coq.QArith Require Import Qcanon.
 From iris.algebra Require Export view gmap dfrac.
-From iris.algebra Require Import local_updates proofmode_classes.
+From iris.algebra Require Import local_updates proofmode_classes big_op.
 From iris.prelude Require Import options.
 
 (** * CMRA for a "view of a gmap".
@@ -321,6 +321,30 @@ Section lemmas.
       specialize (Hrel _ _ Hbf). destruct Hrel as (v' & ? & ? & Hm).
       eexists. do 2 (split; first done).
       rewrite lookup_insert_ne //.
+  Qed.
+
+  Lemma gmap_view_alloc_big m m' dq :
+    m' ##ₘ m →
+    ✓ dq →
+    gmap_view_auth 1 m ~~>
+      gmap_view_auth 1 (m' ∪ m) ⋅ ([^op map] k↦v ∈ m', gmap_view_frag k dq v).
+  Proof.
+    revert m. induction m' as [|k v m'] using map_ind.
+    { intros m _. rewrite big_opM_empty left_id right_id. done. }
+    intros m Hdisj. etrans.
+    { apply IHm'; last done. eapply map_disjoint_weaken_l; first done.
+      apply insert_subseteq. done. }
+    etrans.
+    - eapply cmra_update_op; last reflexivity.
+      eapply (gmap_view_alloc _ k dq); last done.
+      apply lookup_union_None. split; first done.
+      eapply map_disjoint_Some_l; first done.
+      rewrite lookup_insert. done.
+    - (* Turn goal into "L ≡ R". *)
+      eapply cmra_update_proper; [reflexivity| |reflexivity].
+      rewrite -assoc. f_equiv.
+      + rewrite insert_union_l. done.
+      + rewrite big_opM_insert; last done. done.
   Qed.
 
   Lemma gmap_view_delete m k v :
