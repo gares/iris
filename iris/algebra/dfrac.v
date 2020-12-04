@@ -18,6 +18,7 @@
     discarded. Conversely, knowing that a fraction has been discarded implies
     that no one can own 1. And, since discarding is an irreversible operation,
     it also implies that no one can own 1 in the future *)
+From stdpp Require Import countable.
 From iris.algebra Require Export cmra.
 From iris.algebra Require Import proofmode_classes updates frac.
 From iris.prelude Require Import options.
@@ -36,6 +37,24 @@ Section dfrac.
 
   Implicit Types p q : Qp.
   Implicit Types dp dq : dfrac.
+
+  Global Instance dfrac_inhabited : Inhabited dfrac := populate DfracDiscarded.
+  Global Instance dfrac_eq_dec : EqDecision dfrac.
+  Proof. solve_decision. Defined.
+  Global Instance dfrac_countable : Countable dfrac.
+  Proof.
+    set (enc dq := match dq with
+      | DfracOwn q => inl q
+      | DfracDiscarded => inr (inl ())
+      | DfracBoth q => inr (inr q)
+      end).
+    set (dec y := Some match y with
+      | inl q => DfracOwn q
+      | inr (inl ()) => DfracDiscarded
+      | inr (inr q) => DfracBoth q
+      end).
+    refine (inj_countable enc dec _). by intros [].
+  Qed.
 
   Global Instance DfracOwn_inj : Inj (=) (=) DfracOwn.
   Proof. by injection 1. Qed.
