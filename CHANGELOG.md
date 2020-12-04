@@ -144,12 +144,16 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   are unchanged.
 * `pure_exec_fill` is no longer registered as an instance for `PureExec`, to
   avoid TC search attempting to apply this instance all the time.
+* Merge `wp_value_inv`/`wp_value_inv'` into `wp_value_fupd`/`wp_value_fupd'` by
+  making the lemma bidirectional.
 
 **Changes in `heap_lang`:**
 
 * `wp_pures` now turns goals of the form `WP v {{ Φ }}` into `Φ v`.
 * Fix `wp_bind` in case of a NOP (i.e., when the given expression pattern is
   already at the top level).
+* The `wp_` tactics now preserve the possibility of doing a fancy update when
+  the expression reduces to a value.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
