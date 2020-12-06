@@ -265,13 +265,16 @@ Section tests.
   Abort.
 End tests.
 
-Section persistent_mapsto_tests.
+Section mapsto_tests.
   Context `{!heapG Σ}.
+
+  (* Test that the different versions of mapsto work with the tactics, parses,
+     and prints correctly. *)
 
   (* Loading from a persistent points-to predicate in the _persistent_ context. *)
   Lemma persistent_mapsto_load_persistent l v :
     {{{ l ↦□ v }}} ! #l {{{ RET v; True }}}.
-  Proof. iIntros (Φ) "#Hl HΦ". wp_load. by iApply "HΦ". Qed.
+  Proof. iIntros (Φ) "#Hl HΦ". Show. wp_load. by iApply "HΦ". Qed.
 
   (* Loading from a persistent points-to predicate in the _spatial_ context. *)
   Lemma persistent_mapsto_load_spatial l v :
@@ -295,7 +298,14 @@ Section persistent_mapsto_tests.
     wp_load. by iApply "HΦ".
   Qed.
 
-End persistent_mapsto_tests.
+  (* Loading from the general mapsto for any [dfrac]. *)
+  Lemma general_mapsto dq l v :
+    [[{ l ↦{dq} v }]] ! #l [[{ RET v; True }]].
+  Proof. 
+    iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
+  Qed.
+
+End mapsto_tests.
 
 Section inv_mapsto_tests.
   Context `{!heapG Σ}.
