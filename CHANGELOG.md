@@ -58,6 +58,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Add `mono_nat`, a wrapper for `auth max_nat`. The result is an authoritative
   `nat` where a fragment is a lower bound whose ownership is persistent.
   See [algebra.lib.mono_nat](iris/algebra/lib/mono_nat.v) for further information.
+* Add the `gset_bij` resource algebra for monotone partial bijections.
+  See [algebra.lib.gset_bij](iris/algebra/lib/gset_bij.v) for further information.
 * Change `*_valid` lemma statements involving fractions to use `Qp` addition and
   inequality instead of RA composition and validity (also in `base_logic` and
   the higher layers).
@@ -127,6 +129,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   available everywhere, and no longer inside the `uPred` module.
 * Define a ghost state library on top of the `mono_nat` resource algebra.
   See [base_logic.lib.mono_nat](iris/base_logic/lib/mono_nat.v) for further
+  information.
+* Define a ghost state library on top of the `gset_bij` resource algebra.
+  See [base_logic.lib.gset_bij](iris/base_logic/lib/gset_bij.v) for further
   information.
 * Remove the `gen_heap` notations `l ↦ -` and `l ↦{q} -`. They were barely used
   and looked very confusing in context: `l ↦ - ∗ P` looks like a magic wand.
