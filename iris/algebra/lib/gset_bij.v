@@ -2,15 +2,15 @@
 
 This RA is a view where the authoritative element is a partial bijection between
 types [A] and [B] and the fragments are subrels of the bijection. The data for
-the bijection is represented as a set of pairs [A*B], and the view relation
+the bijection is represented as a set of pairs [A * B], and the view relation
 enforces when an authoritative element is valid it is a bijection (that is, it
 is deterministic as a function from [A → option B] and [B → option A]).
 
 The fragments compose by set union, which means that fragments are their own
 core, ownership of a fragment is persistent, and the authoritative element can
-only grow (in that it can only map more pairs (a,b)). *)
+only grow (in that it can only map more pairs [(a,b)]). *)
 
-(** view needs to be exported for the canonical instances *)
+(* [algebra.view] needs to be exported for the canonical instances *)
 From iris.algebra Require Export view gset.
 From iris.algebra Require Import updates.
 From iris.prelude Require Import options.
@@ -19,7 +19,7 @@ Section gset_bijective.
   Context `{Countable A, Countable B}.
   Implicit Types (a : A) (b : B).
 
-  (** [gset_bijective] states that for a graph [L] of (a, b) pairs, [L] maps
+  (** [gset_bijective] states that for a graph [L] of [(a, b)] pairs, [L] maps
   from [A] to [B] and back deterministically. The key property characterizing
   [gset_bijective] is [gset_bijective_eq_iff]. *)
   Definition gset_bijective (L : gset (A * B)) :=

@@ -1,22 +1,24 @@
 (** Propositions for reasoning about monotone partial bijections.
 
-This library provides two propositions [gset_bij_own_auth γ L] and [gset_bij_own_elem γ a b], where [L]
-is a bijection between types [A] and [B] represented by a set of associations
-[gset (A*B)]. The idea is that [gset_bij_own_auth γ L] is an authoritative bijection [L]
-while [gset_bij_own_elem γ a b] is a persistent resource saying [L] associates a and b.
+This library provides two propositions [gset_bij_own_auth γ L] and
+[gset_bij_own_elem γ a b], where [L] is a bijection between types [A] and [B]
+represented by a set of associations [gset (A * B)]. The idea is that
+[gset_bij_own_auth γ L] is an authoritative bijection [L], while
+[gset_bij_own_elem γ a b] is a persistent resource saying [L] associates [a]
+and [b].
 
 The main use case is in a logical relation-based proof where [L] maintains the
 association between locations [A] in one execution and [B] in another (perhaps
 of different types, if the logical relation relates two different semantics).
 
 The association [L] is always bijective, so that if [a] is mapped to [b], there
-should be no other mappings for either [a] or [b]; the [gset_bij_own_extend] update
-theorem enforces that new mappings respect this property, and [gset_bij_own_elem_agree]
-allows the user to exploit bijectivity. The bijection grows monotonically, so
-that the set of associations only grows; this is captured by the persistence of
-[gset_bij_own_elem].
+should be no other mappings for either [a] or [b]; the [gset_bij_own_extend]
+update theorem enforces that new mappings respect this property, and
+[gset_bij_own_elem_agree] allows the user to exploit bijectivity. The bijection
+grows monotonically, so that the set of associations only grows; this is
+captured by the persistence of [gset_bij_own_elem].
 
-This library is a logical, ownership-based wrapper around gset_bij. *)
+This library is a logical, ownership-based wrapper around [gset_bij]. *)
 
 From iris.algebra.lib Require Import gset_bij.
 From iris.bi.lib Require Import fractional.
