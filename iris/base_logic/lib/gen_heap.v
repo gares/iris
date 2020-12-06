@@ -185,7 +185,7 @@ Section gen_heap.
   Lemma mapsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
   Proof. apply mapsto_frac_ne. intros ?%exclusive_l; [done|apply _]. Qed.
 
-  (** Permanently turn a fractional points-to predicate into a persistent
+  (** Permanently turn any points-to predicate into a persistent
       points-to predicate. *)
   Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
   Proof. rewrite mapsto_eq. apply own_update, gmap_view_persist. Qed.

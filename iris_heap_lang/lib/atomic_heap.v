@@ -14,7 +14,7 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   store : val;
   cmpxchg : val;
   (* -- predicates -- *)
-  mapsto (l : loc) (q: dfrac) (v : val) : iProp Σ;
+  mapsto (l : loc) (dq: dfrac) (v : val) : iProp Σ;
   (* -- mapsto properties -- *)
   mapsto_timeless l q v :> Timeless (mapsto l q v);
   mapsto_fractional l v :> Fractional (λ (q : Qp), mapsto l (DfracOwn q) v);
