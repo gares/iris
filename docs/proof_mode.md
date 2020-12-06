@@ -130,20 +130,22 @@ Elimination of logical connectives
     and name the resulting hypothesis `H2`. The Coq introduction patterns can
     also be used for pure conjunctions; for example we can destruct
     `∃ x, ⌜v = x⌝ ∗ l ↦ x` using `iDestruct "H" as (x Heq) "H"` to immediately
-    put `Heq: v = x` in the Coq context.
-  + `iDestruct pm_trm as "ipat"` : destruct a [proof-mode term][pm-trm] (see below) after
-    specialization using the [introduction pattern][ipat] `ipat`. When applied to a wand
-    in the intuitionistic context this tactic consumes wands (but leaves
-    universally quantified hypotheses). To keep the wand use `iPoseProof`
-    instead.
+    put `Heq: v = x` in the Coq context. This variant of the tactic will always
+    throw away the original hypothesis `H1`.
+  + `iDestruct pm_trm as "ipat"` : specialize the [proof-mode term][pm-trm] (see
+    below) and destruct it using the [introduction pattern][ipat] `ipat`. If
+    `pm_trm` starts with a hypothesis, and that hypothesis resides in the
+    intuitionistic context, it will not be thrown away.
   + `iDestruct pm_trm as (x1 ... xn) "ipat"` : combine the above, first
     specializing `pm_trm`, then eliminating existential quantifiers (and pure
     conjuncts) with `x1 ...  xn`, and finally destructing the resulting term
-    with `ipat`.
+    using the [introduction pattern][ipat] `ipat`.
   + `iDestruct pm_trm as %cpat` : destruct the pure conclusion of a term
     `pr_trm` using the Coq introduction pattern `cpat`. When using this tactic,
     all hypotheses can be used for proving the premises of `pm_trm`, as well as
     for proving the resulting goal.
+  + `iDestruct num as (x1 ... xn) "ipat"` / `iDestruct num as %cpat` :
+    introduce `num : nat` hypotheses and destruct the last introduced hypothesis.
 
   In case all branches of `ipat` start with a `#` (which causes the hypothesis
   to be moved to the intuitionistic context) or with an `%` (which causes the

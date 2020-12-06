@@ -93,6 +93,52 @@ Lemma test_iDestruct_intuitionistic_2 P Q `{!Persistent P, !Affine P}:
   Q ∗ (Q -∗ P) -∗ P.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". done. Qed.
 
+Lemma test_iDestruct_specialize_wand P Q :
+  Q -∗ Q -∗ □ (Q -∗ P) -∗ P ∗ P.
+Proof.
+  iIntros "HQ1 HQ2 #HQP".
+  (* [iDestruct] does not consume "HQP" because a wand is instantiated *)
+  iDestruct ("HQP" with "HQ1") as "HP1".
+  iDestruct ("HQP" with "HQ2") as "HP2".
+  iFrame.
+Qed.
+Lemma test_iPoseProof_specialize_wand P Q :
+  Q -∗ Q -∗ □ (Q -∗ P) -∗ P ∗ P.
+Proof.
+  iIntros "HQ1 HQ2 #HQP".
+  (* [iPoseProof] does not consume "HQP" because a wand is instantiated *)
+  iPoseProof ("HQP" with "HQ1") as "HP1".
+  iPoseProof ("HQP" with "HQ2") as "HP2".
+  iFrame.
+Qed.
+
+Lemma test_iDestruct_pose_forall (Φ : nat → PROP) :
+  □ (∀ x, Φ x) -∗ Φ 0 ∗ Φ 1.
+Proof.
+  iIntros "#H".
+  (* [iDestruct] does not consume "H" because quantifiers are instantiated *)
+  iDestruct ("H" $! 0) as "$".
+  iDestruct ("H" $! 1) as "$".
+Qed.
+
+Lemma test_iDestruct_or P Q : □ (P ∨ Q) -∗ Q ∨ P.
+Proof.
+  iIntros "#H".
+  (* [iDestruct] consumes "H" because no quantifiers/wands are instantiated *)
+  iDestruct "H" as "[H|H]".
+  - by iRight.
+  - by iLeft.
+Qed.
+Lemma test_iPoseProof_or P Q : □ (P ∨ Q) -∗ (Q ∨ P) ∗ (P ∨ Q).
+Proof.
+  iIntros "#H".
+  (* [iPoseProof] does not consume "H" despite that no quantifiers/wands are
+  instantiated. This makes it different from [iDestruct]. *)
+  iPoseProof "H" as "[HP|HQ]".
+  - iFrame "H". by iRight.
+  - iFrame "H". by iLeft.
+Qed.
+
 Lemma test_iDestruct_intuitionistic_affine_bi `{!BiAffine PROP} P Q `{!Persistent P}:
   Q ∗ (Q -∗ P) -∗ P ∗ Q.
 Proof. iIntros "[HQ HQP]". iDestruct ("HQP" with "HQ") as "#HP". by iFrame. Qed.
