@@ -10,7 +10,10 @@ From iris.prelude Require Import options.
 Class ghost_varG Σ (A : Type) := GhostVarG {
   ghost_var_inG :> inG Σ (frac_agreeR $ leibnizO A);
 }.
-Definition ghost_varΣ (A : Type) : gFunctors := #[ GFunctor (frac_agreeR $ leibnizO A) ].
+Global Hint Mode ghost_varG - ! : typeclass_instances.
+
+Definition ghost_varΣ (A : Type) : gFunctors :=
+  #[ GFunctor (frac_agreeR $ leibnizO A) ].
 
 Instance subG_ghost_varΣ Σ A : subG (ghost_varΣ A) Σ → ghost_varG Σ A.
 Proof. solve_inG. Qed.
@@ -26,7 +29,7 @@ Local Ltac unseal := rewrite ?ghost_var_eq /ghost_var_def.
 
 Section lemmas.
   Context `{!ghost_varG Σ A}.
-  Implicit Types (a : A) (q : Qp).
+  Implicit Types (a b : A) (q : Qp).
 
   Global Instance ghost_var_timeless γ q a : Timeless (ghost_var γ q a).
   Proof. unseal. apply _. Qed.
