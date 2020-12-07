@@ -79,7 +79,7 @@ Section mono_nat.
   Lemma mono_nat_included q n : mono_nat_lb n ≼ mono_nat_auth q n.
   Proof. apply cmra_included_r. Qed.
 
-  Lemma mono_nat_update n n' :
+  Lemma mono_nat_update {n} n' :
     n ≤ n' →
     mono_nat_auth 1 n ~~> mono_nat_auth 1 n'.
   Proof.
