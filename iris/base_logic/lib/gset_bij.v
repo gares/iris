@@ -27,16 +27,17 @@ From iris.proofmode Require Import tactics.
 From iris.prelude Require Import options.
 
 (* The uCMRA we need. *)
-Class gset_bijG A B `{Countable A, Countable B} Σ :=
+Class gset_bijG Σ A B `{Countable A, Countable B} :=
   GsetBijG { gset_bijG_inG :> inG Σ (gset_bijR A B); }.
+Global Hint Mode gset_bijG - ! ! - - - - : typeclass_instances.
 
 Definition gset_bijΣ A B `{Countable A, Countable B}: gFunctors :=
   #[ GFunctor (gset_bijR A B) ].
 Global Instance subG_gset_bijΣ `{Countable A, Countable B} Σ :
-  subG (gset_bijΣ A B) Σ → gset_bijG A B Σ.
+  subG (gset_bijΣ A B) Σ → gset_bijG Σ A B.
 Proof. solve_inG. Qed.
 
-Definition gset_bij_own_auth_def `{gset_bijG A B Σ} (γ : gname)
+Definition gset_bij_own_auth_def `{gset_bijG Σ A B} (γ : gname)
     (q : Qp) (L : gset (A * B)) : iProp Σ :=
   own γ (gset_bij_auth q L).
 Definition gset_bij_own_auth_aux : seal (@gset_bij_own_auth_def). Proof. by eexists. Qed.
@@ -45,7 +46,7 @@ Definition gset_bij_own_auth_eq :
   @gset_bij_own_auth = @gset_bij_own_auth_def := seal_eq gset_bij_own_auth_aux.
 Arguments gset_bij_own_auth {_ _ _ _ _ _ _ _}.
 
-Definition gset_bij_own_elem_def `{gset_bijG A B Σ} (γ : gname)
+Definition gset_bij_own_elem_def `{gset_bijG Σ A B} (γ : gname)
   (a : A) (b : B) : iProp Σ := own γ (gset_bij_elem a b).
 Definition gset_bij_own_elem_aux : seal (@gset_bij_own_elem_def). Proof. by eexists. Qed.
 Definition gset_bij_own_elem := unseal gset_bij_own_elem_aux.
@@ -54,7 +55,7 @@ Definition gset_bij_own_elem_eq :
 Arguments gset_bij_own_elem {_ _ _ _ _ _ _ _}.
 
 Section gset_bij.
-  Context `{gset_bijG A B Σ}.
+  Context `{gset_bijG Σ A B}.
   Implicit Types (L : gset (A * B)) (a : A) (b : B).
 
   Global Instance gset_bij_own_auth_timeless γ q L :
