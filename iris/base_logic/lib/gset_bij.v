@@ -129,7 +129,7 @@ Section gset_bij.
     by iApply gset_bij_own_elem_get_big.
   Qed.
   Lemma gset_bij_own_alloc_empty :
-    ⊢ |==> ∃ γ, gset_bij_own_auth γ 1 ∅.
+    ⊢ |==> ∃ γ, gset_bij_own_auth γ 1 (∅ : gset (A * B)).
   Proof. iMod (gset_bij_own_alloc ∅) as (γ) "[Hauth _]"; by auto. Qed.
 
   Lemma gset_bij_own_extend {γ L} a b :
