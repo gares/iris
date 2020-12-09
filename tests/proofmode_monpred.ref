@@ -29,17 +29,17 @@
   Objective0 : Objective Q
   𝓟, 𝓠 : PROP
   ============================
-  "H2" : ∀ i : I, Q i
+  "H2" : ∀ i, Q i
   "H3" : 𝓟
   "H4" : 𝓠
   --------------------------------------∗
-  ∀ i : I, 𝓟 ∗ 𝓠 ∗ Q i
+  ∀ i, 𝓟 ∗ 𝓠 ∗ Q i
   
 1 subgoal
   
   I : biIndex
   PROP : bi
-  FU0 : BiFUpd PROP * ()
+  FU : BiFUpd PROP
   P, Q : monPred
   i : I
   ============================
@@ -50,7 +50,7 @@
   
   I : biIndex
   PROP : bi
-  FU0 : BiFUpd PROP * ()
+  FU : BiFUpd PROP
   P : monPred
   i : I
   ============================
