@@ -55,7 +55,7 @@ build-coq.8.10.2:
 
 # Nightly job with a known-to-work Coq version
 # (so failures must be caused by std++)
-build-stdpp.dev-coq.8.11.2:
+build-stdpp.dev-coq.8.12.1:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.12.1   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
@@ -66,7 +66,7 @@ build-stdpp.dev-coq.8.11.2:
   - api
 
 # Nightly job with latest Coq branch
-build-stdpp.dev-coq.8.12.dev:
+build-stdpp.dev-coq.8.13.dev:
   <<: *template
   variables:
     OPAM_PINS: "coq version 8.13.dev   coq-stdpp.dev git git+https://gitlab.mpi-sws.org/iris/stdpp.git#$STDPP_REV"
