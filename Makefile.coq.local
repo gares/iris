@@ -8,7 +8,7 @@ MAKE_REF:=
 real-all: $(if $(NO_TEST),,test)
 
 # the test suite
-TESTFILES:=$(wildcard tests/*.v)
+TESTFILES:=$(shell find tests/ -name "*.v")
 NORMALIZER:=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
@@ -35,11 +35,10 @@ tests/.coqdeps.d: $(TESTFILES)
 # - Either compare the result with the reference file, or move it over the reference file.
 # - Cleanup, and mark as done for make.
 $(TESTFILES:.v=.vo): %.vo: %.v $(if $(MAKE_REF),,%.ref) $(NORMALIZER)
-	$(HIDE)TEST="$$(basename -s .v $<)" && \
-	  if test -f "tests/$$TEST.$(COQ_MINOR_VERSION).ref"; then \
-	    REF="tests/$$TEST.$(COQ_MINOR_VERSION).ref"; \
+	$(HIDE)if test -f $*".$(COQ_MINOR_VERSION).ref"; then \
+	    REF=$*".$(COQ_MINOR_VERSION).ref"; \
 	  else \
-	    REF="tests/$$TEST.ref"; \
+	    REF=$*".ref"; \
 	  fi && \
 	  echo "COQTEST$(if $(COQ_OLD), [no ref],$(if $(MAKE_REF), [make ref],)) $<$(if $(COQ_OLD),, (ref: $$REF))" && \
 	  TMPFILE="$$(mktemp)" && \
