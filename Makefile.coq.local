@@ -8,7 +8,7 @@ MAKE_REF:=
 real-all: $(if $(NO_TEST),,test)
 
 # the test suite
-TESTFILES:=$(shell find tests/ -name "*.v")
+TESTFILES:=$(shell find tests -name "*.v")
 NORMALIZER:=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
