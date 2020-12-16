@@ -19,7 +19,8 @@ test: $(TESTFILES:.v=.vo)
 .PHONY: test
 
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
-COQ_MINOR_VERSION:=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+\b' -o)
+# Need to make this a lazy variable (`=` instead of `:=`) since COQ_VERSION is only set later.
+COQ_MINOR_VERSION=$(shell echo "$(COQ_VERSION)" | egrep '^[0-9]+\.[0-9]+\b' -o)
 
 tests/.coqdeps.d: $(TESTFILES)
 	$(SHOW)'COQDEP TESTFILES'
