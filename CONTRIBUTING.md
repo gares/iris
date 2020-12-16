@@ -24,16 +24,15 @@ followed by `make builddep`.
 
 ## How to submit a merge request
 
-To contribute code, you need an [MPI-SWS GitLab account][account] (use the
-"Register" tab).  Please send your MPI-SWS GitLab username to [Ralf Jung][jung]
-to unlock forks for your account.  Then you can fork the
+To contribute code, you need an MPI-SWS GitLab account as described on the
+[chat page](https://iris-project.org/chat.html).  Then you can fork the
 [Iris git repository][iris], make your changes in your fork, and create a merge
-request.
+request.  If forking fails with an error, please send your MPI-SWS GitLab
+username to [Ralf Jung][jung] to unlock forks for your account.
 
 Please do *not* use the master branch of your fork, that might confuse CI.  Use
 a feature branch instead.
 
-[account]: https://gitlab.mpi-sws.org/users/sign_in
 [jung]: https://gitlab.mpi-sws.org/jung
 [iris]: https://gitlab.mpi-sws.org/iris/iris
 

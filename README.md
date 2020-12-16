@@ -155,14 +155,12 @@ Contacting the developers:
 
 * Discussion about the Iris Coq development happens on the mailing list
   [iris-club@lists.mpi-sws.org](https://lists.mpi-sws.org/listinfo/iris-club)
-  and in the [Iris Chat](https://mattermost.mpi-sws.org/iris).  This is also the
-  right place to ask questions.  The chat requires an account at the
-  [MPI-SWS GitLab](https://gitlab.mpi-sws.org/users/sign_in): use the "Register"
-  tab, and then contact [Ralf](https://gitlab.mpi-sws.org/jung) to have your
-  account unlocked.
+  and in the [Iris Chat](https://iris-project.org/chat.html).  This is also the
+  right place to ask questions.
 * If you want to report a bug, please use the
-  [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which also
-  requires an MPI-SWS GitLab account.
+  [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which requires
+  an MPI-SWS GitLab account. The [chat page](https://iris-project.org/chat.html)
+  describes how to create such an account.
 * To contribute to Iris itself, see the [contribution guide](CONTRIBUTING.md).
 
 Miscellaneous:
