@@ -157,9 +157,9 @@ Contacting the developers:
   [iris-club@lists.mpi-sws.org](https://lists.mpi-sws.org/listinfo/iris-club)
   and in the [Iris Chat](https://mattermost.mpi-sws.org/iris).  This is also the
   right place to ask questions.  The chat requires an account at the
-  [MPI-SWS GitLab](https://gitlab.mpi-sws.org/users/sign_in) (use the "Register"
-  tab). If you have trouble joining the chat, please contact
-  [Ralf](https://gitlab.mpi-sws.org/jung).
+  [MPI-SWS GitLab](https://gitlab.mpi-sws.org/users/sign_in): use the "Register"
+  tab, and then contact [Ralf](https://gitlab.mpi-sws.org/jung) to have your
+  account unlocked.
 * If you want to report a bug, please use the
   [issue tracker](https://gitlab.mpi-sws.org/iris/iris/issues), which also
   requires an MPI-SWS GitLab account.

@@ -26,7 +26,7 @@ followed by `make builddep`.
 
 To contribute code, you need an [MPI-SWS GitLab account][account] (use the
 "Register" tab).  Please send your MPI-SWS GitLab username to [Ralf Jung][jung]
-to enable personal projects for your account.  Then you can fork the
+to unlock forks for your account.  Then you can fork the
 [Iris git repository][iris], make your changes in your fork, and create a merge
 request.
 
