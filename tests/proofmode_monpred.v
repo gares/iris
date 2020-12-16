@@ -1,6 +1,5 @@
 From iris.proofmode Require Import tactics monpred.
 From iris.base_logic.lib Require Import invariants.
-Unset Printing Use Implicit Types. (* FIXME: remove once we drop support for Coq <=8.11. *)
 
 Section tests.
   Context {I : biIndex} {PROP : bi}.
@@ -102,11 +101,7 @@ Section tests.
     iAssumption.
   Qed.
 
-  (* This is a hack to avoid avoid coq bug #5735: sections variables ignore hint
-     modes. So we assume the instances in a way that cannot be used by type
-     class resolution, and then separately declare the instance as such. *)
-  Context (FU0 : BiFUpd PROP * unit).
-  Instance FU : BiFUpd PROP := fst FU0.
+  Context (FU : BiFUpd PROP).
 
   Lemma test_apply_fupd_intro_mask E1 E2 P :
     E2 ⊆ E1 → P -∗ |={E1,E2}=> |={E2,E1}=> P.

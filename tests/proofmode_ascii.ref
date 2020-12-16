@@ -154,21 +154,21 @@ Tactic failure: iInv: invariant "H2" not found.
   
   PROP : bi
   ============================
-  forall (P : PROP) (_ : True), bi_entails P P
+  forall P (_ : True), bi_entails P P
 "p2"
      : string
 1 subgoal
   
   PROP : bi
   ============================
-  forall P : PROP, and True (bi_entails P P)
+  forall P, and True (bi_entails P P)
 "p3"
      : string
 1 subgoal
   
   PROP : bi
   ============================
-  ex (fun P : PROP => bi_entails P P)
+  ex (fun P => bi_entails P P)
 "p4"
      : string
 1 subgoal

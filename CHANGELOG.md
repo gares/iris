@@ -5,7 +5,7 @@ lemma.
 
 ## Iris master
 
-With this release, we dropped support for Coq 8.9.
+With this release, we dropped support for Coq 8.9 and Coq 8.10.
 
 We also split Iris into multiple opam packages: `coq-iris` no longer contains
 HeapLang, which is now in a separate package `coq-iris-heap-lang`.
