@@ -349,6 +349,9 @@ Proof.
     apply Some_included. by rewrite Hi.
   - intros ?. exists y. by rewrite lookup_insert Some_included.
 Qed.
+Lemma singleton_mono i x y :
+  x ≼ y → {[ i := x ]} ≼ ({[ i := y ]} : gmap K A).
+Proof. intros Hincl. apply singleton_included. right. done. Qed.
 
 Global Instance singleton_cancelable i x :
   Cancelable (Some x) → Cancelable {[ i := x ]}.
