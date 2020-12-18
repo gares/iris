@@ -28,6 +28,8 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 
 (** Since we use an [option val] instance of [gen_heap], we need to overwrite
 the notations.  That also helps for scopes and coercions. *)
+(** FIXME: Refactor these notations using custom entries once Coq bug #13654
+has been fixed. *)
 Notation "l ↦{ dq } v" := (mapsto (L:=loc) (V:=option val) l dq (Some v%V))
   (at level 20, format "l  ↦{ dq }  v") : bi_scope.
 Notation "l ↦□ v" := (mapsto (L:=loc) (V:=option val) l DfracDiscarded (Some v%V))

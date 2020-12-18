@@ -123,6 +123,8 @@ Section definitions.
 End definitions.
 Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
+(** FIXME: Refactor these notations using custom entries once Coq bug #13654
+has been fixed. *)
 Local Notation "l ↦{ dq } v" := (mapsto l dq v)
   (at level 20, format "l  ↦{ dq }  v") : bi_scope.
 Local Notation "l ↦□ v" := (mapsto l DfracDiscarded v)
