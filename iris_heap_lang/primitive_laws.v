@@ -28,8 +28,14 @@ Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
 
 (** Since we use an [option val] instance of [gen_heap], we need to overwrite
 the notations.  That also helps for scopes and coercions. *)
-Notation "l ↦ dq v" := (mapsto (L:=loc) (V:=option val) l dq (Some v%V))
-  (at level 20, dq custom dfrac at level 1, format "l  ↦ dq  v") : bi_scope.
+Notation "l ↦{ dq } v" := (mapsto (L:=loc) (V:=option val) l dq (Some v%V))
+  (at level 20, format "l  ↦{ dq }  v") : bi_scope.
+Notation "l ↦□ v" := (mapsto (L:=loc) (V:=option val) l DfracDiscarded (Some v%V))
+  (at level 20, format "l  ↦□  v") : bi_scope.
+Notation "l ↦{# q } v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn q) (Some v%V))
+  (at level 20, format "l  ↦{# q }  v") : bi_scope.
+Notation "l ↦ v" := (mapsto (L:=loc) (V:=option val) l (DfracOwn 1) (Some v%V))
+  (at level 20, format "l  ↦  v") : bi_scope.
 
 (** Same for [gen_inv_heap], except that these are higher-order notations so to
 make setoid rewriting in the predicate [I] work we need actual definitions
