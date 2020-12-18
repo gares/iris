@@ -155,11 +155,12 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
     persistent proposition provides read-only access to `l`.
   + The lemma `mapsto_persist : l ↦{dq} v ==∗ l ↦□ v` is used for making the
     location `l` read-only.
-  + See the changes to HeapLang for an indication on how to adapt your language.
-  + See the changes to iris-examples for an indication on how to adapt your
-    development. In particular, instead of `∃ q, l ↦{q} v` you likely want to
-    use `l ↦□ v`, which has the advantage of being persistent (rather than just
-    duplicable).
+  + See the [changes to HeapLang](https://gitlab.mpi-sws.org/iris/iris/-/merge_requests/554)
+    for an indication on how to adapt your language.
+  + See the [changes to iris-examples](https://gitlab.mpi-sws.org/iris/examples/-/commit/a8425b708ec51d918d5cf6eb3ab6fde88f4e2c2a)
+    for an indication on how to adapt your development. In particular, instead
+    of `∃ q, l ↦{q} v` you likely want to use `l ↦□ v`, which has the advantage
+    of being persistent (rather than just duplicable).
 
 **Changes in `program_logic`:**
 
