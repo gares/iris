@@ -161,6 +161,16 @@ Section dfrac.
   Lemma dfrac_valid_own p : ✓ DfracOwn p ↔ (p ≤ 1)%Qp.
   Proof. done. Qed.
 
+  Lemma dfrac_valid_own_r dq q : ✓ (dq ⋅ DfracOwn q) → (q < 1)%Qp.
+  Proof.
+    destruct dq as [q'| |q']; [|done|].
+    - apply Qp_lt_le_trans, Qp_lt_add_r.
+    - intro Hlt. etrans; last apply Hlt. apply Qp_lt_add_r.
+  Qed.
+
+  Lemma dfrac_valid_own_l dq q : ✓ (DfracOwn q ⋅ dq) → (q < 1)%Qp.
+  Proof. rewrite comm. apply dfrac_valid_own_r. Qed.
+
   Lemma dfrac_valid_discarded p : ✓ DfracDiscarded.
   Proof. done. Qed.
 
@@ -174,12 +184,11 @@ Section dfrac.
   Proof. rewrite /IsOp' /IsOp dfrac_op_own=>-> //. Qed.
 
   (** Discarding a fraction is a frame preserving update. *)
-  Lemma dfrac_discard_update q : DfracOwn q ~~> DfracDiscarded.
+  Lemma dfrac_discard_update dq : dq ~~> DfracDiscarded.
   Proof.
-    intros n [[q'| |q']|];
-      rewrite /op /cmra_op -!cmra_discrete_valid_iff /valid /cmra_valid //=.
-    - intros. apply Qp_lt_le_trans with (q + q')%Qp; [|done]. apply Qp_lt_add_r.
-    - intros. apply Qp_le_lt_trans with (q + q')%Qp; [|done]. apply Qp_le_add_r.
+    intros n [[q'| |q']|]; rewrite -!cmra_discrete_valid_iff //=.
+    - apply dfrac_valid_own_r.
+    - apply cmra_valid_op_r.
   Qed.
 
 End dfrac.

@@ -212,14 +212,14 @@ Section tests.
 
   Check "test_array_fraction_destruct".
   Lemma test_array_fraction_destruct l vs :
-    l ↦∗ vs -∗ l ↦∗{1/2} vs ∗ l ↦∗{1/2} vs.
+    l ↦∗ vs -∗ l ↦∗{#1/2} vs ∗ l ↦∗{#1/2} vs.
   Proof.
     iIntros "[Hl1 Hl2]". Show.
     by iFrame.
   Qed.
 
   Lemma test_array_fraction_combine l vs :
-    l ↦∗{1/2} vs -∗ l↦∗{1/2} vs -∗ l ↦∗ vs.
+    l ↦∗{#1/2} vs -∗ l↦∗{#1/2} vs -∗ l ↦∗ vs.
   Proof.
     iIntros "Hl1 Hl2".
     iSplitL "Hl1"; by iFrame.
@@ -233,7 +233,7 @@ Section tests.
   Qed.
 
   Lemma test_array_app_split l vs1 vs2 :
-    l ↦∗ (vs1 ++ vs2) -∗ l ↦∗{1/2} (vs1 ++ vs2).
+    l ↦∗ (vs1 ++ vs2) -∗ l ↦∗{#1/2} (vs1 ++ vs2).
   Proof.
     iIntros "[$ _]". (* splits the fraction, not the app *)
   Qed.
@@ -264,6 +264,48 @@ Section tests.
     wp_pures. Show. (* No second fupd was added. *)
   Abort.
 End tests.
+
+Section mapsto_tests.
+  Context `{!heapG Σ}.
+
+  (* Test that the different versions of mapsto work with the tactics, parses,
+     and prints correctly. *)
+
+  (* Loading from a persistent points-to predicate in the _persistent_ context. *)
+  Lemma persistent_mapsto_load_persistent l v :
+    {{{ l ↦□ v }}} ! #l {{{ RET v; True }}}.
+  Proof. iIntros (Φ) "#Hl HΦ". Show. wp_load. by iApply "HΦ". Qed.
+
+  (* Loading from a persistent points-to predicate in the _spatial_ context. *)
+  Lemma persistent_mapsto_load_spatial l v :
+    {{{ l ↦□ v }}} ! #l {{{ RET v; True }}}.
+  Proof. iIntros (Φ) "Hl HΦ". wp_load. by iApply "HΦ". Qed.
+
+  Lemma persistent_mapsto_twp_load_persistent l v :
+    [[{ l ↦□ v }]] ! #l [[{ RET v; True }]].
+  Proof. iIntros (Φ) "#Hl HΦ". wp_load. by iApply "HΦ". Qed.
+
+  Lemma persistent_mapsto_twp_load_spatial l v :
+    [[{ l ↦□ v }]] ! #l [[{ RET v; True }]].
+  Proof. iIntros (Φ) "Hl HΦ". wp_load. by iApply "HΦ". Qed.
+
+  Lemma persistent_mapsto_load l (n : nat) :
+    {{{ l ↦ #n }}} Store #l (! #l + #5) ;; ! #l {{{ RET #(n + 5); l ↦□ #(n + 5) }}}.
+  Proof.
+    iIntros (Φ) "Hl HΦ".
+    wp_load. wp_store.
+    iMod (mapsto_persist with "Hl") as "#Hl".
+    wp_load. by iApply "HΦ".
+  Qed.
+
+  (* Loading from the general mapsto for any [dfrac]. *)
+  Lemma general_mapsto dq l v :
+    [[{ l ↦{dq} v }]] ! #l [[{ RET v; True }]].
+  Proof. 
+    iIntros (Φ) "Hl HΦ". Show. wp_load. by iApply "HΦ".
+  Qed.
+
+End mapsto_tests.
 
 Section inv_mapsto_tests.
   Context `{!heapG Σ}.

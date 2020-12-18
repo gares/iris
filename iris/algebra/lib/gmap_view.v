@@ -378,13 +378,13 @@ Section lemmas.
       rewrite lookup_insert_ne //.
   Qed.
 
-  Lemma gmap_view_persist k q v :
-    gmap_view_frag k (DfracOwn q) v ~~> gmap_view_frag k DfracDiscarded v.
+  Lemma gmap_view_persist k dq v :
+    gmap_view_frag k dq v ~~> gmap_view_frag k DfracDiscarded v.
   Proof.
     apply view_update_frag=>m n bf Hrel j [df va] /=.
     rewrite lookup_op. destruct (decide (j = k)) as [->|Hne].
     - rewrite lookup_singleton.
-      edestruct (Hrel k ((DfracOwn q, to_agree v) ⋅? bf !! k)) as (v' & Hdf & Hva & Hm).
+      edestruct (Hrel k ((dq, to_agree v) ⋅? bf !! k)) as (v' & Hdf & Hva & Hm).
       { rewrite lookup_op lookup_singleton.
         destruct (bf !! k) eqn:Hbf; by rewrite Hbf. }
       rewrite Some_op_opM. intros [= Hbf].

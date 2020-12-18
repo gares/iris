@@ -111,8 +111,8 @@ Section increment.
   (* TODO: Generalize to q and 1-q, based on some theory for a "maybe-mapsto"
      connective that works on [option Qp] (the type of 1-q). *)
   Lemma weak_incr_spec (l: loc) (v : Z) :
-    l ↦{1/2} #v -∗
-    <<< ∀ (v' : Z), l ↦{1/2} #v' >>>
+    l ↦{#1/2} #v -∗
+    <<< ∀ (v' : Z), l ↦{#1/2} #v' >>>
       weak_incr #l @ ⊤
     <<< ⌜v = v'⌝ ∗ l ↦ #(v + 1), RET #v >>>.
   Proof.

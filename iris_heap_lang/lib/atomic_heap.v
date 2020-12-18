@@ -14,23 +14,25 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   store : val;
   cmpxchg : val;
   (* -- predicates -- *)
-  mapsto (l : loc) (q: Qp) (v : val) : iProp Σ;
+  mapsto (l : loc) (dq: dfrac) (v : val) : iProp Σ;
   (* -- mapsto properties -- *)
   mapsto_timeless l q v :> Timeless (mapsto l q v);
-  mapsto_fractional l v :> Fractional (λ q, mapsto l q v);
+  mapsto_fractional l v :> Fractional (λ (q : Qp), mapsto l (DfracOwn q) v);
+  mapsto_persistent l v :> Persistent (mapsto l DfracDiscarded v);
   mapsto_as_fractional l q v :>
-    AsFractional (mapsto l q v) (λ q, mapsto l q v) q;
-  mapsto_agree l q1 q2 v1 v2 : mapsto l q1 v1 -∗ mapsto l q2 v2 -∗ ⌜v1 = v2⌝;
+    AsFractional (mapsto l (DfracOwn q) v) (λ q, mapsto l (DfracOwn q) v) q;
+  mapsto_agree l dq1 dq2 v1 v2 : mapsto l dq1 v1 -∗ mapsto l dq2 v2 -∗ ⌜v1 = v2⌝;
+  mapsto_persist l dq v : mapsto l dq v ==∗ mapsto l DfracDiscarded v;
   (* -- operation specs -- *)
   alloc_spec (v : val) :
-    {{{ True }}} alloc v {{{ l, RET #l; mapsto l 1 v }}};
+    {{{ True }}} alloc v {{{ l, RET #l; mapsto l (DfracOwn 1) v }}};
   free_spec (l : loc) (v : val) :
-    {{{ mapsto l 1 v }}} free #l {{{ l, RET #l; True }}};
+    {{{ mapsto l (DfracOwn 1) v }}} free #l {{{ l, RET #l; True }}};
   load_spec (l : loc) :
     ⊢ <<< ∀ (v : val) q, mapsto l q v >>> load #l @ ⊤ <<< mapsto l q v, RET v >>>;
   store_spec (l : loc) (w : val) :
-    ⊢ <<< ∀ v, mapsto l 1 v >>> store #l w @ ⊤
-      <<< mapsto l 1 w, RET #() >>>;
+    ⊢ <<< ∀ v, mapsto l (DfracOwn 1) v >>> store #l w @ ⊤
+      <<< mapsto l (DfracOwn 1) w, RET #() >>>;
   (* This spec is slightly weaker than it could be: It is sufficient for [w1]
   *or* [v] to be unboxed.  However, by writing it this way the [val_is_unboxed]
   is outside the atomic triple, which makes it much easier to use -- and the
@@ -39,27 +41,30 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
   [destruct (decide (a = b))] and it will simplify in both places. *)
   cmpxchg_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀ v, mapsto l 1 v >>> cmpxchg #l w1 w2 @ ⊤
-      <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
+    ⊢ <<< ∀ v, mapsto l (DfracOwn 1) v >>> cmpxchg #l w1 w2 @ ⊤
+      <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
 Arguments atomic_heap _ {_}.
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
+(** FIXME: Refactor these notations using custom entries once Coq bug #13654
+has been fixed. *)
 Module notation.
-Notation "l ↦{ q } v" := (mapsto l q v)
-  (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
-Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
+  Notation "l ↦{ dq } v" := (mapsto l dq v)
+    (at level 20, format "l  ↦{ dq }  v") : bi_scope.
+  Notation "l ↦□ v" := (mapsto l DfracDiscarded v)
+    (at level 20, format "l  ↦□  v") : bi_scope.
+  Notation "l ↦{# q } v" := (mapsto l (DfracOwn q) v)
+    (at level 20, format "l  ↦{# q }  v") : bi_scope.
+  Notation "l ↦ v" := (mapsto l (DfracOwn 1) v)
+    (at level 20, format "l  ↦  v") : bi_scope.
 
-Notation "l ↦{ q } -" := (∃ v, l ↦{q} v)%I
-  (at level 20, q at level 50, format "l  ↦{ q }  -") : bi_scope.
-Notation "l ↦ -" := (l ↦{1} -)%I (at level 20) : bi_scope.
+  Notation "'ref' e" := (alloc e) : expr_scope.
+  Notation "! e" := (load e) : expr_scope.
+  Notation "e1 <- e2" := (store e1 e2) : expr_scope.
 
-Notation "'ref' e" := (alloc e) : expr_scope.
-Notation "! e" := (load e) : expr_scope.
-Notation "e1 <- e2" := (store e1 e2) : expr_scope.
-
-Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
+  Notation CAS e1 e2 e3 := (Snd (cmpxchg e1 e2 e3)).
 
 End notation.
 
@@ -70,8 +75,8 @@ Section derived.
 
   Lemma cas_spec (l : loc) (w1 w2 : val) :
     val_is_unboxed w1 →
-    ⊢ <<< ∀ v, mapsto l 1 v >>> CAS #l w1 w2 @ ⊤
-    <<< if decide (v = w1) then mapsto l 1 w2 else mapsto l 1 v,
+    ⊢ <<< ∀ v, mapsto l (DfracOwn 1) v >>> CAS #l w1 w2 @ ⊤
+    <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET #if decide (v = w1) then true else false >>>.
   Proof.
     iIntros (? Φ) "AU". awp_apply cmpxchg_spec; first done.
@@ -149,4 +154,5 @@ Definition primitive_atomic_heap `{!heapG Σ} : atomic_heap Σ :=
      load_spec := primitive_load_spec;
      store_spec := primitive_store_spec;
      cmpxchg_spec := primitive_cmpxchg_spec;
+     mapsto_persist := primitive_laws.mapsto_persist;
      mapsto_agree := primitive_laws.mapsto_agree |}.

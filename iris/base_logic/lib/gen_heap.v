@@ -1,5 +1,6 @@
 From stdpp Require Export namespaces.
 From iris.algebra Require Import gmap_view namespace_map agree frac.
+From iris.algebra Require Export dfrac.
 From iris.bi.lib Require Import fractional.
 From iris.proofmode Require Import tactics.
 From iris.base_logic.lib Require Export own.
@@ -7,7 +8,7 @@ From iris.prelude Require Import options.
 Import uPred.
 
 (** This file provides a generic mechanism for a language-level point-to
-connective [l ↦{q} v] reflecting the physical heap.  This library is designed to
+connective [l ↦{dq} v] reflecting the physical heap.  This library is designed to
 be used as a singleton (i.e., with only a single instance existing in any
 proof), with the [gen_heapG] typeclass providing the ghost names of that unique
 instance.  That way, [mapsto] does not need an explicit [gname] parameter.
@@ -20,7 +21,7 @@ physical state, you will likely want explicit ghost names and are thus better
 off using [algebra.lib.gmap_view] together with [base_logic.lib.own].
 
 This library is generic in the types [L] for locations and [V] for values and
-supports fractional permissions.  Next to the point-to connective [l ↦{q} v],
+supports fractional permissions.  Next to the point-to connective [l ↦{dq} v],
 which keeps track of the value [v] of a location [l], this library also provides
 a way to attach "meta" or "ghost" data to locations. This is done as follows:
 
@@ -100,8 +101,8 @@ Section definitions.
     own (gen_heap_name hG) (gmap_view_auth 1 (σ : gmap L (leibnizO V))) ∗
     own (gen_meta_name hG) (gmap_view_auth 1 (m : gmap L gnameO)).
 
-  Definition mapsto_def (l : L) (q : Qp) (v: V) : iProp Σ :=
-    own (gen_heap_name hG) (gmap_view_frag l (DfracOwn q) (v : leibnizO V)).
+  Definition mapsto_def (l : L) (dq : dfrac) (v: V) : iProp Σ :=
+    own (gen_heap_name hG) (gmap_view_frag l dq (v : leibnizO V)).
   Definition mapsto_aux : seal (@mapsto_def). Proof. by eexists. Qed.
   Definition mapsto := mapsto_aux.(unseal).
   Definition mapsto_eq : @mapsto = @mapsto_def := mapsto_aux.(seal_eq).
@@ -122,9 +123,16 @@ Section definitions.
 End definitions.
 Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
-Local Notation "l ↦{ q } v" := (mapsto l q v)
-  (at level 20, q at level 50, format "l  ↦{ q }  v") : bi_scope.
-Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
+(** FIXME: Refactor these notations using custom entries once Coq bug #13654
+has been fixed. *)
+Local Notation "l ↦{ dq } v" := (mapsto l dq v)
+  (at level 20, format "l  ↦{ dq }  v") : bi_scope.
+Local Notation "l ↦□ v" := (mapsto l DfracDiscarded v)
+  (at level 20, format "l  ↦□  v") : bi_scope.
+Local Notation "l ↦{# q } v" := (mapsto l (DfracOwn q) v)
+  (at level 20, format "l  ↦{# q }  v") : bi_scope.
+Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v)
+  (at level 20, format "l  ↦  v") : bi_scope.
 
 Section gen_heap.
   Context {L V} `{Countable L, !gen_heapG L V Σ}.
@@ -136,50 +144,59 @@ Section gen_heap.
   Implicit Types v : V.
 
   (** General properties of mapsto *)
-  Global Instance mapsto_timeless l q v : Timeless (l ↦{q} v).
-  Proof. rewrite mapsto_eq /mapsto_def. apply _. Qed.
-  Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{q} v)%I.
+  Global Instance mapsto_timeless l dq v : Timeless (l ↦{dq} v).
+  Proof. rewrite mapsto_eq. apply _. Qed.
+  Global Instance mapsto_fractional l v : Fractional (λ q, l ↦{#q} v)%I.
   Proof.
     intros p q. rewrite mapsto_eq /mapsto_def -own_op gmap_view_frag_add //.
   Qed.
   Global Instance mapsto_as_fractional l q v :
-    AsFractional (l ↦{q} v) (λ q, l ↦{q} v)%I q.
+    AsFractional (l ↦{#q} v) (λ q, l ↦{#q} v)%I q.
   Proof. split; [done|]. apply _. Qed.
+  Global Instance mapsto_persistent l v : Persistent (l ↦□ v).
+  Proof. rewrite mapsto_eq. apply _. Qed.
 
-  Lemma mapsto_valid l q v : l ↦{q} v -∗ ⌜q ≤ 1⌝%Qp.
+  Lemma mapsto_valid l dq v : l ↦{dq} v -∗ ⌜✓ dq⌝%Qp.
   Proof.
     rewrite mapsto_eq. iIntros "Hl".
     iDestruct (own_valid with "Hl") as %?%gmap_view_frag_valid. done.
   Qed.
-  Lemma mapsto_valid_2 l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜(q1 + q2 ≤ 1)%Qp ∧ v1 = v2⌝.
+  Lemma mapsto_valid_2 l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜✓ (dq1 ⋅ dq2) ∧ v1 = v2⌝.
   Proof.
     rewrite mapsto_eq. iIntros "H1 H2".
     iDestruct (own_valid_2 with "H1 H2") as %[??]%gmap_view_frag_op_valid_L.
-    eauto.
+    auto.
   Qed.
   (** Almost all the time, this is all you really need. *)
-  Lemma mapsto_agree l q1 q2 v1 v2 : l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ ⌜v1 = v2⌝.
+  Lemma mapsto_agree l dq1 dq2 v1 v2 : l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ ⌜v1 = v2⌝.
   Proof.
     iIntros "H1 H2".
     iDestruct (mapsto_valid_2 with "H1 H2") as %[_ ?].
     done.
   Qed.
 
-  Lemma mapsto_combine l q1 q2 v1 v2 :
-    l ↦{q1} v1 -∗ l ↦{q2} v2 -∗ l ↦{q1 + q2} v1 ∗ ⌜v1 = v2⌝.
+  Lemma mapsto_combine l dq1 dq2 v1 v2 :
+    l ↦{dq1} v1 -∗ l ↦{dq2} v2 -∗ l ↦{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
   Proof.
     iIntros "Hl1 Hl2". iDestruct (mapsto_agree with "Hl1 Hl2") as %->.
-    iCombine "Hl1 Hl2" as "Hl". eauto with iFrame.
+    iCombine "Hl1 Hl2" as "Hl".
+    rewrite mapsto_eq /mapsto_def -own_op gmap_view_frag_op.
+    auto.
   Qed.
 
-  Lemma mapsto_frac_ne l1 l2 q1 q2 v1 v2 :
-    ¬ (q1 + q2 ≤ 1)%Qp → l1 ↦{q1} v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
+  Lemma mapsto_frac_ne l1 l2 dq1 dq2 v1 v2 :
+    ¬ ✓(dq1 ⋅ dq2) → l1 ↦{dq1} v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
   Proof.
     iIntros (?) "Hl1 Hl2"; iIntros (->).
     by iDestruct (mapsto_valid_2 with "Hl1 Hl2") as %[??].
   Qed.
-  Lemma mapsto_ne l1 l2 q2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{q2} v2 -∗ ⌜l1 ≠ l2⌝.
-  Proof. apply mapsto_frac_ne, Qp_not_add_le_l. Qed.
+  Lemma mapsto_ne l1 l2 dq2 v1 v2 : l1 ↦ v1 -∗ l2 ↦{dq2} v2 -∗ ⌜l1 ≠ l2⌝.
+  Proof. apply mapsto_frac_ne. intros ?%exclusive_l; [done|apply _]. Qed.
+
+  (** Permanently turn any points-to predicate into a persistent
+      points-to predicate. *)
+  Lemma mapsto_persist l dq v : l ↦{dq} v ==∗ l ↦□ v.
+  Proof. rewrite mapsto_eq. apply own_update, gmap_view_persist. Qed.
 
   (** General properties of [meta] and [meta_token] *)
   Global Instance meta_token_timeless l N : Timeless (meta_token l N).
@@ -270,12 +287,11 @@ Section gen_heap.
       first by apply lookup_union_None.
   Qed.
 
-  Lemma gen_heap_valid σ l q v : gen_heap_interp σ -∗ l ↦{q} v -∗ ⌜σ !! l = Some v⌝.
+  Lemma gen_heap_valid σ l dq v : gen_heap_interp σ -∗ l ↦{dq} v -∗ ⌜σ !! l = Some v⌝.
   Proof.
     iDestruct 1 as (m Hσm) "[Hσ _]". iIntros "Hl".
-    rewrite /gen_heap_interp mapsto_eq /mapsto_def.
-    iDestruct (own_valid_2 with "Hσ Hl") as %[??]%gmap_view_both_valid_L.
-    iPureIntro. done.
+    rewrite /gen_heap_interp mapsto_eq.
+    by iDestruct (own_valid_2 with "Hσ Hl") as %[??]%gmap_view_both_valid_L.
   Qed.
 
   Lemma gen_heap_update σ l v1 v2 :

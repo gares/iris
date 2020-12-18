@@ -20,7 +20,7 @@ using a separate assertion [inv_mapsto_own] for "invariant" locations, we can
 keep all the other proofs that do not need it conservative.  *)
 
 Definition inv_heapN: namespace := nroot .@ "inv_heap".
-Local Notation "l ↦ v" := (mapsto l 1 v) (at level 20) : bi_scope.
+Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v) (at level 20) : bi_scope.
 
 Definition inv_heap_mapUR (L V : Type) `{Countable L} : ucmraT := gmapUR L $ prodR
   (optionR $ exclR $ leibnizO V)

@@ -14,11 +14,18 @@ From iris.prelude Require Import options.
 (** The [array] connective is a version of [mapsto] that works
 with lists of values. *)
 
-Definition array `{!heapG Σ} (l : loc) (q : Qp) (vs : list val) : iProp Σ :=
-  ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{q} v)%I.
-Notation "l ↦∗{ q } vs" := (array l q vs)
-  (at level 20, q at level 50, format "l  ↦∗{ q }  vs") : bi_scope.
-Notation "l ↦∗ vs" := (array l 1 vs)
+Definition array `{!heapG Σ} (l : loc) (dq : dfrac) (vs : list val) : iProp Σ :=
+  ([∗ list] i ↦ v ∈ vs, (l +ₗ i) ↦{dq} v)%I.
+
+(** FIXME: Refactor these notations using custom entries once Coq bug #13654
+has been fixed. *)
+Notation "l ↦∗{ dq } vs" := (array l dq vs)
+  (at level 20, format "l  ↦∗{ dq }  vs") : bi_scope.
+Notation "l ↦∗□ vs" := (array l DfracDiscarded vs)
+  (at level 20, format "l  ↦∗□  vs") : bi_scope.
+Notation "l ↦∗{# q } vs" := (array l (DfracOwn q) vs)
+  (at level 20, format "l  ↦∗{# q }  vs") : bi_scope.
+Notation "l ↦∗ vs" := (array l (DfracOwn 1) vs)
   (at level 20, format "l  ↦∗  vs") : bi_scope.
 
 (** We have [FromSep] and [IntoSep] instances to split the fraction (via the
@@ -32,32 +39,31 @@ Implicit Types Φ : val → iProp Σ.
 Implicit Types σ : state.
 Implicit Types v : val.
 Implicit Types vs : list val.
-Implicit Types q : Qp.
 Implicit Types l : loc.
 Implicit Types sz off : nat.
 
 Global Instance array_timeless l q vs : Timeless (array l q vs) := _.
 
-Global Instance array_fractional l vs : Fractional (λ q, l ↦∗{q} vs)%I := _.
+Global Instance array_fractional l vs : Fractional (λ q, l ↦∗{#q} vs)%I := _.
 Global Instance array_as_fractional l q vs :
-  AsFractional (l ↦∗{q} vs) (λ q, l ↦∗{q} vs)%I q.
+  AsFractional (l ↦∗{#q} vs) (λ q, l ↦∗{#q} vs)%I q.
 Proof. split; done || apply _. Qed.
 
-Lemma array_nil l q : l ↦∗{q} [] ⊣⊢ emp.
+Lemma array_nil l dq : l ↦∗{dq} [] ⊣⊢ emp.
 Proof. by rewrite /array. Qed.
 
-Lemma array_singleton l q v : l ↦∗{q} [v] ⊣⊢ l ↦{q} v.
+Lemma array_singleton l dq v : l ↦∗{dq} [v] ⊣⊢ l ↦{dq} v.
 Proof. by rewrite /array /= right_id loc_add_0. Qed.
 
-Lemma array_app l q vs ws :
-  l ↦∗{q} (vs ++ ws) ⊣⊢ l ↦∗{q} vs ∗ (l +ₗ length vs) ↦∗{q} ws.
+Lemma array_app l dq vs ws :
+  l ↦∗{dq} (vs ++ ws) ⊣⊢ l ↦∗{dq} vs ∗ (l +ₗ length vs) ↦∗{dq} ws.
 Proof.
   rewrite /array big_sepL_app.
   setoid_rewrite Nat2Z.inj_add.
   by setoid_rewrite loc_add_assoc.
 Qed.
 
-Lemma array_cons l q v vs : l ↦∗{q} (v :: vs) ⊣⊢ l ↦{q} v ∗ (l +ₗ 1) ↦∗{q} vs.
+Lemma array_cons l dq v vs : l ↦∗{dq} (v :: vs) ⊣⊢ l ↦{dq} v ∗ (l +ₗ 1) ↦∗{dq} vs.
 Proof.
   rewrite /array big_sepL_cons loc_add_0.
   setoid_rewrite loc_add_assoc.
@@ -65,14 +71,14 @@ Proof.
   by setoid_rewrite Z.add_1_l.
 Qed.
 
-Global Instance array_cons_frame l q v vs R Q :
-  Frame false R (l ↦{q} v ∗ (l +ₗ 1) ↦∗{q} vs) Q →
-  Frame false R (l ↦∗{q} (v :: vs)) Q.
+Global Instance array_cons_frame l dq v vs R Q :
+  Frame false R (l ↦{dq} v ∗ (l +ₗ 1) ↦∗{dq} vs) Q →
+  Frame false R (l ↦∗{dq} (v :: vs)) Q.
 Proof. by rewrite /Frame array_cons. Qed.
 
-Lemma update_array l q vs off v :
+Lemma update_array l dq vs off v :
   vs !! off = Some v →
-  ⊢ l ↦∗{q} vs -∗ ((l +ₗ off) ↦{q} v ∗ ∀ v', (l +ₗ off) ↦{q} v' -∗ l ↦∗{q} <[off:=v']>vs).
+  ⊢ l ↦∗{dq} vs -∗ ((l +ₗ off) ↦{dq} v ∗ ∀ v', (l +ₗ off) ↦{dq} v' -∗ l ↦∗{dq} <[off:=v']>vs).
 Proof.
   iIntros (Hlookup) "Hl".
   rewrite -[X in (l ↦∗{_} X)%I](take_drop_middle _ off v); last done.
@@ -90,9 +96,9 @@ Proof.
 Qed.
 
 (** * Rules for allocation *)
-Lemma mapsto_seq_array l q v n :
-  ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{q} v) -∗
-  l ↦∗{q} replicate n v.
+Lemma mapsto_seq_array l dq v n :
+  ([∗ list] i ∈ seq 0 n, (l +ₗ (i : nat)) ↦{dq} v) -∗
+  l ↦∗{dq} replicate n v.
 Proof.
   rewrite /array. iInduction n as [|n'] "IH" forall (l); simpl.
   { done. }
@@ -144,9 +150,9 @@ Proof.
 Qed.
 
 (** * Rules for accessing array elements *)
-Lemma twp_load_offset s E l q off vs v :
+Lemma twp_load_offset s E l dq off vs v :
   vs !! off = Some v →
-  [[{ l ↦∗{q} vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗{q} vs }]].
+  [[{ l ↦∗{dq} vs }]] ! #(l +ₗ off) @ s; E [[{ RET v; l ↦∗{dq} vs }]].
 Proof.
   iIntros (Hlookup Φ) "Hl HΦ".
   iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -154,19 +160,19 @@ Proof.
   iDestruct ("Hl2" $! v) as "Hl2". rewrite list_insert_id; last done.
   iApply "Hl2". iApply "Hl1".
 Qed.
-Lemma wp_load_offset s E l q off vs v :
+Lemma wp_load_offset s E l dq off vs v :
   vs !! off = Some v →
-  {{{ ▷ l ↦∗{q} vs }}} ! #(l +ₗ off) @ s; E {{{ RET v; l ↦∗{q} vs }}}.
+  {{{ ▷ l ↦∗{dq} vs }}} ! #(l +ₗ off) @ s; E {{{ RET v; l ↦∗{dq} vs }}}.
 Proof.
   iIntros (? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_load_offset with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
-Lemma twp_load_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) :
-  [[{ l ↦∗{q} vs }]] ! #(l +ₗ off) @ s; E [[{ RET vs !!! off; l ↦∗{q} vs }]].
+Lemma twp_load_offset_vec s E l dq sz (off : fin sz) (vs : vec val sz) :
+  [[{ l ↦∗{dq} vs }]] ! #(l +ₗ off) @ s; E [[{ RET vs !!! off; l ↦∗{dq} vs }]].
 Proof. apply twp_load_offset. by apply vlookup_lookup. Qed.
-Lemma wp_load_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) :
-  {{{ ▷ l ↦∗{q} vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗{q} vs }}}.
+Lemma wp_load_offset_vec s E l dq sz (off : fin sz) (vs : vec val sz) :
+  {{{ ▷ l ↦∗{dq} vs }}} ! #(l +ₗ off) @ s; E {{{ RET vs !!! off; l ↦∗{dq} vs }}}.
 Proof. apply wp_load_offset. by apply vlookup_lookup. Qed.
 
 Lemma twp_store_offset s E l off vs v :
@@ -245,13 +251,13 @@ Proof.
   iApply (twp_cmpxchg_suc_offset_vec with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
-Lemma twp_cmpxchg_fail_offset s E l q off vs v0 v1 v2 :
+Lemma twp_cmpxchg_fail_offset s E l dq off vs v0 v1 v2 :
   vs !! off = Some v0 →
   v0 ≠ v1 →
   vals_compare_safe v0 v1 →
-  [[{ l ↦∗{q} vs }]]
+  [[{ l ↦∗{dq} vs }]]
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  [[{ RET (v0, #false); l ↦∗{q} vs }]].
+  [[{ RET (v0, #false); l ↦∗{dq} vs }]].
 Proof.
   iIntros (Hlookup HNEq Hcmp Φ) "Hl HΦ".
   iDestruct (update_array l _ _ _ _ Hlookup with "Hl") as "[Hl1 Hl2]".
@@ -260,31 +266,31 @@ Proof.
   iIntros "Hl1". iApply "HΦ". iDestruct ("Hl2" $! v0) as "Hl2".
   rewrite list_insert_id; last done. iApply "Hl2". iApply "Hl1".
 Qed.
-Lemma wp_cmpxchg_fail_offset s E l q off vs v0 v1 v2 :
+Lemma wp_cmpxchg_fail_offset s E l dq off vs v0 v1 v2 :
   vs !! off = Some v0 →
   v0 ≠ v1 →
   vals_compare_safe v0 v1 →
-  {{{ ▷ l ↦∗{q} vs }}}
+  {{{ ▷ l ↦∗{dq} vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (v0, #false); l ↦∗{q} vs }}}.
+  {{{ RET (v0, #false); l ↦∗{dq} vs }}}.
 Proof.
   iIntros (??? Φ) ">H HΦ". iApply (twp_wp_step with "HΦ").
   iApply (twp_cmpxchg_fail_offset with "H"); [eauto..|]; iIntros "H HΦ". by iApply "HΦ".
 Qed.
 
-Lemma twp_cmpxchg_fail_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) v1 v2 :
+Lemma twp_cmpxchg_fail_offset_vec s E l dq sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off ≠ v1 →
   vals_compare_safe (vs !!! off) v1 →
-  [[{ l ↦∗{q} vs }]]
+  [[{ l ↦∗{dq} vs }]]
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  [[{ RET (vs !!! off, #false); l ↦∗{q} vs }]].
+  [[{ RET (vs !!! off, #false); l ↦∗{dq} vs }]].
 Proof. intros. eapply twp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
-Lemma wp_cmpxchg_fail_offset_vec s E l q sz (off : fin sz) (vs : vec val sz) v1 v2 :
+Lemma wp_cmpxchg_fail_offset_vec s E l dq sz (off : fin sz) (vs : vec val sz) v1 v2 :
   vs !!! off ≠ v1 →
   vals_compare_safe (vs !!! off) v1 →
-  {{{ ▷ l ↦∗{q} vs }}}
+  {{{ ▷ l ↦∗{dq} vs }}}
     CmpXchg #(l +ₗ off) v1 v2 @ s; E
-  {{{ RET (vs !!! off, #false); l ↦∗{q} vs }}}.
+  {{{ RET (vs !!! off, #false); l ↦∗{dq} vs }}}.
 Proof. intros. eapply wp_cmpxchg_fail_offset=> //. by apply vlookup_lookup. Qed.
 
 Lemma twp_faa_offset s E l off vs (i1 i2 : Z) :
@@ -349,11 +355,11 @@ Proof.
   iIntros (pvs' ->) "Hp". iApply "HΦ". eauto with iFrame.
 Qed.
 
-Lemma wp_resolve_cmpxchg_fail s E l (p : proph_id) (pvs : list (val * val)) q v' v1 v2 v :
+Lemma wp_resolve_cmpxchg_fail s E l (p : proph_id) (pvs : list (val * val)) dq v' v1 v2 v :
   v' ≠ v1 → vals_compare_safe v' v1 →
-  {{{ proph p pvs ∗ ▷ l ↦{q} v' }}}
+  {{{ proph p pvs ∗ ▷ l ↦{dq} v' }}}
     Resolve (CmpXchg #l v1 v2) #p v @ s; E
-  {{{ RET (v', #false) ; ∃ pvs', ⌜pvs = ((v', #false)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{q} v' }}}.
+  {{{ RET (v', #false) ; ∃ pvs', ⌜pvs = ((v', #false)%V, v)::pvs'⌝ ∗ proph p pvs' ∗ l ↦{dq} v' }}}.
 Proof.
   iIntros (NEq Hcmp Φ) "[Hp Hl] HΦ".
   iApply (wp_resolve with "Hp"); first done.

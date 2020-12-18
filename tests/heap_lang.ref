@@ -74,8 +74,8 @@
   heapG0 : heapG Σ
   l : loc
   ============================
-  "Hl1" : l ↦{1 / 2} #0
-  "Hl2" : l ↦{1 / 2} #0
+  "Hl1" : l ↦{#1 / 2} #0
+  "Hl2" : l ↦{#1 / 2} #0
   --------------------------------------∗
   |={⊤}=> True
   
@@ -124,10 +124,10 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   l : loc
   vs : list val
   ============================
-  "Hl1" : l ↦∗{1 / 2} vs
-  "Hl2" : l ↦∗{1 / 2} vs
+  "Hl1" : l ↦∗{#1 / 2} vs
+  "Hl2" : l ↦∗{#1 / 2} vs
   --------------------------------------∗
-  l ↦∗{1 / 2} vs ∗ l ↦∗{1 / 2} vs
+  l ↦∗{#1 / 2} vs ∗ l ↦∗{#1 / 2} vs
   
 "test_wp_finish_fupd"
      : string
@@ -150,6 +150,34 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   ============================
   --------------------------------------∗
   |={⊤}=> True
+  
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  l : loc
+  v : val
+  Φ : val → iPropI Σ
+  ============================
+  "Hl" : l ↦□ v
+  --------------------------------------□
+  "HΦ" : ▷ (True -∗ Φ v)
+  --------------------------------------∗
+  WP ! #l {{ v, Φ v }}
+  
+1 subgoal
+  
+  Σ : gFunctors
+  heapG0 : heapG Σ
+  dq : dfrac
+  l : loc
+  v : val
+  Φ : val → iPropI Σ
+  ============================
+  "Hl" : l ↦{dq} v
+  "HΦ" : True -∗ Φ v
+  --------------------------------------∗
+  WP ! #l [{ v, Φ v }]
   
 1 subgoal
   

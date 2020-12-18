@@ -143,6 +143,23 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   initial heap.
 * Rename `mapsto_mapsto_ne` to `mapsto_frac_ne`, and add a simpler
   `mapsto_ne` that does not require reasoning about fractions.
+* Extend the `gen_heap` library with read-only points-to assertions using
+  [discardable fractions](iris/algebra/dfrac.v).
+  + The `mapsto` connective now takes a `dfrac` rather than a `frac` (i.e.,
+    positive rational number `Qp`).
+  + The notation `l ↦{ dq } v` is generalized to discardable fractions
+    `dq : dfrac`.
+  + The new notation `l ↦{# q} v` is used for a concrete fraction `q : frac`
+    (e.g., to enable writing `l ↦{# 1/2} v`).
+  + The new notation `l ↦□ v` is used for the discarded fraction. This
+    persistent proposition provides read-only access to `l`.
+  + The lemma `mapsto_persist : l ↦{dq} v ==∗ l ↦□ v` is used for making the
+    location `l` read-only.
+  + See the changes to HeapLang for an indication on how to adapt your language.
+  + See the changes to iris-examples for an indication on how to adapt your
+    development. In particular, instead of `∃ q, l ↦{q} v` you likely want to
+    use `l ↦□ v`, which has the advantage of being persistent (rather than just
+    duplicable).
 
 **Changes in `program_logic`:**
 
@@ -153,6 +170,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   avoid TC search attempting to apply this instance all the time.
 * Merge `wp_value_inv`/`wp_value_inv'` into `wp_value_fupd`/`wp_value_fupd'` by
   making the lemma bidirectional.
+* Generalize HeapLang's `mapsto` (`↦`), `array` (`↦∗`), and atomic heap
+  connectives to discardable fractions. See the CHANGELOG entry in the category
+  `base_logic` for more information.
 
 **Changes in `heap_lang`:**
 
