@@ -362,8 +362,7 @@ Proof. intros; destruct p; simpl; apply _. Qed.
 Lemma plain_persistent P : Plain P → Persistent P.
 Proof. intros. by rewrite /Persistent -plainly_elim_persistently. Qed.
 
-(* Not an instance, see the bottom of this file *)
-Lemma impl_persistent P Q :
+Global Instance impl_persistent P Q :
   Absorbing P → Plain P → Persistent Q → Persistent (P → Q).
 Proof.
   intros. by rewrite /Persistent {2}(plain P) -persistently_impl_plainly
@@ -645,10 +644,3 @@ To avoid that, we declare it using a [Hint Immediate], so that it will
 only be used at the leaves of the proof search tree, i.e. when the
 premise of the hint can be derived from just the current context. *)
 Global Hint Immediate plain_persistent : typeclass_instances.
-
-(* Not defined using an ordinary [Instance] because the default
-[class_apply @impl_persistent] shelves the [BiPlainly] premise, making proof
-search for the other premises fail. See the proof of [coreP_persistent] for an
-example where it would fail with a regular [Instance].*)
-Global Hint Extern 4 (Persistent _) =>
-  notypeclasses refine (impl_persistent _ _ _ _ _) : typeclass_instances.
