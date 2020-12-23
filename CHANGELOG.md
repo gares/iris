@@ -73,6 +73,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   been working properly for quite some time).
 * Strengthen `persistent_sep_dup` to support propositions that are persistent
   and either affine or absorbing.
+* Fix the statement of the lemma `fupd_plainly_laterN`; the old lemma was a
+  duplicate of `fupd_plain_laterN`.
 
 **Changes in `proofmode`:**
 
