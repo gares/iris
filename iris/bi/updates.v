@@ -463,13 +463,18 @@ Section fupd_derived.
     Lemma fupd_plain_keep_r E P R `{!Plain P} : R ∗ (R ={E}=∗ P) ⊢ |={E}=> R ∗ P.
     Proof. by rewrite {1}(plain P) fupd_plainly_keep_r. Qed.
 
+    Lemma fupd_plainly_laterN E n P : (▷^n |={E}=> ■ P) ⊢ |={E}=> ▷^n ◇ P.
+    Proof.
+      revert P. induction n as [|n IH]=> P /=.
+      { by rewrite -except_0_intro (fupd_plainly_elim E) fupd_trans. }
+      rewrite -!later_laterN !laterN_later.
+      rewrite -plainly_idemp fupd_plainly_later.
+      by rewrite except_0_plainly_1 later_plainly_1 IH except_0_later.
+    Qed.
     Lemma fupd_plain_later E P `{!Plain P} : (▷ |={E}=> P) ⊢ |={E}=> ▷ ◇ P.
     Proof. by rewrite {1}(plain P) fupd_plainly_later. Qed.
     Lemma fupd_plain_laterN E n P `{!Plain P} : (▷^n |={E}=> P) ⊢ |={E}=> ▷^n ◇ P.
-    Proof.
-      induction n as [|n IH]; simpl; [by rewrite -except_0_intro|].
-      by rewrite IH fupd_plain_later except_0_laterN except_0_idemp.
-    Qed.
+    Proof. by rewrite {1}(plain P) fupd_plainly_laterN. Qed.
 
     Lemma fupd_plain_forall_2 E {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
       (∀ x, |={E}=> Φ x) ⊢ |={E}=> ∀ x, Φ x.
@@ -477,16 +482,6 @@ Section fupd_derived.
       rewrite -fupd_plainly_forall_2. apply forall_mono=> x.
       by rewrite {1}(plain (Φ _)).
     Qed.
-
-    Lemma fupd_plainly_laterN E n P `{HP : !Plain P} :
-      (▷^n |={E}=> P) ⊢ |={E}=> ▷^n ◇ P.
-    Proof.
-      revert P HP. induction n as [|n IH]=> P ? /=.
-      - by rewrite -except_0_intro.
-      - rewrite -!later_laterN !laterN_later.
-        rewrite fupd_plain_later. by rewrite IH except_0_later.
-    Qed.
-
     Lemma fupd_plain_forall E1 E2 {A} (Φ : A → PROP) `{!∀ x, Plain (Φ x)} :
       E2 ⊆ E1 →
       (|={E1,E2}=> ∀ x, Φ x) ⊣⊢ (∀ x, |={E1,E2}=> Φ x).
