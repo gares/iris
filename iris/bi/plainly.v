@@ -547,6 +547,13 @@ Global Instance big_sepMS_plain `{BiAffine PROP, Countable A} (Φ : A → PROP) 
   (∀ x, Plain (Φ x)) → Plain ([∗ mset] x ∈ X, Φ x).
 Proof. rewrite big_opMS_eq. apply _. Qed.
 
+Global Instance plainly_timeless P  `{!BiPlainlyExist PROP} :
+  Timeless P → Timeless (■ P).
+Proof.
+  intros. rewrite /Timeless /bi_except_0 later_plainly_1.
+  by rewrite (timeless P) /bi_except_0 plainly_or {1}plainly_elim.
+Qed.
+
 (* Interaction with equality *)
 Section internal_eq.
   Context `{!BiInternalEq PROP}.
@@ -603,6 +610,13 @@ Section prop_ext.
         (λ Q, ■ (True -∗ Q))%I ltac:(shelve)); last solve_proper.
       by rewrite -entails_wand // -(plainly_emp_intro True%I) True_impl.
   Qed.
+
+  (* This proof uses [BiPlainlyExist] and [BiLöb] via [plainly_timeless] and
+  [wand_timeless]. *)
+  Global Instance internal_eq_timeless `{!BiPlainlyExist PROP, !BiLöb PROP}
+      `{!Timeless P} `{!Timeless Q} :
+    Timeless (PROP := PROP) (P ≡ Q).
+  Proof. rewrite prop_ext. apply _. Qed.
 End prop_ext.
 
 (* Interaction with ▷ *)
@@ -628,12 +642,6 @@ Proof. induction n; apply _. Qed.
 Global Instance except_0_plain P : Plain P → Plain (◇ P).
 Proof. rewrite /bi_except_0; apply _. Qed.
 
-Global Instance plainly_timeless P  `{!BiPlainlyExist PROP} :
-  Timeless P → Timeless (■ P).
-Proof.
-  intros. rewrite /Timeless /bi_except_0 later_plainly_1.
-  by rewrite (timeless P) /bi_except_0 plainly_or {1}plainly_elim.
-Qed.
 End plainly_derived.
 
 (* When declared as an actual instance, [plain_persistent] will cause
