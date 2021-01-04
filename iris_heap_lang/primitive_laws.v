@@ -123,6 +123,8 @@ Proof. solve_atomic. Qed.
 
 Instance alloc_atomic s v w : Atomic s (AllocN (Val v) (Val w)).
 Proof. solve_atomic. Qed.
+Instance free_atomic s v : Atomic s (Free (Val v)).
+Proof. solve_atomic. Qed.
 Instance load_atomic s v : Atomic s (Load (Val v)).
 Proof. solve_atomic. Qed.
 Instance store_atomic s v1 v2 : Atomic s (Store (Val v1) (Val v2)).
