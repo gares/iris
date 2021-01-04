@@ -141,6 +141,7 @@ iris/proofmode/modality_instances.v
 
 iris_heap_lang/locations.v
 iris_heap_lang/lang.v
+iris_heap_lang/class_instances.v
 iris_heap_lang/metatheory.v
 iris_heap_lang/tactics.v
 iris_heap_lang/primitive_laws.v
