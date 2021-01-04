@@ -184,6 +184,10 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   already at the top level).
 * The `wp_` tactics now preserve the possibility of doing a fancy update when
   the expression reduces to a value.
+* Move `IntoVal`, `AsVal`, `Atomic`, `AsRecV`, and `PureExec` instances to their
+  own file [heap_lang.class_instances](iris_heap_lang/class_instances.v).
+* Move `inv_head_step` tactic and `head_step` auto hints (now part of new hint
+  database `head_step`) to [heap_lang.tactics](iris_heap_lang/tactics.v).
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
