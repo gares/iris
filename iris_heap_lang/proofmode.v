@@ -26,6 +26,7 @@ Tactic Notation "wp_expr_eval" tactic3(t) :=
       [let x := fresh in intros x; t; unfold x; notypeclasses refine eq_refl|]
   | _ => fail "wp_expr_eval: not a 'wp'"
   end.
+Ltac wp_expr_simpl := wp_expr_eval simpl.
 
 Lemma tac_wp_pure `{!heapG Σ} Δ Δ' s E K e1 e2 φ n Φ :
   PureExec φ n e1 e2 →
@@ -64,8 +65,6 @@ Proof. rewrite envs_entails_eq=> ->. by rewrite wp_value_fupd. Qed.
 Lemma tac_twp_value `{!heapG Σ} Δ s E (Φ : val → iPropI Σ) v :
   envs_entails Δ (|={E}=> Φ v) → envs_entails Δ (WP (Val v) @ s; E [{ Φ }]).
 Proof. rewrite envs_entails_eq=> ->. by rewrite twp_value_fupd. Qed.
-
-Ltac wp_expr_simpl := wp_expr_eval simpl.
 
 (** Simplify the goal if it is [WP] of a value.
   If the postcondition already allows a fupd, do not add a second one.
