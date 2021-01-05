@@ -284,7 +284,7 @@ Qed.
 
 Lemma singleton_core (i : K) (x : A) cx :
   pcore x = Some cx → core {[ i := x ]} =@{gmap K A} {[ i := cx ]}.
-Proof. apply omap_singleton. Qed.
+Proof. apply omap_singleton_Some. Qed.
 Lemma singleton_core' (i : K) (x : A) cx :
   pcore x ≡ Some cx → core {[ i := x ]} ≡@{gmap K A} {[ i := cx ]}.
 Proof.

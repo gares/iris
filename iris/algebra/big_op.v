@@ -340,7 +340,7 @@ Section gmap.
     { by rewrite omap_empty !big_opM_empty. }
     assert (omap h m !! i = None) by (by rewrite lookup_omap Hmi).
     destruct (h x) as [y|] eqn:Hhx.
-    - by rewrite (omap_insert _ _ _ _ y) // !big_opM_insert // IH Hhx.
+    - by rewrite omap_insert Hhx //= !big_opM_insert // IH Hhx.
     - rewrite omap_insert_None // delete_notin // big_opM_insert //.
       by rewrite Hhx /= left_id.
   Qed.
