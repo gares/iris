@@ -521,7 +521,7 @@ Definition accessor {PROP : bi} {X : Type} (M1 M2 : PROP → PROP)
            (α β : X → PROP) (mγ : X → option PROP) : PROP :=
   M1 (∃ x, α x ∗ (β x -∗ M2 (default emp (mγ x))))%I.
 
-(* Typeclass for assertions around which accessors can be elliminated.
+(* Typeclass for assertions around which accessors can be eliminated.
    Inputs: [Q], [E1], [E2], [α], [β], [γ]
    Outputs: [Q']
 
