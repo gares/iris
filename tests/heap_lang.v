@@ -1,4 +1,4 @@
-From iris.base_logic.lib Require Import gen_inv_heap.
+From iris.base_logic.lib Require Import gen_inv_heap invariants.
 From iris.program_logic Require Export weakestpre total_weakestpre.
 From iris.heap_lang Require Import lang adequacy proofmode notation.
 (* Import lang *again*. This used to break notation. *)
@@ -322,6 +322,34 @@ Section inv_mapsto_tests.
     iIntros (Heq). setoid_rewrite Heq. Show.
   Abort.
 End inv_mapsto_tests.
+
+Section atomic.
+  Context `{!heapG Σ}.
+
+  (* These tests check if a side-condition for [Atomic] is generated *)
+  Check "wp_iMod_fupd_atomic".
+  Lemma wp_iMod_fupd_atomic E1 E2 P :
+    (|={E1,E2}=> P) -∗ WP #() #() @ E1 {{ _, True }}.
+  Proof.
+    iIntros "H". iMod "H". Show.
+  Abort.
+
+  Check "wp_iInv_atomic".
+  Lemma wp_iInv_atomic N E P :
+    ↑ N ⊆ E →
+    inv N P -∗ WP #() #() @ E {{ _, True }}.
+  Proof.
+    iIntros (?) "H". iInv "H" as "H" "Hclose". Show.
+  Abort.
+  Check "wp_iInv_atomic_acc".
+  Lemma wp_iInv_atomic_acc N E P :
+    ↑ N ⊆ E →
+    inv N P -∗ WP #() #() @ E {{ _, True }}.
+  Proof.
+    (* Test if a side-condition for [Atomic] is generated *)
+    iIntros (?) "H". iInv "H" as "H". Show.
+  Abort.
+End atomic.
 
 Section printing_tests.
   Context `{!heapG Σ}.
