@@ -24,10 +24,10 @@ performance and horrible error messages, so we wrap it in a [once]. *)
 Ltac iSolveTC :=
   solve [once (typeclasses eauto)].
 
-(** Tactic used for solving side-conditions arising from TC resolution in iMod
-and iInv. *)
+(** Tactic used for solving side-conditions arising from TC resolution in [iMod]
+and [iInv]. *)
 Ltac iSolveSideCondition :=
-  split_and?; try solve [ fast_done | solve_ndisj ].
+  split_and?; try solve [ fast_done | solve_ndisj | iSolveTC ].
 
 (** Used for printing [string]s and [ident]s. *)
 Ltac pretty_ident H :=

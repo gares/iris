@@ -569,26 +569,26 @@ Global Instance elim_modal_at_fupd_hyp `{BiFUpd PROP} φ p p' E1 E2 P 𝓟 𝓟'
   ElimModal φ p p' ((|={E1,E2}=> P) i) 𝓟' 𝓠 𝓠'.
 Proof. by rewrite /MakeMonPredAt /ElimModal monPred_at_fupd=><-. Qed.
 
-Global Instance elim_acc_at_None `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' P P'x i :
+Global Instance elim_acc_at_None `{BiFUpd PROP} {X} φ E1 E2 E3 E4 α α' β β' P P'x i :
   (∀ x, MakeEmbed (α x) (α' x)) → (∀ x, MakeEmbed (β x) (β' x)) →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ _, None) P P'x →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ _, None) (P i) (λ x, P'x x i).
+  ElimAcc (X:=X) φ (fupd E1 E2) (fupd E3 E4) α' β' (λ _, None) P P'x →
+  ElimAcc (X:=X) φ (fupd E1 E2) (fupd E3 E4) α β (λ _, None) (P i) (λ x, P'x x i).
 Proof.
-  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ HEA) "Hinner Hacc".
-  iApply (HEA with "[Hinner]").
+  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ HEA ?) "Hinner Hacc".
+  iApply (HEA with "[Hinner]"); first done.
   - iIntros (x).  iSpecialize ("Hinner" $! x). rewrite -Hα. by iIntros (? <-).
   - iMod "Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]". iModIntro. iExists x.
     rewrite -Hα -Hβ. iFrame. iIntros (? _) "Hβ". by iApply "Hclose".
 Qed.
-Global Instance elim_acc_at_Some `{BiFUpd PROP} {X} E1 E2 E3 E4 α α' β β' γ γ' P P'x i :
+Global Instance elim_acc_at_Some `{BiFUpd PROP} {X} φ E1 E2 E3 E4 α α' β β' γ γ' P P'x i :
   (∀ x, MakeEmbed (α x) (α' x)) →
   (∀ x, MakeEmbed (β x) (β' x)) →
   (∀ x, MakeEmbed (γ x) (γ' x)) →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α' β' (λ x, Some (γ' x)) P P'x →
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E3 E4) α β (λ x, Some (γ x)) (P i) (λ x, P'x x i).
+  ElimAcc (X:=X) φ (fupd E1 E2) (fupd E3 E4) α' β' (λ x, Some (γ' x)) P P'x →
+  ElimAcc (X:=X) φ (fupd E1 E2) (fupd E3 E4) α β (λ x, Some (γ x)) (P i) (λ x, P'x x i).
 Proof.
-  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ Hγ HEA) "Hinner Hacc".
-  iApply (HEA with "[Hinner]").
+  rewrite /ElimAcc /MakeEmbed. iIntros (Hα Hβ Hγ HEA ?) "Hinner Hacc".
+  iApply (HEA with "[Hinner]"); first done.
   - iIntros (x).  iSpecialize ("Hinner" $! x). rewrite -Hα. by iIntros (? <-).
   - iMod "Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]". iModIntro. iExists x.
     rewrite -Hα -Hβ -Hγ. iFrame. iIntros (? _) "Hβ /=". by iApply "Hclose".

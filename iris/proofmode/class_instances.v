@@ -968,14 +968,14 @@ Proof. rewrite /AddModal bi_tforall_forall. apply add_modal_forall. Qed.
 
 (** ElimInv *)
 Global Instance elim_inv_acc_without_close {X : Type}
-     φ Pinv Pin (M1 M2 : PROP → PROP) α β mγ Q (Q' : X → PROP) :
-  IntoAcc (X:=X) Pinv φ Pin M1 M2 α β mγ →
-  ElimAcc (X:=X) M1 M2 α β mγ Q Q' →
-  ElimInv φ Pinv Pin α None Q Q'.
+     φ1 φ2 Pinv Pin (M1 M2 : PROP → PROP) α β mγ Q (Q' : X → PROP) :
+  IntoAcc (X:=X) Pinv φ1 Pin M1 M2 α β mγ →
+  ElimAcc (X:=X) φ2 M1 M2 α β mγ Q Q' →
+  ElimInv (φ1 ∧ φ2) Pinv Pin α None Q Q'.
 Proof.
   rewrite /ElimAcc /IntoAcc /ElimInv.
-  iIntros (Hacc Helim Hφ) "(Hinv & Hin & Hcont)".
-  iApply (Helim with "[Hcont]").
+  iIntros (Hacc Helim [??]) "(Hinv & Hin & Hcont)".
+  iApply (Helim with "[Hcont]"); first done.
   - iIntros (x) "Hα". iApply "Hcont". iSplitL; simpl; done.
   - iApply (Hacc with "Hinv Hin"). done.
 Qed.

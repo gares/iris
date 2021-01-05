@@ -288,11 +288,11 @@ Section proofmode_classes.
   Qed.
 
   Global Instance elim_modal_fupd_wp_atomic p s E1 E2 e P Φ :
-    Atomic (stuckness_to_atomicity s) e →
-    ElimModal True p false (|={E1,E2}=> P) P
-            (WP e @ s; E1 {{ Φ }}) (WP e @ s; E2 {{ v, |={E2,E1}=> Φ v }})%I.
+    ElimModal (Atomic (stuckness_to_atomicity s) e) p false
+            (|={E1,E2}=> P) P
+            (WP e @ s; E1 {{ Φ }}) (WP e @ s; E2 {{ v, |={E2,E1}=> Φ v }})%I | 100.
   Proof.
-    intros. by rewrite /ElimModal intuitionistically_if_elim
+    intros ?. by rewrite intuitionistically_if_elim
       fupd_frame_r wand_elim_r wp_atomic.
   Qed.
 
@@ -300,25 +300,23 @@ Section proofmode_classes.
     AddModal (|={E}=> P) P (WP e @ s; E {{ Φ }}).
   Proof. by rewrite /AddModal fupd_frame_r wand_elim_r fupd_wp. Qed.
 
-  Global Instance elim_acc_wp {X} E1 E2 α β γ e s Φ :
-    Atomic (stuckness_to_atomicity s) e →
-    ElimAcc (X:=X) (fupd E1 E2) (fupd E2 E1)
+  Global Instance elim_acc_wp_atomic {X} E1 E2 α β γ e s Φ :
+    ElimAcc (X:=X) (Atomic (stuckness_to_atomicity s) e)
+            (fupd E1 E2) (fupd E2 E1)
             α β γ (WP e @ s; E1 {{ Φ }})
-            (λ x, WP e @ s; E2 {{ v, |={E2}=> β x ∗ (γ x -∗? Φ v) }})%I.
+            (λ x, WP e @ s; E2 {{ v, |={E2}=> β x ∗ (γ x -∗? Φ v) }})%I | 100.
   Proof.
-    intros ?. rewrite /ElimAcc.
-    iIntros "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+    iIntros (?) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
     iApply (wp_wand with "(Hinner Hα)").
     iIntros (v) ">[Hβ HΦ]". iApply "HΦ". by iApply "Hclose".
   Qed.
 
   Global Instance elim_acc_wp_nonatomic {X} E α β γ e s Φ :
-    ElimAcc (X:=X) (fupd E E) (fupd E E)
+    ElimAcc (X:=X) True (fupd E E) (fupd E E)
             α β γ (WP e @ s; E {{ Φ }})
             (λ x, WP e @ s; E {{ v, |={E}=> β x ∗ (γ x -∗? Φ v) }})%I.
   Proof.
-    rewrite /ElimAcc.
-    iIntros "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+    iIntros (?) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
     iApply wp_fupd.
     iApply (wp_wand with "(Hinner Hα)").
     iIntros (v) ">[Hβ HΦ]". iApply "HΦ". by iApply "Hclose".
