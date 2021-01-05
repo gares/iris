@@ -101,6 +101,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Remove the laws `pure_forall_2 : (∀ a, ⌜ φ a ⌝) ⊢ ⌜ ∀ a, φ a ⌝` from the BI
   interface and factor it into a type class `BiPureForall`.
 * Add notation `¬ P` for `P → False` to `bi_scope`.
+* Add Coq side-condition `φ` to class `ElimAcc` (similar to what we already had
+  for `ElimInv` and `ElimModal`).
 
 **Changes in `base_logic`:**
 
@@ -176,6 +178,10 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Generalize HeapLang's `mapsto` (`↦`), `array` (`↦∗`), and atomic heap
   connectives to discardable fractions. See the CHANGELOG entry in the category
   `base_logic` for more information.
+* Opening an invariant or eliminating a mask-changing update modality around a
+  non-atomic weakest precondition creates an side-condition `Atomic ...`.
+  Before, this would fail with the mysterious error "iMod: cannot eliminate
+  modality (|={E1,E2}=> ...) in (WP ...)".
 
 **Changes in `heap_lang`:**
 
