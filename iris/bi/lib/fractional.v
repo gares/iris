@@ -114,13 +114,13 @@ Section fractional.
        - In the forward direction, they make the search not terminate
        - In the backward direction, the higher order unification of Φ
          with the goal does not work. *)
-  Instance mul_as_fractional_l P Φ p q :
+  Local Instance mul_as_fractional_l P Φ p q :
     AsFractional P Φ (q * p) → AsFractional P (λ q, Φ (q * p)%Qp) q.
   Proof.
     intros H. split; first apply H. eapply (mul_fractional_l _ Φ p).
     split; first done. apply H.
   Qed.
-  Instance mul_as_fractional_r P Φ p q :
+  Local Instance mul_as_fractional_r P Φ p q :
     AsFractional P Φ (p * q) → AsFractional P (λ q, Φ (p * q)%Qp) q.
   Proof.
     intros H. split; first apply H. eapply (mul_fractional_r _ Φ p).

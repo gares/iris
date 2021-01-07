@@ -44,7 +44,7 @@ Proof.
   intros [a Hrel]. eapply auth_view_rel_raw_valid, Hrel.
 Qed.
 
-Instance auth_view_rel_discrete {A : ucmraT} :
+Global Instance auth_view_rel_discrete {A : ucmraT} :
   CmraDiscrete A → ViewRelDiscrete (auth_view_rel (A:=A)).
 Proof.
   intros ? n a b [??]; split.
@@ -66,8 +66,8 @@ Definition auth_frag {A: ucmraT} : A → auth A := view_frag.
 
 Typeclasses Opaque auth_auth auth_frag.
 
-Instance: Params (@auth_auth) 2 := {}.
-Instance: Params (@auth_frag) 1 := {}.
+Global Instance: Params (@auth_auth) 2 := {}.
+Global Instance: Params (@auth_frag) 1 := {}.
 
 Notation "◯ a" := (auth_frag a) (at level 20).
 Notation "●{ q } a" := (auth_auth q a) (at level 20, format "●{ q }  a").
@@ -358,7 +358,7 @@ Next Obligation.
   - by apply (cmra_morphism_validN _).
 Qed.
 
-Instance authURF_contractive F :
+Global Instance authURF_contractive F :
   urFunctorContractive F → urFunctorContractive (authURF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
@@ -372,6 +372,6 @@ Program Definition authRF (F : urFunctor) : rFunctor := {|
 |}.
 Solve Obligations with apply authURF.
 
-Instance authRF_contractive F :
+Global Instance authRF_contractive F :
   urFunctorContractive F → rFunctorContractive (authRF F).
 Proof. apply authURF_contractive. Qed.

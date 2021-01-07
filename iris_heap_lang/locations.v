@@ -4,12 +4,12 @@ From iris.prelude Require Import options.
 
 Record loc := { loc_car : Z }.
 
-Instance loc_eq_decision : EqDecision loc.
+Global Instance loc_eq_decision : EqDecision loc.
 Proof. solve_decision. Qed.
 
-Instance loc_inhabited : Inhabited loc := populate {|loc_car := 0 |}.
+Global Instance loc_inhabited : Inhabited loc := populate {|loc_car := 0 |}.
 
-Instance loc_countable : Countable loc.
+Global Instance loc_countable : Countable loc.
 Proof. by apply (inj_countable' loc_car (λ i, {| loc_car := i |})); intros []. Qed.
 
 Program Instance loc_infinite : Infinite loc :=
@@ -28,7 +28,7 @@ Proof. destruct l; rewrite /loc_add /=; f_equal; lia. Qed.
 Lemma loc_add_0 l : l +ₗ 0 = l.
 Proof. destruct l; rewrite /loc_add /=; f_equal; lia. Qed.
 
-Instance loc_add_inj l : Inj eq eq (loc_add l).
+Global Instance loc_add_inj l : Inj eq eq (loc_add l).
 Proof. destruct l; rewrite /Inj /loc_add /=; intros; simplify_eq; lia. Qed.
 
 Definition fresh_locs (ls : gset loc) : loc :=

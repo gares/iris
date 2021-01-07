@@ -44,7 +44,7 @@ Class inv_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
 Definition inv_heapΣ (L V : Type) `{Countable L} : gFunctors :=
   #[ GFunctor (authR (inv_heap_mapUR L V)) ].
 
-Instance subG_inv_heapPreG (L V : Type) `{Countable L} {Σ} :
+Global Instance subG_inv_heapPreG (L V : Type) `{Countable L} {Σ} :
   subG (inv_heapΣ L V) Σ → inv_heapPreG L V Σ.
 Proof. solve_inG. Qed.
 
@@ -77,8 +77,8 @@ Local Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)
    make them explicit. *)
 Arguments inv_heap_inv _ _ {_ _ _ _ _ _}.
 
-Instance: Params (@inv_mapsto_own) 8 := {}.
-Instance: Params (@inv_mapsto) 7 := {}.
+Global Instance: Params (@inv_mapsto_own) 8 := {}.
+Global Instance: Params (@inv_mapsto) 7 := {}.
 
 Section to_inv_heap.
   Context {L V : Type} `{Countable L}.

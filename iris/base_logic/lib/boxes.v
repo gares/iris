@@ -13,7 +13,7 @@ Class boxG Σ :=
 Definition boxΣ : gFunctors := #[ GFunctor (excl_authR boolO *
                                             optionRF (agreeRF (▶ ∙)) ) ].
 
-Instance subG_boxΣ Σ : subG boxΣ Σ → boxG Σ.
+Global Instance subG_boxΣ Σ : subG boxΣ Σ → boxG Σ.
 Proof. solve_inG. Qed.
 
 Section box_defs.
@@ -40,10 +40,10 @@ Section box_defs.
                          inv N (slice_inv γ (Φ γ)).
 End box_defs.
 
-Instance: Params (@box_own_prop) 3 := {}.
-Instance: Params (@slice_inv) 3 := {}.
-Instance: Params (@slice) 5 := {}.
-Instance: Params (@box) 5 := {}.
+Global Instance: Params (@box_own_prop) 3 := {}.
+Global Instance: Params (@slice_inv) 3 := {}.
+Global Instance: Params (@slice) 5 := {}.
+Global Instance: Params (@box) 5 := {}.
 
 Section box.
 Context `{!invG Σ, !boxG Σ} (N : namespace).

@@ -62,7 +62,7 @@ Section dfrac.
   Proof. by injection 1. Qed.
 
   (** An element is valid as long as the sum of its content is less than one. *)
-  Instance dfrac_valid : Valid dfrac := λ dq,
+  Local Instance dfrac_valid : Valid dfrac := λ dq,
     match dq with
     | DfracOwn q => q ≤ 1
     | DfracDiscarded => True
@@ -72,7 +72,7 @@ Section dfrac.
   (** As in the fractional camera the core is undefined for elements denoting
      ownership of a fraction. For elements denoting the knowledge that a fraction has
      been discarded the core is the identity function. *)
-  Instance dfrac_pcore : PCore dfrac := λ dq,
+  Local Instance dfrac_pcore : PCore dfrac := λ dq,
     match dq with
     | DfracOwn q => None
     | DfracDiscarded => Some DfracDiscarded
@@ -81,7 +81,7 @@ Section dfrac.
 
   (** When elements are combined, ownership is added together and knowledge of
      discarded fractions is combined with the max operation. *)
-  Instance dfrac_op : Op dfrac := λ dq dp,
+  Local Instance dfrac_op : Op dfrac := λ dq dp,
     match dq, dp with
     | DfracOwn q, DfracOwn q' => DfracOwn (q + q')
     | DfracOwn q, DfracDiscarded => DfracBoth q

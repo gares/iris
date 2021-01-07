@@ -134,16 +134,16 @@ Section M.
 
   Canonical Structure M_O : ofeT := leibnizO M.
 
-  Instance M_valid : Valid M := λ x, x ≠ Bot.
-  Instance M_op : Op M := λ x y,
+  Local Instance M_valid : Valid M := λ x, x ≠ Bot.
+  Local Instance M_op : Op M := λ x y,
     match x, y with
     | Auth n, Frag j | Frag j, Auth n => if decide (j ≤ n) then Auth n else Bot
     | Frag i, Frag j => Frag (max i j)
     | _, _ => Bot
     end.
-  Instance M_pcore : PCore M := λ x,
+  Local Instance M_pcore : PCore M := λ x,
     Some match x with Auth j | Frag j => Frag j | _ => Bot end.
-  Instance M_unit : Unit M := Frag 0.
+  Local Instance M_unit : Unit M := Frag 0.
 
   Definition M_ra_mixin : RAMixin M.
   Proof.
@@ -184,7 +184,7 @@ End M.
 
 Class counterG Σ := CounterG { counter_tokG :> inG Σ M_UR }.
 Definition counterΣ : gFunctors := #[GFunctor (constRF M_UR)].
-Instance subG_counterΣ {Σ} : subG counterΣ Σ → counterG Σ.
+Global Instance subG_counterΣ {Σ} : subG counterΣ Σ → counterG Σ.
 Proof. intros [?%subG_inG _]%subG_inv. split; apply _. Qed.
 
 Section counter_proof.

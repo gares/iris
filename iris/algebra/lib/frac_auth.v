@@ -21,8 +21,8 @@ Definition frac_auth_frag {A : cmraT} (q : frac) (x : A) : frac_authR A :=
 
 Typeclasses Opaque frac_auth_auth frac_auth_frag.
 
-Instance: Params (@frac_auth_auth) 1 := {}.
-Instance: Params (@frac_auth_frag) 2 := {}.
+Global Instance: Params (@frac_auth_auth) 1 := {}.
+Global Instance: Params (@frac_auth_frag) 2 := {}.
 
 Notation "●F a" := (frac_auth_auth a) (at level 10).
 Notation "◯F{ q } a" := (frac_auth_frag q a) (at level 10, format "◯F{ q }  a").

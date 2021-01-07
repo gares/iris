@@ -13,7 +13,7 @@ Class heapPreG Σ := HeapPreG {
 
 Definition heapΣ : gFunctors :=
   #[invΣ; gen_heapΣ loc (option val); inv_heapΣ loc (option val); proph_mapΣ proph_id (val * val)].
-Instance subG_heapPreG {Σ} : subG heapΣ Σ → heapPreG Σ.
+Global Instance subG_heapPreG {Σ} : subG heapΣ Σ → heapPreG Σ.
 Proof. solve_inG. Qed.
 
 Definition heap_adequacy Σ `{!heapPreG Σ} s e σ φ :

@@ -9,7 +9,7 @@ Canonical Structure tagO := leibnizO tag.
 Goal tagO = natO.
 Proof. reflexivity. Qed.
 
-Instance test_cofe {Σ} : Cofe (iPrePropO Σ) := _.
+Global Instance test_cofe {Σ} : Cofe (iPrePropO Σ) := _.
 
 Section tests.
   Context `{!invG Σ}.

@@ -17,7 +17,7 @@ Class heapG Σ := HeapG {
   heapG_proph_mapG :> proph_mapG proph_id (val * val) Σ;
 }.
 
-Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
+Global Instance heapG_irisG `{!heapG Σ} : irisG heap_lang Σ := {
   iris_invG := heapG_invG;
   state_interp σ κs _ :=
     (gen_heap_interp σ.(heap) ∗ proph_map_interp κs σ.(used_proph_id))%I;
@@ -48,8 +48,8 @@ Section definitions.
     inv_mapsto l (from_option I False).
 End definitions.
 
-Instance: Params (@inv_mapsto_own) 4 := {}.
-Instance: Params (@inv_mapsto) 3 := {}.
+Global Instance: Params (@inv_mapsto_own) 4 := {}.
+Global Instance: Params (@inv_mapsto) 3 := {}.
 
 Notation inv_heap_inv := (inv_heap_inv loc (option val)).
 Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)

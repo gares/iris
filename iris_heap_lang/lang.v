@@ -181,9 +181,9 @@ Definition val_is_unboxed (v : val) : Prop :=
   | _ => False
   end.
 
-Instance lit_is_unboxed_dec l : Decision (lit_is_unboxed l).
+Global Instance lit_is_unboxed_dec l : Decision (lit_is_unboxed l).
 Proof. destruct l; simpl; exact (decide _). Defined.
-Instance val_is_unboxed_dec v : Decision (val_is_unboxed v).
+Global Instance val_is_unboxed_dec v : Decision (val_is_unboxed v).
 Proof. destruct v as [ | | | [] | [] ]; simpl; exact (decide _). Defined.
 
 (** We just compare the word-sized representation of two values, without looking
@@ -207,16 +207,16 @@ Proof. by destruct v. Qed.
 Lemma of_to_val e v : to_val e = Some v → of_val v = e.
 Proof. destruct e=>//=. by intros [= <-]. Qed.
 
-Instance of_val_inj : Inj (=) (=) of_val.
+Global Instance of_val_inj : Inj (=) (=) of_val.
 Proof. intros ??. congruence. Qed.
 
-Instance base_lit_eq_dec : EqDecision base_lit.
+Global Instance base_lit_eq_dec : EqDecision base_lit.
 Proof. solve_decision. Defined.
-Instance un_op_eq_dec : EqDecision un_op.
+Global Instance un_op_eq_dec : EqDecision un_op.
 Proof. solve_decision. Defined.
-Instance bin_op_eq_dec : EqDecision bin_op.
+Global Instance bin_op_eq_dec : EqDecision bin_op.
 Proof. solve_decision. Defined.
-Instance expr_eq_dec : EqDecision expr.
+Global Instance expr_eq_dec : EqDecision expr.
 Proof.
   refine (
    fix go (e1 e2 : expr) {struct e1} : Decision (e1 = e2) :=
@@ -269,10 +269,10 @@ Proof.
      end
    for go); try (clear go gov; abstract intuition congruence).
 Defined.
-Instance val_eq_dec : EqDecision val.
+Global Instance val_eq_dec : EqDecision val.
 Proof. solve_decision. Defined.
 
-Instance base_lit_countable : Countable base_lit.
+Global Instance base_lit_countable : Countable base_lit.
 Proof.
  refine (inj_countable' (λ l, match l with
   | LitInt n => (inl (inl n), None)
@@ -290,12 +290,12 @@ Proof.
   | (_, Some p) => LitProphecy p
   end) _); by intros [].
 Qed.
-Instance un_op_finite : Countable un_op.
+Global Instance un_op_finite : Countable un_op.
 Proof.
  refine (inj_countable' (λ op, match op with NegOp => 0 | MinusUnOp => 1 end)
   (λ n, match n with 0 => NegOp | _ => MinusUnOp end) _); by intros [].
 Qed.
-Instance bin_op_countable : Countable bin_op.
+Global Instance bin_op_countable : Countable bin_op.
 Proof.
  refine (inj_countable' (λ op, match op with
   | PlusOp => 0 | MinusOp => 1 | MultOp => 2 | QuotOp => 3 | RemOp => 4
@@ -307,7 +307,7 @@ Proof.
   | 10 => LeOp | 11 => LtOp | 12 => EqOp | _ => OffsetOp
   end) _); by intros [].
 Qed.
-Instance expr_countable : Countable expr.
+Global Instance expr_countable : Countable expr.
 Proof.
  set (enc :=
    fix go e :=
@@ -388,13 +388,13 @@ Proof.
      [exact (gov v)|done..].
  - destruct v; by f_equal.
 Qed.
-Instance val_countable : Countable val.
+Global Instance val_countable : Countable val.
 Proof. refine (inj_countable of_val to_val _); auto using to_of_val. Qed.
 
-Instance state_inhabited : Inhabited state :=
+Global Instance state_inhabited : Inhabited state :=
   populate {| heap := inhabitant; used_proph_id := inhabitant |}.
-Instance val_inhabited : Inhabited val := populate (LitV LitUnit).
-Instance expr_inhabited : Inhabited expr := populate (Val inhabitant).
+Global Instance val_inhabited : Inhabited val := populate (LitV LitUnit).
+Global Instance expr_inhabited : Inhabited expr := populate (Val inhabitant).
 
 Canonical Structure stateO := leibnizO state.
 Canonical Structure locO := leibnizO loc.
@@ -699,7 +699,7 @@ Inductive head_step : expr → state → list observation → expr → state →
                (κs ++ [(p, (v, w))]) (Val v) σ' ts.
 
 (** Basic properties about the language *)
-Instance fill_item_inj Ki : Inj (=) (=) (fill_item Ki).
+Global Instance fill_item_inj Ki : Inj (=) (=) (fill_item Ki).
 Proof. induction Ki; intros ???; simplify_eq/=; auto with f_equal. Qed.
 
 Lemma fill_item_val Ki e :

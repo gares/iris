@@ -13,7 +13,7 @@ Set Primitive Projections.
 
 (** Unbundled version *)
 Class Dist A := dist : nat → relation A.
-Instance: Params (@dist) 3 := {}.
+Global Instance: Params (@dist) 3 := {}.
 Notation "x ≡{ n }≡ y" := (dist n x y)
   (at level 70, n at next level, format "x  ≡{ n }≡  y").
 Notation "x ≡{ n }@{ A }≡ y" := (dist (A:=A) n x y)
@@ -102,7 +102,7 @@ Global Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 Class Discrete {A : ofeT} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.
 Arguments discrete {_} _ {_} _ _.
 Global Hint Mode Discrete + ! : typeclass_instances.
-Instance: Params (@Discrete) 1 := {}.
+Global Instance: Params (@Discrete) 1 := {}.
 
 Class OfeDiscrete (A : ofeT) := ofe_discrete_discrete (x : A) :> Discrete x.
 
@@ -171,7 +171,7 @@ Section ofe.
   Proof. intros; eauto using dist_le. Qed.
   (** [ne_proper] and [ne_proper_2] are not instances to improve efficiency of
   type class search during setoid rewriting.
-  Instances of [NonExpansive{,2}] are hence accompanied by instances of
+  Local Instances of [NonExpansive{,2}] are hence accompanied by instances of
   [Proper] built using these lemmas. *)
   Lemma ne_proper {B : ofeT} (f : A → B) `{!NonExpansive f} :
     Proper ((≡) ==> (≡)) f.
@@ -221,7 +221,7 @@ Proof. intros Hf [|n]; last exact: Hf. hnf. by intros. Qed.
 
 Notation Contractive f := (∀ n, Proper (dist_later n ==> dist n) f).
 
-Instance const_contractive {A B : ofeT} (x : A) : Contractive (@const A B x).
+Global Instance const_contractive {A B : ofeT} (x : A) : Contractive (@const A B x).
 Proof. by intros n y1 y2. Qed.
 
 Section contractive.
@@ -472,11 +472,11 @@ Section fixpointAB.
   Lemma fixpoint_B_unfold : fB fixpoint_A fixpoint_B ≡ fixpoint_B.
   Proof. by rewrite {2}/fixpoint_B /fixpoint_AB (fixpoint_unfold _). Qed.
 
-  Instance: Proper ((≡) ==> (≡) ==> (≡)) fA.
+  Local Instance: Proper ((≡) ==> (≡) ==> (≡)) fA.
   Proof using fA_contractive.
     apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
   Qed.
-  Instance: Proper ((≡) ==> (≡) ==> (≡)) fB.
+  Local Instance: Proper ((≡) ==> (≡) ==> (≡)) fB.
   Proof using fB_contractive.
     apply ne_proper_2=> n x x' ? y y' ?. f_contractive; auto using dist_S.
   Qed.
@@ -541,8 +541,8 @@ Section ofe_mor.
   Context {A B : ofeT}.
   Global Instance ofe_mor_proper (f : ofe_mor A B) : Proper ((≡) ==> (≡)) f.
   Proof. apply ne_proper, ofe_mor_ne. Qed.
-  Instance ofe_mor_equiv : Equiv (ofe_mor A B) := λ f g, ∀ x, f x ≡ g x.
-  Instance ofe_mor_dist : Dist (ofe_mor A B) := λ n f g, ∀ x, f x ≡{n}≡ g x.
+  Local Instance ofe_mor_equiv : Equiv (ofe_mor A B) := λ f g, ∀ x, f x ≡ g x.
+  Local Instance ofe_mor_dist : Dist (ofe_mor A B) := λ n f g, ∀ x, f x ≡{n}≡ g x.
   Definition ofe_mor_ofe_mixin : OfeMixin (ofe_mor A B).
   Proof.
     split.
@@ -584,18 +584,18 @@ End ofe_mor.
 Arguments ofe_morO : clear implicits.
 Notation "A -n> B" :=
   (ofe_morO A B) (at level 99, B at level 200, right associativity).
-Instance ofe_mor_inhabited {A B : ofeT} `{Inhabited B} :
+Global Instance ofe_mor_inhabited {A B : ofeT} `{Inhabited B} :
   Inhabited (A -n> B) := populate (λne _, inhabitant).
 
 (** Identity and composition and constant function *)
 Definition cid {A} : A -n> A := OfeMor id.
-Instance: Params (@cid) 1 := {}.
+Global Instance: Params (@cid) 1 := {}.
 Definition cconst {A B : ofeT} (x : B) : A -n> B := OfeMor (const x).
-Instance: Params (@cconst) 2 := {}.
+Global Instance: Params (@cconst) 2 := {}.
 
 Definition ccompose {A B C}
   (f : B -n> C) (g : A -n> B) : A -n> C := OfeMor (f ∘ g).
-Instance: Params (@ccompose) 3 := {}.
+Global Instance: Params (@ccompose) 3 := {}.
 Infix "◎" := ccompose (at level 40, left associativity).
 Global Instance ccompose_ne {A B C} :
   NonExpansive2 (@ccompose A B C).
@@ -604,13 +604,13 @@ Proof. intros n ?? Hf g1 g2 Hg x. rewrite /= (Hg x) (Hf (g2 x)) //. Qed.
 (* Function space maps *)
 Definition ofe_mor_map {A A' B B'} (f : A' -n> A) (g : B -n> B')
   (h : A -n> B) : A' -n> B' := g ◎ h ◎ f.
-Instance ofe_mor_map_ne {A A' B B'} n :
+Global Instance ofe_mor_map_ne {A A' B B'} n :
   Proper (dist n ==> dist n ==> dist n ==> dist n) (@ofe_mor_map A A' B B').
 Proof. intros ??? ??? ???. by repeat apply ccompose_ne. Qed.
 
 Definition ofe_morO_map {A A' B B'} (f : A' -n> A) (g : B -n> B') :
   (A -n> B) -n> (A' -n>  B') := OfeMor (ofe_mor_map f g).
-Instance ofe_morO_map_ne {A A' B B'} :
+Global Instance ofe_morO_map_ne {A A' B B'} :
   NonExpansive2 (@ofe_morO_map A A' B B').
 Proof.
   intros n f f' Hf g g' Hg ?. rewrite /= /ofe_mor_map.
@@ -619,7 +619,7 @@ Qed.
 
 (** * Unit type *)
 Section unit.
-  Instance unit_dist : Dist unit := λ _ _ _, True.
+  Local Instance unit_dist : Dist unit := λ _ _ _, True.
   Definition unit_ofe_mixin : OfeMixin unit.
   Proof. by repeat split; try exists 0. Qed.
   Canonical Structure unitO : ofeT := OfeT unit unit_ofe_mixin.
@@ -633,7 +633,7 @@ End unit.
 
 (** * Empty type *)
 Section empty.
-  Instance Empty_set_dist : Dist Empty_set := λ _ _ _, True.
+  Local Instance Empty_set_dist : Dist Empty_set := λ _ _ _, True.
   Definition Empty_set_ofe_mixin : OfeMixin Empty_set.
   Proof. by repeat split; try exists 0. Qed.
   Canonical Structure Empty_setO : ofeT := OfeT Empty_set Empty_set_ofe_mixin.
@@ -649,7 +649,7 @@ End empty.
 Section product.
   Context {A B : ofeT}.
 
-  Instance prod_dist : Dist (A * B) := λ n, prod_relation (dist n) (dist n).
+  Local Instance prod_dist : Dist (A * B) := λ n, prod_relation (dist n) (dist n).
   Global Instance pair_ne :
     NonExpansive2 (@pair A B) := _.
   Global Instance fst_ne : NonExpansive (@fst A B) := _.
@@ -683,13 +683,13 @@ End product.
 Arguments prodO : clear implicits.
 Typeclasses Opaque prod_dist.
 
-Instance prod_map_ne {A A' B B' : ofeT} n :
+Global Instance prod_map_ne {A A' B B' : ofeT} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==>
            dist n ==> dist n) (@prod_map A A' B B').
 Proof. by intros f f' Hf g g' Hg ?? [??]; split; [apply Hf|apply Hg]. Qed.
 Definition prodO_map {A A' B B'} (f : A -n> A') (g : B -n> B') :
   prodO A B -n> prodO A' B' := OfeMor (prod_map f g).
-Instance prodO_map_ne {A A' B B'} :
+Global Instance prodO_map_ne {A A' B B'} :
   NonExpansive2 (@prodO_map A A' B B').
 Proof. intros n f f' Hf g g' Hg [??]; split; [apply Hf|apply Hg]. Qed.
 
@@ -707,7 +707,7 @@ Record oFunctor := OFunctor {
     oFunctor_map (f◎g, g'◎f') x ≡ oFunctor_map (g,g') (oFunctor_map (f,f') x)
 }.
 Existing Instance oFunctor_map_ne.
-Instance: Params (@oFunctor_map) 9 := {}.
+Global Instance: Params (@oFunctor_map) 9 := {}.
 
 Declare Scope oFunctor_scope.
 Delimit Scope oFunctor_scope with OF.
@@ -743,14 +743,14 @@ Next Obligation.
   rewrite -oFunctor_map_compose. apply equiv_dist=> n. apply oFunctor_map_ne.
   split=> y /=; by rewrite !oFunctor_map_compose.
 Qed.
-Instance oFunctor_oFunctor_compose_contractive_1 (F1 F2 : oFunctor)
+Global Instance oFunctor_oFunctor_compose_contractive_1 (F1 F2 : oFunctor)
     `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
   oFunctorContractive F1 → oFunctorContractive (oFunctor_oFunctor_compose F1 F2).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n [f1 g1] [f2 g2] Hfg; simpl in *.
   f_contractive; destruct Hfg; split; simpl in *; apply oFunctor_map_ne; by split.
 Qed.
-Instance oFunctor_oFunctor_compose_contractive_2 (F1 F2 : oFunctor)
+Global Instance oFunctor_oFunctor_compose_contractive_2 (F1 F2 : oFunctor)
     `{!∀ `{Cofe A, Cofe B}, Cofe (oFunctor_car F2 A B)} :
   oFunctorContractive F2 → oFunctorContractive (oFunctor_oFunctor_compose F1 F2).
 Proof.
@@ -763,7 +763,7 @@ Program Definition constOF (B : ofeT) : oFunctor :=
 Solve Obligations with done.
 Coercion constOF : ofeT >-> oFunctor.
 
-Instance constOF_contractive B : oFunctorContractive (constOF B).
+Global Instance constOF_contractive B : oFunctorContractive (constOF B).
 Proof. rewrite /oFunctorContractive; apply _. Qed.
 
 Program Definition idOF : oFunctor :=
@@ -786,7 +786,7 @@ Next Obligation.
 Qed.
 Notation "F1 * F2" := (prodOF F1%OF F2%OF) : oFunctor_scope.
 
-Instance prodOF_contractive F1 F2 :
+Global Instance prodOF_contractive F1 F2 :
   oFunctorContractive F1 → oFunctorContractive F2 →
   oFunctorContractive (prodOF F1 F2).
 Proof.
@@ -813,7 +813,7 @@ Next Obligation.
 Qed.
 Notation "F1 -n> F2" := (ofe_morOF F1%OF F2%OF) : oFunctor_scope.
 
-Instance ofe_morOF_contractive F1 F2 :
+Global Instance ofe_morOF_contractive F1 F2 :
   oFunctorContractive F1 → oFunctorContractive F2 →
   oFunctorContractive (ofe_morOF F1 F2).
 Proof.
@@ -825,7 +825,7 @@ Qed.
 Section sum.
   Context {A B : ofeT}.
 
-  Instance sum_dist : Dist (A + B) := λ n, sum_relation (dist n) (dist n).
+  Local Instance sum_dist : Dist (A + B) := λ n, sum_relation (dist n) (dist n).
   Global Instance inl_ne : NonExpansive (@inl A B) := _.
   Global Instance inr_ne : NonExpansive (@inr A B) := _.
   Global Instance inl_ne_inj n : Inj (dist n) (dist n) (@inl A B) := _.
@@ -875,7 +875,7 @@ End sum.
 Arguments sumO : clear implicits.
 Typeclasses Opaque sum_dist.
 
-Instance sum_map_ne {A A' B B' : ofeT} n :
+Global Instance sum_map_ne {A A' B B' : ofeT} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==>
            dist n ==> dist n) (@sum_map A A' B B').
 Proof.
@@ -883,7 +883,7 @@ Proof.
 Qed.
 Definition sumO_map {A A' B B'} (f : A -n> A') (g : B -n> B') :
   sumO A B -n> sumO A' B' := OfeMor (sum_map f g).
-Instance sumO_map_ne {A A' B B'} :
+Global Instance sumO_map_ne {A A' B B'} :
   NonExpansive2 (@sumO_map A A' B B').
 Proof. intros n f f' Hf g g' Hg [?|?]; constructor; [apply Hf|apply Hg]. Qed.
 
@@ -902,7 +902,7 @@ Next Obligation.
 Qed.
 Notation "F1 + F2" := (sumOF F1%OF F2%OF) : oFunctor_scope.
 
-Instance sumOF_contractive F1 F2 :
+Global Instance sumOF_contractive F1 F2 :
   oFunctorContractive F1 → oFunctorContractive F2 →
   oFunctorContractive (sumOF F1 F2).
 Proof.
@@ -914,7 +914,7 @@ Qed.
 Section discrete_ofe.
   Context `{Equiv A} (Heq : @Equivalence A (≡)).
 
-  Instance discrete_dist : Dist A := λ n x y, x ≡ y.
+  Local Instance discrete_dist : Dist A := λ n x y, x ≡ y.
   Definition discrete_ofe_mixin : OfeMixin A.
   Proof using Type*.
     split.
@@ -953,7 +953,7 @@ Notation discrete_ofe_equivalence_of A := ltac:(
   | discrete_ofe_mixin ?H => exact H
   end) (only parsing).
 
-Instance leibnizO_leibniz A : LeibnizEquiv (leibnizO A).
+Global Instance leibnizO_leibniz A : LeibnizEquiv (leibnizO A).
 Proof. by intros x y. Qed.
 
 (** * Basic Coq types *)
@@ -964,8 +964,8 @@ Canonical Structure NO := leibnizO N.
 Canonical Structure ZO := leibnizO Z.
 
 Section prop.
-  Instance Prop_equiv : Equiv Prop := iff.
-  Instance Prop_equivalence : Equivalence (≡@{Prop}) := _.
+  Local Instance Prop_equiv : Equiv Prop := iff.
+  Local Instance Prop_equivalence : Equivalence (≡@{Prop}) := _.
   Canonical Structure PropO := discreteO Prop.
 End prop.
 
@@ -973,7 +973,7 @@ End prop.
 Section option.
   Context {A : ofeT}.
 
-  Instance option_dist : Dist (option A) := λ n, option_Forall2 (dist n).
+  Local Instance option_dist : Dist (option A) := λ n, option_Forall2 (dist n).
   Lemma dist_option_Forall2 n mx my : mx ≡{n}≡ my ↔ option_Forall2 (dist n) mx my.
   Proof. done. Qed.
 
@@ -1037,13 +1037,13 @@ End option.
 Typeclasses Opaque option_dist.
 Arguments optionO : clear implicits.
 
-Instance option_fmap_ne {A B : ofeT} n:
+Global Instance option_fmap_ne {A B : ofeT} n:
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@fmap option _ A B).
 Proof. intros f f' Hf ?? []; constructor; auto. Qed.
-Instance option_mbind_ne {A B : ofeT} n:
+Global Instance option_mbind_ne {A B : ofeT} n:
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@mbind option _ A B).
 Proof. destruct 2; simpl; auto. Qed.
-Instance option_mjoin_ne {A : ofeT} n:
+Global Instance option_mjoin_ne {A : ofeT} n:
   Proper (dist n ==> dist n) (@mjoin option _ A).
 Proof. destruct 1 as [?? []|]; simpl; by constructor. Qed.
 
@@ -1056,7 +1056,7 @@ Qed.
 
 Definition optionO_map {A B} (f : A -n> B) : optionO A -n> optionO B :=
   OfeMor (fmap f : optionO A → optionO B).
-Instance optionO_map_ne A B : NonExpansive (@optionO_map A B).
+Global Instance optionO_map_ne A B : NonExpansive (@optionO_map A B).
 Proof. by intros n f f' Hf []; constructor; apply Hf. Qed.
 
 Program Definition optionOF (F : oFunctor) : oFunctor := {|
@@ -1075,7 +1075,7 @@ Next Obligation.
   apply option_fmap_equiv_ext=>y; apply oFunctor_map_compose.
 Qed.
 
-Instance optionOF_contractive F :
+Global Instance optionOF_contractive F :
   oFunctorContractive F → oFunctorContractive (optionOF F).
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg;
@@ -1091,12 +1091,12 @@ Record later (A : Type) : Type := Next { later_car : A }.
 Add Printing Constructor later.
 Arguments Next {_} _.
 Arguments later_car {_} _.
-Instance: Params (@Next) 1 := {}.
+Global Instance: Params (@Next) 1 := {}.
 
 Section later.
   Context {A : ofeT}.
-  Instance later_equiv : Equiv (later A) := λ x y, later_car x ≡ later_car y.
-  Instance later_dist : Dist (later A) := λ n x y,
+  Local Instance later_equiv : Equiv (later A) := λ x y, later_car x ≡ later_car y.
+  Local Instance later_dist : Dist (later A) := λ n x y,
     dist_later n (later_car x) (later_car y).
   Definition later_ofe_mixin : OfeMixin (later A).
   Proof.
@@ -1129,7 +1129,7 @@ Section later.
 
   Lemma Next_uninj x : ∃ a, x ≡ Next a.
   Proof. by exists (later_car x). Qed.
-  Instance later_car_anti_contractive n :
+  Local Instance later_car_anti_contractive n :
     Proper (dist n ==> dist_later n) later_car.
   Proof. move=> [x] [y] /= Hxy. done. Qed.
 
@@ -1148,11 +1148,11 @@ Arguments laterO : clear implicits.
 
 Definition later_map {A B} (f : A → B) (x : later A) : later B :=
   Next (f (later_car x)).
-Instance later_map_ne {A B : ofeT} (f : A → B) n :
+Global Instance later_map_ne {A B : ofeT} (f : A → B) n :
   Proper (dist (pred n) ==> dist (pred n)) f →
   Proper (dist n ==> dist n) (later_map f) | 0.
 Proof. destruct n as [|n]; intros Hf [x] [y] ?; do 2 red; simpl; auto. Qed.
-Instance later_map_proper {A B : ofeT} (f : A → B) :
+Global Instance later_map_proper {A B : ofeT} (f : A → B) :
   Proper ((≡) ==> (≡)) f →
   Proper ((≡) ==> (≡)) (later_map f).
 Proof. solve_proper. Qed.
@@ -1166,7 +1166,7 @@ Lemma later_map_ext {A B : ofeT} (f g : A → B) x :
 Proof. destruct x; intros Hf; apply Hf. Qed.
 Definition laterO_map {A B} (f : A -n> B) : laterO A -n> laterO B :=
   OfeMor (later_map f).
-Instance laterO_map_contractive (A B : ofeT) : Contractive (@laterO_map A B).
+Global Instance laterO_map_contractive (A B : ofeT) : Contractive (@laterO_map A B).
 Proof. intros [|n] f g Hf n'; [done|]; apply Hf; lia. Qed.
 
 Program Definition laterOF (F : oFunctor) : oFunctor := {|
@@ -1187,7 +1187,7 @@ Next Obligation.
 Qed.
 Notation "▶ F"  := (laterOF F%OF) (at level 20, right associativity) : oFunctor_scope.
 
-Instance laterOF_contractive F : oFunctorContractive (laterOF F).
+Global Instance laterOF_contractive F : oFunctorContractive (laterOF F).
 Proof.
   intros A1 ? A2 ? B1 ? B2 ? n fg fg' Hfg. apply laterO_map_contractive.
   destruct n as [|n]; simpl in *; first done. apply oFunctor_map_ne, Hfg.
@@ -1213,8 +1213,8 @@ Section discrete_fun.
   Context {A : Type} {B : A → ofeT}.
   Implicit Types f g : discrete_fun B.
 
-  Instance discrete_fun_equiv : Equiv (discrete_fun B) := λ f g, ∀ x, f x ≡ g x.
-  Instance discrete_fun_dist : Dist (discrete_fun B) := λ n f g, ∀ x, f x ≡{n}≡ g x.
+  Local Instance discrete_fun_equiv : Equiv (discrete_fun B) := λ f g, ∀ x, f x ≡ g x.
+  Local Instance discrete_fun_dist : Dist (discrete_fun B) := λ n f g, ∀ x, f x ≡{n}≡ g x.
   Definition discrete_fun_ofe_mixin : OfeMixin (discrete_fun B).
   Proof.
     split.
@@ -1268,14 +1268,14 @@ Lemma discrete_fun_map_compose {A} {B1 B2 B3 : A → ofeT}
   discrete_fun_map (λ x, f2 x ∘ f1 x) g = discrete_fun_map f2 (discrete_fun_map f1 g).
 Proof. done. Qed.
 
-Instance discrete_fun_map_ne {A} {B1 B2 : A → ofeT} (f : ∀ x, B1 x → B2 x) n :
+Global Instance discrete_fun_map_ne {A} {B1 B2 : A → ofeT} (f : ∀ x, B1 x → B2 x) n :
   (∀ x, Proper (dist n ==> dist n) (f x)) →
   Proper (dist n ==> dist n) (discrete_fun_map f).
 Proof. by intros ? y1 y2 Hy x; rewrite /discrete_fun_map (Hy x). Qed.
 
 Definition discrete_funO_map {A} {B1 B2 : A → ofeT} (f : discrete_fun (λ x, B1 x -n> B2 x)) :
   discrete_funO B1 -n> discrete_funO B2 := OfeMor (discrete_fun_map f).
-Instance discrete_funO_map_ne {A} {B1 B2 : A → ofeT} :
+Global Instance discrete_funO_map_ne {A} {B1 B2 : A → ofeT} :
   NonExpansive (@discrete_funO_map A B1 B2).
 Proof. intros n f1 f2 Hf g x; apply Hf. Qed.
 
@@ -1299,7 +1299,7 @@ Qed.
 
 Notation "T -d> F" := (@discrete_funOF T%type (λ _, F%OF)) : oFunctor_scope.
 
-Instance discrete_funOF_contractive {C} (F : C → oFunctor) :
+Global Instance discrete_funOF_contractive {C} (F : C → oFunctor) :
   (∀ c, oFunctorContractive (F c)) → oFunctorContractive (discrete_funOF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n ?? g.
@@ -1356,8 +1356,8 @@ Section sigma.
 
   (* TODO: Find a better place for this Equiv instance. It also
      should not depend on A being an OFE. *)
-  Instance sig_equiv : Equiv (sig P) := λ x1 x2, `x1 ≡ `x2.
-  Instance sig_dist : Dist (sig P) := λ n x1 x2, `x1 ≡{n}≡ `x2.
+  Local Instance sig_equiv : Equiv (sig P) := λ x1 x2, `x1 ≡ `x2.
+  Local Instance sig_dist : Dist (sig P) := λ n x1 x2, `x1 ≡{n}≡ `x2.
 
   Definition sig_equiv_alt x y : x ≡ y ↔ `x ≡ `y := reflexivity _.
   Definition sig_dist_alt n x y : x ≡{n}≡ y ↔ `x ≡{n}≡ `y := reflexivity _.
@@ -1399,7 +1399,7 @@ Section sigT.
     Unlike in the topos of trees, with (C)OFEs we cannot use step-indexed equality
     on the first component.
   *)
-  Instance sigT_dist : Dist (sigT P) := λ n x1 x2,
+  Local Instance sigT_dist : Dist (sigT P) := λ n x1 x2,
     ∃ Heq : projT1 x1 = projT1 x2, rew Heq in projT2 x1 ≡{n}≡ projT2 x2.
 
   (**
@@ -1409,7 +1409,7 @@ Section sigT.
     By defining [equiv] in terms of [dist], we can define an OFE
     without assuming UIP, at the cost of complex reasoning on [equiv].
   *)
-  Instance sigT_equiv : Equiv (sigT P) := λ x1 x2,
+  Local Instance sigT_equiv : Equiv (sigT P) := λ x1 x2,
     ∀ n, x1 ≡{n}≡ x2.
 
   (** Unfolding lemmas.
@@ -1599,10 +1599,10 @@ Arguments ofe_iso_21 {_ _} _ _.
 Section ofe_iso.
   Context {A B : ofeT}.
 
-  Instance ofe_iso_equiv : Equiv (ofe_iso A B) := λ I1 I2,
+  Local Instance ofe_iso_equiv : Equiv (ofe_iso A B) := λ I1 I2,
     ofe_iso_1 I1 ≡ ofe_iso_1 I2 ∧ ofe_iso_2 I1 ≡ ofe_iso_2 I2.
 
-  Instance ofe_iso_dist : Dist (ofe_iso A B) := λ n I1 I2,
+  Local Instance ofe_iso_dist : Dist (ofe_iso A B) := λ n I1 I2,
     ofe_iso_1 I1 ≡{n}≡ ofe_iso_1 I2 ∧ ofe_iso_2 I1 ≡{n}≡ ofe_iso_2 I2.
 
   Global Instance ofe_iso_1_ne : NonExpansive (ofe_iso_1 (A:=A) (B:=B)).
@@ -1633,7 +1633,7 @@ Solve Obligations with done.
 
 Definition iso_ofe_sym {A B : ofeT} (I : ofe_iso A B) : ofe_iso B A :=
   OfeIso (ofe_iso_2 I) (ofe_iso_1 I) (ofe_iso_21 I) (ofe_iso_12 I).
-Instance iso_ofe_sym_ne {A B} : NonExpansive (iso_ofe_sym (A:=A) (B:=B)).
+Global Instance iso_ofe_sym_ne {A B} : NonExpansive (iso_ofe_sym (A:=A) (B:=B)).
 Proof. intros n I1 I2 []; split; simpl; by f_equiv. Qed.
 
 Program Definition iso_ofe_trans {A B C}
@@ -1641,7 +1641,7 @@ Program Definition iso_ofe_trans {A B C}
   OfeIso (ofe_iso_1 J ◎ ofe_iso_1 I) (ofe_iso_2 I ◎ ofe_iso_2 J) _ _.
 Next Obligation. intros A B C I J z; simpl. by rewrite !ofe_iso_12. Qed.
 Next Obligation. intros A B C I J z; simpl. by rewrite !ofe_iso_21. Qed.
-Instance iso_ofe_trans_ne {A B C} : NonExpansive2 (iso_ofe_trans (A:=A) (B:=B) (C:=C)).
+Global Instance iso_ofe_trans_ne {A B C} : NonExpansive2 (iso_ofe_trans (A:=A) (B:=B) (C:=C)).
 Proof. intros n I1 I2 [] J1 J2 []; split; simpl; by f_equiv. Qed.
 
 Program Definition iso_ofe_cong (F : oFunctor) `{!Cofe A, !Cofe B}
@@ -1658,9 +1658,9 @@ Next Obligation.
   apply equiv_dist=> n.
   apply oFunctor_map_ne; split=> ? /=; by rewrite ?ofe_iso_12 ?ofe_iso_21.
 Qed.
-Instance iso_ofe_cong_ne (F : oFunctor) `{!Cofe A, !Cofe B} :
+Global Instance iso_ofe_cong_ne (F : oFunctor) `{!Cofe A, !Cofe B} :
   NonExpansive (iso_ofe_cong F (A:=A) (B:=B)).
 Proof. intros n I1 I2 []; split; simpl; by f_equiv. Qed.
-Instance iso_ofe_cong_contractive (F : oFunctor) `{!Cofe A, !Cofe B} :
+Global Instance iso_ofe_cong_contractive (F : oFunctor) `{!Cofe A, !Cofe B} :
   oFunctorContractive F → Contractive (iso_ofe_cong F (A:=A) (B:=B)).
 Proof. intros ? n I1 I2 HI; split; simpl; f_contractive; by destruct HI. Qed.

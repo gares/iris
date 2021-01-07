@@ -473,7 +473,7 @@ Next Obligation.
   rewrite Hagree. rewrite agree_map_to_agree. done.
 Qed.
 
-Instance gmap_viewURF_contractive (K : Type) `{Countable K} F :
+Global Instance gmap_viewURF_contractive (K : Type) `{Countable K} F :
   oFunctorContractive F → urFunctorContractive (gmap_viewURF K F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg.
@@ -493,7 +493,7 @@ Program Definition gmap_viewRF (K : Type) `{Countable K} (F : oFunctor) : rFunct
 |}.
 Solve Obligations with apply gmap_viewURF.
 
-Instance gmap_viewRF_contractive (K : Type) `{Countable K} F :
+Global Instance gmap_viewRF_contractive (K : Type) `{Countable K} F :
   oFunctorContractive F → rFunctorContractive (gmap_viewRF K F).
 Proof. apply gmap_viewURF_contractive. Qed.
 

@@ -9,7 +9,7 @@ Set Default Proof Using "Type*".
 Class Embed (A B : Type) := embed : A → B.
 Arguments embed {_ _ _} _%I : simpl never.
 Notation "⎡ P ⎤" := (embed P) : bi_scope.
-Instance: Params (@embed) 3 := {}.
+Global Instance: Params (@embed) 3 := {}.
 Typeclasses Opaque embed.
 
 Global Hint Mode Embed ! - : typeclass_instances.

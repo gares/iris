@@ -16,7 +16,7 @@ From iris.prelude Require Import options.
 Class mono_natG Σ :=
   MonoNatG { mono_natG_inG :> inG Σ mono_natR; }.
 Definition mono_natΣ : gFunctors := #[ GFunctor mono_natR ].
-Instance subG_mono_natΣ Σ : subG mono_natΣ Σ → mono_natG Σ.
+Global Instance subG_mono_natΣ Σ : subG mono_natΣ Σ → mono_natG Σ.
 Proof. solve_inG. Qed.
 
 Definition mono_nat_auth_own_def `{!mono_natG Σ}

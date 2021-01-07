@@ -6,8 +6,8 @@ From iris.prelude Require Import options.
 Section ofe.
   Context {A : ofeT}.
 
-  Instance vec_equiv m : Equiv (vec A m) := equiv (A:=list A).
-  Instance vec_dist m : Dist (vec A m) := dist (A:=list A).
+  Local Instance vec_equiv m : Equiv (vec A m) := equiv (A:=list A).
+  Local Instance vec_dist m : Dist (vec A m) := dist (A:=list A).
 
   Definition vec_ofe_mixin m : OfeMixin (vec A m).
   Proof. by apply (iso_ofe_mixin vec_to_list). Qed.
@@ -76,7 +76,7 @@ Proof.
   intros Hf. eapply (list_fmap_ext_ne f g v) in Hf.
   by rewrite -!vec_to_list_map in Hf.
 Qed.
-Instance vec_map_ne {A B : ofeT} m f n :
+Global Instance vec_map_ne {A B : ofeT} m f n :
   Proper (dist n ==> dist n) f →
   Proper (dist n ==> dist n) (@vec_map A B m f).
 Proof.
@@ -85,7 +85,7 @@ Proof.
 Qed.
 Definition vecO_map {A B : ofeT} m (f : A -n> B) : vecO A m -n> vecO B m :=
   OfeMor (vec_map m f).
-Instance vecO_map_ne {A A'} m :
+Global Instance vecO_map_ne {A A'} m :
   NonExpansive (@vecO_map A A' m).
 Proof. intros n f g ? v. by apply vec_map_ext_ne. Qed.
 
@@ -108,7 +108,7 @@ Next Obligation.
   rewrite !vec_to_list_map. by apply: (oFunctor_map_compose (listOF F) f g f' g').
 Qed.
 
-Instance vecOF_contractive F m :
+Global Instance vecOF_contractive F m :
   oFunctorContractive F → oFunctorContractive (vecOF F m).
 Proof.
   by intros ?? A1 ? A2 ? B1 ? B2 ? n ???; apply vecO_map_ne; first apply oFunctor_map_contractive.

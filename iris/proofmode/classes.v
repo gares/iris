@@ -271,9 +271,9 @@ Class IsApp {A} (l k1 k2 : list A) := is_app : l = k1 ++ k2.
 Global Hint Mode IsCons + ! - - : typeclass_instances.
 Global Hint Mode IsApp + ! - - : typeclass_instances.
 
-Instance is_cons_cons {A} (x : A) (l : list A) : IsCons (x :: l) x l.
+Global Instance is_cons_cons {A} (x : A) (l : list A) : IsCons (x :: l) x l.
 Proof. done. Qed.
-Instance is_app_app {A} (l1 l2 : list A) : IsApp (l1 ++ l2) l1 l2.
+Global Instance is_app_app {A} (l1 l2 : list A) : IsApp (l1 ++ l2) l1 l2.
 Proof. done. Qed.
 
 Class Frame {PROP : bi} (p : bool) (R P Q : PROP) := frame : □?p R ∗ Q ⊢ P.
@@ -290,14 +290,14 @@ Arguments MaybeFrame {_} _ _%I _%I _%I _.
 Arguments maybe_frame {_} _ _%I _%I _%I _ {_}.
 Global Hint Mode MaybeFrame + + ! - - - : typeclass_instances.
 
-Instance maybe_frame_frame {PROP : bi} p (R P Q : PROP) :
+Global Instance maybe_frame_frame {PROP : bi} p (R P Q : PROP) :
   Frame p R P Q → MaybeFrame p R P Q true.
 Proof. done. Qed.
 
-Instance maybe_frame_default_persistent {PROP : bi} (R P : PROP) :
+Global Instance maybe_frame_default_persistent {PROP : bi} (R P : PROP) :
   MaybeFrame true R P P false | 100.
 Proof. intros. rewrite /MaybeFrame /=. by rewrite sep_elim_r. Qed.
-Instance maybe_frame_default {PROP : bi} (R P : PROP) :
+Global Instance maybe_frame_default {PROP : bi} (R P : PROP) :
   TCOr (Affine R) (Absorbing P) → MaybeFrame false R P P false | 100.
 Proof. intros. rewrite /MaybeFrame /=. apply: sep_elim_r. Qed.
 
@@ -459,13 +459,13 @@ Class IntoLaterN {PROP : bi} (only_head : bool) (n : nat) (P Q : PROP) :=
 Arguments IntoLaterN {_} _ _%nat_scope _%I _%I.
 Global Hint Mode IntoLaterN + + + ! - : typeclass_instances.
 
-Instance maybe_into_laterN_default {PROP : bi} only_head n (P : PROP) :
+Global Instance maybe_into_laterN_default {PROP : bi} only_head n (P : PROP) :
   MaybeIntoLaterN only_head n P P | 1000.
 Proof. apply laterN_intro. Qed.
 (* In the case both parameters are evars and n=0, we have to stop the
    search and unify both evars immediately instead of looping using
    other instances. *)
-Instance maybe_into_laterN_default_0 {PROP : bi} only_head (P : PROP) :
+Global Instance maybe_into_laterN_default_0 {PROP : bi} only_head (P : PROP) :
   MaybeIntoLaterN only_head 0 P P | 0.
 Proof. apply _. Qed.
 
@@ -597,40 +597,40 @@ with the exception of:
 - [MaybeIntoLaterN] and [FromLaterN] used by [iNext]
 - [IntoPersistent] used by [iIntuitionistic]
 *)
-Instance into_pure_tc_opaque {PROP : bi} (P : PROP) φ :
+Global Instance into_pure_tc_opaque {PROP : bi} (P : PROP) φ :
   IntoPure P φ → IntoPure (tc_opaque P) φ := id.
-Instance from_pure_tc_opaque {PROP : bi} (a : bool) (P : PROP) φ :
+Global Instance from_pure_tc_opaque {PROP : bi} (a : bool) (P : PROP) φ :
   FromPure a P φ → FromPure a (tc_opaque P) φ := id.
-Instance from_wand_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+Global Instance from_wand_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromWand P Q1 Q2 → FromWand (tc_opaque P) Q1 Q2 := id.
-Instance into_wand_tc_opaque {PROP : bi} p q (R P Q : PROP) :
+Global Instance into_wand_tc_opaque {PROP : bi} p q (R P Q : PROP) :
   IntoWand p q R P Q → IntoWand p q (tc_opaque R) P Q := id.
 (* Higher precedence than [from_and_sep] so that [iCombine] does not loop. *)
-Instance from_and_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+Global Instance from_and_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromAnd P Q1 Q2 → FromAnd (tc_opaque P) Q1 Q2 | 102 := id.
-Instance into_and_tc_opaque {PROP : bi} p (P Q1 Q2 : PROP) :
+Global Instance into_and_tc_opaque {PROP : bi} p (P Q1 Q2 : PROP) :
   IntoAnd p P Q1 Q2 → IntoAnd p (tc_opaque P) Q1 Q2 := id.
-Instance into_sep_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+Global Instance into_sep_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   IntoSep P Q1 Q2 → IntoSep (tc_opaque P) Q1 Q2 := id.
-Instance from_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+Global Instance from_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   FromOr P Q1 Q2 → FromOr (tc_opaque P) Q1 Q2 := id.
-Instance into_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
+Global Instance into_or_tc_opaque {PROP : bi} (P Q1 Q2 : PROP) :
   IntoOr P Q1 Q2 → IntoOr (tc_opaque P) Q1 Q2 := id.
-Instance from_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
+Global Instance from_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   FromExist P Φ → FromExist (tc_opaque P) Φ := id.
-Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :
+Global Instance into_exist_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name: ident_name) :
   IntoExist P Φ name → IntoExist (tc_opaque P) Φ name := id.
-Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :
+Global Instance from_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) (name : ident_name) :
   FromForall P Φ name → FromForall (tc_opaque P) Φ name := id.
-Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
+Global Instance into_forall_tc_opaque {PROP : bi} {A} (P : PROP) (Φ : A → PROP) :
   IntoForall P Φ → IntoForall (tc_opaque P) Φ := id.
-Instance from_modal_tc_opaque {PROP1 PROP2 : bi} {A}
+Global Instance from_modal_tc_opaque {PROP1 PROP2 : bi} {A}
     M (sel : A) (P : PROP2) (Q : PROP1) :
   FromModal M sel P Q → FromModal M sel (tc_opaque P) Q := id.
-Instance elim_modal_tc_opaque {PROP : bi} φ p p' (P P' Q Q' : PROP) :
+Global Instance elim_modal_tc_opaque {PROP : bi} φ p p' (P P' Q Q' : PROP) :
   ElimModal φ p p' P P' Q Q' → ElimModal φ p p' (tc_opaque P) P' Q Q' := id.
-Instance into_inv_tc_opaque {PROP : bi} (P : PROP) N :
+Global Instance into_inv_tc_opaque {PROP : bi} (P : PROP) N :
   IntoInv P N → IntoInv (tc_opaque P) N := id.
-Instance elim_inv_tc_opaque {PROP : bi} {X} φ Pinv Pin Pout Pclose Q Q' :
+Global Instance elim_inv_tc_opaque {PROP : bi} {X} φ Pinv Pin Pout Pclose Q Q' :
   ElimInv (PROP:=PROP) (X:=X) φ Pinv Pin Pout Pclose Q Q' →
   ElimInv φ (tc_opaque Pinv) Pin Pout Pclose Q Q' := id.

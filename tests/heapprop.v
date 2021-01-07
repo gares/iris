@@ -18,8 +18,8 @@ Add Printing Constructor heapProp.
 Section ofe.
   Inductive heapProp_equiv' (P Q : heapProp) : Prop :=
     { heapProp_in_equiv : ∀ σ, P σ ↔ Q σ }.
-  Instance heapProp_equiv : Equiv heapProp := heapProp_equiv'.
-  Instance heapProp_equivalence : Equivalence (≡@{heapProp}).
+  Local Instance heapProp_equiv : Equiv heapProp := heapProp_equiv'.
+  Local Instance heapProp_equivalence : Equivalence (≡@{heapProp}).
   Proof. split; repeat destruct 1; constructor; naive_solver. Qed.
   Canonical Structure heapPropO := discreteO heapProp.
 End ofe.
@@ -220,7 +220,7 @@ Canonical Structure heapPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of heapProp;
      bi_bi_mixin := heapProp_bi_mixin; bi_bi_later_mixin := heapProp_bi_later_mixin |}.
 
-Instance heapProp_pure_forall : BiPureForall heapPropI.
+Global Instance heapProp_pure_forall : BiPureForall heapPropI.
 Proof. intros A φ. rewrite /bi_forall /bi_pure /=. unseal. by split. Qed.
 
 Lemma heapProp_proofmode_test {A} (P Q R : heapProp) (Φ Ψ : A → heapProp) :

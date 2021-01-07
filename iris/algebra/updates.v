@@ -8,13 +8,13 @@ From iris.prelude Require Import options.
 *)
 Definition cmra_updateP {A : cmraT} (x : A) (P : A → Prop) := ∀ n mz,
   ✓{n} (x ⋅? mz) → ∃ y, P y ∧ ✓{n} (y ⋅? mz).
-Instance: Params (@cmra_updateP) 1 := {}.
+Global Instance: Params (@cmra_updateP) 1 := {}.
 Infix "~~>:" := cmra_updateP (at level 70).
 
 Definition cmra_update {A : cmraT} (x y : A) := ∀ n mz,
   ✓{n} (x ⋅? mz) → ✓{n} (y ⋅? mz).
 Infix "~~>" := cmra_update (at level 70).
-Instance: Params (@cmra_update) 1 := {}.
+Global Instance: Params (@cmra_update) 1 := {}.
 
 Section updates.
 Context {A : cmraT}.

@@ -43,7 +43,7 @@ Fixpoint big_sepL2 {PROP : bi} {A B}
   | x1 :: l1, x2 :: l2 => Φ 0 x1 x2 ∗ big_sepL2 (λ n, Φ (S n)) l1 l2
   | _, _ => False
   end%I.
-Instance: Params (@big_sepL2) 3 := {}.
+Global Instance: Params (@big_sepL2) 3 := {}.
 Arguments big_sepL2 {PROP A B} _ !_ !_ /.
 Typeclasses Opaque big_sepL2.
 Notation "'[∗' 'list]' k ↦ x1 ; x2 ∈ l1 ; l2 , P" :=
@@ -59,7 +59,7 @@ Definition big_sepM2_aux : seal (@big_sepM2_def). Proof. by eexists. Qed.
 Definition big_sepM2 := big_sepM2_aux.(unseal).
 Arguments big_sepM2 {PROP K _ _ A B} _ _ _.
 Definition big_sepM2_eq : @big_sepM2 = _ := big_sepM2_aux.(seal_eq).
-Instance: Params (@big_sepM2) 6 := {}.
+Global Instance: Params (@big_sepM2) 6 := {}.
 Notation "'[∗' 'map]' k ↦ x1 ; x2 ∈ m1 ; m2 , P" :=
   (big_sepM2 (λ k x1 x2, P) m1 m2) : bi_scope.
 Notation "'[∗' 'map]' x1 ; x2 ∈ m1 ; m2 , P" :=

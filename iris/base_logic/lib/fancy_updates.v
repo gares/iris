@@ -33,13 +33,13 @@ Proof.
     iIntros "!> !>". by iApply "HP".
   - rewrite uPred_fupd_eq /uPred_fupd_def. by iIntros (????) "[HwP $]".
 Qed.
-Instance uPred_bi_fupd `{!invG Σ} : BiFUpd (uPredI (iResUR Σ)) :=
+Global Instance uPred_bi_fupd `{!invG Σ} : BiFUpd (uPredI (iResUR Σ)) :=
   {| bi_fupd_mixin := uPred_fupd_mixin |}.
 
-Instance uPred_bi_bupd_fupd `{!invG Σ} : BiBUpdFUpd (uPredI (iResUR Σ)).
+Global Instance uPred_bi_bupd_fupd `{!invG Σ} : BiBUpdFUpd (uPredI (iResUR Σ)).
 Proof. rewrite /BiBUpdFUpd uPred_fupd_eq. by iIntros (E P) ">? [$ $] !> !>". Qed.
 
-Instance uPred_bi_fupd_plainly `{!invG Σ} : BiFUpdPlainly (uPredI (iResUR Σ)).
+Global Instance uPred_bi_fupd_plainly `{!invG Σ} : BiFUpdPlainly (uPredI (iResUR Σ)).
 Proof.
   split.
   - rewrite uPred_fupd_eq /uPred_fupd_def. iIntros (E P) "H [Hw HE]".

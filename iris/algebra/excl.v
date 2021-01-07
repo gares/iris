@@ -10,14 +10,14 @@ Inductive excl (A : Type) :=
 Arguments Excl {_} _.
 Arguments ExclBot {_}.
 
-Instance: Params (@Excl) 1 := {}.
-Instance: Params (@ExclBot) 1 := {}.
+Global Instance: Params (@Excl) 1 := {}.
+Global Instance: Params (@ExclBot) 1 := {}.
 
 Notation excl' A := (option (excl A)).
 Notation Excl' x := (Some (Excl x)).
 Notation ExclBot' := (Some ExclBot).
 
-Instance maybe_Excl {A} : Maybe (@Excl A) := λ x,
+Global Instance maybe_Excl {A} : Maybe (@Excl A) := λ x,
   match x with Excl a => Some a | _ => None end.
 
 Section excl.
@@ -70,12 +70,12 @@ Global Instance ExclBot_discrete : Discrete (@ExclBot A).
 Proof. by inversion_clear 1; constructor. Qed.
 
 (* CMRA *)
-Instance excl_valid : Valid (excl A) := λ x,
+Local Instance excl_valid : Valid (excl A) := λ x,
   match x with Excl _ => True | ExclBot => False end.
-Instance excl_validN : ValidN (excl A) := λ n x,
+Local Instance excl_validN : ValidN (excl A) := λ n x,
   match x with Excl _ => True | ExclBot => False end.
-Instance excl_pcore : PCore (excl A) := λ _, None.
-Instance excl_op : Op (excl A) := λ x y, ExclBot.
+Local Instance excl_pcore : PCore (excl A) := λ _, None.
+Local Instance excl_op : Op (excl A) := λ x y, ExclBot.
 
 Lemma excl_cmra_mixin : CmraMixin (excl A).
 Proof.
@@ -128,15 +128,15 @@ Proof. by destruct x. Qed.
 Lemma excl_map_ext {A B : ofeT} (f g : A → B) x :
   (∀ x, f x ≡ g x) → excl_map f x ≡ excl_map g x.
 Proof. by destruct x; constructor. Qed.
-Instance excl_map_ne {A B : ofeT} n :
+Global Instance excl_map_ne {A B : ofeT} n :
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@excl_map A B).
 Proof. by intros f f' Hf; destruct 1; constructor; apply Hf. Qed.
-Instance excl_map_cmra_morphism {A B : ofeT} (f : A → B) :
+Global Instance excl_map_cmra_morphism {A B : ofeT} (f : A → B) :
   NonExpansive f → CmraMorphism (excl_map f).
 Proof. split; try done; try apply _. by intros n [a|]. Qed.
 Definition exclO_map {A B} (f : A -n> B) : exclO A -n> exclO B :=
   OfeMor (excl_map f).
-Instance exclO_map_ne A B : NonExpansive (@exclO_map A B).
+Global Instance exclO_map_ne A B : NonExpansive (@exclO_map A B).
 Proof. by intros n f f' Hf []; constructor; apply Hf. Qed.
 
 Program Definition exclRF (F : oFunctor) : rFunctor := {|
@@ -155,7 +155,7 @@ Next Obligation.
   apply excl_map_ext=>y; apply oFunctor_map_compose.
 Qed.
 
-Instance exclRF_contractive F :
+Global Instance exclRF_contractive F :
   oFunctorContractive F → rFunctorContractive (exclRF F).
 Proof.
   intros A1 ? A2 ? B1 ? B2 ? n x1 x2 ??. by apply exclO_map_ne, oFunctor_map_contractive.

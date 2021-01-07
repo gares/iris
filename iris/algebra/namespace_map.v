@@ -23,26 +23,26 @@ Add Printing Constructor namespace_map.
 Arguments NamespaceMap {_} _ _.
 Arguments namespace_map_data_proj {_} _.
 Arguments namespace_map_token_proj {_} _.
-Instance: Params (@NamespaceMap) 1 := {}.
-Instance: Params (@namespace_map_data_proj) 1 := {}.
-Instance: Params (@namespace_map_token_proj) 1 := {}.
+Global Instance: Params (@NamespaceMap) 1 := {}.
+Global Instance: Params (@namespace_map_data_proj) 1 := {}.
+Global Instance: Params (@namespace_map_token_proj) 1 := {}.
 
 (** TODO: [positives_flatten] violates the namespace abstraction. *)
 Definition namespace_map_data {A : cmraT} (N : namespace) (a : A) : namespace_map A :=
   NamespaceMap {[ positives_flatten N := a ]} ε.
 Definition namespace_map_token {A : cmraT} (E : coPset) : namespace_map A :=
   NamespaceMap ∅ (CoPset E).
-Instance: Params (@namespace_map_data) 2 := {}.
+Global Instance: Params (@namespace_map_data) 2 := {}.
 
 (* Ofe *)
 Section ofe.
 Context {A : ofeT}.
 Implicit Types x y : namespace_map A.
 
-Instance namespace_map_equiv : Equiv (namespace_map A) := λ x y,
+Local Instance namespace_map_equiv : Equiv (namespace_map A) := λ x y,
   namespace_map_data_proj x ≡ namespace_map_data_proj y ∧
   namespace_map_token_proj x = namespace_map_token_proj y.
-Instance namespace_map_dist : Dist (namespace_map A) := λ n x y,
+Local Instance namespace_map_dist : Dist (namespace_map A) := λ n x y,
   namespace_map_data_proj x ≡{n}≡ namespace_map_data_proj y ∧
   namespace_map_token_proj x = namespace_map_token_proj y.
 
@@ -91,7 +91,7 @@ Proof. intros. apply NamespaceMap_discrete; apply _. Qed.
 Global Instance namespace_map_token_discrete E : Discrete (@namespace_map_token A E).
 Proof. intros. apply NamespaceMap_discrete; apply _. Qed.
 
-Instance namespace_map_valid : Valid (namespace_map A) := λ x,
+Local Instance namespace_map_valid : Valid (namespace_map A) := λ x,
   match namespace_map_token_proj x with
   | CoPset E =>
      ✓ (namespace_map_data_proj x) ∧
@@ -100,7 +100,7 @@ Instance namespace_map_valid : Valid (namespace_map A) := λ x,
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_valid !_ /.
-Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
+Local Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
   match namespace_map_token_proj x with
   | CoPset E =>
      ✓{n} (namespace_map_data_proj x) ∧
@@ -109,9 +109,9 @@ Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_validN !_ /.
-Instance namespace_map_pcore : PCore (namespace_map A) := λ x,
+Local Instance namespace_map_pcore : PCore (namespace_map A) := λ x,
   Some (NamespaceMap (core (namespace_map_data_proj x)) ε).
-Instance namespace_map_op : Op (namespace_map A) := λ x y,
+Local Instance namespace_map_op : Op (namespace_map A) := λ x y,
   NamespaceMap (namespace_map_data_proj x ⋅ namespace_map_data_proj y)
                (namespace_map_token_proj x ⋅ namespace_map_token_proj y).
 
@@ -193,7 +193,7 @@ Proof.
   by intros [?%cmra_discrete_valid ?].
 Qed.
 
-Instance namespace_map_empty : Unit (namespace_map A) := NamespaceMap ε ε.
+Local Instance namespace_map_empty : Unit (namespace_map A) := NamespaceMap ε ε.
 Lemma namespace_map_ucmra_mixin : UcmraMixin (namespace_map A).
 Proof.
   split; simpl.

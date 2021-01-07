@@ -37,10 +37,10 @@ Implicit Types P Q : monPred.
 Section Ofe_Cofe_def.
   Inductive monPred_equiv' P Q : Prop :=
     { monPred_in_equiv i : P i ≡ Q i } .
-  Instance monPred_equiv : Equiv monPred := monPred_equiv'.
+  Local Instance monPred_equiv : Equiv monPred := monPred_equiv'.
   Inductive monPred_dist' (n : nat) (P Q : monPred) : Prop :=
     { monPred_in_dist i : P i ≡{n}≡ Q i }.
-  Instance monPred_dist : Dist monPred := monPred_dist'.
+  Local Instance monPred_dist : Dist monPred := monPred_dist'.
 
   Definition monPred_sig P : { f : I -d> PROP | Proper ((⊑) ==> (⊢)) f } :=
     exist _ (monPred_at P) (monPred_mono P).
@@ -324,7 +324,7 @@ Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
 Arguments Objective {_ _} _%I.
 Arguments objective_at {_ _} _%I {_}.
 Global Hint Mode Objective + + ! : typeclass_instances.
-Instance: Params (@Objective) 2 := {}.
+Global Instance: Params (@Objective) 2 := {}.
 
 (** Primitive facts that cannot be deduced from the BI structure. *)
 

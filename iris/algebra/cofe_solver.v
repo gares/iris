@@ -50,8 +50,8 @@ Record tower := {
   tower_car k :> A k;
   g_tower k : g k (tower_car (S k)) ≡ tower_car k
 }.
-Instance tower_equiv : Equiv tower := λ X Y, ∀ k, X k ≡ Y k.
-Instance tower_dist : Dist tower := λ n X Y, ∀ k, X k ≡{n}≡ Y k.
+Global Instance tower_equiv : Equiv tower := λ X Y, ∀ k, X k ≡ Y k.
+Global Instance tower_dist : Dist tower := λ n X Y, ∀ k, X k ≡{n}≡ Y k.
 Definition tower_ofe_mixin : OfeMixin tower.
 Proof.
   split.
@@ -98,7 +98,7 @@ Qed.
 Lemma gg_tower k i (X : tower) : gg i (X (i + k)) ≡ X k.
 Proof. by induction i as [|i IH]; simpl; [done|rewrite g_tower IH]. Qed.
 
-Instance tower_car_ne k : NonExpansive (λ X, tower_car X k).
+Global Instance tower_car_ne k : NonExpansive (λ X, tower_car X k).
 Proof. by intros X Y HX. Qed.
 Definition project (k : nat) : T -n> A k := OfeMor (λ X : T, tower_car X k).
 
@@ -151,8 +151,8 @@ Qed.
 Program Definition embed (k : nat) (x : A k) : T :=
   {| tower_car n := embed_coerce n x |}.
 Next Obligation. intros k x i. apply g_embed_coerce. Qed.
-Instance: Params (@embed) 1 := {}.
-Instance embed_ne k : NonExpansive (embed k).
+Global Instance: Params (@embed) 1 := {}.
+Global Instance embed_ne k : NonExpansive (embed k).
 Proof. by intros n x y Hxy i; rewrite /= Hxy. Qed.
 Definition embed' (k : nat) : A k -n> T := OfeMor (embed k).
 Lemma embed_f k (x : A k) : embed (S k) (f k x) ≡ embed k x.
@@ -188,7 +188,7 @@ Next Obligation.
   by apply (contractive_ne map); split=> Y /=; rewrite ?g_tower ?embed_f.
 Qed.
 Definition unfold (X : T) : oFunctor_apply F T := compl (unfold_chain X).
-Instance unfold_ne : NonExpansive unfold.
+Global Instance unfold_ne : NonExpansive unfold.
 Proof.
   intros n X Y HXY. by rewrite /unfold (conv_compl n (unfold_chain X))
     (conv_compl n (unfold_chain Y)) /= (HXY (S n)).
@@ -201,7 +201,7 @@ Next Obligation.
   rewrite g_S -oFunctor_map_compose.
   apply (contractive_proper map); split=> Y; [apply embed_f|apply g_tower].
 Qed.
-Instance fold_ne : NonExpansive fold.
+Global Instance fold_ne : NonExpansive fold.
 Proof. by intros n X Y HXY k; rewrite /fold /= HXY. Qed.
 
 Theorem result : solution F.

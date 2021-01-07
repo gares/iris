@@ -18,8 +18,8 @@ Definition excl_auth_frag {A : ofeT} (a : A) : excl_authR A :=
 
 Typeclasses Opaque excl_auth_auth excl_auth_frag.
 
-Instance: Params (@excl_auth_auth) 1 := {}.
-Instance: Params (@excl_auth_frag) 2 := {}.
+Global Instance: Params (@excl_auth_auth) 1 := {}.
+Global Instance: Params (@excl_auth_frag) 2 := {}.
 
 Notation "●E a" := (excl_auth_auth a) (at level 10).
 Notation "◯E a" := (excl_auth_frag a) (at level 10).

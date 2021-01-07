@@ -20,7 +20,7 @@ Class ownPG (Λ : language) (Σ : gFunctors) := OwnPG {
   ownP_name : gname;
 }.
 
-Instance ownPG_irisG `{!ownPG Λ Σ} : irisG Λ Σ := {
+Global Instance ownPG_irisG `{!ownPG Λ Σ} : irisG Λ Σ := {
   iris_invG := ownP_invG;
   state_interp σ κs _ := own ownP_name (●E σ)%I;
   fork_post _ := True%I;
@@ -36,14 +36,14 @@ Class ownPPreG (Λ : language) (Σ : gFunctors) : Set := IrisPreG {
   ownPPre_state_inG :> inG Σ (excl_authR (stateO Λ))
 }.
 
-Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.
+Global Instance subG_ownPΣ {Λ Σ} : subG (ownPΣ Λ) Σ → ownPPreG Λ Σ.
 Proof. solve_inG. Qed.
 
 (** Ownership *)
 Definition ownP `{!ownPG Λ Σ} (σ : state Λ) : iProp Σ :=
   own ownP_name (◯E σ).
 Typeclasses Opaque ownP.
-Instance: Params (@ownP) 3 := {}.
+Global Instance: Params (@ownP) 3 := {}.
 
 (* Adequacy *)
 Theorem ownP_adequacy Σ `{!ownPPreG Λ Σ} s e σ φ :

@@ -6,7 +6,7 @@ Definition vs `{!invG Σ} (E1 E2 : coPset) (P Q : iProp Σ) : iProp Σ :=
   □ (P -∗ |={E1,E2}=> Q).
 Arguments vs {_ _} _ _ _%I _%I.
 
-Instance: Params (@vs) 4 := {}.
+Global Instance: Params (@vs) 4 := {}.
 Notation "P ={ E1 , E2 }=> Q" := (vs E1 E2 P Q)
   (at level 99, E1,E2 at level 50, Q at level 200,
    format "P  ={ E1 , E2 }=>  Q") : bi_scope.

@@ -10,7 +10,7 @@ Definition coreP `{!BiPlainly PROP} (P : PROP) : PROP :=
   (* TODO: Looks like we want notation for affinely-plainly; that lets us avoid
   using conjunction/implication here. *)
   (∀ Q : PROP, <affine> ■ (Q -∗ <pers> Q) -∗ <affine> ■ (P -∗ Q) -∗ Q)%I.
-Instance: Params (@coreP) 1 := {}.
+Global Instance: Params (@coreP) 1 := {}.
 Typeclasses Opaque coreP.
 
 Section core.

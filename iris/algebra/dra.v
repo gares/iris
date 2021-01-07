@@ -107,10 +107,10 @@ Implicit Types a b : A.
 Implicit Types x y z : validity A.
 Arguments valid _ _ !_ /.
 
-Instance validity_valid : Valid (validity A) := validity_is_valid.
-Instance validity_equiv : Equiv (validity A) := λ x y,
+Local Instance validity_valid : Valid (validity A) := validity_is_valid.
+Local Instance validity_equiv : Equiv (validity A) := λ x y,
   (valid x ↔ valid y) ∧ (valid x → validity_car x ≡ validity_car y).
-Instance validity_equivalence : Equivalence (@equiv (validity A) _).
+Local Instance validity_equivalence : Equivalence (@equiv (validity A) _).
 Proof.
   split; unfold equiv, validity_equiv.
   - by intros [x px ?]; simpl.
@@ -120,11 +120,11 @@ Proof.
 Qed.
 Canonical Structure validityO : ofeT := discreteO (validity A).
 
-Instance dra_valid_proper' : Proper ((≡) ==> iff) (valid : A → Prop).
+Local Instance dra_valid_proper' : Proper ((≡) ==> iff) (valid : A → Prop).
 Proof. by split; apply: dra_valid_proper. Qed.
 Global Instance to_validity_proper : Proper ((≡) ==> (≡)) to_validity.
 Proof. by intros x1 x2 Hx; split; rewrite /= Hx. Qed.
-Instance: Proper ((≡) ==> (≡) ==> iff) (disjoint : relation A).
+Local Instance: Proper ((≡) ==> (≡) ==> iff) (disjoint : relation A).
 Proof.
   intros x1 x2 Hx y1 y2 Hy; split.
   - by rewrite Hy (symmetry_iff (##) x1) (symmetry_iff (##) x2) Hx.

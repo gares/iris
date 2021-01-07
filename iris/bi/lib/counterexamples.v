@@ -72,9 +72,9 @@ Module savedprop. Section savedprop.
   (** We assume that we cannot update to false. *)
   Hypothesis consistency : ¬(⊢ |==> False).
 
-  Instance bupd_mono' : Proper ((⊢) ==> (⊢)) bupd.
+  Global Instance bupd_mono' : Proper ((⊢) ==> (⊢)) bupd.
   Proof. intros P Q ?. by apply bupd_mono. Qed.
-  Instance elim_modal_bupd p P Q : ElimModal True p false (|==> P) P (|==> Q) (|==> Q).
+  Global Instance elim_modal_bupd p P Q : ElimModal True p false (|==> P) P (|==> Q) (|==> Q).
   Proof.
     by rewrite /ElimModal bi.intuitionistically_if_elim
       bupd_frame_r bi.wand_elim_r bupd_trans.
@@ -165,9 +165,9 @@ Module inv. Section inv.
     iIntros "(HP & HPw)". by iApply "HPw".
   Qed.
 
-  Instance fupd_mono' E : Proper ((⊢) ==> (⊢)) (fupd E).
+  Global Instance fupd_mono' E : Proper ((⊢) ==> (⊢)) (fupd E).
   Proof. intros P Q ?. by apply fupd_mono. Qed.
-  Instance fupd_proper E : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E).
+  Global Instance fupd_proper E : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E).
   Proof.
     intros P Q; rewrite !bi.equiv_spec=> -[??]; split; by apply fupd_mono.
   Qed.
@@ -303,9 +303,9 @@ Module linear. Section linear.
     cinv γ P -∗ cinv_own γ -∗ fupd M1 M0 (▷ P ∗ cinv_own γ ∗ (▷ P -∗ fupd M0 M1 emp)).
 
   (** Some general lemmas and proof mode compatibility. *)
-  Instance fupd_mono' E1 E2 : Proper ((⊢) ==> (⊢)) (fupd E1 E2).
+  Global Instance fupd_mono' E1 E2 : Proper ((⊢) ==> (⊢)) (fupd E1 E2).
   Proof. intros P Q ?. by apply fupd_mono. Qed.
-  Instance fupd_proper E1 E2 : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E1 E2).
+  Global Instance fupd_proper E1 E2 : Proper ((⊣⊢) ==> (⊣⊢)) (fupd E1 E2).
   Proof.
     intros P Q; rewrite !bi.equiv_spec=> -[??]; split; by apply fupd_mono.
   Qed.

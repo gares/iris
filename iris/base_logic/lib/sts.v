@@ -11,7 +11,7 @@ Class stsG Σ (sts : stsT) := StsG {
 }.
 
 Definition stsΣ (sts : stsT) : gFunctors := #[ GFunctor (stsR sts) ].
-Instance subG_stsΣ Σ sts :
+Global Instance subG_stsΣ Σ sts :
   subG (stsΣ sts) Σ → Inhabited (sts.state sts) → stsG Σ sts.
 Proof. solve_inG. Qed.
 
@@ -51,10 +51,10 @@ Section definitions.
   Proof. apply _. Qed.
 End definitions.
 
-Instance: Params (@sts_inv) 4 := {}.
-Instance: Params (@sts_ownS) 4 := {}.
-Instance: Params (@sts_own) 5 := {}.
-Instance: Params (@sts_ctx) 6 := {}.
+Global Instance: Params (@sts_inv) 4 := {}.
+Global Instance: Params (@sts_ownS) 4 := {}.
+Global Instance: Params (@sts_own) 5 := {}.
+Global Instance: Params (@sts_ctx) 6 := {}.
 
 Section sts.
   Context `{!invG Σ, !stsG Σ sts}.

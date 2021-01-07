@@ -7,7 +7,7 @@ Section ofe.
 Context {A : ofeT}.
 Implicit Types l : list A.
 
-Instance list_dist : Dist (list A) := λ n, Forall2 (dist n).
+Local Instance list_dist : Dist (list A) := λ n, Forall2 (dist n).
 
 Lemma list_dist_lookup n l1 l2 : l1 ≡{n}≡ l2 ↔ ∀ i, l1 !! i ≡{n}≡ l2 !! i.
 Proof. setoid_rewrite dist_option_Forall2. apply Forall2_lookup. Qed.
@@ -98,27 +98,27 @@ End ofe.
 Arguments listO : clear implicits.
 
 (** Non-expansiveness of higher-order list functions and big-ops *)
-Instance list_fmap_ne {A B : ofeT} (f : A → B) n :
+Global Instance list_fmap_ne {A B : ofeT} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
 Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
-Instance list_omap_ne {A B : ofeT} (f : A → option B) n :
+Global Instance list_omap_ne {A B : ofeT} (f : A → option B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (omap (M:=list) f).
 Proof.
   intros Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
   destruct (Hf _ _ Hx); [f_equiv|]; auto.
 Qed.
-Instance imap_ne {A B : ofeT} (f : nat → A → B) n :
+Global Instance imap_ne {A B : ofeT} (f : nat → A → B) n :
   (∀ i, Proper (dist n ==> dist n) (f i)) → Proper (dist n ==> dist n) (imap f).
 Proof.
   intros Hf l1 l2 Hl. revert f Hf.
   induction Hl; intros f Hf; simpl; [constructor|f_equiv; naive_solver].
 Qed.
-Instance list_bind_ne {A B : ofeT} (f : A → list A) n :
+Global Instance list_bind_ne {A B : ofeT} (f : A → list A) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (mbind f).
 Proof. induction 2; simpl; [constructor|solve_proper]. Qed.
-Instance list_join_ne {A : ofeT} : NonExpansive (mjoin (M:=list) (A:=A)).
+Global Instance list_join_ne {A : ofeT} : NonExpansive (mjoin (M:=list) (A:=A)).
 Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
-Instance zip_with_ne {A B C : ofeT} (f : A → B → C) n :
+Global Instance zip_with_ne {A B C : ofeT} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
   Proper (dist n ==> dist n ==> dist n) (zip_with f).
 Proof. induction 2; destruct 1; simpl; [constructor..|f_equiv; [f_equiv|]; auto]. Qed.
@@ -141,7 +141,7 @@ Lemma list_fmap_ext_ne {A} {B : ofeT} (f g : A → B) (l : list A) n :
 Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2, Forall_true. Qed.
 Definition listO_map {A B} (f : A -n> B) : listO A -n> listO B :=
   OfeMor (fmap f : listO A → listO B).
-Instance listO_map_ne A B : NonExpansive (@listO_map A B).
+Global Instance listO_map_ne A B : NonExpansive (@listO_map A B).
 Proof. intros n f g ? l. by apply list_fmap_ext_ne. Qed.
 
 Program Definition listOF (F : oFunctor) : oFunctor := {|
@@ -160,7 +160,7 @@ Next Obligation.
   apply list_fmap_equiv_ext=>y; apply oFunctor_map_compose.
 Qed.
 
-Instance listOF_contractive F :
+Global Instance listOF_contractive F :
   oFunctorContractive F → oFunctorContractive (listOF F).
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, oFunctor_map_contractive.
@@ -172,17 +172,17 @@ Section cmra.
   Implicit Types l : list A.
   Local Arguments op _ _ !_ !_ / : simpl nomatch.
 
-  Instance list_op : Op (list A) :=
+  Local Instance list_op : Op (list A) :=
     fix go l1 l2 := let _ : Op _ := @go in
     match l1, l2 with
     | [], _ => l2
     | _, [] => l1
     | x :: l1, y :: l2 => x ⋅ y :: l1 ⋅ l2
     end.
-  Instance list_pcore : PCore (list A) := λ l, Some (core <$> l).
+  Local Instance list_pcore : PCore (list A) := λ l, Some (core <$> l).
 
-  Instance list_valid : Valid (list A) := Forall (λ x, ✓ x).
-  Instance list_validN : ValidN (list A) := λ n, Forall (λ x, ✓{n} x).
+  Local Instance list_valid : Valid (list A) := Forall (λ x, ✓ x).
+  Local Instance list_validN : ValidN (list A) := λ n, Forall (λ x, ✓{n} x).
 
   Lemma cons_valid l x : ✓ (x :: l) ↔ ✓ x ∧ ✓ l.
   Proof. apply Forall_cons. Qed.
@@ -299,7 +299,7 @@ End cmra.
 Arguments listR : clear implicits.
 Arguments listUR : clear implicits.
 
-Instance list_singletonM {A : ucmraT} : SingletonM nat A (list A) := λ n x,
+Global Instance list_singletonM {A : ucmraT} : SingletonM nat A (list A) := λ n x,
   replicate n ε ++ [x].
 
 Section properties.
@@ -515,7 +515,7 @@ Section properties.
 End properties.
 
 (** Functor *)
-Instance list_fmap_cmra_morphism {A B : ucmraT} (f : A → B)
+Global Instance list_fmap_cmra_morphism {A B : ucmraT} (f : A → B)
   `{!CmraMorphism f} : CmraMorphism (fmap f : list A → list B).
 Proof.
   split; try apply _.
@@ -543,7 +543,7 @@ Next Obligation.
   apply list_fmap_equiv_ext=>y; apply urFunctor_map_compose.
 Qed.
 
-Instance listURF_contractive F :
+Global Instance listURF_contractive F :
   urFunctorContractive F → urFunctorContractive (listURF F).
 Proof.
   by intros ? A1 ? A2 ? B1 ? B2 ? n f g Hfg; apply listO_map_ne, urFunctor_map_contractive.
@@ -555,6 +555,6 @@ Program Definition listRF (F : urFunctor) : rFunctor := {|
 |}.
 Solve Obligations with apply listURF.
 
-Instance listRF_contractive F :
+Global Instance listRF_contractive F :
   urFunctorContractive F → rFunctorContractive (listRF F).
 Proof. apply listURF_contractive. Qed.

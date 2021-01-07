@@ -3,9 +3,9 @@ From iris.heap_lang Require Export lang.
 From iris.heap_lang Require Import tactics notation.
 From iris.prelude Require Import options.
 
-Instance into_val_val v : IntoVal (Val v) v.
+Global Instance into_val_val v : IntoVal (Val v) v.
 Proof. done. Qed.
-Instance as_val_val v : AsVal (Val v).
+Global Instance as_val_val v : AsVal (Val v).
 Proof. by eexists. Qed.
 
 (** * Instances of the [Atomic] class *)

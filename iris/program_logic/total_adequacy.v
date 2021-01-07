@@ -46,7 +46,7 @@ Proof.
   iIntros "!>" (t') "H". by iApply "IH".
 Qed.
 
-Instance twptp_Permutation : Proper ((≡ₚ) ==> (⊢)) twptp.
+Local Instance twptp_Permutation : Proper ((≡ₚ) ==> (⊢)) twptp.
 Proof.
   iIntros (t1 t1' Ht) "Ht1". iRevert (t1' Ht); iRevert (t1) "Ht1".
   iApply twptp_ind; iIntros "!>" (t1) "IH"; iIntros (t1' Ht).

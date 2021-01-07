@@ -6,11 +6,11 @@ From iris.prelude Require Import options.
 Definition discrete_fun_insert `{EqDecision A} {B : A → ofeT}
     (x : A) (y : B x) (f : discrete_fun B) : discrete_fun B := λ x',
   match decide (x = x') with left H => eq_rect _ B y _ H | right _ => f x' end.
-Instance: Params (@discrete_fun_insert) 5 := {}.
+Global Instance: Params (@discrete_fun_insert) 5 := {}.
 
 Definition discrete_fun_singleton `{EqDecision A} {B : A → ucmraT}
   (x : A) (y : B x) : discrete_fun B := discrete_fun_insert x y ε.
-Instance: Params (@discrete_fun_singleton) 5 := {}.
+Global Instance: Params (@discrete_fun_singleton) 5 := {}.
 
 Section ofe.
   Context `{Heqdec : EqDecision A} {B : A → ofeT}.

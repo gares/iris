@@ -20,7 +20,7 @@ Class proph_mapPreG (P V : Type) (Σ : gFunctors) `{Countable P} :=
 Definition proph_mapΣ (P V : Type) `{Countable P} : gFunctors :=
   #[GFunctor (gmap_viewR P (listO $ leibnizO V))].
 
-Instance subG_proph_mapPreG {Σ P V} `{Countable P} :
+Global Instance subG_proph_mapPreG {Σ P V} `{Countable P} :
   subG (proph_mapΣ P V) Σ → proph_mapPreG P V Σ.
 Proof. solve_inG. Qed.
 

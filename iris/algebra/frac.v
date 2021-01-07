@@ -15,9 +15,9 @@ Notation frac := Qp (only parsing).
 Section frac.
   Canonical Structure fracO := leibnizO frac.
 
-  Instance frac_valid : Valid frac := λ x, (x ≤ 1)%Qp.
-  Instance frac_pcore : PCore frac := λ _, None.
-  Instance frac_op : Op frac := λ x y, (x + y)%Qp.
+  Local Instance frac_valid : Valid frac := λ x, (x ≤ 1)%Qp.
+  Local Instance frac_pcore : PCore frac := λ _, None.
+  Local Instance frac_op : Op frac := λ x y, (x + y)%Qp.
 
   Lemma frac_valid' p : ✓ p ↔ (p ≤ 1)%Qp.
   Proof. done. Qed.

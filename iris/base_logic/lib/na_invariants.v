@@ -12,7 +12,7 @@ Class na_invG Σ :=
   na_inv_inG :> inG Σ (prodR coPset_disjR (gset_disjR positive)).
 Definition na_invΣ : gFunctors :=
   #[ GFunctor (constRF (prodR coPset_disjR (gset_disjR positive))) ].
-Instance subG_na_invG {Σ} : subG na_invΣ Σ → na_invG Σ.
+Global Instance subG_na_invG {Σ} : subG na_invΣ Σ → na_invG Σ.
 Proof. solve_inG. Qed.
 
 Section defs.
@@ -26,7 +26,7 @@ Section defs.
           inv N (P ∗ own p (CoPset ∅, GSet {[i]}) ∨ na_own p {[i]}))%I.
 End defs.
 
-Instance: Params (@na_inv) 3 := {}.
+Global Instance: Params (@na_inv) 3 := {}.
 Typeclasses Opaque na_own na_inv.
 
 Section proofs.

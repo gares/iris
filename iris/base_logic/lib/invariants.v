@@ -13,7 +13,7 @@ Definition inv_aux : seal (@inv_def). Proof. by eexists. Qed.
 Definition inv := inv_aux.(unseal).
 Arguments inv {Σ _} N P.
 Definition inv_eq : @inv = @inv_def := inv_aux.(seal_eq).
-Instance: Params (@inv) 3 := {}.
+Global Instance: Params (@inv) 3 := {}.
 
 (** * Invariants *)
 Section inv.

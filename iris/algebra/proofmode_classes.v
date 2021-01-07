@@ -19,7 +19,7 @@ Class IsOp {A : cmraT} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
 Arguments is_op {_} _ _ _ {_}.
 Global Hint Mode IsOp + - - - : typeclass_instances.
 
-Instance is_op_op {A : cmraT} (a b : A) : IsOp (a ⋅ b) a b | 100.
+Global Instance is_op_op {A : cmraT} (a b : A) : IsOp (a ⋅ b) a b | 100.
 Proof. by rewrite /IsOp. Qed.
 
 Class IsOp' {A : cmraT} (a b1 b2 : A) := is_op' :> IsOp a b1 b2.
@@ -29,7 +29,7 @@ Global Hint Mode IsOp' + - ! ! : typeclass_instances.
 Class IsOp'LR {A : cmraT} (a b1 b2 : A) := is_op_lr : IsOp a b1 b2.
 Existing Instance is_op_lr | 0.
 Global Hint Mode IsOp'LR + ! - - : typeclass_instances.
-Instance is_op_lr_op {A : cmraT} (a b : A) : IsOp'LR (a ⋅ b) a b | 0.
+Global Instance is_op_lr_op {A : cmraT} (a b : A) : IsOp'LR (a ⋅ b) a b | 0.
 Proof. by rewrite /IsOp'LR /IsOp. Qed.
 
 (* FromOp *)

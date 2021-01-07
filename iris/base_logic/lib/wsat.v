@@ -28,7 +28,7 @@ Module invG.
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.
 
-  Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
+  Global Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
   Proof. solve_inG. Qed.
 End invG.
 Import invG.
@@ -39,18 +39,18 @@ Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)).
 Arguments ownI {_ _} _ _%I.
 Typeclasses Opaque ownI.
-Instance: Params (@invariant_unfold) 1 := {}.
-Instance: Params (@ownI) 3 := {}.
+Global Instance: Params (@invariant_unfold) 1 := {}.
+Global Instance: Params (@ownI) 3 := {}.
 
 Definition ownE `{!invG Σ} (E : coPset) : iProp Σ :=
   own enabled_name (CoPset E).
 Typeclasses Opaque ownE.
-Instance: Params (@ownE) 3 := {}.
+Global Instance: Params (@ownE) 3 := {}.
 
 Definition ownD `{!invG Σ} (E : gset positive) : iProp Σ :=
   own disabled_name (GSet E).
 Typeclasses Opaque ownD.
-Instance: Params (@ownD) 3 := {}.
+Global Instance: Params (@ownD) 3 := {}.
 
 Definition wsat `{!invG Σ} : iProp Σ :=
   locked (∃ I : gmap positive (iProp Σ),
@@ -62,7 +62,7 @@ Context `{!invG Σ}.
 Implicit Types P : iProp Σ.
 
 (* Invariants *)
-Instance invariant_unfold_contractive : Contractive (@invariant_unfold Σ).
+Local Instance invariant_unfold_contractive : Contractive (@invariant_unfold Σ).
 Proof. solve_contractive. Qed.
 Global Instance ownI_contractive i : Contractive (@ownI Σ _ i).
 Proof. solve_contractive. Qed.

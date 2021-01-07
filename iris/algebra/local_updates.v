@@ -4,7 +4,7 @@ From iris.prelude Require Import options.
 (** * Local updates *)
 Definition local_update {A : cmraT} (x y : A * A) := ∀ n mz,
   ✓{n} x.1 → x.1 ≡{n}≡ x.2 ⋅? mz → ✓{n} y.1 ∧ y.1 ≡{n}≡ y.2 ⋅? mz.
-Instance: Params (@local_update) 1 := {}.
+Global Instance: Params (@local_update) 1 := {}.
 Infix "~l~>" := local_update (at level 70).
 
 Section updates.

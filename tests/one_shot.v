@@ -30,7 +30,7 @@ Definition Shot (n : Z) : one_shotR := Cinr (to_agree n).
 
 Class one_shotG Σ := { one_shot_inG :> inG Σ one_shotR }.
 Definition one_shotΣ : gFunctors := #[GFunctor one_shotR].
-Instance subG_one_shotΣ {Σ} : subG one_shotΣ Σ → one_shotG Σ.
+Global Instance subG_one_shotΣ {Σ} : subG one_shotΣ Σ → one_shotG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.

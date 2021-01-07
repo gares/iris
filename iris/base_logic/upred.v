@@ -113,17 +113,17 @@ Record uPred (M : ucmraT) : Type := UPred {
 Bind Scope bi_scope with uPred.
 Arguments uPred_holds {_} _%I _ _ : simpl never.
 Add Printing Constructor uPred.
-Instance: Params (@uPred_holds) 3 := {}.
+Global Instance: Params (@uPred_holds) 3 := {}.
 
 Section cofe.
   Context {M : ucmraT}.
 
   Inductive uPred_equiv' (P Q : uPred M) : Prop :=
     { uPred_in_equiv : ∀ n x, ✓{n} x → P n x ↔ Q n x }.
-  Instance uPred_equiv : Equiv (uPred M) := uPred_equiv'.
+  Local Instance uPred_equiv : Equiv (uPred M) := uPred_equiv'.
   Inductive uPred_dist' (n : nat) (P Q : uPred M) : Prop :=
     { uPred_in_dist : ∀ n' x, n' ≤ n → ✓{n'} x → P n' x ↔ Q n' x }.
-  Instance uPred_dist : Dist (uPred M) := uPred_dist'.
+  Local Instance uPred_dist : Dist (uPred M) := uPred_dist'.
   Definition uPred_ofe_mixin : OfeMixin (uPred M).
   Proof.
     split.
@@ -156,11 +156,11 @@ Section cofe.
 End cofe.
 Arguments uPredO : clear implicits.
 
-Instance uPred_ne {M} (P : uPred M) n : Proper (dist n ==> iff) (P n).
+Global Instance uPred_ne {M} (P : uPred M) n : Proper (dist n ==> iff) (P n).
 Proof.
   intros x1 x2 Hx; split=> ?; eapply uPred_mono; eauto; by rewrite Hx.
 Qed.
-Instance uPred_proper {M} (P : uPred M) n : Proper ((≡) ==> iff) (P n).
+Global Instance uPred_proper {M} (P : uPred M) n : Proper ((≡) ==> iff) (P n).
 Proof. by intros x1 x2 Hx; apply uPred_ne, equiv_dist. Qed.
 
 Lemma uPred_holds_ne {M} (P Q : uPred M) n1 n2 x :
@@ -192,7 +192,7 @@ Program Definition uPred_map {M1 M2 : ucmraT} (f : M2 -n> M1)
   uPred M2 := {| uPred_holds n x := P n (f x) |}.
 Next Obligation. naive_solver eauto using uPred_mono, cmra_morphism_monotoneN. Qed.
 
-Instance uPred_map_ne {M1 M2 : ucmraT} (f : M2 -n> M1)
+Global Instance uPred_map_ne {M1 M2 : ucmraT} (f : M2 -n> M1)
   `{!CmraMorphism f} n : Proper (dist n ==> dist n) (uPred_map f).
 Proof.
   intros x1 x2 Hx; split=> n' y ??.
@@ -235,7 +235,7 @@ Next Obligation.
   apply uPred_map_ext=>y; apply urFunctor_map_compose.
 Qed.
 
-Instance uPredOF_contractive F :
+Global Instance uPredOF_contractive F :
   urFunctorContractive F → oFunctorContractive (uPredOF F).
 Proof.
   intros ? A1 ? A2 ? B1 ? B2 ? n P Q HPQ.

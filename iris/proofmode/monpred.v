@@ -14,7 +14,7 @@ Global Hint Mode MakeMonPredAt ! ! - ! - : typeclass_instances.
 
 Class IsBiIndexRel {I : biIndex} (i j : I) := is_bi_index_rel : i ⊑ j.
 Global Hint Mode IsBiIndexRel + - - : typeclass_instances.
-Instance is_bi_index_rel_refl {I : biIndex} (i : I) : IsBiIndexRel i i | 0.
+Global Instance is_bi_index_rel_refl {I : biIndex} (i : I) : IsBiIndexRel i i | 0.
 Proof. by rewrite /IsBiIndexRel. Qed.
 Global Hint Extern 1 (IsBiIndexRel _ _) => unfold IsBiIndexRel; assumption
             : typeclass_instances.

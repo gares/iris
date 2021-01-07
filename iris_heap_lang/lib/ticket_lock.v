@@ -32,7 +32,7 @@ Class tlockG Σ :=
 Definition tlockΣ : gFunctors :=
   #[ GFunctor (authR (prodUR (optionUR (exclR natO)) (gset_disjUR nat))) ].
 
-Instance subG_tlockΣ {Σ} : subG tlockΣ Σ → tlockG Σ.
+Global Instance subG_tlockΣ {Σ} : subG tlockΣ Σ → tlockG Σ.
 Proof. solve_inG. Qed.
 
 Section proof.

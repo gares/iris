@@ -66,7 +66,7 @@ Local Definition inG_fold {Σ A} {i : inG Σ A} :
 Local Definition iRes_singleton {Σ A} {i : inG Σ A} (γ : gname) (a : A) : iResUR Σ :=
   discrete_fun_singleton (inG_id i)
     {[ γ := inG_unfold (cmra_transport inG_prf a) ]}.
-Instance: Params (@iRes_singleton) 4 := {}.
+Global Instance: Params (@iRes_singleton) 4 := {}.
 
 Local Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).

@@ -188,18 +188,18 @@ Canonical Structure bi_ofeO.
 Global Instance bi_cofe' (PROP : bi) : Cofe PROP.
 Proof. apply bi_cofe. Qed.
 
-Instance: Params (@bi_entails) 1 := {}.
-Instance: Params (@bi_emp) 1 := {}.
-Instance: Params (@bi_pure) 1 := {}.
-Instance: Params (@bi_and) 1 := {}.
-Instance: Params (@bi_or) 1 := {}.
-Instance: Params (@bi_impl) 1 := {}.
-Instance: Params (@bi_forall) 2 := {}.
-Instance: Params (@bi_exist) 2 := {}.
-Instance: Params (@bi_sep) 1 := {}.
-Instance: Params (@bi_wand) 1 := {}.
-Instance: Params (@bi_persistently) 1 := {}.
-Instance: Params (@bi_later) 1  := {}.
+Global Instance: Params (@bi_entails) 1 := {}.
+Global Instance: Params (@bi_emp) 1 := {}.
+Global Instance: Params (@bi_pure) 1 := {}.
+Global Instance: Params (@bi_and) 1 := {}.
+Global Instance: Params (@bi_or) 1 := {}.
+Global Instance: Params (@bi_impl) 1 := {}.
+Global Instance: Params (@bi_forall) 2 := {}.
+Global Instance: Params (@bi_exist) 2 := {}.
+Global Instance: Params (@bi_sep) 1 := {}.
+Global Instance: Params (@bi_wand) 1 := {}.
+Global Instance: Params (@bi_persistently) 1 := {}.
+Global Instance: Params (@bi_later) 1  := {}.
 
 Arguments bi_car : simpl never.
 Arguments bi_dist : simpl never.
@@ -218,8 +218,8 @@ Arguments bi_persistently {PROP} _%I : simpl never, rename.
 Arguments bi_later {PROP} _%I : simpl never, rename.
 
 Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
-Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
-Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
+Global Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
+Global Instance bi_inhabited {PROP : bi} : Inhabited PROP := populate (bi_pure True).
 
 Notation "P ⊢ Q" := (bi_entails P%I Q%I) : stdpp_scope.
 Notation "P '⊢@{' PROP } Q" := (bi_entails (PROP:=PROP) P%I Q%I) (only parsing) : stdpp_scope.

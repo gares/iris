@@ -10,7 +10,7 @@ Class InternalEq (PROP : bi) :=
   internal_eq : ∀ {A : ofeT}, A → A → PROP.
 Arguments internal_eq {_ _ _} _ _ : simpl never.
 Global Hint Mode InternalEq ! : typeclass_instances.
-Instance: Params (@internal_eq) 3 := {}.
+Global Instance: Params (@internal_eq) 3 := {}.
 Infix "≡" := internal_eq : bi_scope.
 Infix "≡@{ A }" := (internal_eq (A := A)) (only parsing) : bi_scope.
 

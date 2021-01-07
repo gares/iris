@@ -39,8 +39,8 @@ Definition ufrac_auth_frag {A : cmraT} (q : Qp) (x : A) : ufrac_authR A :=
 
 Typeclasses Opaque ufrac_auth_auth ufrac_auth_frag.
 
-Instance: Params (@ufrac_auth_auth) 2 := {}.
-Instance: Params (@ufrac_auth_frag) 2 := {}.
+Global Instance: Params (@ufrac_auth_auth) 2 := {}.
+Global Instance: Params (@ufrac_auth_frag) 2 := {}.
 
 Notation "●U{ q } a" := (ufrac_auth_auth q a) (at level 10, format "●U{ q }  a").
 Notation "◯U{ q } a" := (ufrac_auth_frag q a) (at level 10, format "◯U{ q }  a").

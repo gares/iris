@@ -89,10 +89,10 @@ Canonical Structure uPredI (M : ucmraT) : bi :=
      bi_bi_mixin := uPred_bi_mixin M;
      bi_bi_later_mixin := uPred_bi_later_mixin M |}.
 
-Instance uPred_pure_forall M : BiPureForall (uPredI M).
+Global Instance uPred_pure_forall M : BiPureForall (uPredI M).
 Proof. exact: @pure_forall_2. Qed.
 
-Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
+Global Instance uPred_later_contractive {M} : BiLaterContractive (uPredI M).
 Proof. apply later_contractive. Qed.
 
 Lemma uPred_internal_eq_mixin M : BiInternalEqMixin (uPredI M) (@uPred_internal_eq M).

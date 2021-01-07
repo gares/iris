@@ -87,7 +87,7 @@ Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
   GFunctor (namespace_mapR (agreeR positiveO))
 ].
 
-Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
+Global Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
   subG (gen_heapΣ L V) Σ → gen_heapPreG L V Σ.
 Proof. solve_inG. Qed.
 

@@ -19,10 +19,10 @@ Bind Scope siProp_scope with siProp.
 Section cofe.
   Inductive siProp_equiv' (P Q : siProp) : Prop :=
     { siProp_in_equiv : ∀ n, P n ↔ Q n }.
-  Instance siProp_equiv : Equiv siProp := siProp_equiv'.
+  Local Instance siProp_equiv : Equiv siProp := siProp_equiv'.
   Inductive siProp_dist' (n : nat) (P Q : siProp) : Prop :=
     { siProp_in_dist : ∀ n', n' ≤ n → P n' ↔ Q n' }.
-  Instance siProp_dist : Dist siProp := siProp_dist'.
+  Local Instance siProp_dist : Dist siProp := siProp_dist'.
   Definition siProp_ofe_mixin : OfeMixin siProp.
   Proof.
     split.

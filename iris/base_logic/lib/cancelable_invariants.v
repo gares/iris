@@ -8,7 +8,7 @@ Import uPred.
 Class cinvG Σ := cinv_inG :> inG Σ fracR.
 Definition cinvΣ : gFunctors := #[GFunctor fracR].
 
-Instance subG_cinvΣ {Σ} : subG cinvΣ Σ → cinvG Σ.
+Global Instance subG_cinvΣ {Σ} : subG cinvΣ Σ → cinvG Σ.
 Proof. solve_inG. Qed.
 
 Section defs.
@@ -20,7 +20,7 @@ Section defs.
     inv N (P ∨ cinv_own γ 1).
 End defs.
 
-Instance: Params (@cinv) 5 := {}.
+Global Instance: Params (@cinv) 5 := {}.
 
 Section proofs.
   Context `{!invG Σ, !cinvG Σ}.

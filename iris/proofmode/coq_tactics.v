@@ -69,7 +69,7 @@ Proof. by constructor. Qed.
 Global Instance affine_env_bi `(BiAffine PROP) Γ : AffineEnv Γ | 0.
 Proof. induction Γ; apply _. Qed.
 
-Instance affine_env_spatial Δ :
+Local Instance affine_env_spatial Δ :
   AffineEnv (env_spatial Δ) → Affine ([∗] env_spatial Δ).
 Proof. intros H. induction H; simpl; apply _. Qed.
 

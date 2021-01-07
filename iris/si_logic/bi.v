@@ -121,10 +121,10 @@ Canonical Structure siPropI : bi :=
   {| bi_ofe_mixin := ofe_mixin_of siProp;
      bi_bi_mixin := siProp_bi_mixin; bi_bi_later_mixin := siProp_bi_later_mixin |}.
 
-Instance siProp_pure_forall : BiPureForall siPropI.
+Global Instance siProp_pure_forall : BiPureForall siPropI.
 Proof. exact: @pure_forall_2. Qed.
 
-Instance siProp_later_contractive : BiLaterContractive siPropI.
+Global Instance siProp_later_contractive : BiLaterContractive siPropI.
 Proof. apply later_contractive. Qed.
 
 Lemma siProp_internal_eq_mixin : BiInternalEqMixin siPropI (@siProp_internal_eq).

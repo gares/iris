@@ -14,9 +14,9 @@ Section ufrac.
 
   Canonical Structure ufracO := leibnizO ufrac.
 
-  Instance ufrac_valid : Valid ufrac := λ x, True.
-  Instance ufrac_pcore : PCore ufrac := λ _, None.
-  Instance ufrac_op : Op ufrac := λ x y, (x + y)%Qp.
+  Local Instance ufrac_valid : Valid ufrac := λ x, True.
+  Local Instance ufrac_pcore : PCore ufrac := λ _, None.
+  Local Instance ufrac_op : Op ufrac := λ x y, (x + y)%Qp.
 
   Lemma ufrac_op' p q : p ⋅ q = (p + q)%Qp.
   Proof. done. Qed.

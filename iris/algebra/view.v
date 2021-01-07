@@ -55,15 +55,15 @@ Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
 }.
 Arguments ViewRel {_ _} _ _.
 Arguments view_rel_holds {_ _} _ _ _ _.
-Instance: Params (@view_rel_holds) 4 := {}.
+Global Instance: Params (@view_rel_holds) 4 := {}.
 
-Instance view_rel_ne {A B} (rel : view_rel A B) n :
+Global Instance view_rel_ne {A B} (rel : view_rel A B) n :
   Proper (dist n ==> dist n ==> iff) (rel n).
 Proof.
   intros a1 a2 Ha b1 b2 Hb.
   split=> ?; (eapply view_rel_mono; [done|done|by rewrite Hb|done]).
 Qed.
-Instance view_rel_proper {A B} (rel : view_rel A B) n :
+Global Instance view_rel_proper {A B} (rel : view_rel A B) n :
   Proper ((≡) ==> (≡) ==> iff) (rel n).
 Proof. intros a1 a2 Ha b1 b2 Hb. apply view_rel_ne; by apply equiv_dist. Qed.
 
@@ -80,17 +80,17 @@ Add Printing Constructor view.
 Arguments View {_ _ _} _ _.
 Arguments view_auth_proj {_ _ _} _.
 Arguments view_frag_proj {_ _ _} _.
-Instance: Params (@View) 3 := {}.
-Instance: Params (@view_auth_proj) 3 := {}.
-Instance: Params (@view_frag_proj) 3 := {}.
+Global Instance: Params (@View) 3 := {}.
+Global Instance: Params (@view_auth_proj) 3 := {}.
+Global Instance: Params (@view_frag_proj) 3 := {}.
 
 Definition view_auth {A B} {rel : view_rel A B} (q : Qp) (a : A) : view rel :=
   View (Some (q, to_agree a)) ε.
 Definition view_frag {A B} {rel : view_rel A B} (b : B) : view rel := View None b.
 Typeclasses Opaque view_auth view_frag.
 
-Instance: Params (@view_auth) 3 := {}.
-Instance: Params (@view_frag) 3 := {}.
+Global Instance: Params (@view_auth) 3 := {}.
+Global Instance: Params (@view_frag) 3 := {}.
 
 Notation "●V{ q } a" := (view_auth q a) (at level 20, format "●V{ q }  a").
 Notation "●V a" := (view_auth 1 a) (at level 20).
@@ -107,9 +107,9 @@ Section ofe.
   Implicit Types b : B.
   Implicit Types x y : view rel.
 
-  Instance view_equiv : Equiv (view rel) := λ x y,
+  Local Instance view_equiv : Equiv (view rel) := λ x y,
     view_auth_proj x ≡ view_auth_proj y ∧ view_frag_proj x ≡ view_frag_proj y.
-  Instance view_dist : Dist (view rel) := λ n x y,
+  Local Instance view_dist : Dist (view rel) := λ n x y,
     view_auth_proj x ≡{n}≡ view_auth_proj y ∧
     view_frag_proj x ≡{n}≡ view_frag_proj y.
 
@@ -173,21 +173,21 @@ Section cmra.
   Global Instance view_frag_inj : Inj (≡) (≡) (@view_frag A B rel).
   Proof. by intros ?? [??]. Qed.
 
-  Instance view_valid : Valid (view rel) := λ x,
+  Local Instance view_valid : Valid (view rel) := λ x,
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x))
     | None => ∀ n, ∃ a, rel n a (view_frag_proj x)
     end.
-  Instance view_validN : ValidN (view rel) := λ n x,
+  Local Instance view_validN : ValidN (view rel) := λ n x,
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
     | None => ∃ a, rel n a (view_frag_proj x)
     end.
-  Instance view_pcore : PCore (view rel) := λ x,
+  Local Instance view_pcore : PCore (view rel) := λ x,
     Some (View (core (view_auth_proj x)) (core (view_frag_proj x))).
-  Instance view_op : Op (view rel) := λ x y,
+  Local Instance view_op : Op (view rel) := λ x y,
     View (view_auth_proj x ⋅ view_auth_proj y) (view_frag_proj x ⋅ view_frag_proj y).
 
   Local Definition view_valid_eq :
@@ -253,7 +253,7 @@ Section cmra.
     - naive_solver.
   Qed.
 
-  Instance view_empty : Unit (view rel) := View ε ε.
+  Local Instance view_empty : Unit (view rel) := View ε ε.
   Lemma view_ucmra_mixin : UcmraMixin (view rel).
   Proof.
     split; simpl.
@@ -556,7 +556,7 @@ Proof.
   intros. constructor; simpl; [|by auto].
   apply option_fmap_equiv_ext=> a; by rewrite /prod_map /= agree_map_ext.
 Qed.
-Instance view_map_ne {A A' B B' : ofeT}
+Global Instance view_map_ne {A A' B B' : ofeT}
     {rel : nat → A → B → Prop} {rel' : nat → A' → B' → Prop}
     (f : A → A') (g : B → B') `{Hf : !NonExpansive f, Hg : !NonExpansive g} :
   NonExpansive (view_map (rel':=rel') (rel:=rel) f g).

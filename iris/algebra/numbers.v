@@ -3,10 +3,10 @@ From iris.prelude Require Import options.
 
 (** ** Natural numbers with [add] as the operation. *)
 Section nat.
-  Instance nat_valid : Valid nat := λ x, True.
-  Instance nat_validN : ValidN nat := λ n x, True.
-  Instance nat_pcore : PCore nat := λ x, Some 0.
-  Instance nat_op : Op nat := plus.
+  Local Instance nat_valid : Valid nat := λ x, True.
+  Local Instance nat_validN : ValidN nat := λ n x, True.
+  Local Instance nat_pcore : PCore nat := λ x, Some 0.
+  Local Instance nat_op : Op nat := plus.
   Definition nat_op_plus x y : x ⋅ y = x + y := eq_refl.
   Lemma nat_included (x y : nat) : x ≼ y ↔ x ≤ y.
   Proof. by rewrite nat_le_sum. Qed.
@@ -23,7 +23,7 @@ Section nat.
   Global Instance nat_cmra_discrete : CmraDiscrete natR.
   Proof. apply discrete_cmra_discrete. Qed.
 
-  Instance nat_unit : Unit nat := 0.
+  Local Instance nat_unit : Unit nat := 0.
   Lemma nat_ucmra_mixin : UcmraMixin nat.
   Proof. split; apply _ || done. Qed.
   Canonical Structure natUR : ucmraT := UcmraT nat nat_ucmra_mixin.
@@ -51,11 +51,11 @@ Add Printing Constructor max_nat.
 Canonical Structure max_natO := leibnizO max_nat.
 
 Section max_nat.
-  Instance max_nat_unit : Unit max_nat := MaxNat 0.
-  Instance max_nat_valid : Valid max_nat := λ x, True.
-  Instance max_nat_validN : ValidN max_nat := λ n x, True.
-  Instance max_nat_pcore : PCore max_nat := Some.
-  Instance max_nat_op : Op max_nat := λ n m, MaxNat (max_nat_car n `max` max_nat_car m).
+  Local Instance max_nat_unit : Unit max_nat := MaxNat 0.
+  Local Instance max_nat_valid : Valid max_nat := λ x, True.
+  Local Instance max_nat_validN : ValidN max_nat := λ n x, True.
+  Local Instance max_nat_pcore : PCore max_nat := Some.
+  Local Instance max_nat_op : Op max_nat := λ n m, MaxNat (max_nat_car n `max` max_nat_car m).
   Definition max_nat_op_max x y : MaxNat x ⋅ MaxNat y = MaxNat (x `max` y) := eq_refl.
 
   Lemma max_nat_included x y : x ≼ y ↔ max_nat_car x ≤ max_nat_car y.
@@ -107,10 +107,10 @@ Add Printing Constructor min_nat.
 Canonical Structure min_natO := leibnizO min_nat.
 
 Section min_nat.
-  Instance min_nat_valid : Valid min_nat := λ x, True.
-  Instance min_nat_validN : ValidN min_nat := λ n x, True.
-  Instance min_nat_pcore : PCore min_nat := Some.
-  Instance min_nat_op : Op min_nat := λ n m, MinNat (min_nat_car n `min` min_nat_car m).
+  Local Instance min_nat_valid : Valid min_nat := λ x, True.
+  Local Instance min_nat_validN : ValidN min_nat := λ n x, True.
+  Local Instance min_nat_pcore : PCore min_nat := Some.
+  Local Instance min_nat_op : Op min_nat := λ n m, MinNat (min_nat_car n `min` min_nat_car m).
   Definition min_nat_op_min x y : MinNat x ⋅ MinNat y = MinNat (x `min` y) := eq_refl.
 
   Lemma min_nat_included (x y : min_nat) : x ≼ y ↔ min_nat_car y ≤ min_nat_car x.
@@ -159,10 +159,10 @@ End min_nat.
 
 (** ** Positive integers with [Pos.add] as the operation. *)
 Section positive.
-  Instance pos_valid : Valid positive := λ x, True.
-  Instance pos_validN : ValidN positive := λ n x, True.
-  Instance pos_pcore : PCore positive := λ x, None.
-  Instance pos_op : Op positive := Pos.add.
+  Local Instance pos_valid : Valid positive := λ x, True.
+  Local Instance pos_validN : ValidN positive := λ n x, True.
+  Local Instance pos_pcore : PCore positive := λ x, None.
+  Local Instance pos_op : Op positive := Pos.add.
   Definition pos_op_plus x y : x ⋅ y = (x + y)%positive := eq_refl.
   Lemma pos_included (x y : positive) : x ≼ y ↔ (x < y)%positive.
   Proof. by rewrite Plt_sum. Qed.

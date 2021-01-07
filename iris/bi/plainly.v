@@ -9,7 +9,7 @@ Set Default Proof Using "Type*".
 Class Plainly (A : Type) := plainly : A → A.
 Arguments plainly {A}%type_scope {_} _%I.
 Global Hint Mode Plainly ! : typeclass_instances.
-Instance: Params (@plainly) 2 := {}.
+Global Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
@@ -95,12 +95,12 @@ Class Plain `{BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
 Arguments Plain {_ _} _%I : simpl never.
 Arguments plain {_ _} _%I {_}.
 Global Hint Mode Plain + - ! : typeclass_instances.
-Instance: Params (@Plain) 1 := {}.
+Global Instance: Params (@Plain) 1 := {}.
 
 Definition plainly_if `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
   (if p then ■ P else P)%I.
 Arguments plainly_if {_ _} !_ _%I /.
-Instance: Params (@plainly_if) 2 := {}.
+Global Instance: Params (@plainly_if) 2 := {}.
 Typeclasses Opaque plainly_if.
 
 Notation "■? p P" := (plainly_if p P) : bi_scope.

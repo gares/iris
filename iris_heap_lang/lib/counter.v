@@ -16,7 +16,7 @@ Definition read : val := λ: "l", !"l".
 Class mcounterG Σ := MCounterG { mcounter_inG :> inG Σ (authR max_natUR) }.
 Definition mcounterΣ : gFunctors := #[GFunctor (authR max_natUR)].
 
-Instance subG_mcounterΣ {Σ} : subG mcounterΣ Σ → mcounterG Σ.
+Global Instance subG_mcounterΣ {Σ} : subG mcounterΣ Σ → mcounterG Σ.
 Proof. solve_inG. Qed.
 
 Section mono_proof.
@@ -90,7 +90,7 @@ Class ccounterG Σ :=
 Definition ccounterΣ : gFunctors :=
   #[GFunctor (frac_authR natR)].
 
-Instance subG_ccounterΣ {Σ} : subG ccounterΣ Σ → ccounterG Σ.
+Global Instance subG_ccounterΣ {Σ} : subG ccounterΣ Σ → ccounterG Σ.
 Proof. solve_inG. Qed.
 
 Section contrib_spec.

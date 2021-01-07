@@ -38,5 +38,5 @@ Arguments locked {_ _} _ _.
 
 Existing Instances is_lock_ne is_lock_persistent locked_timeless.
 
-Instance is_lock_proper Σ `{!heapG Σ} (L: lock Σ) γ lk:
+Global Instance is_lock_proper Σ `{!heapG Σ} (L: lock Σ) γ lk:
   Proper ((≡) ==> (≡)) (is_lock L γ lk) := ne_proper _.

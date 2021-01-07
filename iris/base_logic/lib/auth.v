@@ -12,7 +12,7 @@ Class authG Σ (A : ucmraT) := AuthG {
 }.
 Definition authΣ (A : ucmraT) : gFunctors := #[ GFunctor (authR A) ].
 
-Instance subG_authΣ Σ A : subG (authΣ A) Σ → CmraDiscrete A → authG Σ A.
+Global Instance subG_authΣ Σ A : subG (authΣ A) Σ → CmraDiscrete A → authG Σ A.
 Proof. solve_inG. Qed.
 
 Section definitions.
@@ -55,9 +55,9 @@ Section definitions.
 End definitions.
 
 Typeclasses Opaque auth_own auth_inv auth_ctx.
-Instance: Params (@auth_own) 4 := {}.
-Instance: Params (@auth_inv) 5 := {}.
-Instance: Params (@auth_ctx) 7 := {}.
+Global Instance: Params (@auth_own) 4 := {}.
+Global Instance: Params (@auth_inv) 5 := {}.
+Global Instance: Params (@auth_ctx) 7 := {}.
 
 Section auth.
   Context `{!invG Σ, !authG Σ A}.

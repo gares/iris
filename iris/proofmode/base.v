@@ -70,12 +70,12 @@ Inductive ident :=
   | INamed :> string → ident.
 End ident.
 
-Instance maybe_IAnon : Maybe IAnon := λ i,
+Global Instance maybe_IAnon : Maybe IAnon := λ i,
   match i with IAnon n => Some n | _ => None end.
-Instance maybe_INamed : Maybe INamed := λ i,
+Global Instance maybe_INamed : Maybe INamed := λ i,
   match i with INamed s => Some s | _ => None end.
 
-Instance beq_eq_dec : EqDecision ident.
+Global Instance beq_eq_dec : EqDecision ident.
 Proof. solve_decision. Defined.
 
 Definition positive_beq := Eval compute in Pos.eqb.
