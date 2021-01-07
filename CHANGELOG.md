@@ -179,8 +179,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   connectives to discardable fractions. See the CHANGELOG entry in the category
   `base_logic` for more information.
 * Opening an invariant or eliminating a mask-changing update modality around a
-  non-atomic weakest precondition creates an side-condition `Atomic ...`.
-  Before, this would fail with the mysterious error "iMod: cannot eliminate
+  non-atomic weakest precondition creates a side-condition `Atomic ...`.
+  Before, this would fail with the unspecific error "iMod: cannot eliminate
   modality (|={E1,E2}=> ...) in (WP ...)".
 
 **Changes in `heap_lang`:**
