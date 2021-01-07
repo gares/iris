@@ -325,6 +325,7 @@ End inv_mapsto_tests.
 
 Section atomic.
   Context `{!heapG Σ}.
+  Implicit Types P Q : iProp Σ.
 
   (* These tests check if a side-condition for [Atomic] is generated *)
   Check "wp_iMod_fupd_atomic".

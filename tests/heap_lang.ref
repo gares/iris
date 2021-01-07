@@ -195,7 +195,7 @@ Tactic failure: wp_pure: cannot find ?y in (Var "x") or
   Σ : gFunctors
   heapG0 : heapG Σ
   E1, E2 : coPset
-  P : iPropI Σ
+  P : iProp Σ
   ============================
   Atomic (stuckness_to_atomicity NotStuck) (#() #())
 
