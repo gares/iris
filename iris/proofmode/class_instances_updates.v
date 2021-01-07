@@ -170,12 +170,11 @@ Global Instance add_modal_fupd `{!BiFUpd PROP} E1 E2 P Q :
 Proof. by rewrite /AddModal fupd_frame_r wand_elim_r fupd_trans. Qed.
 
 Global Instance elim_acc_fupd `{!BiFUpd PROP} {X} E1 E2 E α β mγ Q :
-  ElimAcc (X:=X) (fupd E1 E2) (fupd E2 E1) α β mγ
+  ElimAcc (X:=X) True (fupd E1 E2) (fupd E2 E1) α β mγ
           (|={E1,E}=> Q)
           (λ x, |={E2}=> β x ∗ (mγ x -∗? |={E1,E}=> Q))%I.
 Proof.
-  rewrite /ElimAcc.
-  iIntros "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+  iIntros (_) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
   iMod ("Hinner" with "Hα") as "[Hβ Hfin]".
   iMod ("Hclose" with "Hβ") as "Hγ". by iApply "Hfin".
 Qed.

@@ -523,17 +523,18 @@ Definition accessor {PROP : bi} {X : Type} (M1 M2 : PROP → PROP)
 
 (* Typeclass for assertions around which accessors can be eliminated.
    Inputs: [Q], [E1], [E2], [α], [β], [γ]
-   Outputs: [Q']
+   Outputs: [Q'], [φ]
 
    Elliminates an accessor [accessor E1 E2 α β γ] in goal [Q'], turning the goal
-   into [Q'] with a new assumption [α x]. *)
-Class ElimAcc {PROP : bi} {X : Type} (M1 M2 : PROP → PROP)
+   into [Q'] with a new assumption [α x], where [φ] is a side-condition at the
+   Cow level that needs to hold. *)
+Class ElimAcc {PROP : bi} {X : Type} (φ : Prop) (M1 M2 : PROP → PROP)
       (α β : X → PROP) (mγ : X → option PROP)
       (Q : PROP) (Q' : X → PROP) :=
-  elim_acc : ((∀ x, α x -∗ Q' x) -∗ accessor M1 M2 α β mγ -∗ Q).
-Arguments ElimAcc {_} {_} _%I _%I _%I _%I _%I _%I : simpl never.
-Arguments elim_acc {_} {_} _%I _%I _%I _%I _%I _%I {_}.
-Global Hint Mode ElimAcc + ! ! ! ! ! ! ! - : typeclass_instances.
+  elim_acc : φ → ((∀ x, α x -∗ Q' x) -∗ accessor M1 M2 α β mγ -∗ Q).
+Arguments ElimAcc {_} {_} _ _%I _%I _%I _%I _%I _%I : simpl never.
+Arguments elim_acc {_} {_} _ _%I _%I _%I _%I _%I _%I {_}.
+Global Hint Mode ElimAcc + ! - ! ! ! ! ! ! - : typeclass_instances.
 
 (* Turn [P] into an accessor.
    Inputs:
