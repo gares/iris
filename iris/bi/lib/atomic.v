@@ -328,7 +328,7 @@ Section lemmas.
     (* FIXME: Is there any way to prevent maybe_wand from unfolding?
        It gets unfolded by env_cbv in the proofmode, ideally we'd like that
        to happen only if one argument is a constructor. *)
-    iIntros (?) "Hinner >Hacc". iDestruct "Hacc" as (x') "[Hα' Hclose]".
+    iIntros (_) "Hinner >Hacc". iDestruct "Hacc" as (x') "[Hα' Hclose]".
     iMod ("Hinner" with "Hα'") as (x) "[Hα Hclose']".
     iMod (fupd_intro_mask') as "Hclose''"; last iModIntro; first done.
     iExists x. iFrame. iSplitWith "Hclose'".

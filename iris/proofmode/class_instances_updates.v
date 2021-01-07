@@ -174,7 +174,7 @@ Global Instance elim_acc_fupd `{!BiFUpd PROP} {X} E1 E2 E α β mγ Q :
           (|={E1,E}=> Q)
           (λ x, |={E2}=> β x ∗ (mγ x -∗? |={E1,E}=> Q))%I.
 Proof.
-  iIntros (?) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
+  iIntros (_) "Hinner >Hacc". iDestruct "Hacc" as (x) "[Hα Hclose]".
   iMod ("Hinner" with "Hα") as "[Hβ Hfin]".
   iMod ("Hclose" with "Hβ") as "Hγ". by iApply "Hfin".
 Qed.
