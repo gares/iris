@@ -12,9 +12,10 @@ TESTFILES:=$(shell find tests -name "*.v")
 NORMALIZER:=test-normalizer.sed
 
 test: $(TESTFILES:.v=.vo)
-# Make sure everything imports the options.
+# Make sure everything imports the options, and all Instance/Argument/Hint are qualified.
 	$(HIDE)for FILE in $(VFILES); do \
-	  if ! fgrep -q 'From iris.prelude Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; echo; exit 1; fi \
+	  if ! fgrep -q 'From iris.prelude Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; echo; exit 1; fi ; \
+	  if egrep '^\s*(Instance|Arguments|Hint (Extern|Constructors|Resolve|Immediate|Mode|Opaque|Transparent|Unfold))\s' "$$FILE"; then echo "ERROR: $$FILE contains unqualified 'Instance'/'Arguments'/'Hint'."; echo; exit 1; fi \
 	done
 .PHONY: test
 
