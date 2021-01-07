@@ -305,6 +305,10 @@ Section gen_heap.
   Qed.
 End gen_heap.
 
+(** This variant of [gen_heap_init] should only be used when absolutely needed.
+The key difference to [gen_heap_init] is that the [inG] instances in the new
+[gen_heapG] instance are related to the original [gen_heapPreG] instance,
+whereas [gen_heap_init] forgets about that relation. *)
 Lemma gen_heap_init_names `{Countable L, !gen_heapPreG L V Σ} σ :
   ⊢ |==> ∃ γh γm : gname,
     let hG := GenHeapG L V Σ γh γm in
