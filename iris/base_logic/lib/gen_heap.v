@@ -61,25 +61,22 @@ these can be matched up with the invariant namespaces. *)
   as a premise).
  *)
 
-(** The CMRAs we need, and the global ghost names we are using.
-
-Typically, the adequacy theorem will use [gen_heap_init] to obtain an instance
-of this class; everything else should assume it as a premise.  *)
-Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
-  gen_heap_inG :> inG Σ (gmap_viewR L (leibnizO V));
-  gen_meta_inG :> inG Σ (gmap_viewR L gnameO);
-  gen_meta_data_inG :> inG Σ (namespace_mapR (agreeR positiveO));
-  gen_heap_name : gname;
-  gen_meta_name : gname
-}.
-Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
-Global Arguments gen_meta_name {L V Σ _ _} _ : assert.
+(** The CMRAs we need, and the global ghost names we are using. *)
 
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (gmap_viewR L (leibnizO V));
   gen_meta_preG_inG :> inG Σ (gmap_viewR L gnameO);
   gen_meta_data_preG_inG :> inG Σ (namespace_mapR (agreeR positiveO));
 }.
+
+Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
+  gen_heap_inG :> gen_heapPreG L V Σ;
+  gen_heap_name : gname;
+  gen_meta_name : gname
+}.
+Global Arguments GenHeapG L V Σ {_ _ _} _ _.
+Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
+Global Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
 Definition gen_heapΣ (L V : Type) `{Countable L} : gFunctors := #[
   GFunctor (gmap_viewR L (leibnizO V));
@@ -308,19 +305,32 @@ Section gen_heap.
   Qed.
 End gen_heap.
 
-Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
-  ⊢ |==> ∃ _ : gen_heapG L V Σ,
+(** This variant of [gen_heap_init] should only be used when absolutely needed.
+The key difference to [gen_heap_init] is that the [inG] instances in the new
+[gen_heapG] instance are related to the original [gen_heapPreG] instance,
+whereas [gen_heap_init] forgets about that relation. *)
+Lemma gen_heap_init_names `{Countable L, !gen_heapPreG L V Σ} σ :
+  ⊢ |==> ∃ γh γm : gname,
+    let hG := GenHeapG L V Σ γh γm in
     gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
 Proof.
   iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L (leibnizO V)))) as (γh) "Hh".
   { exact: gmap_view_auth_valid. }
   iMod (own_alloc (gmap_view_auth 1 (∅ : gmap L gnameO))) as (γm) "Hm".
   { exact: gmap_view_auth_valid. }
-  pose (gen_heap := GenHeapG L V Σ _ _ _ _ _ γh γm).
-  iExists gen_heap.
-  iAssert (gen_heap_interp (hG:=gen_heap) ∅) with "[Hh Hm]" as "Hinterp".
+  iExists γh, γm.
+  iAssert (gen_heap_interp (hG:=GenHeapG _ _ _ γh γm) ∅) with "[Hh Hm]" as "Hinterp".
   { iExists ∅; simpl. iFrame "Hh Hm". by rewrite dom_empty_L. }
   iMod (gen_heap_alloc_big with "Hinterp") as "(Hinterp & $ & $)".
   { apply map_disjoint_empty_r. }
   rewrite right_id_L. done.
+Qed.
+
+Lemma gen_heap_init `{Countable L, !gen_heapPreG L V Σ} σ :
+  ⊢ |==> ∃ _ : gen_heapG L V Σ,
+    gen_heap_interp σ ∗ ([∗ map] l ↦ v ∈ σ, l ↦ v) ∗ ([∗ map] l ↦ _ ∈ σ, meta_token l ⊤).
+Proof.
+  iMod (gen_heap_init_names σ) as (γh γm) "Hinit".
+  iExists (GenHeapG _ _ _ γh γm).
+  done.
 Qed.

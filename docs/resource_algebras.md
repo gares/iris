@@ -112,34 +112,31 @@ Proof. apply (heap_adequacy clientΣ)=> ?. apply client_safe. Qed.
 Some Iris modules involve a form of "global state".  For example, defining the
 `↦` for HeapLang involves a piece of ghost state that matches the current
 physical heap.  The `gname` of that ghost state must be picked once when the
-proof starts, and then globally known everywhere.  Hence it is added to
-`gen_heapG`, the type class for the generalized heap module:
+proof starts, and then globally known everywhere.  Hence `gen_heapG`, the type
+class for the generalized heap module, bundles the usual `inG` assumptions
+together with the `gname`:
 ```coq
+Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V))
+}.
 Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_inG :> inG Σ (authR (gen_heapUR L V));
+  gen_heap_inG :> gen_heapPreG L V Σ;
   gen_heap_name : gname
 }.
 ```
 
-Such modules always need some kind of "initialization" to create an instance
-of their type class.  For example, the initialization for `heapG` is happening
-as part of [`heap_adequacy`](iris_heap_lang/adequacy.v); this in turn uses
-the initialization lemma for `gen_heapG` from
+The `gen_heapPreG` typeclass (without the singleton data) is relevant for
+initialization, i.e., to create an instance of `gen_heapG`. This is happening as
+part of [`heap_adequacy`](iris_heap_lang/adequacy.v) using the
+initialization lemma for `gen_heapG` from
 [`gen_heap_init`](iris/base_logic/lib/gen_heap.v):
 ```coq
 Lemma gen_heap_init `{gen_heapPreG L V Σ} σ :
   (|==> ∃ _ : gen_heapG L V Σ, gen_heap_ctx σ)%I.
 ```
 These lemmas themselves only make assumptions the way normal modules (those
-without global state) do, which are typically collected in a `somethingPreG`
-type class (such as `gen_heapPreG`):
-```coq
-Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  gen_heap_preG_inG :> inG Σ (authR (gen_heapUR L V))
-}.
-```
-Just like in the normal case, `somethingPreG` type classes have an `Instance`
-showing that a `subG` is enough to instantiate them:
+without global state) do. Just like in the normal case, `somethingPreG` type
+classes have an `Instance` showing that a `subG` is enough to instantiate them:
 ```coq
 Instance subG_gen_heapPreG {Σ L V} `{Countable L} :
   subG (gen_heapΣ L V) Σ → gen_heapPreG L V Σ.
