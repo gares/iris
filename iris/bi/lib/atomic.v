@@ -89,11 +89,11 @@ End definition.
 (** Seal it *)
 Definition atomic_update_aux : seal (@atomic_update_def). Proof. by eexists. Qed.
 Definition atomic_update := atomic_update_aux.(unseal).
-Arguments atomic_update {PROP _ TA TB}.
+Global Arguments atomic_update {PROP _ TA TB}.
 Definition atomic_update_eq : @atomic_update = _ := atomic_update_aux.(seal_eq).
 
-Arguments atomic_acc {PROP _ TA TB} Eo Ei _ _ _ _ : simpl never.
-Arguments atomic_update {PROP _ TA TB} Eo Ei _ _ _ : simpl never.
+Global Arguments atomic_acc {PROP _ TA TB} Eo Ei _ _ _ _ : simpl never.
+Global Arguments atomic_update {PROP _ TA TB} Eo Ei _ _ _ : simpl never.
 
 (** Notation: Atomic updates *)
 Notation "'AU' '<<' ∀ x1 .. xn , α '>>' @ Eo , Ei '<<' ∃ y1 .. yn , β , 'COMM' Φ '>>'" :=

@@ -14,8 +14,8 @@ Class inG (Σ : gFunctors) (A : cmraT) := InG {
   inG_apply := rFunctor_apply (gFunctors_lookup Σ inG_id);
   inG_prf : A = inG_apply (iPropO Σ) _;
 }.
-Arguments inG_id {_ _} _.
-Arguments inG_apply {_ _} _ _ {_}.
+Global Arguments inG_id {_ _} _.
+Global Arguments inG_apply {_ _} _ _ {_}.
 
 (** We use the mode [-] for [Σ] since there is always a unique [Σ]. We use the
 mode [!] for [A] since we can have multiple [inG]s for different [A]s, so we do
@@ -72,7 +72,7 @@ Local Definition own_def `{!inG Σ A} (γ : gname) (a : A) : iProp Σ :=
   uPred_ownM (iRes_singleton γ a).
 Local Definition own_aux : seal (@own_def). Proof. by eexists. Qed.
 Definition own := own_aux.(unseal).
-Arguments own {Σ A _} γ a.
+Global Arguments own {Σ A _} γ a.
 Local Definition own_eq : @own = @own_def := own_aux.(seal_eq).
 Local Instance: Params (@own) 4 := {}.
 
@@ -288,15 +288,15 @@ Lemma own_update_3 γ a1 a2 a3 a' :
 Proof. intros. do 2 apply wand_intro_r. rewrite -!own_op. by apply own_update. Qed.
 End global.
 
-Arguments own_valid {_ _} [_] _ _.
-Arguments own_valid_2 {_ _} [_] _ _ _.
-Arguments own_valid_3 {_ _} [_] _ _ _ _.
-Arguments own_valid_l {_ _} [_] _ _.
-Arguments own_valid_r {_ _} [_] _ _.
-Arguments own_updateP {_ _} [_] _ _ _ _.
-Arguments own_update {_ _} [_] _ _ _ _.
-Arguments own_update_2 {_ _} [_] _ _ _ _ _.
-Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
+Global Arguments own_valid {_ _} [_] _ _.
+Global Arguments own_valid_2 {_ _} [_] _ _ _.
+Global Arguments own_valid_3 {_ _} [_] _ _ _ _.
+Global Arguments own_valid_l {_ _} [_] _ _.
+Global Arguments own_valid_r {_ _} [_] _ _.
+Global Arguments own_updateP {_ _} [_] _ _ _ _.
+Global Arguments own_update {_ _} [_] _ _ _ _.
+Global Arguments own_update_2 {_ _} [_] _ _ _ _ _.
+Global Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
 
 Lemma own_unit A `{i : !inG Σ (A:ucmraT)} γ : ⊢ |==> own γ (ε:A).
 Proof.

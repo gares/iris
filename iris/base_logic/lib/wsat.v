@@ -37,7 +37,7 @@ Definition invariant_unfold {Σ} (P : iProp Σ) : later (iProp Σ) :=
   Next P.
 Definition ownI `{!invG Σ} (i : positive) (P : iProp Σ) : iProp Σ :=
   own invariant_name (gmap_view_frag i DfracDiscarded (invariant_unfold P)).
-Arguments ownI {_ _} _ _%I.
+Global Arguments ownI {_ _} _ _%I.
 Typeclasses Opaque ownI.
 Global Instance: Params (@invariant_unfold) 1 := {}.
 Global Instance: Params (@ownI) 3 := {}.

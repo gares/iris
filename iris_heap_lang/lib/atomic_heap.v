@@ -45,7 +45,7 @@ Class atomic_heap {Σ} `{!heapG Σ} := AtomicHeap {
       <<< if decide (v = w1) then mapsto l (DfracOwn 1) w2 else mapsto l (DfracOwn 1) v,
         RET (v, #if decide (v = w1) then true else false) >>>;
 }.
-Arguments atomic_heap _ {_}.
+Global Arguments atomic_heap _ {_}.
 
 (** Notation for heap primitives, in a module so you can import it separately. *)
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654

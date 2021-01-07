@@ -7,7 +7,7 @@ Import interface.bi derived_laws.bi derived_laws_later.bi.
 Set Default Proof Using "Type*".
 
 Class Plainly (A : Type) := plainly : A → A.
-Arguments plainly {A}%type_scope {_} _%I.
+Global Arguments plainly {A}%type_scope {_} _%I.
 Global Hint Mode Plainly ! : typeclass_instances.
 Global Instance: Params (@plainly) 2 := {}.
 Notation "■ P" := (plainly P) : bi_scope.
@@ -43,21 +43,21 @@ Class BiPlainly (PROP : bi) := {
   bi_plainly_mixin : BiPlainlyMixin PROP bi_plainly_plainly;
 }.
 Global Hint Mode BiPlainly ! : typeclass_instances.
-Arguments bi_plainly_plainly : simpl never.
+Global Arguments bi_plainly_plainly : simpl never.
 
 Class BiPlainlyExist `{!BiPlainly PROP} :=
   plainly_exist_1 A (Ψ : A → PROP) :
     ■ (∃ a, Ψ a) ⊢ ∃ a, ■ (Ψ a).
-Arguments BiPlainlyExist : clear implicits.
-Arguments BiPlainlyExist _ {_}.
-Arguments plainly_exist_1 _ {_ _} _.
+Global Arguments BiPlainlyExist : clear implicits.
+Global Arguments BiPlainlyExist _ {_}.
+Global Arguments plainly_exist_1 _ {_ _} _.
 Global Hint Mode BiPlainlyExist ! - : typeclass_instances.
 
 Class BiPropExt `{!BiPlainly PROP, !BiInternalEq PROP} :=
   prop_ext_2 (P Q : PROP) : ■ (P ∗-∗ Q) ⊢ P ≡ Q.
-Arguments BiPropExt : clear implicits.
-Arguments BiPropExt _ {_ _}.
-Arguments prop_ext_2 _ {_ _ _} _.
+Global Arguments BiPropExt : clear implicits.
+Global Arguments BiPropExt _ {_ _}.
+Global Arguments prop_ext_2 _ {_ _ _} _.
 Global Hint Mode BiPropExt ! - - : typeclass_instances.
 
 Section plainly_laws.
@@ -92,14 +92,14 @@ End plainly_laws.
 
 (* Derived properties and connectives *)
 Class Plain `{BiPlainly PROP} (P : PROP) := plain : P ⊢ ■ P.
-Arguments Plain {_ _} _%I : simpl never.
-Arguments plain {_ _} _%I {_}.
+Global Arguments Plain {_ _} _%I : simpl never.
+Global Arguments plain {_ _} _%I {_}.
 Global Hint Mode Plain + - ! : typeclass_instances.
 Global Instance: Params (@Plain) 1 := {}.
 
 Definition plainly_if `{!BiPlainly PROP} (p : bool) (P : PROP) : PROP :=
   (if p then ■ P else P)%I.
-Arguments plainly_if {_ _} !_ _%I /.
+Global Arguments plainly_if {_ _} !_ _%I /.
 Global Instance: Params (@plainly_if) 2 := {}.
 Typeclasses Opaque plainly_if.
 

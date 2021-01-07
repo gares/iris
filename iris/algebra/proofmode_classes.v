@@ -16,7 +16,7 @@ From iris.prelude Require Import options.
   [own γ q1] and [own γ q2] instead of [own γ ((q1 + q2)/2)] twice.
 *)
 Class IsOp {A : cmraT} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
-Arguments is_op {_} _ _ _ {_}.
+Global Arguments is_op {_} _ _ _ {_}.
 Global Hint Mode IsOp + - - - : typeclass_instances.
 
 Global Instance is_op_op {A : cmraT} (a b : A) : IsOp (a ⋅ b) a b | 100.

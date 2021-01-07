@@ -6,7 +6,7 @@ From iris.prelude Require Import options.
 Class MakeMonPredAt {I : biIndex} {PROP : bi} (i : I)
       (P : monPred I PROP) (𝓟 : PROP) :=
   make_monPred_at : P i ⊣⊢ 𝓟.
-Arguments MakeMonPredAt {_ _} _ _%I _%I.
+Global Arguments MakeMonPredAt {_ _} _ _%I _%I.
 (** Since [MakeMonPredAt] is used by [AsEmpValid] to import lemmas into the
 proof mode, the index [I] and BI [PROP] often contain evars. Hence, it is
 important to use the mode [!] also for the first two arguments. *)
@@ -24,7 +24,7 @@ Global Hint Extern 1 (IsBiIndexRel _ _) => unfold IsBiIndexRel; assumption
 Class FrameMonPredAt {I : biIndex} {PROP : bi} (p : bool) (i : I)
       (𝓡 : PROP) (P : monPred I PROP) (𝓠 : PROP) :=
   frame_monPred_at : □?p 𝓡 ∗ 𝓠 -∗ P i.
-Arguments FrameMonPredAt {_ _} _ _ _%I _%I _%I.
+Global Arguments FrameMonPredAt {_ _} _ _ _%I _%I _%I.
 Global Hint Mode FrameMonPredAt + + + - ! ! - : typeclass_instances.
 
 Section modalities.

@@ -120,7 +120,7 @@ Module inv. Section inv.
   (** We have the update modality (two classes: empty/full mask) *)
   Inductive mask := M0 | M1.
   Context (fupd : mask → PROP → PROP).
-  Arguments fupd _ _%I.
+  Global Arguments fupd _ _%I.
   Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E P.
   Hypothesis fupd_mono : ∀ E P Q, (P ⊢ Q) → fupd E P ⊢ fupd E Q.
   Hypothesis fupd_fupd : ∀ E P, fupd E (fupd E P) ⊢ fupd E P.
@@ -129,7 +129,7 @@ Module inv. Section inv.
 
   (** We have invariants *)
   Context (name : Type) (inv : name → PROP → PROP).
-  Arguments inv _ _%I.
+  Global Arguments inv _ _%I.
   Hypothesis inv_persistent : ∀ i P, Persistent (inv i P).
   Hypothesis inv_alloc : ∀ P, P ⊢ fupd M1 (∃ i, inv i P).
   Hypothesis inv_fupd :
@@ -287,7 +287,7 @@ Module linear. Section linear.
   (** We have the mask-changing update modality (two classes: empty/full mask) *)
   Inductive mask := M0 | M1.
   Context (fupd : mask → mask → PROP → PROP).
-  Arguments fupd _ _ _%I.
+  Global Arguments fupd _ _ _%I.
   Hypothesis fupd_intro : ∀ E P, P ⊢ fupd E E P.
   Hypothesis fupd_mono : ∀ E1 E2 P Q, (P ⊢ Q) → fupd E1 E2 P ⊢ fupd E1 E2 Q.
   Hypothesis fupd_fupd : ∀ E1 E2 E3 P, fupd E1 E2 (fupd E2 E3 P) ⊢ fupd E1 E3 P.

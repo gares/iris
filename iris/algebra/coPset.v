@@ -66,7 +66,7 @@ Inductive coPset_disj :=
   | CoPsetBot : coPset_disj.
 
 Section coPset_disj.
-  Arguments op _ _ !_ !_ /.
+  Local Arguments op _ _ !_ !_ /.
   Canonical Structure coPset_disjO := leibnizO coPset_disj.
 
   Local Instance coPset_disj_valid : Valid coPset_disj := λ X,

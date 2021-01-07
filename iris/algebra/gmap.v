@@ -97,7 +97,7 @@ Proof. intros (y'&?&->)%dist_Some_inv_r'. by rewrite insert_id. Qed.
 (** Internalized properties *)
 End ofe.
 
-Arguments gmapO _ {_ _} _.
+Global Arguments gmapO _ {_ _} _.
 
 (** Non-expansiveness of higher-order map functions and big-ops *)
 Lemma merge_ne `{Countable K} {A B C : ofeT} (f g : option A → option B → option C)
@@ -232,8 +232,8 @@ Canonical Structure gmapUR := UcmraT (gmap K A) gmap_ucmra_mixin.
 
 End cmra.
 
-Arguments gmapR _ {_ _} _.
-Arguments gmapUR _ {_ _} _.
+Global Arguments gmapR _ {_ _} _.
+Global Arguments gmapUR _ {_ _} _.
 
 Section properties.
 Context `{Countable K} {A : cmraT}.

@@ -28,8 +28,8 @@ with g (k : nat) : A (S k) -n> A k :=
   match k with 0 => OfeMor (λ _, ()) | S k => map (f k,g k) end.
 Definition f_S k (x : A (S k)) : f (S k) x = map (g k,f k) x := eq_refl.
 Definition g_S k (x : A (S (S k))) : g (S k) x = map (f k,g k) x := eq_refl.
-Arguments f : simpl never.
-Arguments g : simpl never.
+Global Arguments f : simpl never.
+Global Arguments g : simpl never.
 
 Lemma gf {k} (x : A k) : g k (f k x) ≡ x.
 Proof using Fcontr.

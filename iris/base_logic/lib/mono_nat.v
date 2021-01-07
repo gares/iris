@@ -26,7 +26,7 @@ Definition mono_nat_auth_own_aux : seal (@mono_nat_auth_own_def). Proof. by eexi
 Definition mono_nat_auth_own := mono_nat_auth_own_aux.(unseal).
 Definition mono_nat_auth_own_eq :
   @mono_nat_auth_own = @mono_nat_auth_own_def := mono_nat_auth_own_aux.(seal_eq).
-Arguments mono_nat_auth_own {Σ _} γ q n.
+Global Arguments mono_nat_auth_own {Σ _} γ q n.
 
 Definition mono_nat_lb_own_def `{!mono_natG Σ} (γ : gname) (n : nat): iProp Σ :=
   own γ (mono_nat_lb n).
@@ -34,7 +34,7 @@ Definition mono_nat_lb_own_aux : seal (@mono_nat_lb_own_def). Proof. by eexists.
 Definition mono_nat_lb_own := mono_nat_lb_own_aux.(unseal).
 Definition mono_nat_lb_own_eq :
   @mono_nat_lb_own = @mono_nat_lb_own_def := mono_nat_lb_own_aux.(seal_eq).
-Arguments mono_nat_lb_own {Σ _} γ n.
+Global Arguments mono_nat_lb_own {Σ _} γ n.
 
 Local Ltac unseal := rewrite
   ?mono_nat_auth_own_eq /mono_nat_auth_own_def

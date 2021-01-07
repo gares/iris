@@ -4,15 +4,15 @@ From iris.prelude Require Import options.
 
 Class Fractional {PROP : bi} (Φ : Qp → PROP) :=
   fractional p q : Φ (p + q)%Qp ⊣⊢ Φ p ∗ Φ q.
-Arguments Fractional {_} _%I : simpl never.
+Global Arguments Fractional {_} _%I : simpl never.
 
 Class AsFractional {PROP : bi} (P : PROP) (Φ : Qp → PROP) (q : Qp) := {
   as_fractional : P ⊣⊢ Φ q;
   as_fractional_fractional :> Fractional Φ
 }.
-Arguments AsFractional {_} _%I _%I _%Qp.
+Global Arguments AsFractional {_} _%I _%I _%Qp.
 
-Arguments fractional {_ _ _} _ _.
+Global Arguments fractional {_ _ _} _ _.
 
 Global Hint Mode AsFractional - + - - : typeclass_instances.
 (* To make [as_fractional_fractional] a useful instance, we have to

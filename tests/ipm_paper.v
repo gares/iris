@@ -128,9 +128,9 @@ Definition read : val := λ: "l", !"l".
 Inductive M := Auth : nat → M | Frag : nat → M | Bot.
 
 Section M.
-  Arguments cmra_op _ !_ !_/.
-  Arguments op _ _ !_ !_/.
-  Arguments core _ _ !_/.
+  Local Arguments cmra_op _ !_ !_/.
+  Local Arguments op _ _ !_ !_/.
+  Local Arguments core _ _ !_/.
 
   Canonical Structure M_O : ofeT := leibnizO M.
 

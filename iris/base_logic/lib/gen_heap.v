@@ -72,8 +72,8 @@ Class gen_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := GenHeapG {
   gen_heap_name : gname;
   gen_meta_name : gname
 }.
-Arguments gen_heap_name {L V Σ _ _} _ : assert.
-Arguments gen_meta_name {L V Σ _ _} _ : assert.
+Global Arguments gen_heap_name {L V Σ _ _} _ : assert.
+Global Arguments gen_meta_name {L V Σ _ _} _ : assert.
 
 Class gen_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   gen_heap_preG_inG :> inG Σ (gmap_viewR L (leibnizO V));
@@ -121,7 +121,7 @@ Section definitions.
   Definition meta := meta_aux.(unseal).
   Definition meta_eq : @meta = @meta_def := meta_aux.(seal_eq).
 End definitions.
-Arguments meta {L _ _ V Σ _ A _ _} l N x.
+Global Arguments meta {L _ _ V Σ _ A _ _} l N x.
 
 (** FIXME: Refactor these notations using custom entries once Coq bug #13654
 has been fixed. *)

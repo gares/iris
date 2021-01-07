@@ -95,6 +95,6 @@ Section gmultiset.
 
 End gmultiset.
 
-Arguments gmultisetO _ {_ _}.
-Arguments gmultisetR _ {_ _}.
-Arguments gmultisetUR _ {_ _}.
+Global Arguments gmultisetO _ {_ _}.
+Global Arguments gmultisetR _ {_ _}.
+Global Arguments gmultisetUR _ {_ _}.

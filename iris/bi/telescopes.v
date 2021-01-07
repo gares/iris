@@ -8,10 +8,10 @@ Import bi.
 (** Telescopic quantifiers *)
 Definition bi_texist {PROP : bi} {TT : tele} (Ψ : TT → PROP) : PROP :=
   tele_fold (@bi_exist PROP) (λ x, x) (tele_bind Ψ).
-Arguments bi_texist {_ !_} _ /.
+Global Arguments bi_texist {_ !_} _ /.
 Definition bi_tforall {PROP : bi} {TT : tele} (Ψ : TT → PROP) : PROP :=
   tele_fold (@bi_forall PROP) (λ x, x) (tele_bind Ψ).
-Arguments bi_tforall {_ !_} _ /.
+Global Arguments bi_tforall {_ !_} _ /.
 
 Notation "'∃..' x .. y , P" := (bi_texist (λ x, .. (bi_texist (λ y, P)) .. )%I)
   (at level 200, x binder, y binder, right associativity,

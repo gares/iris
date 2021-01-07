@@ -72,13 +72,13 @@ Structure ectxLanguage := EctxLanguage {
 Bind Scope expr_scope with expr.
 Bind Scope val_scope with val.
 
-Arguments EctxLanguage {_ _ _ _ _ _ _ _ _ _ _} _.
-Arguments of_val {_} _.
-Arguments to_val {_} _.
-Arguments empty_ectx {_}.
-Arguments comp_ectx {_} _ _.
-Arguments fill {_} _ _.
-Arguments head_step {_} _ _ _ _ _ _.
+Global Arguments EctxLanguage {_ _ _ _ _ _ _ _ _ _ _} _.
+Global Arguments of_val {_} _.
+Global Arguments to_val {_} _.
+Global Arguments empty_ectx {_}.
+Global Arguments comp_ectx {_} _ _.
+Global Arguments fill {_} _ _.
+Global Arguments head_step {_} _ _ _ _ _ _.
 
 (* From an ectx_language, we can construct a language. *)
 Section ectx_language.
@@ -309,7 +309,7 @@ Section ectx_language.
   Proof. apply: pure_exec_ctx. Qed.
 End ectx_language.
 
-Arguments ectx_lang : clear implicits.
+Global Arguments ectx_lang : clear implicits.
 Coercion ectx_lang : ectxLanguage >-> language.
 
 (* This definition makes sure that the fields of the [language] record do not

@@ -36,10 +36,10 @@ Declare Scope val_scope.
 Delimit Scope val_scope with V.
 Bind Scope val_scope with val.
 
-Arguments Language {_ _ _ _ _ _ _} _.
-Arguments of_val {_} _.
-Arguments to_val {_} _.
-Arguments prim_step {_} _ _ _ _ _ _.
+Global Arguments Language {_ _ _ _ _ _ _} _.
+Global Arguments of_val {_} _.
+Global Arguments to_val {_} _.
+Global Arguments prim_step {_} _ _ _ _ _ _.
 
 Canonical Structure stateO Λ := leibnizO (state Λ).
 Canonical Structure valO Λ := leibnizO (val Λ).

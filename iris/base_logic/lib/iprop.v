@@ -28,7 +28,7 @@ Structure gFunctor := GFunctor {
   gFunctor_F :> rFunctor;
   gFunctor_map_contractive : rFunctorContractive gFunctor_F;
 }.
-Arguments GFunctor _ {_}.
+Global Arguments GFunctor _ {_}.
 Existing Instance gFunctor_map_contractive.
 Add Printing Constructor gFunctor.
 

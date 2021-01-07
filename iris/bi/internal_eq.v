@@ -8,7 +8,7 @@ can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
 [▷ (x ≡ y) ⊢ Next x ≡ Next y] if the BI is step-indexed. *)
 Class InternalEq (PROP : bi) :=
   internal_eq : ∀ {A : ofeT}, A → A → PROP.
-Arguments internal_eq {_ _ _} _ _ : simpl never.
+Global Arguments internal_eq {_ _ _} _ _ : simpl never.
 Global Hint Mode InternalEq ! : typeclass_instances.
 Global Instance: Params (@internal_eq) 3 := {}.
 Infix "≡" := internal_eq : bi_scope.
@@ -41,7 +41,7 @@ Class BiInternalEq (PROP : bi) := {
   bi_internal_eq_mixin : BiInternalEqMixin PROP bi_internal_eq_internal_eq;
 }.
 Global Hint Mode BiInternalEq ! : typeclass_instances.
-Arguments bi_internal_eq_internal_eq : simpl never.
+Global Arguments bi_internal_eq_internal_eq : simpl never.
 
 Section internal_eq_laws.
   Context `{BiInternalEq PROP}.

@@ -9,7 +9,7 @@ Record siProp := SiProp {
   siProp_holds :> nat → Prop;
   siProp_closed n1 n2 : siProp_holds n1 → n2 ≤ n1 → siProp_holds n2
 }.
-Arguments siProp_holds : simpl never.
+Global Arguments siProp_holds : simpl never.
 Add Printing Constructor siProp.
 
 Declare Scope siProp_scope.
@@ -127,7 +127,7 @@ Definition unseal_eqs :=
 Ltac unseal := rewrite !unseal_eqs /=.
 
 Section primitive.
-Arguments siProp_holds !_ _ /.
+Local Arguments siProp_holds !_ _ /.
 
 Notation "P ⊢ Q" := (siProp_entails P Q)
   (at level 99, Q at level 200, right associativity).

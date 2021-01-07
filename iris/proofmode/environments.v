@@ -7,8 +7,8 @@ Import bi.
 Inductive env (A : Type) : Type :=
   | Enil : env A
   | Esnoc : env A → ident → A → env A.
-Arguments Enil {_}.
-Arguments Esnoc {_} _ _ _.
+Global Arguments Enil {_}.
+Global Arguments Esnoc {_} _ _ _.
 Global Instance: Params (@Enil) 1 := {}.
 Global Instance: Params (@Esnoc) 1 := {}.
 
@@ -216,10 +216,10 @@ Record envs (PROP : bi) := Envs {
   env_counter : positive (** A counter to generate fresh hypothesis names *)
 }.
 Add Printing Constructor envs.
-Arguments Envs {_} _ _ _.
-Arguments env_intuitionistic {_} _.
-Arguments env_spatial {_} _.
-Arguments env_counter {_} _.
+Global Arguments Envs {_} _ _ _.
+Global Arguments env_intuitionistic {_} _.
+Global Arguments env_spatial {_} _.
+Global Arguments env_counter {_} _.
 
 (** We now define the judgment [envs_entails Δ Q] for proof mode entailments.
 This judgment expresses that [Q] can be proved under the proof mode environment
@@ -254,7 +254,7 @@ Global Instance: Params (@of_envs') 1 := {}.
 Definition of_envs {PROP : bi} (Δ : envs PROP) : PROP :=
   of_envs' (env_intuitionistic Δ) (env_spatial Δ).
 Global Instance: Params (@of_envs) 1 := {}.
-Arguments of_envs : simpl never.
+Global Arguments of_envs : simpl never.
 
 Definition pre_envs_entails_def {PROP : bi} (Γp Γs : env PROP) (Q : PROP) :=
   of_envs' Γp Γs ⊢ Q.
@@ -268,7 +268,7 @@ Definition envs_entails {PROP : bi} (Δ : envs PROP) (Q : PROP) : Prop :=
 Definition envs_entails_eq :
   @envs_entails = λ PROP (Δ : envs PROP) Q, (of_envs Δ ⊢ Q).
 Proof. by rewrite /envs_entails pre_envs_entails_eq. Qed.
-Arguments envs_entails {PROP} Δ Q%I.
+Global Arguments envs_entails {PROP} Δ Q%I.
 Global Instance: Params (@envs_entails) 1 := {}.
 
 Record envs_Forall2 {PROP : bi} (R : relation PROP) (Δ1 Δ2 : envs PROP) := {

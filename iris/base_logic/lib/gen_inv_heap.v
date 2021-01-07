@@ -34,8 +34,8 @@ Class inv_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
   inv_heap_inG :> inG Σ (authR (inv_heap_mapUR L V));
   inv_heap_name : gname
 }.
-Arguments Inv_HeapG _ _ {_ _ _ _}.
-Arguments inv_heap_name {_ _ _ _ _} _ : assert.
+Global Arguments Inv_HeapG _ _ {_ _ _ _}.
+Global Arguments inv_heap_name {_ _ _ _ _} _ : assert.
 
 Class inv_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
   inv_heap_preG_inG :> inG Σ (authR (inv_heap_mapUR L V))
@@ -75,7 +75,7 @@ Local Notation "l '↦_' I □" := (inv_mapsto l I%stdpp%type)
 
 (* [inv_heap_inv] has no parameters to infer the types from, so we need to
    make them explicit. *)
-Arguments inv_heap_inv _ _ {_ _ _ _ _ _}.
+Global Arguments inv_heap_inv _ _ {_ _ _ _ _ _}.
 
 Global Instance: Params (@inv_mapsto_own) 8 := {}.
 Global Instance: Params (@inv_mapsto) 7 := {}.

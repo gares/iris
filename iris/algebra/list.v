@@ -95,7 +95,7 @@ Proof. intros ??; inversion_clear 1; constructor; by apply discrete. Qed.
 
 End ofe.
 
-Arguments listO : clear implicits.
+Global Arguments listO : clear implicits.
 
 (** Non-expansiveness of higher-order list functions and big-ops *)
 Global Instance list_fmap_ne {A B : ofeT} (f : A → B) n :
@@ -296,8 +296,8 @@ Section cmra.
 
 End cmra.
 
-Arguments listR : clear implicits.
-Arguments listUR : clear implicits.
+Global Arguments listR : clear implicits.
+Global Arguments listUR : clear implicits.
 
 Global Instance list_singletonM {A : ucmraT} : SingletonM nat A (list A) := λ n x,
   replicate n ε ++ [x].

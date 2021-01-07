@@ -209,4 +209,4 @@ Section auth.
   Qed.
 End auth.
 
-Arguments auth_acc {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.
+Global Arguments auth_acc {_ _ _} [_] {_} [_] _ _ _ _ _ _ _.

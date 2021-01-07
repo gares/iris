@@ -24,7 +24,7 @@ Notation to_ident_name id := (λ id:unit, id) (only parsing).
     to an identifier rather than a lambda; for example, if the user writes
     [bi_exist Φ], there is no binder anywhere to extract. *)
 Class AsIdentName {A B} (f : A → B) (name : ident_name) := as_ident_name {}.
-Arguments as_ident_name {A B f} name : assert.
+Global Arguments as_ident_name {A B f} name : assert.
 
 Ltac solve_as_ident_name :=
   lazymatch goal with

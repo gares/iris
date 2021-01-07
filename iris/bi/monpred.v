@@ -106,10 +106,10 @@ Global Instance monPred_at_proper (R : relation I) :
 Proof. repeat intro. apply equiv_dist=>?. f_equiv=>//. by apply equiv_dist. Qed.
 End Ofe_Cofe.
 
-Arguments monPred _ _ : clear implicits.
-Arguments monPred_at {_ _} _%I _.
+Global Arguments monPred _ _ : clear implicits.
+Global Arguments monPred_at {_ _} _%I _.
 Local Existing Instance monPred_mono.
-Arguments monPredO _ _ : clear implicits.
+Global Arguments monPredO _ _ : clear implicits.
 
 (** BI canonical structure *)
 
@@ -220,8 +220,8 @@ Definition monPred_later := monPred_later_aux.(unseal).
 Definition monPred_later_eq : monPred_later = _ := monPred_later_aux.(seal_eq).
 End Bi.
 
-Arguments monPred_objectively {_ _} _%I.
-Arguments monPred_subjectively {_ _} _%I.
+Global Arguments monPred_objectively {_ _} _%I.
+Global Arguments monPred_subjectively {_ _} _%I.
 Notation "'<obj>' P" := (monPred_objectively P) : bi_scope.
 Notation "'<subj>' P" := (monPred_subjectively P) : bi_scope.
 
@@ -321,8 +321,8 @@ End canonical.
 
 Class Objective {I : biIndex} {PROP : bi} (P : monPred I PROP) :=
   objective_at i j : P i -∗ P j.
-Arguments Objective {_ _} _%I.
-Arguments objective_at {_ _} _%I {_}.
+Global Arguments Objective {_ _} _%I.
+Global Arguments objective_at {_ _} _%I {_}.
 Global Hint Mode Objective + + ! : typeclass_instances.
 Global Instance: Params (@Objective) 2 := {}.
 
@@ -765,7 +765,7 @@ Program Definition monPred_bupd_def `{BiBUpd PROP} (P : monPred) : monPred :=
 Next Obligation. solve_proper. Qed.
 Definition monPred_bupd_aux : seal (@monPred_bupd_def). Proof. by eexists. Qed.
 Definition monPred_bupd := monPred_bupd_aux.(unseal).
-Arguments monPred_bupd {_}.
+Local Arguments monPred_bupd {_}.
 Lemma monPred_bupd_eq `{BiBUpd PROP} : @bupd _ monPred_bupd = monPred_bupd_def.
 Proof. rewrite -monPred_bupd_aux.(seal_eq) //. Qed.
 
@@ -831,7 +831,7 @@ Definition monPred_internal_eq_def `{!BiInternalEq PROP} (A : ofeT) (a b : A) : 
 Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
 Proof. by eexists. Qed.
 Definition monPred_internal_eq := monPred_internal_eq_aux.(unseal).
-Arguments monPred_internal_eq {_}.
+Local Arguments monPred_internal_eq {_}.
 Lemma monPred_internal_eq_eq `{!BiInternalEq PROP} :
   @internal_eq _ (@monPred_internal_eq _) = monPred_internal_eq_def.
 Proof. rewrite -monPred_internal_eq_aux.(seal_eq) //. Qed.
@@ -886,7 +886,7 @@ Program Definition monPred_fupd_def `{BiFUpd PROP} (E1 E2 : coPset)
 Next Obligation. solve_proper. Qed.
 Definition monPred_fupd_aux : seal (@monPred_fupd_def). Proof. by eexists. Qed.
 Definition monPred_fupd := monPred_fupd_aux.(unseal).
-Arguments monPred_fupd {_}.
+Local Arguments monPred_fupd {_}.
 Lemma monPred_fupd_eq `{BiFUpd PROP} : @fupd _ monPred_fupd = monPred_fupd_def.
 Proof. rewrite -monPred_fupd_aux.(seal_eq) //. Qed.
 
@@ -924,7 +924,7 @@ Definition monPred_plainly_def `{BiPlainly PROP} P : monPred :=
   MonPred (λ _, ∀ i, ■ (P i))%I _.
 Definition monPred_plainly_aux : seal (@monPred_plainly_def). Proof. by eexists. Qed.
 Definition monPred_plainly := monPred_plainly_aux.(unseal).
-Arguments monPred_plainly {_}.
+Local Arguments monPred_plainly {_}.
 Lemma monPred_plainly_eq `{BiPlainly PROP} : @plainly _ monPred_plainly = monPred_plainly_def.
 Proof. rewrite -monPred_plainly_aux.(seal_eq) //. Qed.
 

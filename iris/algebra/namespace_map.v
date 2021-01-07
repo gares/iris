@@ -20,9 +20,9 @@ Record namespace_map (A : Type) := NamespaceMap {
   namespace_map_token_proj : coPset_disj
 }.
 Add Printing Constructor namespace_map.
-Arguments NamespaceMap {_} _ _.
-Arguments namespace_map_data_proj {_} _.
-Arguments namespace_map_token_proj {_} _.
+Global Arguments NamespaceMap {_} _ _.
+Global Arguments namespace_map_data_proj {_} _.
+Global Arguments namespace_map_token_proj {_} _.
 Global Instance: Params (@NamespaceMap) 1 := {}.
 Global Instance: Params (@namespace_map_data_proj) 1 := {}.
 Global Instance: Params (@namespace_map_token_proj) 1 := {}.
@@ -72,7 +72,7 @@ Global Instance namespace_map_ofe_discrete :
 Proof. intros ? [??]; apply _. Qed.
 End ofe.
 
-Arguments namespace_mapO : clear implicits.
+Global Arguments namespace_mapO : clear implicits.
 
 (* Camera *)
 Section cmra.
@@ -296,5 +296,5 @@ Proof.
 Qed.
 End cmra.
 
-Arguments namespace_mapR : clear implicits.
-Arguments namespace_mapUR : clear implicits.
+Global Arguments namespace_mapR : clear implicits.
+Global Arguments namespace_mapUR : clear implicits.

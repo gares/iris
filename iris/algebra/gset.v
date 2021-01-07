@@ -66,22 +66,22 @@ Section gset.
 
 End gset.
 
-Arguments gsetO _ {_ _}.
-Arguments gsetR _ {_ _}.
-Arguments gsetUR _ {_ _}.
+Global Arguments gsetO _ {_ _}.
+Global Arguments gsetR _ {_ _}.
+Global Arguments gsetUR _ {_ _}.
 
 (* The disjoint union CMRA *)
 Inductive gset_disj K `{Countable K} :=
   | GSet : gset K → gset_disj K
   | GSetBot : gset_disj K.
-Arguments GSet {_ _ _} _.
-Arguments GSetBot {_ _ _}.
+Global Arguments GSet {_ _ _} _.
+Global Arguments GSetBot {_ _ _}.
 
 Section gset_disj.
   Context `{Countable K}.
-  Arguments op _ _ !_ !_ /.
-  Arguments cmra_op _ !_ !_ /.
-  Arguments ucmra_op _ !_ !_ /.
+  Local Arguments op _ _ !_ !_ /.
+  Local Arguments cmra_op _ !_ !_ /.
+  Local Arguments ucmra_op _ !_ !_ /.
 
   Canonical Structure gset_disjO := leibnizO (gset_disj K).
 
@@ -134,7 +134,7 @@ Section gset_disj.
   Proof. split; try apply _ || done. intros [X|]; gset_disj_solve. Qed.
   Canonical Structure gset_disjUR := UcmraT (gset_disj K) gset_disj_ucmra_mixin.
 
-  Arguments op _ _ _ _ : simpl never.
+  Local Arguments op _ _ _ _ : simpl never.
 
   Lemma gset_disj_alloc_updateP_strong P (Q : gset_disj K → Prop) X :
     (∀ Y, X ⊆ Y → ∃ j, j ∉ Y ∧ P j) →
@@ -231,6 +231,6 @@ Section gset_disj.
   Qed.
 End gset_disj.
 
-Arguments gset_disjO _ {_ _}.
-Arguments gset_disjR _ {_ _}.
-Arguments gset_disjUR _ {_ _}.
+Global Arguments gset_disjO _ {_ _}.
+Global Arguments gset_disjR _ {_ _}.
+Global Arguments gset_disjUR _ {_ _}.

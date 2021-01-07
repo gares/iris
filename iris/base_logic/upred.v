@@ -111,7 +111,7 @@ Record uPred (M : ucmraT) : Type := UPred {
     uPred_holds n1 x1 → x1 ≼{n2} x2 → n2 ≤ n1 → uPred_holds n2 x2
 }.
 Bind Scope bi_scope with uPred.
-Arguments uPred_holds {_} _%I _ _ : simpl never.
+Global Arguments uPred_holds {_} _%I _ _ : simpl never.
 Add Printing Constructor uPred.
 Global Instance: Params (@uPred_holds) 3 := {}.
 
@@ -154,7 +154,7 @@ Section cofe.
     repeat intro. apply (chain_cauchy c _ i)=>//. by eapply uPred_mono.
   Qed.
 End cofe.
-Arguments uPredO : clear implicits.
+Global Arguments uPredO : clear implicits.
 
 Global Instance uPred_ne {M} (P : uPred M) n : Proper (dist n ==> iff) (P n).
 Proof.
@@ -253,7 +253,7 @@ Program Definition uPred_pure_def {M} (φ : Prop) : uPred M :=
 Solve Obligations with done.
 Definition uPred_pure_aux : seal (@uPred_pure_def). Proof. by eexists. Qed.
 Definition uPred_pure := uPred_pure_aux.(unseal).
-Arguments uPred_pure {M}.
+Global Arguments uPred_pure {M}.
 Definition uPred_pure_eq :
   @uPred_pure = @uPred_pure_def := uPred_pure_aux.(seal_eq).
 
@@ -262,7 +262,7 @@ Program Definition uPred_and_def {M} (P Q : uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto 2 with uPred_def.
 Definition uPred_and_aux : seal (@uPred_and_def). Proof. by eexists. Qed.
 Definition uPred_and := uPred_and_aux.(unseal).
-Arguments uPred_and {M}.
+Global Arguments uPred_and {M}.
 Definition uPred_and_eq: @uPred_and = @uPred_and_def := uPred_and_aux.(seal_eq).
 
 Program Definition uPred_or_def {M} (P Q : uPred M) : uPred M :=
@@ -270,7 +270,7 @@ Program Definition uPred_or_def {M} (P Q : uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto 2 with uPred_def.
 Definition uPred_or_aux : seal (@uPred_or_def). Proof. by eexists. Qed.
 Definition uPred_or := uPred_or_aux.(unseal).
-Arguments uPred_or {M}.
+Global Arguments uPred_or {M}.
 Definition uPred_or_eq: @uPred_or = @uPred_or_def := uPred_or_aux.(seal_eq).
 
 Program Definition uPred_impl_def {M} (P Q : uPred M) : uPred M :=
@@ -283,7 +283,7 @@ Next Obligation.
 Qed.
 Definition uPred_impl_aux : seal (@uPred_impl_def). Proof. by eexists. Qed.
 Definition uPred_impl := uPred_impl_aux.(unseal).
-Arguments uPred_impl {M}.
+Global Arguments uPred_impl {M}.
 Definition uPred_impl_eq :
   @uPred_impl = @uPred_impl_def := uPred_impl_aux.(seal_eq).
 
@@ -292,7 +292,7 @@ Program Definition uPred_forall_def {M A} (Ψ : A → uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto 2 with uPred_def.
 Definition uPred_forall_aux : seal (@uPred_forall_def). Proof. by eexists. Qed.
 Definition uPred_forall := uPred_forall_aux.(unseal).
-Arguments uPred_forall {M A}.
+Global Arguments uPred_forall {M A}.
 Definition uPred_forall_eq :
   @uPred_forall = @uPred_forall_def := uPred_forall_aux.(seal_eq).
 
@@ -301,7 +301,7 @@ Program Definition uPred_exist_def {M A} (Ψ : A → uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto 2 with uPred_def.
 Definition uPred_exist_aux : seal (@uPred_exist_def). Proof. by eexists. Qed.
 Definition uPred_exist := uPred_exist_aux.(unseal).
-Arguments uPred_exist {M A}.
+Global Arguments uPred_exist {M A}.
 Definition uPred_exist_eq: @uPred_exist = @uPred_exist_def := uPred_exist_aux.(seal_eq).
 
 Program Definition uPred_internal_eq_def {M} {A : ofeT} (a1 a2 : A) : uPred M :=
@@ -309,7 +309,7 @@ Program Definition uPred_internal_eq_def {M} {A : ofeT} (a1 a2 : A) : uPred M :=
 Solve Obligations with naive_solver eauto 2 using dist_le.
 Definition uPred_internal_eq_aux : seal (@uPred_internal_eq_def). Proof. by eexists. Qed.
 Definition uPred_internal_eq := uPred_internal_eq_aux.(unseal).
-Arguments uPred_internal_eq {M A}.
+Global Arguments uPred_internal_eq {M A}.
 Definition uPred_internal_eq_eq:
   @uPred_internal_eq = @uPred_internal_eq_def := uPred_internal_eq_aux.(seal_eq).
 
@@ -322,7 +322,7 @@ Next Obligation.
 Qed.
 Definition uPred_sep_aux : seal (@uPred_sep_def). Proof. by eexists. Qed.
 Definition uPred_sep := uPred_sep_aux.(unseal).
-Arguments uPred_sep {M}.
+Global Arguments uPred_sep {M}.
 Definition uPred_sep_eq: @uPred_sep = @uPred_sep_def := uPred_sep_aux.(seal_eq).
 
 Program Definition uPred_wand_def {M} (P Q : uPred M) : uPred M :=
@@ -335,7 +335,7 @@ Next Obligation.
 Qed.
 Definition uPred_wand_aux : seal (@uPred_wand_def). Proof. by eexists. Qed.
 Definition uPred_wand := uPred_wand_aux.(unseal).
-Arguments uPred_wand {M}.
+Global Arguments uPred_wand {M}.
 Definition uPred_wand_eq :
   @uPred_wand = @uPred_wand_def := uPred_wand_aux.(seal_eq).
 
@@ -347,7 +347,7 @@ Program Definition uPred_plainly_def {M} (P : uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto using uPred_mono, ucmra_unit_validN.
 Definition uPred_plainly_aux : seal (@uPred_plainly_def). Proof. by eexists. Qed.
 Definition uPred_plainly := uPred_plainly_aux.(unseal).
-Arguments uPred_plainly {M}.
+Global Arguments uPred_plainly {M}.
 Definition uPred_plainly_eq :
   @uPred_plainly = @uPred_plainly_def := uPred_plainly_aux.(seal_eq).
 
@@ -356,7 +356,7 @@ Program Definition uPred_persistently_def {M} (P : uPred M) : uPred M :=
 Solve Obligations with naive_solver eauto using uPred_mono, cmra_core_monoN.
 Definition uPred_persistently_aux : seal (@uPred_persistently_def). Proof. by eexists. Qed.
 Definition uPred_persistently := uPred_persistently_aux.(unseal).
-Arguments uPred_persistently {M}.
+Global Arguments uPred_persistently {M}.
 Definition uPred_persistently_eq :
   @uPred_persistently = @uPred_persistently_def := uPred_persistently_aux.(seal_eq).
 
@@ -367,7 +367,7 @@ Next Obligation.
 Qed.
 Definition uPred_later_aux : seal (@uPred_later_def). Proof. by eexists. Qed.
 Definition uPred_later := uPred_later_aux.(unseal).
-Arguments uPred_later {M}.
+Global Arguments uPred_later {M}.
 Definition uPred_later_eq :
   @uPred_later = @uPred_later_def := uPred_later_aux.(seal_eq).
 
@@ -379,7 +379,7 @@ Next Obligation.
 Qed.
 Definition uPred_ownM_aux : seal (@uPred_ownM_def). Proof. by eexists. Qed.
 Definition uPred_ownM := uPred_ownM_aux.(unseal).
-Arguments uPred_ownM {M}.
+Global Arguments uPred_ownM {M}.
 Definition uPred_ownM_eq :
   @uPred_ownM = @uPred_ownM_def := uPred_ownM_aux.(seal_eq).
 
@@ -388,7 +388,7 @@ Program Definition uPred_cmra_valid_def {M} {A : cmraT} (a : A) : uPred M :=
 Solve Obligations with naive_solver eauto 2 using cmra_validN_le.
 Definition uPred_cmra_valid_aux : seal (@uPred_cmra_valid_def). Proof. by eexists. Qed.
 Definition uPred_cmra_valid := uPred_cmra_valid_aux.(unseal).
-Arguments uPred_cmra_valid {M A}.
+Global Arguments uPred_cmra_valid {M A}.
 Definition uPred_cmra_valid_eq :
   @uPred_cmra_valid = @uPred_cmra_valid_def := uPred_cmra_valid_aux.(seal_eq).
 
@@ -404,7 +404,7 @@ Next Obligation.
 Qed.
 Definition uPred_bupd_aux : seal (@uPred_bupd_def). Proof. by eexists. Qed.
 Definition uPred_bupd := uPred_bupd_aux.(unseal).
-Arguments uPred_bupd {M}.
+Global Arguments uPred_bupd {M}.
 Definition uPred_bupd_eq :
   @uPred_bupd = @uPred_bupd_def := uPred_bupd_aux.(seal_eq).
 
@@ -428,7 +428,7 @@ Context {M : ucmraT}.
 Implicit Types φ : Prop.
 Implicit Types P Q : uPred M.
 Implicit Types A : Type.
-Arguments uPred_holds {_} !_ _ _ /.
+Local Arguments uPred_holds {_} !_ _ _ /.
 Local Hint Immediate uPred_in_entails : core.
 
 Notation "P ⊢ Q" := (@uPred_entails M P%I Q%I) : stdpp_scope.

@@ -11,7 +11,7 @@ bundle these operational type classes with the laws. *)
 Class BUpd (PROP : Type) : Type := bupd : PROP → PROP.
 Global Instance : Params (@bupd) 2 := {}.
 Global Hint Mode BUpd ! : typeclass_instances.
-Arguments bupd {_}%type_scope {_} _%bi_scope.
+Global Arguments bupd {_}%type_scope {_} _%bi_scope.
 
 Notation "|==> Q" := (bupd Q) : bi_scope.
 Notation "P ==∗ Q" := (P ⊢ |==> Q) (only parsing) : stdpp_scope.
@@ -20,7 +20,7 @@ Notation "P ==∗ Q" := (P -∗ |==> Q)%I : bi_scope.
 Class FUpd (PROP : Type) : Type := fupd : coPset → coPset → PROP → PROP.
 Global Instance: Params (@fupd) 4 := {}.
 Global Hint Mode FUpd ! : typeclass_instances.
-Arguments fupd {_}%type_scope {_} _ _ _%bi_scope.
+Global Arguments fupd {_}%type_scope {_} _ _ _%bi_scope.
 
 Notation "|={ E1 , E2 }=> Q" := (fupd E1 E2 Q) : bi_scope.
 Notation "P ={ E1 , E2 }=∗ Q" := (P -∗ |={E1,E2}=> Q)%I : bi_scope.
@@ -83,14 +83,14 @@ Class BiBUpd (PROP : bi) := {
   bi_bupd_mixin : BiBUpdMixin PROP bi_bupd_bupd;
 }.
 Global Hint Mode BiBUpd ! : typeclass_instances.
-Arguments bi_bupd_bupd : simpl never.
+Global Arguments bi_bupd_bupd : simpl never.
 
 Class BiFUpd (PROP : bi) := {
   bi_fupd_fupd :> FUpd PROP;
   bi_fupd_mixin : BiFUpdMixin PROP bi_fupd_fupd;
 }.
 Global Hint Mode BiFUpd ! : typeclass_instances.
-Arguments bi_fupd_fupd : simpl never.
+Global Arguments bi_fupd_fupd : simpl never.
 
 Class BiBUpdFUpd (PROP : bi) `{BiBUpd PROP, BiFUpd PROP} :=
   bupd_fupd E (P : PROP) : (|==> P) ={E}=∗ P.

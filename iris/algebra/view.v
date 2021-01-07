@@ -53,8 +53,8 @@ Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
   view_rel_unit n :
     ∃ a, view_rel_holds n a ε
 }.
-Arguments ViewRel {_ _} _ _.
-Arguments view_rel_holds {_ _} _ _ _ _.
+Global Arguments ViewRel {_ _} _ _.
+Global Arguments view_rel_holds {_ _} _ _ _ _.
 Global Instance: Params (@view_rel_holds) 4 := {}.
 
 Global Instance view_rel_ne {A B} (rel : view_rel A B) n :
@@ -77,9 +77,9 @@ always be constructed using [●V] and [◯V], and never using the constructor
 Record view {A B} (rel : nat → A → B → Prop) :=
   View { view_auth_proj : option (frac * agree A) ; view_frag_proj : B }.
 Add Printing Constructor view.
-Arguments View {_ _ _} _ _.
-Arguments view_auth_proj {_ _ _} _.
-Arguments view_frag_proj {_ _ _} _.
+Global Arguments View {_ _ _} _ _.
+Global Arguments view_auth_proj {_ _ _} _.
+Global Arguments view_frag_proj {_ _ _} _.
 Global Instance: Params (@View) 3 := {}.
 Global Instance: Params (@view_auth_proj) 3 := {}.
 Global Instance: Params (@view_frag_proj) 3 := {}.

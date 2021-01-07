@@ -13,9 +13,9 @@ Inductive csum (A B : Type) :=
   | Cinl : A → csum A B
   | Cinr : B → csum A B
   | CsumBot : csum A B.
-Arguments Cinl {_ _} _.
-Arguments Cinr {_ _} _.
-Arguments CsumBot {_ _}.
+Global Arguments Cinl {_ _} _.
+Global Arguments Cinr {_ _} _.
+Global Arguments CsumBot {_ _}.
 
 Global Instance: Params (@Cinl) 2 := {}.
 Global Instance: Params (@Cinr) 2 := {}.
@@ -110,7 +110,7 @@ Proof. by inversion_clear 2; constructor; apply (discrete _). Qed.
 
 End ofe.
 
-Arguments csumO : clear implicits.
+Global Arguments csumO : clear implicits.
 
 (* Functor on COFEs *)
 Definition csum_map {A A' B B'} (fA : A → A') (fB : B → B')
@@ -361,7 +361,7 @@ Proof.
 Qed.
 End cmra.
 
-Arguments csumR : clear implicits.
+Global Arguments csumR : clear implicits.
 
 (* Functor *)
 Global Instance csum_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B') :

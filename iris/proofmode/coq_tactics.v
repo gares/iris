@@ -575,8 +575,8 @@ Qed.
 (** * Combining *)
 Class FromSeps {PROP : bi} (P : PROP) (Qs : list PROP) :=
   from_seps : [∗] Qs ⊢ P.
-Arguments FromSeps {_} _%I _%I.
-Arguments from_seps {_} _%I _%I {_}.
+Local Arguments FromSeps {_} _%I _%I.
+Local Arguments from_seps {_} _%I _%I {_}.
 
 Global Instance from_seps_nil : @FromSeps PROP emp [].
 Proof. by rewrite /FromSeps. Qed.

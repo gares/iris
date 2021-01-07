@@ -201,21 +201,21 @@ Global Instance: Params (@bi_wand) 1 := {}.
 Global Instance: Params (@bi_persistently) 1 := {}.
 Global Instance: Params (@bi_later) 1  := {}.
 
-Arguments bi_car : simpl never.
-Arguments bi_dist : simpl never.
-Arguments bi_equiv : simpl never.
-Arguments bi_entails {PROP} _%I _%I : simpl never, rename.
-Arguments bi_emp {PROP} : simpl never, rename.
-Arguments bi_pure {PROP} _%stdpp : simpl never, rename.
-Arguments bi_and {PROP} _%I _%I : simpl never, rename.
-Arguments bi_or {PROP} _%I _%I : simpl never, rename.
-Arguments bi_impl {PROP} _%I _%I : simpl never, rename.
-Arguments bi_forall {PROP _} _%I : simpl never, rename.
-Arguments bi_exist {PROP _} _%I : simpl never, rename.
-Arguments bi_sep {PROP} _%I _%I : simpl never, rename.
-Arguments bi_wand {PROP} _%I _%I : simpl never, rename.
-Arguments bi_persistently {PROP} _%I : simpl never, rename.
-Arguments bi_later {PROP} _%I : simpl never, rename.
+Global Arguments bi_car : simpl never.
+Global Arguments bi_dist : simpl never.
+Global Arguments bi_equiv : simpl never.
+Global Arguments bi_entails {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_emp {PROP} : simpl never, rename.
+Global Arguments bi_pure {PROP} _%stdpp : simpl never, rename.
+Global Arguments bi_and {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_or {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_impl {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_forall {PROP _} _%I : simpl never, rename.
+Global Arguments bi_exist {PROP _} _%I : simpl never, rename.
+Global Arguments bi_sep {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_wand {PROP} _%I _%I : simpl never, rename.
+Global Arguments bi_persistently {PROP} _%I : simpl never, rename.
+Global Arguments bi_later {PROP} _%I : simpl never, rename.
 
 Global Hint Extern 0 (bi_entails _ _) => reflexivity : core.
 Global Instance bi_rewrite_relation (PROP : bi) : RewriteRelation (@bi_entails PROP) := {}.
@@ -258,7 +258,7 @@ Notation "▷ P" := (bi_later P) : bi_scope.
 
 Definition bi_emp_valid {PROP : bi} (P : PROP) : Prop := emp ⊢ P.
 
-Arguments bi_emp_valid {_} _%I : simpl never.
+Global Arguments bi_emp_valid {_} _%I : simpl never.
 Typeclasses Opaque bi_emp_valid.
 
 Notation "⊢ Q" := (bi_emp_valid Q%I) : stdpp_scope.

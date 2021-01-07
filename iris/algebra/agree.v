@@ -34,8 +34,8 @@ Record agree (A : Type) : Type := {
   agree_car : list A;
   agree_not_nil : bool_decide (agree_car = []) = false
 }.
-Arguments agree_car {_} _.
-Arguments agree_not_nil {_} _.
+Global Arguments agree_car {_} _.
+Global Arguments agree_not_nil {_} _.
 Local Coercion agree_car : agree >-> list.
 
 Definition to_agree {A} (a : A) : agree A :=
@@ -259,8 +259,8 @@ Proof. rewrite to_agree_op_valid. by fold_leibniz. Qed.
 End agree.
 
 Global Instance: Params (@to_agree) 1 := {}.
-Arguments agreeO : clear implicits.
-Arguments agreeR : clear implicits.
+Global Arguments agreeO : clear implicits.
+Global Arguments agreeR : clear implicits.
 
 Program Definition agree_map {A B} (f : A → B) (x : agree A) : agree B :=
   {| agree_car := f <$> agree_car x |}.

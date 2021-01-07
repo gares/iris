@@ -20,9 +20,9 @@ Structure stsT := Sts {
   prim_step : relation state;
   tok : state → propset token;
 }.
-Arguments Sts {_ _} _ _.
-Arguments prim_step {_} _ _.
-Arguments tok {_} _.
+Global Arguments Sts {_ _} _ _.
+Global Arguments prim_step {_} _ _.
+Global Arguments tok {_} _.
 Notation states sts := (propset (state sts)).
 Notation tokens sts := (propset (token sts)).
 
@@ -179,8 +179,8 @@ Notation frame_steps T := (rtc (frame_step T)).
 Inductive car (sts : stsT) :=
   | auth : state sts → propset (token sts) → car sts
   | frag : propset (state sts) → propset (token sts) → car sts.
-Arguments auth {_} _ _.
-Arguments frag {_} _ _.
+Global Arguments auth {_} _ _.
+Global Arguments frag {_} _ _.
 End sts.
 
 Notation stsT := sts.stsT.
@@ -300,7 +300,7 @@ Context {sts : stsT}.
 Implicit Types s : state sts.
 Implicit Types S : states sts.
 Implicit Types T : tokens sts.
-Arguments dra_valid _ !_/.
+Local Arguments dra_valid _ !_/.
 
 (** Setoids *)
 Global Instance sts_auth_proper s : Proper ((≡) ==> (≡)) (sts_auth s).
@@ -461,8 +461,8 @@ Structure stsT := Sts {
   state : Type;
   prim_step : relation state;
 }.
-Arguments Sts {_} _.
-Arguments prim_step {_} _ _.
+Global Arguments Sts {_} _.
+Global Arguments prim_step {_} _ _.
 Notation states sts := (propset (state sts)).
 
 Definition stsT_token := Empty_set.

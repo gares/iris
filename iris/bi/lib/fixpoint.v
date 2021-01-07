@@ -9,18 +9,18 @@ Class BiMonoPred {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) := {
   bi_mono_pred Φ Ψ : ⊢ <pers> (∀ x, Φ x -∗ Ψ x) → ∀ x, F Φ x -∗ F Ψ x;
   bi_mono_pred_ne Φ : NonExpansive Φ → NonExpansive (F Φ)
 }.
-Arguments bi_mono_pred {_ _ _ _} _ _.
+Global Arguments bi_mono_pred {_ _ _ _} _ _.
 Local Existing Instance bi_mono_pred_ne.
 
 Definition bi_least_fixpoint {PROP : bi} {A : ofeT}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
   tc_opaque (∀ Φ : A -n> PROP, <pers> (∀ x, F Φ x -∗ Φ x) → Φ x)%I.
-Arguments bi_least_fixpoint : simpl never.
+Global Arguments bi_least_fixpoint : simpl never.
 
 Definition bi_greatest_fixpoint {PROP : bi} {A : ofeT}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
   tc_opaque (∃ Φ : A -n> PROP, <pers> (∀ x, Φ x -∗ F Φ x) ∧ Φ x)%I.
-Arguments bi_greatest_fixpoint : simpl never.
+Global Arguments bi_greatest_fixpoint : simpl never.
 
 Global Instance least_fixpoint_ne {PROP : bi} {A : ofeT} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>

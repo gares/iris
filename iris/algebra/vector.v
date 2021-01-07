@@ -35,7 +35,7 @@ Section ofe.
   Proof. intros ? v. induction v; apply _. Qed.
 End ofe.
 
-Arguments vecO : clear implicits.
+Global Arguments vecO : clear implicits.
 Typeclasses Opaque vec_dist.
 
 Section proper.

@@ -61,7 +61,7 @@ Definition twp_def `{!irisG Λ Σ} : Twp Λ (iProp Σ) stuckness
   := λ s E e Φ, bi_least_fixpoint (twp_pre' s) (E,e,Φ).
 Definition twp_aux : seal (@twp_def). Proof. by eexists. Qed.
 Definition twp' := twp_aux.(unseal).
-Arguments twp' {Λ Σ _}.
+Global Arguments twp' {Λ Σ _}.
 Existing Instance twp'.
 Lemma twp_eq `{!irisG Λ Σ} : twp = @twp_def Λ Σ _.
 Proof. rewrite -twp_aux.(seal_eq) //. Qed.

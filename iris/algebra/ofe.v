@@ -50,14 +50,14 @@ Structure ofeT := OfeT {
   ofe_dist : Dist ofe_car;
   ofe_mixin : OfeMixin ofe_car
 }.
-Arguments OfeT _ {_ _} _.
+Global Arguments OfeT _ {_ _} _.
 Add Printing Constructor ofeT.
 Global Hint Extern 0 (Equiv _) => eapply (@ofe_equiv _) : typeclass_instances.
 Global Hint Extern 0 (Dist _) => eapply (@ofe_dist _) : typeclass_instances.
-Arguments ofe_car : simpl never.
-Arguments ofe_equiv : simpl never.
-Arguments ofe_dist : simpl never.
-Arguments ofe_mixin : simpl never.
+Global Arguments ofe_car : simpl never.
+Global Arguments ofe_equiv : simpl never.
+Global Arguments ofe_dist : simpl never.
+Global Arguments ofe_mixin : simpl never.
 
 (** When declaring instances of subclasses of OFE (like CMRAs and unital CMRAs)
 we need Coq to *infer* the canonical OFE instance of a given type and take the
@@ -100,7 +100,7 @@ Global Hint Extern 1 (_ ≡{_}≡ _) => apply equiv_dist; assumption : core.
 
 (** Discrete OFEs and discrete OFE elements *)
 Class Discrete {A : ofeT} (x : A) := discrete y : x ≡{0}≡ y → x ≡ y.
-Arguments discrete {_} _ {_} _ _.
+Global Arguments discrete {_} _ {_} _ _.
 Global Hint Mode Discrete + ! : typeclass_instances.
 Global Instance: Params (@Discrete) 1 := {}.
 
@@ -111,8 +111,8 @@ Record chain (A : ofeT) := {
   chain_car :> nat → A;
   chain_cauchy n i : n ≤ i → chain_car i ≡{n}≡ chain_car n
 }.
-Arguments chain_car {_} _ _.
-Arguments chain_cauchy {_} _ _ _ _.
+Global Arguments chain_car {_} _ _.
+Global Arguments chain_cauchy {_} _ _ _ _.
 
 Program Definition chain_map {A B : ofeT} (f : A → B)
     `{!NonExpansive f} (c : chain A) : chain B :=
@@ -124,7 +124,7 @@ Class Cofe (A : ofeT) := {
   compl : Compl A;
   conv_compl n c : compl c ≡{n}≡ c n;
 }.
-Arguments compl : simpl never.
+Global Arguments compl : simpl never.
 Global Hint Mode Cofe ! : typeclass_instances.
 
 Lemma compl_chain_map `{Cofe A, Cofe B} (f : A → B) c `(NonExpansive f) :
@@ -200,7 +200,7 @@ End ofe.
 (** Contractive functions *)
 Definition dist_later `{Dist A} (n : nat) (x y : A) : Prop :=
   match n with 0 => True | S n => x ≡{n}≡ y end.
-Arguments dist_later _ _ !_ _ _ /.
+Global Arguments dist_later _ _ !_ _ _ /.
 
 Global Instance dist_later_equivalence (A : ofeT) n : Equivalence (@dist_later A _ n).
 Proof. destruct n as [|n]; [by split|]. apply dist_equivalence. Qed.
@@ -321,7 +321,7 @@ Program Definition fixpoint_def `{Cofe A, Inhabited A} (f : A → A)
   `{!Contractive f} : A := compl (fixpoint_chain f).
 Definition fixpoint_aux : seal (@fixpoint_def). Proof. by eexists. Qed.
 Definition fixpoint := fixpoint_aux.(unseal).
-Arguments fixpoint {A _ _} f {_}.
+Global Arguments fixpoint {A _ _} f {_}.
 Definition fixpoint_eq : @fixpoint = @fixpoint_def := fixpoint_aux.(seal_eq).
 
 Section fixpoint.
@@ -529,7 +529,7 @@ Record ofe_mor (A B : ofeT) : Type := OfeMor {
   ofe_mor_car :> A → B;
   ofe_mor_ne : NonExpansive ofe_mor_car
 }.
-Arguments OfeMor {_ _} _ {_}.
+Global Arguments OfeMor {_ _} _ {_}.
 Add Printing Constructor ofe_mor.
 Existing Instance ofe_mor_ne.
 
@@ -581,7 +581,7 @@ Section ofe_mor.
   Proof. done. Qed.
 End ofe_mor.
 
-Arguments ofe_morO : clear implicits.
+Global Arguments ofe_morO : clear implicits.
 Notation "A -n> B" :=
   (ofe_morO A B) (at level 99, B at level 200, right associativity).
 Global Instance ofe_mor_inhabited {A B : ofeT} `{Inhabited B} :
@@ -680,7 +680,7 @@ Section product.
   Proof. intros ?? [??]; apply _. Qed.
 End product.
 
-Arguments prodO : clear implicits.
+Global Arguments prodO : clear implicits.
 Typeclasses Opaque prod_dist.
 
 Global Instance prod_map_ne {A A' B B' : ofeT} n :
@@ -872,7 +872,7 @@ Section sum.
   Proof. intros ?? [?|?]; apply _. Qed.
 End sum.
 
-Arguments sumO : clear implicits.
+Global Arguments sumO : clear implicits.
 Typeclasses Opaque sum_dist.
 
 Global Instance sum_map_ne {A A' B B' : ofeT} n :
@@ -1035,7 +1035,7 @@ Section option.
 End option.
 
 Typeclasses Opaque option_dist.
-Arguments optionO : clear implicits.
+Global Arguments optionO : clear implicits.
 
 Global Instance option_fmap_ne {A B : ofeT} n:
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@fmap option _ A B).
@@ -1089,8 +1089,8 @@ If you need to get a witness out, you should use the lemma [Next_uninj]
 instead. *)
 Record later (A : Type) : Type := Next { later_car : A }.
 Add Printing Constructor later.
-Arguments Next {_} _.
-Arguments later_car {_} _.
+Global Arguments Next {_} _.
+Global Arguments later_car {_} _.
 Global Instance: Params (@Next) 1 := {}.
 
 Section later.
@@ -1144,7 +1144,7 @@ Section later.
   Qed.
 End later.
 
-Arguments laterO : clear implicits.
+Global Arguments laterO : clear implicits.
 
 Definition later_map {A B} (f : A → B) (x : later A) : later B :=
   Next (f (later_car x)).
@@ -1249,7 +1249,7 @@ Section discrete_fun.
   Qed.
 End discrete_fun.
 
-Arguments discrete_funO {_} _.
+Global Arguments discrete_funO {_} _.
 Notation "A -d> B" :=
   (@discrete_funO A (λ _, B)) (at level 99, B at level 200, right associativity).
 
@@ -1381,7 +1381,7 @@ Section sigma.
   Proof. intros ??. apply _. Qed.
 End sigma.
 
-Arguments sigO {_} _.
+Global Arguments sigO {_} _.
 
 (** * SigmaT type *)
 (** Ofe for [sigT]. The first component must be discrete and use Leibniz
@@ -1541,7 +1541,7 @@ Section sigT.
   End cofe.
 End sigT.
 
-Arguments sigTO {_} _.
+Global Arguments sigTO {_} _.
 
 Section sigTOF.
   Context {A : Type}.
@@ -1578,7 +1578,7 @@ Section sigTOF.
     repeat intro. apply sigT_map => a. exact: oFunctor_map_contractive.
   Qed.
 End sigTOF.
-Arguments sigTOF {_} _%OF.
+Global Arguments sigTOF {_} _%OF.
 
 Notation "{ x  &  P }" := (sigTOF (λ x, P%OF)) : oFunctor_scope.
 Notation "{ x : A &  P }" := (@sigTOF A%type (λ x, P%OF)) : oFunctor_scope.
@@ -1590,11 +1590,11 @@ Record ofe_iso (A B : ofeT) := OfeIso {
   ofe_iso_12 y : ofe_iso_1 (ofe_iso_2 y) ≡ y;
   ofe_iso_21 x : ofe_iso_2 (ofe_iso_1 x) ≡ x;
 }.
-Arguments OfeIso {_ _} _ _ _ _.
-Arguments ofe_iso_1 {_ _} _.
-Arguments ofe_iso_2 {_ _} _.
-Arguments ofe_iso_12 {_ _} _ _.
-Arguments ofe_iso_21 {_ _} _ _.
+Global Arguments OfeIso {_ _} _ _ _ _.
+Global Arguments ofe_iso_1 {_ _} _.
+Global Arguments ofe_iso_2 {_ _} _.
+Global Arguments ofe_iso_12 {_ _} _ _.
+Global Arguments ofe_iso_21 {_ _} _ _.
 
 Section ofe_iso.
   Context {A B : ofeT}.
@@ -1626,7 +1626,7 @@ Section ofe_iso.
   Qed.
 End ofe_iso.
 
-Arguments ofe_isoO : clear implicits.
+Global Arguments ofe_isoO : clear implicits.
 
 Program Definition iso_ofe_refl {A} : ofe_iso A A := OfeIso cid cid _ _.
 Solve Obligations with done.

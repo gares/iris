@@ -55,11 +55,11 @@ Inductive modality_action (PROP1 : bi) : bi → Type :=
   | MIEnvTransform {PROP2 : bi} (C : PROP2 → PROP1 → Prop) : modality_action PROP1 PROP2
   | MIEnvClear {PROP2} : modality_action PROP1 PROP2
   | MIEnvId : modality_action PROP1 PROP1.
-Arguments MIEnvIsEmpty {_ _}.
-Arguments MIEnvForall {_} _.
-Arguments MIEnvTransform {_ _} _.
-Arguments MIEnvClear {_ _}.
-Arguments MIEnvId {_}.
+Global Arguments MIEnvIsEmpty {_ _}.
+Global Arguments MIEnvForall {_} _.
+Global Arguments MIEnvTransform {_ _} _.
+Global Arguments MIEnvClear {_ _}.
+Global Arguments MIEnvId {_}.
 
 Notation MIEnvFilter C := (MIEnvTransform (TCDiag C)).
 
@@ -105,9 +105,9 @@ Record modality (PROP1 PROP2 : bi) := Modality {
   modality_mixin_of :
     modality_mixin modality_car modality_intuitionistic_action modality_spatial_action
 }.
-Arguments Modality {_ _} _ {_ _} _.
-Arguments modality_intuitionistic_action {_ _} _.
-Arguments modality_spatial_action {_ _} _.
+Global Arguments Modality {_ _} _ {_ _} _.
+Global Arguments modality_intuitionistic_action {_ _} _.
+Global Arguments modality_spatial_action {_ _} _.
 
 Section modality.
   Context {PROP1 PROP2} (M : modality PROP1 PROP2).

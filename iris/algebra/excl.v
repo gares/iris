@@ -7,8 +7,8 @@ Local Arguments valid _ _  !_ /.
 Inductive excl (A : Type) :=
   | Excl : A → excl A
   | ExclBot : excl A.
-Arguments Excl {_} _.
-Arguments ExclBot {_}.
+Global Arguments Excl {_} _.
+Global Arguments ExclBot {_}.
 
 Global Instance: Params (@Excl) 1 := {}.
 Global Instance: Params (@ExclBot) 1 := {}.
@@ -114,8 +114,8 @@ Proof.
 Qed.
 End excl.
 
-Arguments exclO : clear implicits.
-Arguments exclR : clear implicits.
+Global Arguments exclO : clear implicits.
+Global Arguments exclR : clear implicits.
 
 (* Functor *)
 Definition excl_map {A B} (f : A → B) (x : excl A) : excl B :=

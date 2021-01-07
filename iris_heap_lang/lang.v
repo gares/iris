@@ -192,7 +192,7 @@ values is unboxed (exploiting the fact that an unboxed and a boxed value can
 never be equal because these are disjoint sets). *)
 Definition vals_compare_safe (vl v1 : val) : Prop :=
   val_is_unboxed vl ∨ val_is_unboxed v1.
-Arguments vals_compare_safe !_ !_ /.
+Global Arguments vals_compare_safe !_ !_ /.
 
 (** The state: heaps of [option val]s, with [None] representing deallocated locations. *)
 Record state : Type := {
@@ -562,11 +562,11 @@ Definition bin_op_eval (op : bin_op) (v1 v2 : val) : option val :=
 
 Definition state_upd_heap (f: gmap loc (option val) → gmap loc (option val)) (σ: state) : state :=
   {| heap := f σ.(heap); used_proph_id := σ.(used_proph_id) |}.
-Arguments state_upd_heap _ !_ /.
+Global Arguments state_upd_heap _ !_ /.
 
 Definition state_upd_used_proph_id (f: gset proph_id → gset proph_id) (σ: state) : state :=
   {| heap := σ.(heap); used_proph_id := f σ.(used_proph_id) |}.
-Arguments state_upd_used_proph_id _ !_ /.
+Global Arguments state_upd_used_proph_id _ !_ /.
 
 Fixpoint heap_array (l : loc) (vs : list val) : gmap loc (option val) :=
   match vs with

@@ -44,7 +44,7 @@ Definition gset_bij_own_auth_aux : seal (@gset_bij_own_auth_def). Proof. by eexi
 Definition gset_bij_own_auth := unseal gset_bij_own_auth_aux.
 Definition gset_bij_own_auth_eq :
   @gset_bij_own_auth = @gset_bij_own_auth_def := seal_eq gset_bij_own_auth_aux.
-Arguments gset_bij_own_auth {_ _ _ _ _ _ _ _}.
+Global Arguments gset_bij_own_auth {_ _ _ _ _ _ _ _}.
 
 Definition gset_bij_own_elem_def `{gset_bijG Σ A B} (γ : gname)
   (a : A) (b : B) : iProp Σ := own γ (gset_bij_elem a b).
@@ -52,7 +52,7 @@ Definition gset_bij_own_elem_aux : seal (@gset_bij_own_elem_def). Proof. by eexi
 Definition gset_bij_own_elem := unseal gset_bij_own_elem_aux.
 Definition gset_bij_own_elem_eq :
   @gset_bij_own_elem = @gset_bij_own_elem_def := seal_eq gset_bij_own_elem_aux.
-Arguments gset_bij_own_elem {_ _ _ _ _ _ _ _}.
+Global Arguments gset_bij_own_elem {_ _ _ _ _ _ _ _}.
 
 Section gset_bij.
   Context `{gset_bijG Σ A B}.

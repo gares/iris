@@ -12,7 +12,7 @@ Definition val := Z.
 Record heapProp := HeapProp {
   heapProp_holds :> gmap loc val → Prop;
 }.
-Arguments heapProp_holds : simpl never.
+Global Arguments heapProp_holds : simpl never.
 Add Printing Constructor heapProp.
 
 Section ofe.

@@ -740,7 +740,7 @@ Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
 (** * The specialize and pose proof tactics *)
 Record iTrm {X As S} :=
   ITrm { itrm : X ; itrm_vars : hlist As ; itrm_hyps : S }.
-Arguments ITrm {_ _ _} _ _ _.
+Global Arguments ITrm {_ _ _} _ _ _.
 
 Notation "( H $! x1 .. xn )" :=
   (ITrm H (hcons x1 .. (hcons xn hnil) ..) "") (at level 0, x1, xn at level 9).
