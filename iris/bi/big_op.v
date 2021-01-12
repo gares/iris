@@ -91,6 +91,9 @@ Section sep_list.
     ([∗ list] k↦y ∈ l1 ++ l2, Φ k y)
     ⊣⊢ ([∗ list] k↦y ∈ l1, Φ k y) ∗ ([∗ list] k↦y ∈ l2, Φ (length l1 + k) y).
   Proof. by rewrite big_opL_app. Qed.
+  Lemma big_sepL_snoc Φ l x :
+    ([∗ list] k↦y ∈ l ++ [x], Φ k y) ⊣⊢ ([∗ list] k↦y ∈ l, Φ k y) ∗ Φ (length l) x.
+  Proof. by rewrite big_opL_snoc. Qed.
 
   Lemma big_sepL_submseteq `{BiAffine PROP} (Φ : A → PROP) l1 l2 :
     l1 ⊆+ l2 → ([∗ list] y ∈ l2, Φ y) ⊢ [∗ list] y ∈ l1, Φ y.
@@ -421,6 +424,24 @@ Section sep_list2.
     revert Φ l1'. induction l1 as [|x1 l1 IH]=> Φ -[|x1' l1'] //= ?; simplify_eq.
     - by rewrite left_id.
     - by rewrite -assoc IH.
+  Qed.
+
+  Lemma big_sepL2_snoc Φ x1 x2 l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ (l1 ++ [x1]);(l2 ++ [x2]), Φ k y1 y2) ⊣⊢
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ∗ Φ (length l1) x1 x2.
+  Proof.
+    apply (anti_symm (⊢)); last first.
+    - apply wand_elim_l'. rewrite big_sepL2_app. apply wand_mono; last done.
+      rewrite big_sepL2_singleton Nat.add_0_r. done.
+    - rewrite big_sepL2_app_inv_l. apply exist_elim=>l2l. apply exist_elim=>l2r.
+      apply pure_elim_l=>Hl2.
+      apply (pure_elim (length [x1] = length l2r)).
+      { rewrite !big_sepL2_length sep_elim_r. done. }
+      simpl. destruct l2r as [? l2r|]; first done.
+      destruct l2r as [|]; last done. intros _.
+      apply app_inj_tail in Hl2 as [-> ->].
+      apply sep_mono_r.
+      rewrite big_sepL2_singleton Nat.add_0_r. done.
   Qed.
 
   (** The lemmas [big_sepL2_mono], [big_sepL2_ne] and [big_sepL2_proper] are more

@@ -97,6 +97,9 @@ Section list.
     revert f. induction l1 as [|x l1 IH]=> f /=; first by rewrite left_id.
     by rewrite IH assoc.
   Qed.
+  Lemma big_opL_snoc f l x :
+    ([^o list] k↦y ∈ l ++ [x], f k y) ≡ ([^o list] k↦y ∈ l, f k y) `o` f (length l) x.
+  Proof. rewrite big_opL_app big_opL_singleton Nat.add_0_r //. Qed.
 
   Lemma big_opL_unit l : ([^o list] k↦y ∈ l, monoid_unit) ≡ (monoid_unit : M).
   Proof. induction l; rewrite /= ?left_id //. Qed.
