@@ -291,21 +291,30 @@ Section sep_list.
   Proof. induction 1; simpl; apply _. Qed.
 End sep_list.
 
-Section sep_list_more.
-  Context {A : Type}.
-  Implicit Types l : list A.
-  Implicit Types Φ Ψ : nat → A → PROP.
-  (* Some lemmas depend on the generalized versions of the above ones. *)
+(* Some lemmas depend on the generalized versions of the above ones. *)
 
-  Lemma big_sepL_zip_with {B C} Φ f (l1 : list B) (l2 : list C) :
-    ([∗ list] k↦x ∈ zip_with f l1 l2, Φ k x)
+Lemma big_sepL_sep_zip {A B} (Φ : nat → A → PROP) (Ψ : nat → B → PROP) l1 l2 :
+  length l1 = length l2 →
+  ([∗ list] k↦x ∈ l1, Φ k x) ∗ ([∗ list] k↦x ∈ l2, Ψ k x) ⊣⊢
+  ([∗ list] k↦xy ∈ zip l1 l2, Φ k xy.1 ∗ Ψ k xy.2).
+Proof.
+  intros Hlen. rewrite big_sepL_sep. f_equiv.
+  - trans ([∗ list] k↦x ∈ fst <$> zip l1 l2, Φ k x)%I.
+    + rewrite fst_zip; auto with lia.
+    + rewrite big_sepL_fmap //.
+  - trans ([∗ list] k↦x ∈ snd <$> zip l1 l2, Ψ k x)%I.
+    + rewrite snd_zip; auto with lia.
+    + rewrite big_sepL_fmap //.
+Qed.
+
+Lemma big_sepL_zip_with {A B C} (Φ : nat → A → PROP) f (l1 : list B) (l2 : list C) :
+  ([∗ list] k↦x ∈ zip_with f l1 l2, Φ k x)
     ⊣⊢ ([∗ list] k↦x ∈ l1, if l2 !! k is Some y then Φ k (f x y) else emp).
-  Proof.
-    revert Φ l2; induction l1 as [|x l1 IH]=> Φ [|y l2] //=.
-    - by rewrite big_sepL_emp left_id.
-    - by rewrite IH.
-  Qed.
-End sep_list_more.
+Proof.
+  revert Φ l2; induction l1 as [|x l1 IH]=> Φ [|y l2] //=.
+  - by rewrite big_sepL_emp left_id.
+  - by rewrite IH.
+Qed.
 
 Lemma big_sepL2_alt {A B} (Φ : nat → A → B → PROP) l1 l2 :
   ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2)
@@ -617,6 +626,16 @@ Section sep_list2.
   Proof.
     revert Φ l2. induction l1 as [|x1 l1 IH]=> Φ -[|x2 l2]//=; simplify_eq.
     by rewrite IH.
+  Qed.
+
+  Lemma big_sepL2_merge (Φ : nat → A → PROP) (Ψ : nat → B → PROP) (l1 : list A) (l2 : list B):
+    length l1 = length l2 →
+    ([∗ list] k↦y1 ∈ l1, Φ k y1) -∗
+    ([∗ list] k↦y2 ∈ l2, Ψ k y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 ∗ Ψ k y2).
+  Proof.
+    intros Hlen. apply wand_intro_r.
+    rewrite big_sepL_sep_zip // big_sepL2_alt pure_True // left_id //.
   Qed.
 
   Global Instance big_sepL2_nil_persistent Φ :
