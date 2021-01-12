@@ -549,11 +549,11 @@ Qed.
 Lemma cmra_discrete_included_r x y : Discrete y → x ≼{0} y → x ≼ y.
 Proof. intros ? [x' ?]. exists x'. by apply (discrete y). Qed.
 Lemma cmra_op_discrete x1 x2 :
-  ✓ (x1 ⋅ x2) → Discrete x1 → Discrete x2 → Discrete (x1 ⋅ x2).
+  ✓{0} (x1 ⋅ x2) → Discrete x1 → Discrete x2 → Discrete (x1 ⋅ x2).
 Proof.
   intros ??? z Hz.
   destruct (cmra_extend 0 z x1 x2) as (y1&y2&Hz'&?&?); auto; simpl in *.
-  { rewrite -?Hz. by apply cmra_valid_validN. }
+  { rewrite -?Hz. done. }
   by rewrite Hz' (discrete x1 y1) // (discrete x2 y2).
 Qed.
 
