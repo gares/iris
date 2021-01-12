@@ -30,16 +30,16 @@ Definition to_inv_heap {L V : Type} `{Countable L}
     (h: gmap L (V * (V -d> PropO))) : inv_heap_mapUR L V :=
   prod_map (λ x, Excl' x) to_agree <$> h.
 
+Class inv_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
+  inv_heap_preG_inG :> inG Σ (authR (inv_heap_mapUR L V))
+}.
+
 Class inv_heapG (L V : Type) (Σ : gFunctors) `{Countable L} := Inv_HeapG {
-  inv_heap_inG :> inG Σ (authR (inv_heap_mapUR L V));
+  inv_heap_inG :> inv_heapPreG L V Σ;
   inv_heap_name : gname
 }.
 Global Arguments Inv_HeapG _ _ {_ _ _ _}.
 Global Arguments inv_heap_name {_ _ _ _ _} _ : assert.
-
-Class inv_heapPreG (L V : Type) (Σ : gFunctors) `{Countable L} := {
-  inv_heap_preG_inG :> inG Σ (authR (inv_heap_mapUR L V))
-}.
 
 Definition inv_heapΣ (L V : Type) `{Countable L} : gFunctors :=
   #[ GFunctor (authR (inv_heap_mapUR L V)) ].
