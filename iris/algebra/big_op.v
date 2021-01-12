@@ -394,7 +394,6 @@ Section gmap.
   Qed.
 End gmap.
 
-
 (** ** Big ops over finite sets *)
 Section gset.
   Context `{Countable A}.
@@ -480,7 +479,36 @@ Section gset.
   Lemma big_opS_op f g X :
     ([^o set] y ∈ X, f y `o` g y) ≡ ([^o set] y ∈ X, f y) `o` ([^o set] y ∈ X, g y).
   Proof. by rewrite big_opS_eq /big_opS_def -big_opL_op. Qed.
+
+  Lemma big_opS_list_to_set f (l : list A) :
+    NoDup l →
+    ([^o set] x ∈ list_to_set l, f x) ≡ [^o list] _ ↦ x ∈ l, f x.
+  Proof.
+    induction l as [|x l]; intros Hnodup.
+    - rewrite big_opS_empty //.
+    - inversion Hnodup; subst; clear Hnodup.
+      rewrite /= big_opS_union; last first.
+      { rewrite disjoint_singleton_l.
+        rewrite elem_of_list_to_set //. }
+      rewrite big_opS_singleton.
+      f_equiv. apply IHl; auto.
+  Qed.
 End gset.
+
+Lemma big_opS_set_map `{Countable A, Countable B} (h : A → B) (X : gset A) (f : B → M) :
+  Inj (=) (=) h →
+  ([^o set] x ∈ set_map h X, f x) ≡ ([^o set] x ∈ X, f (h x)).
+Proof.
+  intros Hinj.
+  induction X as [|x X ? IH] using set_ind_L => //=; [ by rewrite big_opS_eq | ].
+  replace (set_map h ({[x]} ∪ X)) with ({[h x]} ∪ (set_map h X) : gset B) by set_solver.
+  rewrite !big_opS_union.
+  - rewrite !big_opS_singleton IH //.
+  - set_solver.
+  - cut ((h x) ∉ (set_map h X : gset _)); first by set_solver.
+    intros (x'&Heq&Hin)%elem_of_map.
+    apply Hinj in Heq. subst. auto.
+Qed.
 
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
   ([^o map] k↦_ ∈ m, f k) ≡ ([^o set] k ∈ dom _ m, f k).
