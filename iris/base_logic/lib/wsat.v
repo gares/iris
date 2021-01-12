@@ -8,10 +8,14 @@ From iris.prelude Require Import options.
 exception of what's in the [invG] module. The module [invG] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
 Module invG.
+  Class invPreG (Σ : gFunctors) : Set := WsatPreG {
+    inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
+    enabled_inPreG :> inG Σ coPset_disjR;
+    disabled_inPreG :> inG Σ (gset_disjR positive);
+  }.
+
   Class invG (Σ : gFunctors) : Set := WsatG {
-    inv_inG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
-    enabled_inG :> inG Σ coPset_disjR;
-    disabled_inG :> inG Σ (gset_disjR positive);
+    inv_inG :> invPreG Σ;
     invariant_name : gname;
     enabled_name : gname;
     disabled_name : gname;
@@ -21,12 +25,6 @@ Module invG.
     #[GFunctor (gmap_viewRF positive (laterOF idOF));
       GFunctor coPset_disjR;
       GFunctor (gset_disjR positive)].
-
-  Class invPreG (Σ : gFunctors) : Set := WsatPreG {
-    inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
-    enabled_inPreG :> inG Σ coPset_disjR;
-    disabled_inPreG :> inG Σ (gset_disjR positive);
-  }.
 
   Global Instance subG_invΣ {Σ} : subG invΣ Σ → invPreG Σ.
   Proof. solve_inG. Qed.
@@ -192,7 +190,7 @@ Proof.
     first by apply gmap_view_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
-  iModIntro; iExists (WsatG _ _ _ _ γI γE γD).
+  iModIntro; iExists (WsatG _ _ γI γE γD).
   rewrite /wsat /ownE -lock; iFrame.
   iExists ∅. rewrite fmap_empty big_opM_empty. by iFrame.
 Qed.
