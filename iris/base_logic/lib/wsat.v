@@ -8,13 +8,13 @@ From iris.prelude Require Import options.
 exception of what's in the [invG] module. The module [invG] is thus exported in
 [fancy_updates], which [wsat] is only imported. *)
 Module invG.
-  Class invPreG (Σ : gFunctors) : Set := WsatPreG {
+  Class invPreG (Σ : gFunctors) : Set := InvPreG {
     inv_inPreG :> inG Σ (gmap_viewR positive (laterO (iPropO Σ)));
     enabled_inPreG :> inG Σ coPset_disjR;
     disabled_inPreG :> inG Σ (gset_disjR positive);
   }.
 
-  Class invG (Σ : gFunctors) : Set := WsatG {
+  Class invG (Σ : gFunctors) : Set := InvG {
     inv_inG :> invPreG Σ;
     invariant_name : gname;
     enabled_name : gname;
@@ -190,7 +190,7 @@ Proof.
     first by apply gmap_view_auth_valid.
   iMod (own_alloc (CoPset ⊤)) as (γE) "HE"; first done.
   iMod (own_alloc (GSet ∅)) as (γD) "HD"; first done.
-  iModIntro; iExists (WsatG _ _ γI γE γD).
+  iModIntro; iExists (InvG _ _ γI γE γD).
   rewrite /wsat /ownE -lock; iFrame.
   iExists ∅. rewrite fmap_empty big_opM_empty. by iFrame.
 Qed.

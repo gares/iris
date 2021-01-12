@@ -8,8 +8,9 @@ Local Notation proph_map P V := (gmap P (list V)).
 Definition proph_val_list (P V : Type) := list (P * V).
 
 (** The CMRA we need. *)
-Class proph_mapPreG (P V : Type) (Σ : gFunctors) `{Countable P} :=
-  { proph_map_preG_inG :> inG Σ (gmap_viewR P (listO $ leibnizO V)) }.
+Class proph_mapPreG (P V : Type) (Σ : gFunctors) `{Countable P} := {
+  proph_map_preG_inG :> inG Σ (gmap_viewR P (listO $ leibnizO V))
+}.
 
 Class proph_mapG (P V : Type) (Σ : gFunctors) `{Countable P} := ProphMapG {
   proph_map_inG :> proph_mapPreG P V Σ;
