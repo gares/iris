@@ -1,4 +1,4 @@
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -13,7 +13,7 @@
   --------------------------------------∗
   |={E2}=> ∃.. x : X, α x ∗ (β x ={E2,E1}=∗ γ2 x)
   
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -22,7 +22,7 @@
   α, β, γ1, γ2 : X → PROP
   ============================
   accessor E1 E2 α β γ1 -∗ accessor E1 E2 α β (λ.. x : X, γ1 x ∨ γ2 x)
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -35,7 +35,7 @@
   --------------------------------------∗
   (λ.. x0 : X, γ1 x0 ∨ γ2 x0) x
   
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -48,7 +48,7 @@
   --------------------------------------∗
   γ1 x ∨ γ2 x
   
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -60,7 +60,7 @@
   
 "test1_test"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -69,7 +69,7 @@
   --------------------------------------∗
   ▷ False
   
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -80,7 +80,7 @@
   
 "test2_test"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -88,7 +88,7 @@
   --------------------------------------∗
   False
   
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -97,7 +97,7 @@
   --------------------------------------∗
   False
   
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -108,7 +108,7 @@
   
 "test3_test"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -117,7 +117,7 @@
   --------------------------------------∗
   ▷ False
   
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat

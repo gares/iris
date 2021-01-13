@@ -1,6 +1,6 @@
 "demo_0"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -11,7 +11,7 @@
   --------------------------------------∗
   Q ∨ P
   
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -23,7 +23,7 @@
   
 "test_iStopProof"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   Q : PROP
@@ -34,7 +34,7 @@
   --------------------------------------∗
   Q
   
-1 subgoal
+1 goal
   
   PROP : bi
   Q : PROP
@@ -42,7 +42,7 @@
   □ emp ∗ Q -∗ Q
 "test_iDestruct_and_emp"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -56,7 +56,7 @@
   
 "test_iDestruct_spatial"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   Q : PROP
@@ -67,7 +67,7 @@
   
 "test_iDestruct_spatial_affine"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   Q : PROP
@@ -83,7 +83,7 @@ The command has indeed failed with message:
 Tactic failure: iExistDestruct: cannot destruct P.
 "test_iDestruct_exists_intuitionistic"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P : PROP
@@ -96,7 +96,7 @@ Tactic failure: iExistDestruct: cannot destruct P.
   
 "test_iDestruct_exists_anonymous"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P : PROP
@@ -109,7 +109,7 @@ Tactic failure: iExistDestruct: cannot destruct P.
   
 "test_iIntros_forall_pure"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   Ψ : nat → PROP
@@ -120,7 +120,7 @@ Tactic failure: iExistDestruct: cannot destruct P.
   
 "test_iIntros_pure_names"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   H : True
@@ -162,7 +162,7 @@ The command has indeed failed with message:
 Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I with P.
 "test_iNext_plus_3"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -173,7 +173,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   
 "test_specialize_nested_intuitionistic"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   φ : Prop
@@ -189,7 +189,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   
 "test_iSimpl_in"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   x, y : nat
@@ -198,7 +198,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   --------------------------------------∗
   ⌜S (S (S x)) = y⌝
   
-1 subgoal
+1 goal
   
   PROP : bi
   x, y, z : nat
@@ -208,7 +208,7 @@ Tactic failure: iSpecialize: cannot instantiate (⌜φ⌝ → P -∗ False)%I wi
   --------------------------------------∗
   ⌜S (S (S x)) = y⌝
   
-1 subgoal
+1 goal
   
   PROP : bi
   x, y, z : nat
@@ -225,7 +225,7 @@ The command has indeed failed with message:
 Tactic failure: iEval: %: unsupported selection pattern.
 "test_iFrame_later_1"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -235,7 +235,7 @@ Tactic failure: iEval: %: unsupported selection pattern.
   
 "test_iFrame_later_2"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P, Q : PROP
@@ -247,7 +247,7 @@ The command has indeed failed with message:
 Tactic failure: iFrame: cannot frame Q.
 "test_and_sep_affine_bi"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiAffine0 : BiAffine PROP
@@ -260,7 +260,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_big_sepL_simpl"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -273,7 +273,7 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   P
   
-1 subgoal
+1 goal
   
   PROP : bi
   x : nat
@@ -288,7 +288,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_big_sepL2_simpl"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   x1, x2 : nat
@@ -301,7 +301,7 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   P ∨ ([∗ list] _;_ ∈ (x1 :: l1);(x2 :: l2), True)
   
-1 subgoal
+1 goal
   
   PROP : bi
   x1, x2 : nat
@@ -317,7 +317,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_big_sepL2_iDestruct"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   Φ : nat → nat → PROP
@@ -331,7 +331,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_reducing_after_iDestruct"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -341,7 +341,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_reducing_after_iApply"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -351,7 +351,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_reducing_after_iApply_late_evar"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -361,7 +361,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "test_wandM"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   mP : option PROP
@@ -373,7 +373,7 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   R
   
-1 subgoal
+1 goal
   
   PROP : bi
   mP : option PROP
@@ -385,7 +385,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "elim_mod_accessor"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -400,7 +400,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "print_long_line_1"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -411,7 +411,7 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   True
   
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -424,7 +424,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "print_long_line_2"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -435,7 +435,7 @@ Tactic failure: iFrame: cannot frame Q.
   --------------------------------------∗
   True
   
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -448,7 +448,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_impl"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -460,7 +460,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_impl_nested"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -473,7 +473,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_wand"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -485,7 +485,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_wand_nested"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -498,7 +498,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_fupd"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -511,7 +511,7 @@ Tactic failure: iFrame: cannot frame Q.
   
 "long_fupd_nested"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   BiFUpd0 : BiFUpd PROP
@@ -709,7 +709,7 @@ The command has indeed failed with message:
 Tactic failure: iLöb: no 'BiLöb' instance found.
 "test_pure_name"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   P : PROP

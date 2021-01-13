@@ -1,4 +1,4 @@
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -12,7 +12,7 @@
   --------------------------------------□
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -28,7 +28,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> ▷ P
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -40,7 +40,7 @@
   P : iProp Σ
   ============================
   cinv N γ (<pers> P) ∗ cinv_own γ p ={⊤}=∗ cinv_own γ p ∗ ▷ P
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -58,7 +58,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -77,7 +77,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -98,7 +98,7 @@
   |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N))
           ∗ (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -112,7 +112,7 @@
   ↑N ⊆ E2
   → na_inv t N (<pers> P) ∗ na_own t E1 ∗ na_own t E2
     ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -143,7 +143,7 @@ The command has indeed failed with message:
 Tactic failure: iInv: invariant "H2" not found.
 "test_frac_split_combine"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -157,7 +157,7 @@ Tactic failure: iInv: invariant "H2" not found.
   --------------------------------------∗
   own γ 1%Qp
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -172,7 +172,7 @@ Tactic failure: iInv: invariant "H2" not found.
   
 "test_iInv"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -188,7 +188,7 @@ Tactic failure: iInv: invariant "H2" not found.
   
 "test_iInv_with_close"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ

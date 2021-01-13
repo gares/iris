@@ -1,4 +1,4 @@
-1 subgoal
+1 goal
   
   I : biIndex
   PROP : bi
@@ -9,7 +9,7 @@
   --------------------------------------∗
   (P -∗ Q) i
   
-1 subgoal
+1 goal
   
   I : biIndex
   PROP : bi
@@ -21,7 +21,7 @@
   --------------------------------------∗
   Q j
   
-1 subgoal
+1 goal
   
   I : biIndex
   PROP : bi
@@ -35,7 +35,7 @@
   --------------------------------------∗
   ∀ i, 𝓟 ∗ 𝓠 ∗ Q i
   
-1 subgoal
+1 goal
   
   I : biIndex
   PROP : bi
@@ -46,7 +46,7 @@
   --------------------------------------∗
   (Q -∗ emp) i
   
-1 subgoal
+1 goal
   
   I : biIndex
   PROP : bi
@@ -59,7 +59,7 @@
   
 The command has indeed failed with message:
 Tactic failure: iFrame: cannot frame (P i).
-1 subgoal
+1 goal
   
   I : biIndex
   Σ : gFunctors
@@ -72,7 +72,7 @@ Tactic failure: iFrame: cannot frame (P i).
   --------------------------------------□
   |={⊤ ∖ ↑N}=> ⎡ ▷ <pers> 𝓟 ⎤ ∗ (|={⊤}=> ⎡ ▷ 𝓟 ⎤)
   
-1 subgoal
+1 goal
   
   I : biIndex
   Σ : gFunctors

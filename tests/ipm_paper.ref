@@ -1,6 +1,6 @@
 "sep_exist"
      : string
-1 subgoal
+1 goal
   
   M : ucmraT
   A : Type
@@ -14,7 +14,7 @@
   --------------------------------------∗
   Ψ x ∗ P
   
-2 subgoals
+2 goals
   
   M : ucmraT
   A : Type
@@ -27,13 +27,13 @@
   Ψ x
   
 
-subgoal 2 is:
+goal 2 is:
  "HP" : P
 "HR" : R
 --------------------------------------∗
 P
 
-1 subgoal
+1 goal
   
   M : ucmraT
   A : Type
@@ -48,7 +48,7 @@ P
   
 "sep_exist_short"
      : string
-1 subgoal
+1 goal
   
   M : ucmraT
   A : Type
@@ -63,7 +63,7 @@ P
   
 "read_spec"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -79,7 +79,7 @@ P
   --------------------------------------∗
   WP ! #l {{ v, ∃ m : nat, ⌜v = #m ∧ n ≤ m⌝ ∧ C l m }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ

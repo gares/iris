@@ -1,4 +1,4 @@
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -20,14 +20,14 @@ The command has indeed failed with message:
 Tactic failure: iAuIntro: not all spatial assumptions are laterable.
 "printing"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
   P : val → iProp Σ
   ============================
   ⊢ <<< ∀ x : val, P x >>> code @ ⊤ <<< ∃ y : val, P y, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -38,7 +38,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -52,14 +52,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
   l : loc
   ============================
   ⊢ <<< ∀ x : val, l ↦ x >>> code @ ⊤ <<< l ↦ x, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -70,7 +70,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -83,14 +83,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
   l : loc
   ============================
   ⊢ <<< l ↦ #() >>> code @ ⊤ <<< ∃ y : val, l ↦ y, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -101,7 +101,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -115,14 +115,14 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
   l : loc
   ============================
   ⊢ <<< l ↦ #() >>> code @ ⊤ <<< l ↦ #(), RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -133,7 +133,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -148,7 +148,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   
 "Now come the long pre/post tests"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -157,7 +157,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x >>>
       code @ ⊤
     <<< ∃ y : val, l ↦ y, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -169,7 +169,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -178,7 +178,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ⊤
     <<< ∃ y : val, l ↦ y, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -190,7 +190,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -200,7 +200,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
       code @ ⊤
     <<< ∃ yyyy : val, l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
         RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -214,7 +214,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -223,7 +223,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< ∀ x : val, l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ⊤
     <<< l ↦ x, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -235,7 +235,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -245,7 +245,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ⊤
     <<< ∃ y : val, l ↦ y, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -258,7 +258,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -268,7 +268,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x ∗ l ↦ x >>>
       code @ ⊤
     <<< l ↦ #(), RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -281,7 +281,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -291,7 +291,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   ⊢ <<< l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx >>>
       code @ ⊤
     <<< l ↦ yyyy, RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -304,7 +304,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   --------------------------------------∗
   WP code {{ v, Φ v }}
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -315,7 +315,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
       code @ ⊤
     <<< l ↦ yyyy ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx ∗ l ↦ xx,
         RET #() >>>
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
@@ -331,7 +331,7 @@ Tactic failure: iAuIntro: not all spatial assumptions are laterable.
   
 "Prettification"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   heapG0 : heapG Σ
