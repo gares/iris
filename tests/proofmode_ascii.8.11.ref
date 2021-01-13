@@ -1,4 +1,4 @@
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -12,7 +12,7 @@
   --------------------------------------□
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -28,7 +28,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> ▷ P
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -46,7 +46,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N}=> ▷ <pers> P ∗ (|={⊤}=> cinv_own γ p ∗ ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -65,7 +65,7 @@
   --------------------------------------∗
   |={⊤ ∖ ↑N,⊤}=> cinv_own γ p ∗ ▷ P
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -86,7 +86,7 @@
   |={⊤}=> (▷ <pers> P ∗ na_own t (E2 ∖ ↑N))
           ∗ (na_own t E2 ={⊤}=∗ na_own t E1 ∗ na_own t E2 ∗ ▷ P)
   
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -117,7 +117,7 @@ The command has indeed failed with message:
 Tactic failure: iInv: invariant "H2" not found.
 "test_iInv"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -133,7 +133,7 @@ Tactic failure: iInv: invariant "H2" not found.
   
 "test_iInv_with_close"
      : string
-1 subgoal
+1 goal
   
   Σ : gFunctors
   invG0 : invG Σ
@@ -150,42 +150,42 @@ Tactic failure: iInv: invariant "H2" not found.
   
 "p1"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   forall (P : PROP) (_ : True), bi_entails P P
 "p2"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   forall P : PROP, and True (bi_entails P P)
 "p3"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   ex (fun P : PROP => bi_entails P P)
 "p4"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   bi_emp_valid (bi_exist (fun x : nat => bi_pure (eq x O)))
 "p5"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   bi_emp_valid (bi_exist (fun _ : nat => bi_pure (forall y : nat, eq y y)))
 "p6"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -198,7 +198,7 @@ Tactic failure: iInv: invariant "H2" not found.
               bi_sep (bi_pure (forall y : nat, eq y y)) (bi_pure (eq z O))))))
 "p7"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
@@ -206,14 +206,14 @@ Tactic failure: iInv: invariant "H2" not found.
   bi_entails (bi_pure True) (bi_pure (ge y O))
 "p8"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
   forall (a : nat) (_ : eq a O) (y : nat), bi_emp_valid (bi_pure (ge y O))
 "p9"
      : string
-1 subgoal
+1 goal
   
   PROP : bi
   ============================
