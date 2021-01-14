@@ -178,6 +178,11 @@ Proof. done. Qed.
 Lemma Cinr_op b b' : Cinr (b ⋅ b') = Cinr b ⋅ Cinr b'.
 Proof. done. Qed.
 
+Lemma Cinl_valid a : ✓ (Cinl a) ↔ ✓ a.
+Proof. done. Qed.
+Lemma Cinr_valid b : ✓ (Cinr b) ↔ ✓ b.
+Proof. done. Qed.
+
 Lemma csum_included x y :
   x ≼ y ↔ y = CsumBot ∨ (∃ a a', x = Cinl a ∧ y = Cinl a' ∧ a ≼ a')
                       ∨ (∃ b b', x = Cinr b ∧ y = Cinr b' ∧ b ≼ b').
