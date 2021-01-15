@@ -484,14 +484,10 @@ Section gset.
     NoDup l →
     ([^o set] x ∈ list_to_set l, f x) ≡ [^o list] x ∈ l, f x.
   Proof.
-    induction l as [|x l IHl]; intros Hnodup.
+    induction 1 as [|x l ?? IHl].
     - rewrite big_opS_empty //.
-    - inversion Hnodup; subst; clear Hnodup.
-      rewrite /= big_opS_union; last first.
-      { rewrite disjoint_singleton_l.
-        rewrite elem_of_list_to_set //. }
-      rewrite big_opS_singleton.
-      f_equiv. apply IHl; auto.
+    - rewrite /= big_opS_union; last set_solver.
+      by rewrite big_opS_singleton IHl.
   Qed.
 End gset.
 
