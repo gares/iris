@@ -482,7 +482,7 @@ Section gset.
 
   Lemma big_opS_list_to_set f (l : list A) :
     NoDup l →
-    ([^o set] x ∈ list_to_set l, f x) ≡ [^o list] _ ↦ x ∈ l, f x.
+    ([^o set] x ∈ list_to_set l, f x) ≡ [^o list] x ∈ l, f x.
   Proof.
     induction l as [|x l]; intros Hnodup.
     - rewrite big_opS_empty //.

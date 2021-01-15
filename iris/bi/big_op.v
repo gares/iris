@@ -1633,7 +1633,7 @@ Section gset.
 
   Lemma big_sepS_list_to_set Φ (l : list A) :
     NoDup l →
-    ([∗ set] x ∈ list_to_set l, Φ x) ⊣⊢ [∗ list] _ ↦ x ∈ l, Φ x.
+    ([∗ set] x ∈ list_to_set l, Φ x) ⊣⊢ [∗ list] x ∈ l, Φ x.
   Proof. apply big_opS_list_to_set. Qed.
 
   Lemma big_sepS_sep Φ Ψ X :
