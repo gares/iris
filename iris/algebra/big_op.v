@@ -484,7 +484,7 @@ Section gset.
     NoDup l →
     ([^o set] x ∈ list_to_set l, f x) ≡ [^o list] x ∈ l, f x.
   Proof.
-    induction l as [|x l]; intros Hnodup.
+    induction l as [|x l IHl]; intros Hnodup.
     - rewrite big_opS_empty //.
     - inversion Hnodup; subst; clear Hnodup.
       rewrite /= big_opS_union; last first.
@@ -500,14 +500,10 @@ Lemma big_opS_set_map `{Countable A, Countable B} (h : A → B) (X : gset A) (f 
   ([^o set] x ∈ set_map h X, f x) ≡ ([^o set] x ∈ X, f (h x)).
 Proof.
   intros Hinj.
-  induction X as [|x X ? IH] using set_ind_L => //=; [ by rewrite big_opS_eq | ].
+  induction X as [|x X ? IH] using set_ind_L => //=; [ by rewrite !big_opS_empty | ].
   replace (set_map h ({[x]} ∪ X)) with ({[h x]} ∪ (set_map h X) : gset B) by set_solver.
-  rewrite !big_opS_union.
-  - rewrite !big_opS_singleton IH //.
-  - set_solver.
-  - cut ((h x) ∉ (set_map h X : gset _)); first by set_solver.
-    intros (x'&Heq&Hin)%elem_of_map.
-    apply Hinj in Heq. subst. auto.
+  rewrite !big_opS_union; [|set_solver..].
+  rewrite !big_opS_singleton IH //.
 Qed.
 
 Lemma big_opM_dom `{Countable K} {A} (f : K → M) (m : gmap K A) :
