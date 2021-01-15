@@ -64,6 +64,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   inequality instead of RA composition and validity (also in `base_logic` and
   the higher layers).
 * Move `algebra.base` module to `prelude.prelude`.
+* Strengthen `cmra_op_discrete` to assume only `✓{0} (x1 ⋅ x2)` instead of `✓
+  (x1 ⋅ x2)`.
 
 **Changes in `bi`:**
 
