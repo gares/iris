@@ -496,8 +496,9 @@ Lemma big_opS_set_map `{Countable A, Countable B} (h : A → B) (X : gset A) (f 
   ([^o set] x ∈ set_map h X, f x) ≡ ([^o set] x ∈ X, f (h x)).
 Proof.
   intros Hinj.
-  induction X as [|x X ? IH] using set_ind_L => //=; [ by rewrite !big_opS_empty | ].
-  replace (set_map h ({[x]} ∪ X)) with ({[h x]} ∪ (set_map h X) : gset B) by set_solver.
+  induction X as [|x X ? IH] using set_ind_L.
+  { by rewrite set_map_empty !big_opS_empty. }
+  rewrite set_map_union_L set_map_singleton_L.
   rewrite !big_opS_union; [|set_solver..].
   rewrite !big_opS_singleton IH //.
 Qed.
