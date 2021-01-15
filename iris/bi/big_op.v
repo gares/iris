@@ -1631,6 +1631,11 @@ Section gset.
       (([∗ set] y ∈ Y, ⌜P y⌝ → Φ y) -∗ [∗ set] y ∈ X, Φ y).
   Proof. intros. setoid_rewrite <-decide_emp. by apply big_sepS_filter_acc'. Qed.
 
+  Lemma big_sepS_list_to_set Φ (l : list A) :
+    NoDup l →
+    ([∗ set] x ∈ list_to_set l, Φ x) ⊣⊢ [∗ list] x ∈ l, Φ x.
+  Proof. apply big_opS_list_to_set. Qed.
+
   Lemma big_sepS_sep Φ Ψ X :
     ([∗ set] y ∈ X, Φ y ∗ Ψ y) ⊣⊢ ([∗ set] y ∈ X, Φ y) ∗ ([∗ set] y ∈ X, Ψ y).
   Proof. apply big_opS_op. Qed.
