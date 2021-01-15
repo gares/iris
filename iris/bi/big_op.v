@@ -301,13 +301,9 @@ Lemma big_sepL_sep_zip {A B} (Φ : nat → A → PROP) (Ψ : nat → B → PROP)
   ([∗ list] k↦x ∈ l1, Φ k x) ∗ ([∗ list] k↦x ∈ l2, Ψ k x) ⊣⊢
   ([∗ list] k↦xy ∈ zip l1 l2, Φ k xy.1 ∗ Ψ k xy.2).
 Proof.
-  intros Hlen. rewrite big_sepL_sep. f_equiv.
-  - trans ([∗ list] k↦x ∈ fst <$> zip l1 l2, Φ k x)%I.
-    + rewrite fst_zip; auto with lia.
-    + rewrite big_sepL_fmap //.
-  - trans ([∗ list] k↦x ∈ snd <$> zip l1 l2, Ψ k x)%I.
-    + rewrite snd_zip; auto with lia.
-    + rewrite big_sepL_fmap //.
+  intros Hlen. rewrite big_sepL_sep.
+  rewrite -(big_sepL_fmap fst) -(big_sepL_fmap snd).
+  rewrite fst_zip; last lia. by rewrite snd_zip; last lia.
 Qed.
 
 Lemma big_sepL_zip_with {A B C} (Φ : nat → A → PROP) f (l1 : list B) (l2 : list C) :
@@ -649,7 +645,8 @@ Section sep_list2.
     by rewrite IH.
   Qed.
 
-  Lemma big_sepL2_merge (Φ : nat → A → PROP) (Ψ : nat → B → PROP) (l1 : list A) (l2 : list B):
+  Lemma big_sepL2_merge (Φ : nat → A → PROP) (Ψ : nat → B → PROP)
+      (l1 : list A) (l2 : list B) :
     length l1 = length l2 →
     ([∗ list] k↦y1 ∈ l1, Φ k y1) -∗
     ([∗ list] k↦y2 ∈ l2, Ψ k y2) -∗
