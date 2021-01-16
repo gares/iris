@@ -645,7 +645,7 @@ Section sep_list2.
     by rewrite IH.
   Qed.
 
-  Lemma big_sepL2_merge (Φ : nat → A → PROP) (Ψ : nat → B → PROP)
+  Lemma big_sepL_sepL2 (Φ : nat → A → PROP) (Ψ : nat → B → PROP)
       (l1 : list A) (l2 : list B) :
     length l1 = length l2 →
     ([∗ list] k↦y1 ∈ l1, Φ k y1) -∗
