@@ -196,9 +196,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   own file [heap_lang.class_instances](iris_heap_lang/class_instances.v).
 * Move `inv_head_step` tactic and `head_step` auto hints (now part of new hint
   database `head_step`) to [heap_lang.tactics](iris_heap_lang/tactics.v).
-* The tactic `wp_apply` no longer normalizes the goal using `wp_pures` before
-  applying the given lemma. The new tactic `wp_smart_apply` normalizes the goal
-  with single `wp_pure` steps, as long as the lemma does not match the goal.
+* The tactic `wp_apply` no longer performs `wp_pures` before applying the given
+  lemma. The new tactic `wp_smart_apply` repeatedly performs single `wp_pure`
+  steps until the lemma matches the goal.
 
 The following `sed` script helps adjust your code to the renaming (on macOS,
 replace `sed` by `gsed`, installed via e.g. `brew install gnu-sed`).
