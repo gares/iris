@@ -653,15 +653,12 @@ Section sep_list2.
     by rewrite IH.
   Qed.
 
-  Lemma big_sepL_sepL2 (Φ : nat → A → PROP) (Ψ : nat → B → PROP)
-      (l1 : list A) (l2 : list B) :
+  Lemma big_sepL_sepL2 (Φ1 : nat → A → PROP) (Φ2 : nat → B → PROP) l1 l2 :
     length l1 = length l2 →
-    ([∗ list] k↦y1 ∈ l1, Φ k y1) -∗
-    ([∗ list] k↦y2 ∈ l2, Ψ k y2) -∗
-    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 ∗ Ψ k y2).
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ1 k y1 ∗ Φ2 k y2) ⊣⊢
+    ([∗ list] k↦y1 ∈ l1, Φ1 k y1) ∗ ([∗ list] k↦y2 ∈ l2, Φ2 k y2).
   Proof.
-    intros Hlen. apply wand_intro_r.
-    rewrite big_sepL_sep_zip // big_sepL2_alt pure_True // left_id //.
+    intros. rewrite -big_sepL_sep_zip // big_sepL2_alt pure_True // left_id //.
   Qed.
 
   Global Instance big_sepL2_nil_persistent Φ :
@@ -1173,6 +1170,12 @@ Lemma big_sepM_sep_zip `{Countable K} {A B}
 Proof. apply big_opM_sep_zip. Qed.
 
 (** ** Big ops over two maps *)
+Lemma big_sepM2_alt `{Countable K} {A B} (Φ : K → A → B → PROP) m1 m2 :
+  ([∗ map] k↦y1;y2 ∈ m1; m2, Φ k y1 y2) ⊣⊢
+  ⌜ ∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k) ⌝ ∧
+  [∗ map] k ↦ xy ∈ map_zip m1 m2, Φ k xy.1 xy.2.
+Proof. by rewrite big_sepM2_eq. Qed.
+
 Section map2.
   Context `{Countable K} {A B : Type}.
   Implicit Types Φ Ψ : K → A → B → PROP.
@@ -1535,6 +1538,14 @@ Section map2.
     induction n as [|n IHn]; first done.
     rewrite later_laterN -IHn -big_sepM2_later_2.
     apply big_sepM2_mono. eauto.
+  Qed.
+
+  Lemma big_sepM_sepM2 (Φ1 : K → A → PROP) (Φ2 : K → B → PROP) m1 m2 :
+    (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2) ⊣⊢
+    ([∗ map] k↦y1 ∈ m1, Φ1 k y1) ∗ ([∗ map] k↦y2 ∈ m2, Φ2 k y2).
+  Proof.
+    intros. rewrite -big_sepM_sep_zip // big_sepM2_alt pure_True // left_id //.
   Qed.
 
   Global Instance big_sepM2_empty_persistent Φ :
