@@ -417,6 +417,29 @@ Section gmap.
   Qed.
 End gmap.
 
+Lemma big_opM_sep_zip_with `{Countable K} {A B C}
+    (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (h1 : K → A → M) (h2 : K → B → M) m1 m2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([^o map] k↦xy ∈ map_zip_with f m1 m2, h1 k (g1 xy) `o` h2 k (g2 xy)) ≡
+  ([^o map] k↦x ∈ m1, h1 k x) `o` ([^o map] k↦y ∈ m2, h2 k y).
+Proof.
+  intros Hdom Hg1 Hg2. rewrite big_opM_op.
+  rewrite -(big_opM_fmap g1) -(big_opM_fmap g2).
+  rewrite map_fmap_zip_with_r; [|naive_solver..].
+  by rewrite map_fmap_zip_with_l; [|naive_solver..].
+Qed.
+
+Lemma big_opM_sep_zip `{Countable K} {A B}
+    (h1 : K → A → M) (h2 : K → B → M) m1 m2 :
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([^o map] k↦xy ∈ map_zip m1 m2, h1 k xy.1 `o` h2 k xy.2) ≡
+  ([^o map] k↦x ∈ m1, h1 k x) `o` ([^o map] k↦y ∈ m2, h2 k y).
+Proof. intros. by apply big_opM_sep_zip_with. Qed.
+
+
 (** ** Big ops over finite sets *)
 Section gset.
   Context `{Countable A}.

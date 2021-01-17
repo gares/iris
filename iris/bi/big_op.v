@@ -1154,6 +1154,24 @@ Section map.
   Proof. rewrite big_opM_eq. intros. apply big_sepL_timeless=> _ [??]; apply _. Qed.
 End map.
 
+(* Some lemmas depend on the generalized versions of the above ones. *)
+Lemma big_sepM_sep_zip_with `{Countable K} {A B C}
+    (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (Φ1 : K → A → PROP) (Φ2 : K → B → PROP) m1 m2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([∗ map] k↦xy ∈ map_zip_with f m1 m2, Φ1 k (g1 xy) ∗ Φ2 k (g2 xy)) ⊣⊢
+  ([∗ map] k↦x ∈ m1, Φ1 k x) ∗ ([∗ map] k↦y ∈ m2, Φ2 k y).
+Proof. apply big_opM_sep_zip_with. Qed.
+
+Lemma big_sepM_sep_zip `{Countable K} {A B}
+    (Φ1 : K → A → PROP) (Φ2 : K → B → PROP) m1 m2 :
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([∗ map] k↦xy ∈ map_zip m1 m2, Φ1 k xy.1 ∗ Φ2 k xy.2) ⊣⊢
+  ([∗ map] k↦x ∈ m1, Φ1 k x) ∗ ([∗ map] k↦y ∈ m2, Φ2 k y).
+Proof. apply big_opM_sep_zip. Qed.
+
 (** ** Big ops over two maps *)
 Section map2.
   Context `{Countable K} {A B : Type}.
