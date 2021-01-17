@@ -217,6 +217,26 @@ Proof.
   revert f. induction l as [|x l IH]=> f; csimpl=> //. by rewrite big_opL_app IH.
 Qed.
 
+Lemma big_opL_sep_zip_with {A B C} (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (h1 : nat → A → M) (h2 : nat → B → M) l1 l2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
+  length l1 = length l2 →
+  ([^o list] k↦xy ∈ zip_with f l1 l2, h1 k (g1 xy) `o` h2 k (g2 xy)) ≡
+  ([^o list] k↦x ∈ l1, h1 k x) `o` ([^o list] k↦y ∈ l2, h2 k y).
+Proof.
+  intros Hlen Hg1 Hg2. rewrite big_opL_op.
+  rewrite -(big_opL_fmap g1) -(big_opL_fmap g2).
+  rewrite fmap_zip_with_r; [|auto with lia..].
+  by rewrite fmap_zip_with_l; [|auto with lia..].
+Qed.
+
+Lemma big_opL_sep_zip {A B} (h1 : nat → A → M) (h2 : nat → B → M) l1 l2 :
+  length l1 = length l2 →
+  ([^o list] k↦xy ∈ zip l1 l2, h1 k xy.1 `o` h2 k xy.2) ≡
+  ([^o list] k↦x ∈ l1, h1 k x) `o` ([^o list] k↦y ∈ l2, h2 k y).
+Proof. by apply big_opL_sep_zip_with. Qed.
+
 (** ** Big ops over finite maps *)
 
 Lemma big_opM_empty `{Countable K} {B} (f : K → B → M) :

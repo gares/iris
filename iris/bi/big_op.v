@@ -295,20 +295,24 @@ Section sep_list.
 End sep_list.
 
 (* Some lemmas depend on the generalized versions of the above ones. *)
-
-Lemma big_sepL_sep_zip {A B} (Φ : nat → A → PROP) (Ψ : nat → B → PROP) l1 l2 :
+Lemma big_sepL_sep_zip_with {A B C} (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (Φ1 : nat → A → PROP) (Φ2 : nat → B → PROP) l1 l2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
   length l1 = length l2 →
-  ([∗ list] k↦x ∈ l1, Φ k x) ∗ ([∗ list] k↦x ∈ l2, Ψ k x) ⊣⊢
-  ([∗ list] k↦xy ∈ zip l1 l2, Φ k xy.1 ∗ Ψ k xy.2).
-Proof.
-  intros Hlen. rewrite big_sepL_sep.
-  rewrite -(big_sepL_fmap fst) -(big_sepL_fmap snd).
-  rewrite fst_zip; last lia. by rewrite snd_zip; last lia.
-Qed.
+  ([∗ list] k↦xy ∈ zip_with f l1 l2, Φ1 k (g1 xy) ∗ Φ2 k (g2 xy)) ⊣⊢
+  ([∗ list] k↦x ∈ l1, Φ1 k x) ∗ ([∗ list] k↦y ∈ l2, Φ2 k y).
+Proof. apply big_opL_sep_zip_with. Qed.
+
+Lemma big_sepL_sep_zip {A B} (Φ1 : nat → A → PROP) (Φ2 : nat → B → PROP) l1 l2 :
+  length l1 = length l2 →
+  ([∗ list] k↦xy ∈ zip l1 l2, Φ1 k xy.1 ∗ Φ2 k xy.2) ⊣⊢
+  ([∗ list] k↦x ∈ l1, Φ1 k x) ∗ ([∗ list] k↦y ∈ l2, Φ2 k y).
+Proof. apply big_opL_sep_zip. Qed.
 
 Lemma big_sepL_zip_with {A B C} (Φ : nat → A → PROP) f (l1 : list B) (l2 : list C) :
-  ([∗ list] k↦x ∈ zip_with f l1 l2, Φ k x)
-    ⊣⊢ ([∗ list] k↦x ∈ l1, if l2 !! k is Some y then Φ k (f x y) else emp).
+  ([∗ list] k↦x ∈ zip_with f l1 l2, Φ k x) ⊣⊢
+  ([∗ list] k↦x ∈ l1, if l2 !! k is Some y then Φ k (f x y) else emp).
 Proof.
   revert Φ l2; induction l1 as [|x l1 IH]=> Φ [|y l2] //=.
   - by rewrite big_sepL_emp left_id.
