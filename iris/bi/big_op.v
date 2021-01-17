@@ -319,9 +319,10 @@ Proof.
   - by rewrite IH.
 Qed.
 
+(** ** Big ops over two lists *)
 Lemma big_sepL2_alt {A B} (Φ : nat → A → B → PROP) l1 l2 :
-  ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2)
-  ⊣⊢ ⌜ length l1 = length l2 ⌝ ∧ [∗ list] k ↦ y ∈ zip l1 l2, Φ k (y.1) (y.2).
+  ([∗ list] k↦y1;y2 ∈ l1; l2, Φ k y1 y2) ⊣⊢
+  ⌜ length l1 = length l2 ⌝ ∧ [∗ list] k ↦ xy ∈ zip l1 l2, Φ k (xy.1) (xy.2).
 Proof.
   apply (anti_symm _).
   - apply and_intro.
@@ -335,7 +336,6 @@ Proof.
     induction Hl as [|x1 l1 x2 l2 _ _ IH]=> Φ //=. by rewrite -IH.
 Qed.
 
-(** ** Big ops over two lists *)
 Section sep_list2.
   Context {A B : Type}.
   Implicit Types Φ Ψ : nat → A → B → PROP.
