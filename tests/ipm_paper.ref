@@ -2,7 +2,7 @@
      : string
 1 goal
   
-  M : ucmraT
+  M : ucmra
   A : Type
   P, R : iProp
   Ψ : A → iProp
@@ -16,7 +16,7 @@
   
 2 goals
   
-  M : ucmraT
+  M : ucmra
   A : Type
   P, R : iProp
   Ψ : A → iProp
@@ -35,7 +35,7 @@ P
 
 1 goal
   
-  M : ucmraT
+  M : ucmra
   A : Type
   P, R : iProp
   Ψ : A → iProp
@@ -50,7 +50,7 @@ P
      : string
 1 goal
   
-  M : ucmraT
+  M : ucmra
   A : Type
   P, R : iProp
   Ψ : A → iProp

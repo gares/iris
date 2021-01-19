@@ -60,7 +60,7 @@ Section bupd_alt.
 
   (** We get the usual rule for frame preserving updates if we have an [own]
   connective satisfying the following rule w.r.t. interaction with plainly. *)
-  Context {M : ucmraT} (own : M → PROP).
+  Context {M : ucmra} (own : M → PROP).
   Context (own_updateP_plainly : ∀ x Φ R,
     x ~~>: Φ →
     own x ∗ (∀ y, ⌜Φ y⌝ -∗ own y -∗ ■ R) ⊢ ■ R).
@@ -95,7 +95,7 @@ Proof.
 Qed.
 
 (** The law about the interaction between [uPred_ownM] and plainly holds. *)
-Lemma ownM_updateP {M : ucmraT} x (Φ : M → Prop) (R : uPred M) :
+Lemma ownM_updateP {M : ucmra} x (Φ : M → Prop) (R : uPred M) :
   x ~~>: Φ →
   uPred_ownM x ∗ (∀ y, ⌜Φ y⌝ -∗ uPred_ownM y -∗ ■ R) ⊢ ■ R.
 Proof.

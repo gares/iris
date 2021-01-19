@@ -62,7 +62,7 @@ Section Ofe_Cofe_def.
   Definition monPred_ofe_mixin : OfeMixin monPred.
   Proof. by apply (iso_ofe_mixin monPred_sig monPred_sig_equiv monPred_sig_dist). Qed.
 
-  Canonical Structure monPredO := OfeT monPred monPred_ofe_mixin.
+  Canonical Structure monPredO := Ofe monPred monPred_ofe_mixin.
 
   Global Instance monPred_cofe `{Cofe PROP} : Cofe monPredO.
   Proof.
@@ -826,7 +826,7 @@ Global Instance except0_objective P `{!Objective P} : Objective (◇ P).
 Proof. rewrite /bi_except_0. apply _. Qed.
 
 (** Internal equality *)
-Definition monPred_internal_eq_def `{!BiInternalEq PROP} (A : ofeT) (a b : A) : monPred :=
+Definition monPred_internal_eq_def `{!BiInternalEq PROP} (A : ofe) (a b : A) : monPred :=
   MonPred (λ _, a ≡ b)%I _.
 Definition monPred_internal_eq_aux : seal (@monPred_internal_eq_def).
 Proof. by eexists. Qed.
@@ -862,7 +862,7 @@ Lemma monPred_internal_eq_unfold `{!BiInternalEq PROP} :
   @internal_eq monPredI _ = λ A x y, ⎡ x ≡ y ⎤%I.
 Proof. rewrite monPred_internal_eq_eq. by unseal. Qed.
 
-Lemma monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofeT} i (a b : A) :
+Lemma monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofe} i (a b : A) :
   @monPred_at (a ≡ b) i ⊣⊢ a ≡ b.
 Proof. rewrite monPred_internal_eq_unfold. by apply monPred_at_embed. Qed.
 
@@ -875,7 +875,7 @@ Proof.
                -f_equivI -sig_equivI !discrete_fun_equivI.
 Qed.
 
-Global Instance internal_eq_objective `{!BiInternalEq PROP} {A : ofeT} (x y : A) :
+Global Instance internal_eq_objective `{!BiInternalEq PROP} {A : ofe} (x y : A) :
   @Objective I PROP (x ≡ y).
 Proof. intros ??. rewrite monPred_internal_eq_unfold. by unseal. Qed.
 

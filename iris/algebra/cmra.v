@@ -66,7 +66,7 @@ Section mixin.
 End mixin.
 
 (** Bundled version *)
-Structure cmraT := CmraT' {
+Structure cmra := Cmra' {
   cmra_car :> Type;
   cmra_equiv : Equiv cmra_car;
   cmra_dist : Dist cmra_car;
@@ -77,11 +77,11 @@ Structure cmraT := CmraT' {
   cmra_ofe_mixin : OfeMixin cmra_car;
   cmra_mixin : CmraMixin cmra_car;
 }.
-Global Arguments CmraT' _ {_ _ _ _ _ _} _ _.
-(* Given [m : CmraMixin A], the notation [CmraT A m] provides a smart
+Global Arguments Cmra' _ {_ _ _ _ _ _} _ _.
+(* Given [m : CmraMixin A], the notation [Cmra A m] provides a smart
 constructor, which uses [ofe_mixin_of A] to infer the canonical OFE mixin of
 the type [A], so that it does not have to be given manually. *)
-Notation CmraT A m := (CmraT' A (ofe_mixin_of A%type) m) (only parsing).
+Notation Cmra A m := (Cmra' A (ofe_mixin_of A%type) m) (only parsing).
 
 Global Arguments cmra_car : simpl never.
 Global Arguments cmra_equiv : simpl never.
@@ -92,21 +92,21 @@ Global Arguments cmra_valid : simpl never.
 Global Arguments cmra_validN : simpl never.
 Global Arguments cmra_ofe_mixin : simpl never.
 Global Arguments cmra_mixin : simpl never.
-Add Printing Constructor cmraT.
+Add Printing Constructor cmra.
 Global Hint Extern 0 (PCore _) => eapply (@cmra_pcore _) : typeclass_instances.
 Global Hint Extern 0 (Op _) => eapply (@cmra_op _) : typeclass_instances.
 Global Hint Extern 0 (Valid _) => eapply (@cmra_valid _) : typeclass_instances.
 Global Hint Extern 0 (ValidN _) => eapply (@cmra_validN _) : typeclass_instances.
-Coercion cmra_ofeO (A : cmraT) : ofeT := OfeT A (cmra_ofe_mixin A).
+Coercion cmra_ofeO (A : cmra) : ofe := Ofe A (cmra_ofe_mixin A).
 Canonical Structure cmra_ofeO.
 
-Definition cmra_mixin_of' A {Ac : cmraT} (f : Ac → A) : CmraMixin Ac := cmra_mixin Ac.
+Definition cmra_mixin_of' A {Ac : cmra} (f : Ac → A) : CmraMixin Ac := cmra_mixin Ac.
 Notation cmra_mixin_of A :=
   ltac:(let H := eval hnf in (cmra_mixin_of' A id) in exact H) (only parsing).
 
 (** Lifting properties from the mixin *)
 Section cmra_mixin.
-  Context {A : cmraT}.
+  Context {A : cmra}.
   Implicit Types x y : A.
   Global Instance cmra_op_ne (x : A) : NonExpansive (op x).
   Proof. apply (mixin_cmra_op_ne _ (cmra_mixin A)). Qed.
@@ -138,38 +138,38 @@ Section cmra_mixin.
   Proof. apply (mixin_cmra_extend _ (cmra_mixin A)). Qed.
 End cmra_mixin.
 
-Definition opM {A : cmraT} (x : A) (my : option A) :=
+Definition opM {A : cmra} (x : A) (my : option A) :=
   match my with Some y => x ⋅ y | None => x end.
 Infix "⋅?" := opM (at level 50, left associativity) : stdpp_scope.
 
 (** * CoreId elements *)
-Class CoreId {A : cmraT} (x : A) := core_id : pcore x ≡ Some x.
+Class CoreId {A : cmra} (x : A) := core_id : pcore x ≡ Some x.
 Global Arguments core_id {_} _ {_}.
 Global Hint Mode CoreId + ! : typeclass_instances.
 Global Instance: Params (@CoreId) 1 := {}.
 
 (** * Exclusive elements (i.e., elements that cannot have a frame). *)
-Class Exclusive {A : cmraT} (x : A) := exclusive0_l y : ✓{0} (x ⋅ y) → False.
+Class Exclusive {A : cmra} (x : A) := exclusive0_l y : ✓{0} (x ⋅ y) → False.
 Global Arguments exclusive0_l {_} _ {_} _ _.
 Global Hint Mode Exclusive + ! : typeclass_instances.
 Global Instance: Params (@Exclusive) 1 := {}.
 
 (** * Cancelable elements. *)
-Class Cancelable {A : cmraT} (x : A) :=
+Class Cancelable {A : cmra} (x : A) :=
   cancelableN n y z : ✓{n}(x ⋅ y) → x ⋅ y ≡{n}≡ x ⋅ z → y ≡{n}≡ z.
 Global Arguments cancelableN {_} _ {_} _ _ _ _.
 Global Hint Mode Cancelable + ! : typeclass_instances.
 Global Instance: Params (@Cancelable) 1 := {}.
 
 (** * Identity-free elements. *)
-Class IdFree {A : cmraT} (x : A) :=
+Class IdFree {A : cmra} (x : A) :=
   id_free0_r y : ✓{0}x → x ⋅ y ≡{0}≡ x → False.
 Global Arguments id_free0_r {_} _ {_} _ _.
 Global Hint Mode IdFree + ! : typeclass_instances.
 Global Instance: Params (@IdFree) 1 := {}.
 
 (** * CMRAs whose core is total *)
-Class CmraTotal (A : cmraT) := cmra_total (x : A) : is_Some (pcore x).
+Class CmraTotal (A : cmra) := cmra_total (x : A) : is_Some (pcore x).
 Global Hint Mode CmraTotal ! : typeclass_instances.
 
 (** The function [core] returns a dummy when used on CMRAs without total
@@ -188,7 +188,7 @@ Record UcmraMixin A `{Dist A, Equiv A, PCore A, Op A, Valid A, Unit A} := {
   mixin_ucmra_pcore_unit : pcore ε ≡ Some ε
 }.
 
-Structure ucmraT := UcmraT' {
+Structure ucmra := Ucmra' {
   ucmra_car :> Type;
   ucmra_equiv : Equiv ucmra_car;
   ucmra_dist : Dist ucmra_car;
@@ -201,9 +201,9 @@ Structure ucmraT := UcmraT' {
   ucmra_cmra_mixin : CmraMixin ucmra_car;
   ucmra_mixin : UcmraMixin ucmra_car;
 }.
-Global Arguments UcmraT' _ {_ _ _ _ _ _ _} _ _ _.
-Notation UcmraT A m :=
-  (UcmraT' A (ofe_mixin_of A%type) (cmra_mixin_of A%type) m) (only parsing).
+Global Arguments Ucmra' _ {_ _ _ _ _ _ _} _ _ _.
+Notation Ucmra A m :=
+  (Ucmra' A (ofe_mixin_of A%type) (cmra_mixin_of A%type) m) (only parsing).
 Global Arguments ucmra_car : simpl never.
 Global Arguments ucmra_equiv : simpl never.
 Global Arguments ucmra_dist : simpl never.
@@ -214,17 +214,17 @@ Global Arguments ucmra_validN : simpl never.
 Global Arguments ucmra_ofe_mixin : simpl never.
 Global Arguments ucmra_cmra_mixin : simpl never.
 Global Arguments ucmra_mixin : simpl never.
-Add Printing Constructor ucmraT.
+Add Printing Constructor ucmra.
 Global Hint Extern 0 (Unit _) => eapply (@ucmra_unit _) : typeclass_instances.
-Coercion ucmra_ofeO (A : ucmraT) : ofeT := OfeT A (ucmra_ofe_mixin A).
+Coercion ucmra_ofeO (A : ucmra) : ofe := Ofe A (ucmra_ofe_mixin A).
 Canonical Structure ucmra_ofeO.
-Coercion ucmra_cmraR (A : ucmraT) : cmraT :=
-  CmraT' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A).
+Coercion ucmra_cmraR (A : ucmra) : cmra :=
+  Cmra' A (ucmra_ofe_mixin A) (ucmra_cmra_mixin A).
 Canonical Structure ucmra_cmraR.
 
 (** Lifting properties from the mixin *)
 Section ucmra_mixin.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types x y : A.
   Lemma ucmra_unit_valid : ✓ (ε : A).
   Proof. apply (mixin_ucmra_unit_valid _ (ucmra_mixin A)). Qed.
@@ -235,14 +235,14 @@ Section ucmra_mixin.
 End ucmra_mixin.
 
 (** * Discrete CMRAs *)
-Class CmraDiscrete (A : cmraT) := {
+Class CmraDiscrete (A : cmra) := {
   cmra_discrete_ofe_discrete :> OfeDiscrete A;
   cmra_discrete_valid (x : A) : ✓{0} x → ✓ x
 }.
 Global Hint Mode CmraDiscrete ! : typeclass_instances.
 
 (** * Morphisms *)
-Class CmraMorphism {A B : cmraT} (f : A → B) := {
+Class CmraMorphism {A B : cmra} (f : A → B) := {
   cmra_morphism_ne :> NonExpansive f;
   cmra_morphism_validN n x : ✓{n} x → ✓{n} f x;
   cmra_morphism_pcore x : f <$> pcore x ≡ pcore (f x);
@@ -254,7 +254,7 @@ Global Arguments cmra_morphism_op {_ _} _ {_} _ _.
 
 (** * Properties **)
 Section cmra.
-Context {A : cmraT}.
+Context {A : cmra}.
 Implicit Types x y z : A.
 Implicit Types xs ys zs : list A.
 
@@ -626,7 +626,7 @@ End cmra.
 
 (** * Properties about CMRAs with a unit element **)
 Section ucmra.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types x y z : A.
 
   Lemma ucmra_unit_validN n : ✓{n} (ε:A).
@@ -658,7 +658,7 @@ Global Hint Immediate cmra_unit_cmra_total : core.
 (** * Properties about CMRAs with Leibniz equality *)
 Section cmra_leibniz.
   Local Set Default Proof Using "Type*".
-  Context {A : cmraT} `{!LeibnizEquiv A}.
+  Context {A : cmra} `{!LeibnizEquiv A}.
   Implicit Types x y : A.
 
   Global Instance cmra_assoc_L : Assoc (=) (@op A _).
@@ -705,7 +705,7 @@ End cmra_leibniz.
 
 Section ucmra_leibniz.
   Local Set Default Proof Using "Type*".
-  Context {A : ucmraT} `{!LeibnizEquiv A}.
+  Context {A : ucmra} `{!LeibnizEquiv A}.
   Implicit Types x y z : A.
 
   Global Instance ucmra_unit_left_id_L : LeftId (=) ε (@op A _).
@@ -746,7 +746,7 @@ Section cmra_total.
 End cmra_total.
 
 (** * Properties about morphisms *)
-Global Instance cmra_morphism_id {A : cmraT} : CmraMorphism (@id A).
+Global Instance cmra_morphism_id {A : cmra} : CmraMorphism (@id A).
 Proof.
   split => /=.
   - apply _.
@@ -754,9 +754,9 @@ Proof.
   - intros. by rewrite option_fmap_id.
   - done.
 Qed.
-Global Instance cmra_morphism_proper {A B : cmraT} (f : A → B) `{!CmraMorphism f} :
+Global Instance cmra_morphism_proper {A B : cmra} (f : A → B) `{!CmraMorphism f} :
   Proper ((≡) ==> (≡)) f := ne_proper _.
-Global Instance cmra_morphism_compose {A B C : cmraT} (f : A → B) (g : B → C) :
+Global Instance cmra_morphism_compose {A B C : cmra} (f : A → B) (g : B → C) :
   CmraMorphism f → CmraMorphism g → CmraMorphism (g ∘ f).
 Proof.
   split.
@@ -768,7 +768,7 @@ Qed.
 
 Section cmra_morphism.
   Local Set Default Proof Using "Type*".
-  Context {A B : cmraT} (f : A → B) `{!CmraMorphism f}.
+  Context {A B : cmra} (f : A → B) `{!CmraMorphism f}.
   Lemma cmra_morphism_core x : f (core x) ≡ core (f x).
   Proof. unfold core. rewrite -cmra_morphism_pcore. by destruct (pcore x). Qed.
   Lemma cmra_morphism_monotone x y : x ≼ y → f x ≼ f y.
@@ -781,7 +781,7 @@ End cmra_morphism.
 
 (** COFE → CMRA Functors *)
 Record rFunctor := RFunctor {
-  rFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, cmraT;
+  rFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, cmra;
   rFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → rFunctor_car A1 B1 -n> rFunctor_car A2 B2;
   rFunctor_map_ne `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
@@ -806,7 +806,7 @@ Class rFunctorContractive (F : rFunctor) :=
   rFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@rFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition rFunctor_apply (F: rFunctor) (A: ofeT) `{!Cofe A} : cmraT :=
+Definition rFunctor_apply (F: rFunctor) (A: ofe) `{!Cofe A} : cmra :=
   rFunctor_car F A A.
 
 Program Definition rFunctor_to_oFunctor (F: rFunctor) : oFunctor := {|
@@ -862,17 +862,17 @@ Proof.
   f_equiv; split; simpl in *; f_contractive; destruct Hfg; by split.
 Qed.
 
-Program Definition constRF (B : cmraT) : rFunctor :=
+Program Definition constRF (B : cmra) : rFunctor :=
   {| rFunctor_car A1 _ A2 _ := B; rFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
-Coercion constRF : cmraT >-> rFunctor.
+Coercion constRF : cmra >-> rFunctor.
 
 Global Instance constRF_contractive B : rFunctorContractive (constRF B).
 Proof. rewrite /rFunctorContractive; apply _. Qed.
 
 (** COFE → UCMRA Functors *)
 Record urFunctor := URFunctor {
-  urFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ucmraT;
+  urFunctor_car : ∀ A `{!Cofe A} B `{!Cofe B}, ucmra;
   urFunctor_map `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
     ((A2 -n> A1) * (B1 -n> B2)) → urFunctor_car A1 B1 -n> urFunctor_car A2 B2;
   urFunctor_map_ne `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :
@@ -897,7 +897,7 @@ Class urFunctorContractive (F : urFunctor) :=
   urFunctor_map_contractive `{!Cofe A1, !Cofe A2, !Cofe B1, !Cofe B2} :>
     Contractive (@urFunctor_map F A1 _ A2 _ B1 _ B2 _).
 
-Definition urFunctor_apply (F: urFunctor) (A: ofeT) `{!Cofe A} : ucmraT :=
+Definition urFunctor_apply (F: urFunctor) (A: ofe) `{!Cofe A} : ucmra :=
   urFunctor_car F A A.
 
 Program Definition urFunctor_to_rFunctor (F: urFunctor) : rFunctor := {|
@@ -953,24 +953,24 @@ Proof.
   f_equiv; split; simpl in *; f_contractive; destruct Hfg; by split.
 Qed.
 
-Program Definition constURF (B : ucmraT) : urFunctor :=
+Program Definition constURF (B : ucmra) : urFunctor :=
   {| urFunctor_car A1 _ A2 _ := B; urFunctor_map A1 _ A2 _ B1 _ B2 _ f := cid |}.
 Solve Obligations with done.
-Coercion constURF : ucmraT >-> urFunctor.
+Coercion constURF : ucmra >-> urFunctor.
 
 Global Instance constURF_contractive B : urFunctorContractive (constURF B).
 Proof. rewrite /urFunctorContractive; apply _. Qed.
 
 (** * Transporting a CMRA equality *)
-Definition cmra_transport {A B : cmraT} (H : A = B) (x : A) : B :=
+Definition cmra_transport {A B : cmra} (H : A = B) (x : A) : B :=
   eq_rect A id x _ H.
 
-Lemma cmra_transport_trans {A B C : cmraT} (H1 : A = B) (H2 : B = C) x :
+Lemma cmra_transport_trans {A B C : cmra} (H1 : A = B) (H2 : B = C) x :
   cmra_transport H2 (cmra_transport H1 x) = cmra_transport (eq_trans H1 H2) x.
 Proof. by destruct H2. Qed.
 
 Section cmra_transport.
-  Context {A B : cmraT} (H : A = B).
+  Context {A B : cmra} (H : A = B).
   Notation T := (cmra_transport H).
   Global Instance cmra_transport_ne : NonExpansive T.
   Proof. by intros ???; destruct H. Qed.
@@ -1023,7 +1023,7 @@ Section discrete.
   Qed.
 
   Local Instance discrete_cmra_discrete :
-    CmraDiscrete (CmraT' A (discrete_ofe_mixin Heq) discrete_cmra_mixin).
+    CmraDiscrete (Cmra' A (discrete_ofe_mixin Heq) discrete_cmra_mixin).
   Proof. split; first apply _. done. Qed.
 End discrete.
 
@@ -1031,7 +1031,7 @@ End discrete.
 [ofe_discrete_equivalence_of A] to make sure the same [Equivalence] proof is
 used as when constructing the OFE. *)
 Notation discreteR A ra_mix :=
-  (CmraT A (discrete_cmra_mixin (discrete_ofe_equivalence_of A%type) ra_mix))
+  (Cmra A (discrete_cmra_mixin (discrete_ofe_equivalence_of A%type) ra_mix))
   (only parsing).
 
 Section ra_total.
@@ -1068,12 +1068,12 @@ Section unit.
   Local Instance unit_op : Op () := λ x y, ().
   Lemma unit_cmra_mixin : CmraMixin ().
   Proof. apply discrete_cmra_mixin, ra_total_mixin; by eauto. Qed.
-  Canonical Structure unitR : cmraT := CmraT unit unit_cmra_mixin.
+  Canonical Structure unitR : cmra := Cmra unit unit_cmra_mixin.
 
   Local Instance unit_unit : Unit () := ().
   Lemma unit_ucmra_mixin : UcmraMixin ().
   Proof. done. Qed.
-  Canonical Structure unitUR : ucmraT := UcmraT unit unit_ucmra_mixin.
+  Canonical Structure unitUR : ucmra := Ucmra unit unit_ucmra_mixin.
 
   Global Instance unit_cmra_discrete : CmraDiscrete unitR.
   Proof. done. Qed.
@@ -1091,7 +1091,7 @@ Section empty.
   Local Instance Empty_set_op : Op Empty_set := λ x y, x.
   Lemma Empty_set_cmra_mixin : CmraMixin Empty_set.
   Proof. apply discrete_cmra_mixin, ra_total_mixin; by (intros [] || done). Qed.
-  Canonical Structure Empty_setR : cmraT := CmraT Empty_set Empty_set_cmra_mixin.
+  Canonical Structure Empty_setR : cmra := Cmra Empty_set Empty_set_cmra_mixin.
 
   Global Instance Empty_set_cmra_discrete : CmraDiscrete Empty_setR.
   Proof. done. Qed.
@@ -1103,7 +1103,7 @@ End empty.
 
 (** ** Product *)
 Section prod.
-  Context {A B : cmraT}.
+  Context {A B : cmra}.
   Local Arguments pcore _ _ !_ /.
   Local Arguments cmra_pcore _ !_/.
 
@@ -1166,7 +1166,7 @@ Section prod.
       destruct (cmra_extend n (x.2) (y1.2) (y2.2)) as (z21&z22&?&?&?); auto.
       by exists (z11,z21), (z12,z22).
   Qed.
-  Canonical Structure prodR := CmraT (prod A B) prod_cmra_mixin.
+  Canonical Structure prodR := Cmra (prod A B) prod_cmra_mixin.
 
   Lemma pair_op (a a' : A) (b b' : B) : (a ⋅ a', b ⋅ b') = (a, b) ⋅ (a', b').
   Proof. done. Qed.
@@ -1228,7 +1228,7 @@ Global Hint Extern 4 (CoreId _) =>
 Global Arguments prodR : clear implicits.
 
 Section prod_unit.
-  Context {A B : ucmraT}.
+  Context {A B : ucmra}.
 
   Local Instance prod_unit `{Unit A, Unit B} : Unit (A * B) := (ε, ε).
   Lemma prod_ucmra_mixin : UcmraMixin (A * B).
@@ -1238,7 +1238,7 @@ Section prod_unit.
     - by split; rewrite /=left_id.
     - rewrite prod_pcore_Some'; split; apply (core_id _).
   Qed.
-  Canonical Structure prodUR := UcmraT (prod A B) prod_ucmra_mixin.
+  Canonical Structure prodUR := Ucmra (prod A B) prod_ucmra_mixin.
 
   Lemma pair_split (a : A) (b : B) : (a, b) ≡ (a, ε) ⋅ (ε, b).
   Proof. by rewrite -pair_op left_id right_id. Qed.
@@ -1264,7 +1264,7 @@ End prod_unit.
 
 Global Arguments prodUR : clear implicits.
 
-Global Instance prod_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B') :
+Global Instance prod_map_cmra_morphism {A A' B B' : cmra} (f : A → A') (g : B → B') :
   CmraMorphism f → CmraMorphism g → CmraMorphism (prod_map f g).
 Proof.
   split; first apply _.
@@ -1327,7 +1327,7 @@ Qed.
 
 (** ** CMRA for the option type *)
 Section option.
-  Context {A : cmraT}.
+  Context {A : cmra}.
   Implicit Types a b : A.
   Implicit Types ma mb : option A.
   Local Arguments core _ _ !_ /.
@@ -1425,7 +1425,7 @@ Section option.
       + by exists None, (Some a); repeat constructor.
       + exists None, None; repeat constructor.
   Qed.
-  Canonical Structure optionR := CmraT (option A) option_cmra_mixin.
+  Canonical Structure optionR := Cmra (option A) option_cmra_mixin.
 
   Global Instance option_cmra_discrete : CmraDiscrete A → CmraDiscrete optionR.
   Proof. split; [apply _|]. by intros [a|]; [apply (cmra_discrete_valid a)|]. Qed.
@@ -1433,7 +1433,7 @@ Section option.
   Local Instance option_unit : Unit (option A) := None.
   Lemma option_ucmra_mixin : UcmraMixin optionR.
   Proof. split; [done|  |done]. by intros []. Qed.
-  Canonical Structure optionUR := UcmraT (option A) option_ucmra_mixin.
+  Canonical Structure optionUR := Ucmra (option A) option_ucmra_mixin.
 
   (** Misc *)
   Lemma op_None ma mb : ma ⋅ mb = None ↔ ma = None ∧ mb = None.
@@ -1518,7 +1518,7 @@ Global Arguments optionR : clear implicits.
 Global Arguments optionUR : clear implicits.
 
 Section option_prod.
-  Context {A B : cmraT}.
+  Context {A B : cmra}.
   Implicit Types a : A.
   Implicit Types b : B.
 
@@ -1543,7 +1543,7 @@ Section option_prod.
   Proof. intros ?%Some_pair_included. by rewrite -(Some_included_total b1). Qed.
 End option_prod.
 
-Lemma option_fmap_mono {A B : cmraT} (f : A → B) ma mb :
+Lemma option_fmap_mono {A B : cmra} (f : A → B) ma mb :
   Proper ((≡) ==> (≡)) f →
   (∀ a b, a ≼ b → f a ≼ f b) →
   ma ≼ mb → f <$> ma ≼ f <$> mb.
@@ -1551,7 +1551,7 @@ Proof.
   intros ??. rewrite !option_included; intros [->|(a&b&->&->&?)]; naive_solver.
 Qed.
 
-Global Instance option_fmap_cmra_morphism {A B : cmraT} (f: A → B) `{!CmraMorphism f} :
+Global Instance option_fmap_cmra_morphism {A B : cmra} (f: A → B) `{!CmraMorphism f} :
   CmraMorphism (fmap f : option A → option B).
 Proof.
   split; first apply _.
@@ -1594,7 +1594,7 @@ Proof. apply optionURF_contractive. Qed.
 
 (* Dependently-typed functions over a discrete domain *)
 Section discrete_fun_cmra.
-  Context `{B : A → ucmraT}.
+  Context `{B : A → ucmra}.
   Implicit Types f g : discrete_fun B.
 
   Local Instance discrete_fun_op : Op (discrete_fun B) := λ f g x, f x ⋅ g x.
@@ -1640,7 +1640,7 @@ Section discrete_fun_cmra.
       split; [|split]=>x; [rewrite discrete_fun_lookup_op| |];
       by destruct (FUN x) as (?&?&?&?&?).
   Qed.
-  Canonical Structure discrete_funR := CmraT (discrete_fun B) discrete_fun_cmra_mixin.
+  Canonical Structure discrete_funR := Cmra (discrete_fun B) discrete_fun_cmra_mixin.
 
   Local Instance discrete_fun_unit : Unit (discrete_fun B) := λ x, ε.
   Definition discrete_fun_lookup_empty x : ε x = ε := eq_refl.
@@ -1652,7 +1652,7 @@ Section discrete_fun_cmra.
     - by intros f x; rewrite discrete_fun_lookup_op left_id.
     - constructor=> x. apply core_id_core, _.
   Qed.
-  Canonical Structure discrete_funUR := UcmraT (discrete_fun B) discrete_fun_ucmra_mixin.
+  Canonical Structure discrete_funUR := Ucmra (discrete_fun B) discrete_fun_ucmra_mixin.
 
   Global Instance discrete_fun_unit_discrete :
     (∀ i, Discrete (ε : B i)) → Discrete (ε : discrete_fun B).
@@ -1662,7 +1662,7 @@ End discrete_fun_cmra.
 Global Arguments discrete_funR {_} _.
 Global Arguments discrete_funUR {_} _.
 
-Global Instance discrete_fun_map_cmra_morphism {A} {B1 B2 : A → ucmraT} (f : ∀ x, B1 x → B2 x) :
+Global Instance discrete_fun_map_cmra_morphism {A} {B1 B2 : A → ucmra} (f : ∀ x, B1 x → B2 x) :
   (∀ x, CmraMorphism (f x)) → CmraMorphism (discrete_fun_map f).
 Proof.
   split; first apply _.
@@ -1695,7 +1695,7 @@ Qed.
 
 (** * Constructing a camera [B] through a bijection with [A] that
 is mostly an isomorphism but restricts validity. *)
-Lemma iso_cmra_mixin_restrict {A : cmraT} {B : Type}
+Lemma iso_cmra_mixin_restrict {A : cmra} {B : Type}
   `{!Dist B, !Equiv B, !PCore B, !Op B, !Valid B, !ValidN B}
   (f : A → B) (g : B → A)
   (* [g] is proper/non-expansive and injective w.r.t. setoid and OFE equality *)
@@ -1753,7 +1753,7 @@ Proof.
 Qed.
 
 (** * Constructing a camera through an isomorphism *)
-Lemma iso_cmra_mixin {A : cmraT} {B : Type}
+Lemma iso_cmra_mixin {A : cmra} {B : Type}
   `{!Dist B, !Equiv B, !PCore B, !Op B, !Valid B, !ValidN B}
   (f : A → B) (g : B → A)
   (* [g] is proper/non-expansive and injective w.r.t. setoid and OFE equality *)

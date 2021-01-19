@@ -9,7 +9,7 @@ Import uPred.
 individual CMRAs instead of (lists of) CMRA *functors*. This additional class is
 needed because Coq is otherwise unable to solve type class constraints due to
 higher-order unification problems. *)
-Class inG (Σ : gFunctors) (A : cmraT) := InG {
+Class inG (Σ : gFunctors) (A : cmra) := InG {
   inG_id : gid Σ;
   inG_apply := rFunctor_apply (gFunctors_lookup Σ inG_id);
   inG_prf : A = inG_apply (iPropO Σ) _;
@@ -298,7 +298,7 @@ Global Arguments own_update {_ _} [_] _ _ _ _.
 Global Arguments own_update_2 {_ _} [_] _ _ _ _ _.
 Global Arguments own_update_3 {_ _} [_] _ _ _ _ _ _.
 
-Lemma own_unit A `{i : !inG Σ (A:ucmraT)} γ : ⊢ |==> own γ (ε:A).
+Lemma own_unit A `{i : !inG Σ (A:ucmra)} γ : ⊢ |==> own γ (ε:A).
 Proof.
   rewrite /bi_emp_valid (ownM_unit emp) !own_eq /own_def.
   apply bupd_ownM_update, discrete_fun_singleton_update_empty.
@@ -312,7 +312,7 @@ Qed.
 
 (** Big op class instances *)
 Section big_op_instances.
-  Context `{!inG Σ (A:ucmraT)}.
+  Context `{!inG Σ (A:ucmra)}.
 
   Global Instance own_cmra_sep_homomorphism γ :
     WeakMonoidHomomorphism op uPred_sep (≡) (own γ).

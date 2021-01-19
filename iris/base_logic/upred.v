@@ -104,7 +104,7 @@ This completes the proof.
 
 *)
 
-Record uPred (M : ucmraT) : Type := UPred {
+Record uPred (M : ucmra) : Type := UPred {
   uPred_holds :> nat → M → Prop;
 
   uPred_mono n1 n2 x1 x2 :
@@ -116,7 +116,7 @@ Add Printing Constructor uPred.
 Global Instance: Params (@uPred_holds) 3 := {}.
 
 Section cofe.
-  Context {M : ucmraT}.
+  Context {M : ucmra}.
 
   Inductive uPred_equiv' (P Q : uPred M) : Prop :=
     { uPred_in_equiv : ∀ n x, ✓{n} x → P n x ↔ Q n x }.
@@ -137,7 +137,7 @@ Section cofe.
         by trans (Q i x);[apply HP|apply HQ].
     - intros n P Q HPQ; split=> i x ??; apply HPQ; auto.
   Qed.
-  Canonical Structure uPredO : ofeT := OfeT (uPred M) uPred_ofe_mixin.
+  Canonical Structure uPredO : ofe := Ofe (uPred M) uPred_ofe_mixin.
 
   Program Definition uPred_compl : Compl uPredO := λ c,
     {| uPred_holds n x := ∀ n', n' ≤ n → ✓{n'} x → c n' n' x |}.
@@ -170,7 +170,7 @@ Proof.
 Qed.
 
 (* Equivalence to the definition of uPred in the appendix. *)
-Lemma uPred_alt {M : ucmraT} (P: nat → M → Prop) :
+Lemma uPred_alt {M : ucmra} (P: nat → M → Prop) :
   (∀ n1 n2 x1 x2, P n1 x1 → x1 ≼{n1} x2 → n2 ≤ n1 → P n2 x2) ↔
   ( (∀ x n1 n2, n2 ≤ n1 → P n1 x → P n2 x) (* Pointwise down-closed *)
   ∧ (∀ n x1 x2, x1 ≡{n}≡ x2 → ∀ m, m ≤ n → P m x1 ↔ P m x2) (* Non-expansive *)
@@ -187,30 +187,30 @@ Proof.
 Qed.
 
 (** functor *)
-Program Definition uPred_map {M1 M2 : ucmraT} (f : M2 -n> M1)
+Program Definition uPred_map {M1 M2 : ucmra} (f : M2 -n> M1)
   `{!CmraMorphism f} (P : uPred M1) :
   uPred M2 := {| uPred_holds n x := P n (f x) |}.
 Next Obligation. naive_solver eauto using uPred_mono, cmra_morphism_monotoneN. Qed.
 
-Global Instance uPred_map_ne {M1 M2 : ucmraT} (f : M2 -n> M1)
+Global Instance uPred_map_ne {M1 M2 : ucmra} (f : M2 -n> M1)
   `{!CmraMorphism f} n : Proper (dist n ==> dist n) (uPred_map f).
 Proof.
   intros x1 x2 Hx; split=> n' y ??.
   split; apply Hx; auto using cmra_morphism_validN.
 Qed.
-Lemma uPred_map_id {M : ucmraT} (P : uPred M): uPred_map cid P ≡ P.
+Lemma uPred_map_id {M : ucmra} (P : uPred M): uPred_map cid P ≡ P.
 Proof. by split=> n x ?. Qed.
-Lemma uPred_map_compose {M1 M2 M3 : ucmraT} (f : M1 -n> M2) (g : M2 -n> M3)
+Lemma uPred_map_compose {M1 M2 M3 : ucmra} (f : M1 -n> M2) (g : M2 -n> M3)
     `{!CmraMorphism f, !CmraMorphism g} (P : uPred M3):
   uPred_map (g ◎ f) P ≡ uPred_map f (uPred_map g P).
 Proof. by split=> n x Hx. Qed.
-Lemma uPred_map_ext {M1 M2 : ucmraT} (f g : M1 -n> M2)
+Lemma uPred_map_ext {M1 M2 : ucmra} (f g : M1 -n> M2)
       `{!CmraMorphism f} `{!CmraMorphism g}:
   (∀ x, f x ≡ g x) → ∀ x, uPred_map f x ≡ uPred_map g x.
 Proof. intros Hf P; split=> n x Hx /=; by rewrite /uPred_holds /= Hf. Qed.
-Definition uPredO_map {M1 M2 : ucmraT} (f : M2 -n> M1) `{!CmraMorphism f} :
+Definition uPredO_map {M1 M2 : ucmra} (f : M2 -n> M1) `{!CmraMorphism f} :
   uPredO M1 -n> uPredO M2 := OfeMor (uPred_map f : uPredO M1 → uPredO M2).
-Lemma uPredO_map_ne {M1 M2 : ucmraT} (f g : M2 -n> M1)
+Lemma uPredO_map_ne {M1 M2 : ucmra} (f g : M2 -n> M1)
     `{!CmraMorphism f, !CmraMorphism g} n :
   f ≡{n}≡ g → uPredO_map f ≡{n}≡ uPredO_map g.
 Proof.
@@ -304,7 +304,7 @@ Definition uPred_exist := uPred_exist_aux.(unseal).
 Global Arguments uPred_exist {M A}.
 Definition uPred_exist_eq: @uPred_exist = @uPred_exist_def := uPred_exist_aux.(seal_eq).
 
-Program Definition uPred_internal_eq_def {M} {A : ofeT} (a1 a2 : A) : uPred M :=
+Program Definition uPred_internal_eq_def {M} {A : ofe} (a1 a2 : A) : uPred M :=
   {| uPred_holds n x := a1 ≡{n}≡ a2 |}.
 Solve Obligations with naive_solver eauto 2 using dist_le.
 Definition uPred_internal_eq_aux : seal (@uPred_internal_eq_def). Proof. by eexists. Qed.
@@ -371,7 +371,7 @@ Global Arguments uPred_later {M}.
 Definition uPred_later_eq :
   @uPred_later = @uPred_later_def := uPred_later_aux.(seal_eq).
 
-Program Definition uPred_ownM_def {M : ucmraT} (a : M) : uPred M :=
+Program Definition uPred_ownM_def {M : ucmra} (a : M) : uPred M :=
   {| uPred_holds n x := a ≼{n} x |}.
 Next Obligation.
   intros M a n1 n2 x1 x [a' Hx1] [x2 Hx] Hn.
@@ -383,7 +383,7 @@ Global Arguments uPred_ownM {M}.
 Definition uPred_ownM_eq :
   @uPred_ownM = @uPred_ownM_def := uPred_ownM_aux.(seal_eq).
 
-Program Definition uPred_cmra_valid_def {M} {A : cmraT} (a : A) : uPred M :=
+Program Definition uPred_cmra_valid_def {M} {A : cmra} (a : A) : uPred M :=
   {| uPred_holds n x := ✓{n} a |}.
 Solve Obligations with naive_solver eauto 2 using cmra_validN_le.
 Definition uPred_cmra_valid_aux : seal (@uPred_cmra_valid_def). Proof. by eexists. Qed.
@@ -424,7 +424,7 @@ Ltac unseal :=
   rewrite !unseal_eqs /=.
 
 Section primitive.
-Context {M : ucmraT}.
+Context {M : ucmra}.
 Implicit Types φ : Prop.
 Implicit Types P Q : uPred M.
 Implicit Types A : Type.
@@ -514,7 +514,7 @@ Proof.
     apply HQ, HPQ, HP; eauto using cmra_validN_op_r.
 Qed.
 
-Lemma internal_eq_ne (A : ofeT) :
+Lemma internal_eq_ne (A : ofe) :
   NonExpansive2 (@uPred_internal_eq M A).
 Proof.
   intros n x x' Hx y y' Hy; split=> n' z; unseal; split; intros; simpl in *.
@@ -559,7 +559,7 @@ Proof.
   unseal; split=> n' x ? /=. by rewrite (dist_le _ _ _ _ Ha); last lia.
 Qed.
 
-Lemma cmra_valid_ne {A : cmraT} :
+Lemma cmra_valid_ne {A : cmra} :
   NonExpansive (@uPred_cmra_valid M A).
 Proof.
   intros n a b Ha; unseal; split=> n' x ? /=.
@@ -760,25 +760,25 @@ Lemma later_plainly_2 P : ■ ▷ P ⊢ ▷ ■ P.
 Proof. by unseal. Qed.
 
 (** Internal equality *)
-Lemma internal_eq_refl {A : ofeT} P (a : A) : P ⊢ (a ≡ a).
+Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
 Proof. unseal; by split=> n x ??; simpl. Qed.
-Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → uPred M) :
+Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → uPred M) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
 Proof. intros HΨ. unseal; split=> n x ?? n' x' ??? Ha. by apply HΨ with n a. Qed.
 
-Lemma fun_ext {A} {B : A → ofeT} (g1 g2 : discrete_fun B) :
+Lemma fun_ext {A} {B : A → ofe} (g1 g2 : discrete_fun B) :
   (∀ i, g1 i ≡ g2 i) ⊢ g1 ≡ g2.
 Proof. by unseal. Qed.
-Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sigO P) :
+Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sigO P) :
   proj1_sig x ≡ proj1_sig y ⊢ x ≡ y.
 Proof. by unseal. Qed.
 
-Lemma later_eq_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
+Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
 Proof. by unseal. Qed.
-Lemma later_eq_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
+Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
 Proof. by unseal. Qed.
 
-Lemma discrete_eq_1 {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
+Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
 Proof.
   unseal=> ?. split=> n x ?. by apply (discrete_iff n).
 Qed.
@@ -787,7 +787,7 @@ Qed.
 between two [siProp], but we do not have the infrastructure
 to express the more general case. This temporary proof rule will
 be replaced by the proper one eventually. *)
-Lemma internal_eq_entails {A B : ofeT} (a1 a2 : A) (b1 b2 : B) :
+Lemma internal_eq_entails {A B : ofe} (a1 a2 : A) (b1 b2 : B) :
   (∀ n, a1 ≡{n}≡ a2 → b1 ≡{n}≡ b2) → a1 ≡ a2 ⊢ b1 ≡ b2.
 Proof. unseal=>Hsi. split=>n x ?. apply Hsi. Qed.
 
@@ -862,23 +862,23 @@ Lemma ownM_valid (a : M) : uPred_ownM a ⊢ ✓ a.
 Proof.
   unseal; split=> n x Hv [a' ?]; ofe_subst; eauto using cmra_validN_op_l.
 Qed.
-Lemma cmra_valid_intro {A : cmraT} P (a : A) : ✓ a → P ⊢ (✓ a).
+Lemma cmra_valid_intro {A : cmra} P (a : A) : ✓ a → P ⊢ (✓ a).
 Proof. unseal=> ?; split=> n x ? _ /=; by apply cmra_valid_validN. Qed.
-Lemma cmra_valid_elim {A : cmraT} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
+Lemma cmra_valid_elim {A : cmra} (a : A) : ¬ ✓{0} a → ✓ a ⊢ False.
 Proof. unseal=> Ha; split=> n x ??; apply Ha, cmra_validN_le with n; auto. Qed.
-Lemma plainly_cmra_valid_1 {A : cmraT} (a : A) : ✓ a ⊢ ■ ✓ a.
+Lemma plainly_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ ■ ✓ a.
 Proof. by unseal. Qed.
-Lemma cmra_valid_weaken {A : cmraT} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
+Lemma cmra_valid_weaken {A : cmra} (a b : A) : ✓ (a ⋅ b) ⊢ ✓ a.
 Proof. unseal; split=> n x _; apply cmra_validN_op_l. Qed.
 
-Lemma discrete_valid {A : cmraT} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
+Lemma discrete_valid {A : cmra} `{!CmraDiscrete A} (a : A) : ✓ a ⊣⊢ ⌜✓ a⌝.
 Proof. unseal; split=> n x _. by rewrite /= -cmra_discrete_valid_iff. Qed.
 
 (** This is really just a special case of an entailment
 between two [siProp], but we do not have the infrastructure
 to express the more general case. This temporary proof rule will
 be replaced by the proper one eventually. *)
-Lemma valid_entails {A B : cmraT} (a : A) (b : B) :
+Lemma valid_entails {A B : cmra} (a : A) (b : B) :
   (∀ n, ✓{n} a → ✓{n} b) → ✓ a ⊢ ✓ b.
 Proof. unseal=> Hval. split=>n x ?. apply Hval. Qed.
 
@@ -888,7 +888,7 @@ instance of [siProp] soundness in the future. *)
 Lemma pure_soundness φ : (True ⊢ ⌜ φ ⌝) → φ.
 Proof. unseal=> -[H]. by apply (H 0 ε); eauto using ucmra_unit_validN. Qed.
 
-Lemma internal_eq_soundness {A : ofeT} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+Lemma internal_eq_soundness {A : ofe} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
 Proof.
   unseal=> -[H]. apply equiv_dist=> n.
   by apply (H n ε); eauto using ucmra_unit_validN.

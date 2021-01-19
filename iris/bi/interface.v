@@ -176,14 +176,14 @@ Structure bi := Bi {
   bi_persistently : bi_car → bi_car;
   bi_later : bi_car → bi_car;
   bi_ofe_mixin : OfeMixin bi_car;
-  bi_cofe : Cofe (OfeT bi_car bi_ofe_mixin);
+  bi_cofe : Cofe (Ofe bi_car bi_ofe_mixin);
   bi_bi_mixin : BiMixin bi_entails bi_emp bi_pure bi_and bi_or bi_impl bi_forall
                         bi_exist bi_sep bi_wand bi_persistently;
   bi_bi_later_mixin : BiLaterMixin bi_entails bi_pure bi_or bi_impl
                                    bi_forall bi_exist bi_sep bi_persistently bi_later;
 }.
 
-Coercion bi_ofeO (PROP : bi) : ofeT := OfeT PROP (bi_ofe_mixin PROP).
+Coercion bi_ofeO (PROP : bi) : ofe := Ofe PROP (bi_ofe_mixin PROP).
 Canonical Structure bi_ofeO.
 Global Instance bi_cofe' (PROP : bi) : Cofe PROP.
 Proof. apply bi_cofe. Qed.

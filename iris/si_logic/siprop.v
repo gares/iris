@@ -36,7 +36,7 @@ Section cofe.
         by trans (Q i);[apply HP|apply HQ].
     - intros n P Q HPQ; split=> i ?; apply HPQ; auto.
   Qed.
-  Canonical Structure siPropO : ofeT := OfeT siProp siProp_ofe_mixin.
+  Canonical Structure siPropO : ofe := Ofe siProp siProp_ofe_mixin.
 
   Program Definition siProp_compl : Compl siPropO := λ c,
     {| siProp_holds n := c n n |}.
@@ -101,7 +101,7 @@ Definition siProp_exist_aux : seal (@siProp_exist_def). Proof. by eexists. Qed.
 Definition siProp_exist {A} := unseal siProp_exist_aux A.
 Definition siProp_exist_eq: @siProp_exist = @siProp_exist_def := seal_eq siProp_exist_aux.
 
-Program Definition siProp_internal_eq_def {A : ofeT} (a1 a2 : A) : siProp :=
+Program Definition siProp_internal_eq_def {A : ofe} (a1 a2 : A) : siProp :=
   {| siProp_holds n := a1 ≡{n}≡ a2 |}.
 Solve Obligations with naive_solver eauto 2 using dist_le.
 Definition siProp_internal_eq_aux : seal (@siProp_internal_eq_def). Proof. by eexists. Qed.
@@ -195,7 +195,7 @@ Proof.
   unseal; intros [|n] P Q HPQ; split=> -[|n'] ? //=; try lia.
   apply HPQ; lia.
 Qed.
-Lemma internal_eq_ne (A : ofeT) : NonExpansive2 (@siProp_internal_eq A).
+Lemma internal_eq_ne (A : ofe) : NonExpansive2 (@siProp_internal_eq A).
 Proof.
   intros n x x' Hx y y' Hy; split=> n' z; unseal; split; intros; simpl in *.
   - by rewrite -(dist_le _ _ _ _ Hx) -?(dist_le _ _ _ _ Hy); auto.
@@ -252,19 +252,19 @@ Lemma exist_elim {A} (Φ : A → siProp) Q : (∀ a, Φ a ⊢ Q) → (∃ a, Φ 
 Proof. unseal; intros HΨ; split=> n [a ?]; by apply HΨ with a. Qed.
 
 (** Equality *)
-Lemma internal_eq_refl {A : ofeT} P (a : A) : P ⊢ (a ≡ a).
+Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ (a ≡ a).
 Proof. unseal; by split=> n ? /=. Qed.
-Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → siProp) :
+Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → siProp) :
   NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
 Proof.
   intros Hnonexp. unseal; split=> n Hab n' ? HΨ. eapply Hnonexp with n a; auto.
 Qed.
 
-Lemma fun_ext {A} {B : A → ofeT} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
+Lemma fun_ext {A} {B : A → ofe} (f g : discrete_fun B) : (∀ x, f x ≡ g x) ⊢ f ≡ g.
 Proof. by unseal. Qed.
-Lemma sig_eq {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
+Lemma sig_eq {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊢ x ≡ y.
 Proof. by unseal. Qed.
-Lemma discrete_eq_1 {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
+Lemma discrete_eq_1 {A : ofe} (a b : A) : Discrete a → a ≡ b ⊢ ⌜a ≡ b⌝.
 Proof. unseal=> ?. split=> n. by apply (discrete_iff n). Qed.
 
 Lemma prop_ext_2 P Q : ((P → Q) ∧ (Q → P)) ⊢ P ≡ Q.
@@ -274,9 +274,9 @@ Proof.
 Qed.
 
 (** Later *)
-Lemma later_eq_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
+Lemma later_eq_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢ ▷ (x ≡ y).
 Proof. by unseal. Qed.
-Lemma later_eq_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
+Lemma later_eq_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢ Next x ≡ Next y.
 Proof. by unseal. Qed.
 
 Lemma later_mono P Q : (P ⊢ Q) → ▷ P ⊢ ▷ Q.
@@ -299,7 +299,7 @@ Qed.
 Lemma pure_soundness φ : (True ⊢ ⌜ φ ⌝) → φ.
 Proof. unseal=> -[H]. by apply (H 0). Qed.
 
-Lemma internal_eq_soundness {A : ofeT} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
+Lemma internal_eq_soundness {A : ofe} (x y : A) : (True ⊢ x ≡ y) → x ≡ y.
 Proof. unseal=> -[H]. apply equiv_dist=> n. by apply (H n). Qed.
 
 Lemma later_soundness P : (True ⊢ ▷ P) → (True ⊢ P).

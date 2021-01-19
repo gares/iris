@@ -5,34 +5,34 @@ Import bi.
 
 (** Least and greatest fixpoint of a monotone function, defined entirely inside
     the logic.  *)
-Class BiMonoPred {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) := {
+Class BiMonoPred {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) := {
   bi_mono_pred Φ Ψ : ⊢ <pers> (∀ x, Φ x -∗ Ψ x) → ∀ x, F Φ x -∗ F Ψ x;
   bi_mono_pred_ne Φ : NonExpansive Φ → NonExpansive (F Φ)
 }.
 Global Arguments bi_mono_pred {_ _ _ _} _ _.
 Local Existing Instance bi_mono_pred_ne.
 
-Definition bi_least_fixpoint {PROP : bi} {A : ofeT}
+Definition bi_least_fixpoint {PROP : bi} {A : ofe}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
   tc_opaque (∀ Φ : A -n> PROP, <pers> (∀ x, F Φ x -∗ Φ x) → Φ x)%I.
 Global Arguments bi_least_fixpoint : simpl never.
 
-Definition bi_greatest_fixpoint {PROP : bi} {A : ofeT}
+Definition bi_greatest_fixpoint {PROP : bi} {A : ofe}
     (F : (A → PROP) → (A → PROP)) (x : A) : PROP :=
   tc_opaque (∃ Φ : A -n> PROP, <pers> (∀ x, Φ x -∗ F Φ x) ∧ Φ x)%I.
 Global Arguments bi_greatest_fixpoint : simpl never.
 
-Global Instance least_fixpoint_ne {PROP : bi} {A : ofeT} n :
+Global Instance least_fixpoint_ne {PROP : bi} {A : ofe} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>
           dist n ==> dist n) bi_least_fixpoint.
 Proof. solve_proper. Qed.
-Global Instance least_fixpoint_proper {PROP : bi} {A : ofeT} :
+Global Instance least_fixpoint_proper {PROP : bi} {A : ofe} :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (≡)) ==>
           (≡) ==> (≡)) bi_least_fixpoint.
 Proof. solve_proper. Qed.
 
 Section least.
-  Context {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
+  Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
   Lemma least_fixpoint_unfold_2 x : F (bi_least_fixpoint F) x ⊢ bi_least_fixpoint F x.
   Proof using Type*.
@@ -74,7 +74,7 @@ Section least.
   Qed.
 End least.
 
-Lemma greatest_fixpoint_ne_outer {PROP : bi} {A : ofeT}
+Lemma greatest_fixpoint_ne_outer {PROP : bi} {A : ofe}
     (F1 : (A → PROP) → (A → PROP)) (F2 : (A → PROP) → (A → PROP)):
   (∀ Φ x n, F1 Φ x ≡{n}≡ F2 Φ x) → ∀ x1 x2 n,
   x1 ≡{n}≡ x2 → bi_greatest_fixpoint F1 x1 ≡{n}≡ bi_greatest_fixpoint F2 x2.
@@ -83,17 +83,17 @@ Proof.
   do 3 f_equiv; last solve_proper. repeat f_equiv. apply HF.
 Qed.
 
-Global Instance greatest_fixpoint_ne {PROP : bi} {A : ofeT} n :
+Global Instance greatest_fixpoint_ne {PROP : bi} {A : ofe} n :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (dist n)) ==>
           dist n ==> dist n) bi_greatest_fixpoint.
 Proof. solve_proper. Qed.
-Global Instance greatest_fixpoint_proper {PROP : bi} {A : ofeT} :
+Global Instance greatest_fixpoint_proper {PROP : bi} {A : ofe} :
   Proper (pointwise_relation (A → PROP) (pointwise_relation A (≡)) ==>
           (≡) ==> (≡)) bi_greatest_fixpoint.
 Proof. solve_proper. Qed.
 
 Section greatest.
-  Context {PROP : bi} {A : ofeT} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
+  Context {PROP : bi} {A : ofe} (F : (A → PROP) → (A → PROP)) `{!BiMonoPred F}.
 
   Lemma greatest_fixpoint_unfold_1 x :
     bi_greatest_fixpoint F x ⊢ F (bi_greatest_fixpoint F) x.

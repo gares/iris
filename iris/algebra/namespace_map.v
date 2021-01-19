@@ -28,15 +28,15 @@ Global Instance: Params (@namespace_map_data_proj) 1 := {}.
 Global Instance: Params (@namespace_map_token_proj) 1 := {}.
 
 (** TODO: [positives_flatten] violates the namespace abstraction. *)
-Definition namespace_map_data {A : cmraT} (N : namespace) (a : A) : namespace_map A :=
+Definition namespace_map_data {A : cmra} (N : namespace) (a : A) : namespace_map A :=
   NamespaceMap {[ positives_flatten N := a ]} ε.
-Definition namespace_map_token {A : cmraT} (E : coPset) : namespace_map A :=
+Definition namespace_map_token {A : cmra} (E : coPset) : namespace_map A :=
   NamespaceMap ∅ (CoPset E).
 Global Instance: Params (@namespace_map_data) 2 := {}.
 
 (* Ofe *)
 Section ofe.
-Context {A : ofeT}.
+Context {A : ofe}.
 Implicit Types x y : namespace_map A.
 
 Local Instance namespace_map_equiv : Equiv (namespace_map A) := λ x y,
@@ -62,7 +62,7 @@ Proof.
     (λ x, (namespace_map_data_proj x, namespace_map_token_proj x))).
 Qed.
 Canonical Structure namespace_mapO :=
-  OfeT (namespace_map A) namespace_map_ofe_mixin.
+  Ofe (namespace_map A) namespace_map_ofe_mixin.
 
 Global Instance NamespaceMap_discrete a b :
   Discrete a → Discrete b → Discrete (NamespaceMap a b).
@@ -76,7 +76,7 @@ Global Arguments namespace_mapO : clear implicits.
 
 (* Camera *)
 Section cmra.
-Context {A : cmraT}.
+Context {A : cmra}.
 Implicit Types a b : A.
 Implicit Types x y : namespace_map A.
 
@@ -183,7 +183,7 @@ Proof.
     by exists (NamespaceMap m1 E1), (NamespaceMap m2 E2).
 Qed.
 Canonical Structure namespace_mapR :=
-  CmraT (namespace_map A) namespace_map_cmra_mixin.
+  Cmra (namespace_map A) namespace_map_cmra_mixin.
 
 Global Instance namespace_map_cmra_discrete :
   CmraDiscrete A → CmraDiscrete namespace_mapR.
@@ -202,7 +202,7 @@ Proof.
   - do 2 constructor; [apply (core_id_core _)|done].
 Qed.
 Canonical Structure namespace_mapUR :=
-  UcmraT (namespace_map A) namespace_map_ucmra_mixin.
+  Ucmra (namespace_map A) namespace_map_ucmra_mixin.
 
 Global Instance namespace_map_data_core_id N a :
   CoreId a → CoreId (namespace_map_data N a).

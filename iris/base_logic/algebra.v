@@ -6,18 +6,18 @@ From iris.prelude Require Import options.
 (** Internalized properties of our CMRA constructions. *)
 
 Section upred.
-Context {M : ucmraT}.
+Context {M : ucmra}.
 
 (* Force implicit argument M *)
 Notation "P ⊢ Q" := (bi_entails (PROP:=uPredI M) P%I Q%I).
 Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
-Lemma prod_validI {A B : cmraT} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
+Lemma prod_validI {A B : cmra} (x : A * B) : ✓ x ⊣⊢ ✓ x.1 ∧ ✓ x.2.
 Proof. by uPred.unseal. Qed.
-Lemma option_validI {A : cmraT} (mx : option A) :
+Lemma option_validI {A : cmra} (mx : option A) :
   ✓ mx ⊣⊢ match mx with Some x => ✓ x | None => True : uPred M end.
 Proof. uPred.unseal. by destruct mx. Qed.
-Lemma discrete_fun_validI {A} {B : A → ucmraT} (g : discrete_fun B) :
+Lemma discrete_fun_validI {A} {B : A → ucmra} (g : discrete_fun B) :
   ✓ g ⊣⊢ ∀ i, ✓ g i.
 Proof. by uPred.unseal. Qed.
 
@@ -25,7 +25,7 @@ Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
 Proof. rewrite uPred.discrete_valid frac_valid' //. Qed.
 
 Section gmap_ofe.
-  Context `{Countable K} {A : ofeT}.
+  Context `{Countable K} {A : ofe}.
   Implicit Types m : gmap K A.
   Implicit Types i : K.
 
@@ -34,7 +34,7 @@ Section gmap_ofe.
 End gmap_ofe.
 
 Section gmap_cmra.
-  Context `{Countable K} {A : cmraT}.
+  Context `{Countable K} {A : cmra}.
   Implicit Types m : gmap K A.
 
   Lemma gmap_validI m : ✓ m ⊣⊢ ∀ i, ✓ (m !! i).
@@ -51,7 +51,7 @@ Section gmap_cmra.
 End gmap_cmra.
 
 Section list_ofe.
-  Context {A : ofeT}.
+  Context {A : ofe}.
   Implicit Types l : list A.
 
   Lemma list_equivI l1 l2 : l1 ≡ l2 ⊣⊢ ∀ i, l1 !! i ≡ l2 !! i.
@@ -59,7 +59,7 @@ Section list_ofe.
 End list_ofe.
 
 Section list_cmra.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types l : list A.
 
   Lemma list_validI l : ✓ l ⊣⊢ ∀ i, ✓ (l !! i).
@@ -67,7 +67,7 @@ Section list_cmra.
 End list_cmra.
 
 Section excl.
-  Context {A : ofeT}.
+  Context {A : ofe}.
   Implicit Types a b : A.
   Implicit Types x y : excl A.
 
@@ -88,7 +88,7 @@ Section excl.
 End excl.
 
 Section agree.
-  Context {A : ofeT}.
+  Context {A : ofe}.
   Implicit Types a b : A.
   Implicit Types x y : agree A.
 
@@ -106,7 +106,7 @@ Section agree.
 End agree.
 
 Section csum_ofe.
-  Context {A B : ofeT}.
+  Context {A B : ofe}.
   Implicit Types a : A.
   Implicit Types b : B.
 
@@ -124,7 +124,7 @@ Section csum_ofe.
 End csum_ofe.
 
 Section csum_cmra.
-  Context {A B : cmraT}.
+  Context {A B : cmra}.
   Implicit Types a : A.
   Implicit Types b : B.
 
@@ -203,7 +203,7 @@ Section view.
 End view.
 
 Section auth.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types a b : A.
   Implicit Types x y : auth A.
 
@@ -235,7 +235,7 @@ Section auth.
 End auth.
 
 Section excl_auth.
-  Context {A : ofeT}.
+  Context {A : ofe}.
   Implicit Types a b : A.
 
   Lemma excl_auth_agreeI a b : ✓ (●E a ⋅ ◯E b) ⊢ (a ≡ b).
@@ -247,7 +247,7 @@ Section excl_auth.
 End excl_auth.
 
 Section gmap_view.
-  Context {K : Type} `{Countable K} {V : ofeT}.
+  Context {K : Type} `{Countable K} {V : ofe}.
   Implicit Types (m : gmap K V) (k : K) (dq : dfrac) (v : V).
 
   Lemma gmap_view_both_validI m k dq v :

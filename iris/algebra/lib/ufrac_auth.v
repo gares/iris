@@ -20,9 +20,9 @@ From iris.algebra Require Export auth frac updates local_updates.
 From iris.algebra Require Import ufrac proofmode_classes.
 From iris.prelude Require Import options.
 
-Definition ufrac_authR (A : cmraT) : cmraT :=
+Definition ufrac_authR (A : cmra) : cmra :=
   authR (optionUR (prodR ufracR A)).
-Definition ufrac_authUR (A : cmraT) : ucmraT :=
+Definition ufrac_authUR (A : cmra) : ucmra :=
   authUR (optionUR (prodR ufracR A)).
 
 (** Note in the signature of [ufrac_auth_auth] and [ufrac_auth_frag] we use
@@ -32,9 +32,9 @@ instances with carrier [Qp], namely [fracR] and [ufracR]. When writing things
 like [ufrac_auth_auth q a ∧ ✓ q] we want Coq to infer the type of [q] as [Qp]
 such that the [✓] of the default [fracR] camera is used, and not the [✓] of
 the [ufracR] camera. *)
-Definition ufrac_auth_auth {A : cmraT} (q : Qp) (x : A) : ufrac_authR A :=
+Definition ufrac_auth_auth {A : cmra} (q : Qp) (x : A) : ufrac_authR A :=
   ● (Some (q : ufracR,x)).
-Definition ufrac_auth_frag {A : cmraT} (q : Qp) (x : A) : ufrac_authR A :=
+Definition ufrac_auth_frag {A : cmra} (q : Qp) (x : A) : ufrac_authR A :=
   ◯ (Some (q : ufracR,x)).
 
 Typeclasses Opaque ufrac_auth_auth ufrac_auth_frag.
@@ -46,7 +46,7 @@ Notation "●U{ q } a" := (ufrac_auth_auth q a) (at level 10, format "●U{ q } 
 Notation "◯U{ q } a" := (ufrac_auth_frag q a) (at level 10, format "◯U{ q }  a").
 
 Section ufrac_auth.
-  Context {A : cmraT}.
+  Context {A : cmra}.
   Implicit Types a b : A.
 
   Global Instance ufrac_auth_auth_ne q : NonExpansive (@ufrac_auth_auth A q).

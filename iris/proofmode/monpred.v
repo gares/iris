@@ -476,7 +476,7 @@ Global Instance is_except_0_monPred_at i P :
   IsExcept0 P → IsExcept0 (P i).
 Proof. rewrite /IsExcept0=>- [/(_ i)]. by rewrite monPred_at_except_0. Qed.
 
-Global Instance make_monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofeT} (x y : A) i :
+Global Instance make_monPred_at_internal_eq `{!BiInternalEq PROP} {A : ofe} (x y : A) i :
   MakeMonPredAt i (x ≡ y) (x ≡ y).
 Proof. by rewrite /MakeMonPredAt monPred_at_internal_eq. Qed.
 Global Instance make_monPred_at_except_0 i P 𝓠 :
@@ -493,7 +493,7 @@ Global Instance make_monPred_at_fupd `{BiFUpd PROP} i E1 E2 P 𝓟 :
 Proof. by rewrite /MakeMonPredAt monPred_at_fupd=> <-. Qed.
 
 Global Instance into_internal_eq_monPred_at `{!BiInternalEq PROP}
-    {A : ofeT} (x y : A) P i :
+    {A : ofe} (x y : A) P i :
   IntoInternalEq P x y → IntoInternalEq (P i) x y.
 Proof. rewrite /IntoInternalEq=> ->. by rewrite monPred_at_internal_eq. Qed.
 

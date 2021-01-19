@@ -11,7 +11,7 @@ Set Default Proof Using "Type".
 
 (** The proofs from Section 3.1 *)
 Section demo.
-  Context {M : ucmraT}.
+  Context {M : ucmra}.
   Notation iProp := (uPred M).
 
   (* The version in Coq *)
@@ -132,7 +132,7 @@ Section M.
   Local Arguments op _ _ !_ !_/.
   Local Arguments core _ _ !_/.
 
-  Canonical Structure M_O : ofeT := leibnizO M.
+  Canonical Structure M_O : ofe := leibnizO M.
 
   Local Instance M_valid : Valid M := λ x, x ≠ Bot.
   Local Instance M_op : Op M := λ x y,
@@ -157,7 +157,7 @@ Section M.
         repeat (simpl; case_decide); f_equal/=; lia.
     - intros [n1|i1|] [n2|i2|]; simpl; by try case_decide.
   Qed.
-  Canonical Structure M_R : cmraT := discreteR M M_ra_mixin.
+  Canonical Structure M_R : cmra := discreteR M M_ra_mixin.
 
   Global Instance M_discrete : CmraDiscrete M_R.
   Proof. apply discrete_cmra_discrete. Qed.
@@ -167,7 +167,7 @@ Section M.
     split; try (done || apply _).
     intros [?|?|]; simpl; try case_decide; f_equal/=; lia.
   Qed.
-  Canonical Structure M_UR : ucmraT := UcmraT M M_ucmra_mixin.
+  Canonical Structure M_UR : ucmra := Ucmra M M_ucmra_mixin.
 
   Global Instance frag_core_id n : CoreId (Frag n).
   Proof. by constructor. Qed.

@@ -50,7 +50,7 @@ Proof.
 Qed.
 
 Section agree.
-Context {A : ofeT}.
+Context {A : ofe}.
 Implicit Types a b : A.
 Implicit Types x y : agree A.
 
@@ -74,7 +74,7 @@ Proof.
         destruct (H1' b) as (c&?&?); eauto. by exists c; split; last etrans.
   - intros n x y [??]; split; naive_solver eauto using dist_S.
 Qed.
-Canonical Structure agreeO := OfeT (agree A) agree_ofe_mixin.
+Canonical Structure agreeO := Ofe (agree A) agree_ofe_mixin.
 
 (* CMRA *)
 (* agree_validN is carefully written such that, when applied to a singleton, it
@@ -147,7 +147,7 @@ Proof.
     + by rewrite agree_idemp.
     + by move: Hval; rewrite Hx; move=> /agree_op_invN->; rewrite agree_idemp.
 Qed.
-Canonical Structure agreeR : cmraT := CmraT (agree A) agree_cmra_mixin.
+Canonical Structure agreeR : cmra := Cmra (agree A) agree_cmra_mixin.
 
 Global Instance agree_cmra_total : CmraTotal agreeR.
 Proof. rewrite /CmraTotal; eauto. Qed.
@@ -275,7 +275,7 @@ Lemma agree_map_to_agree {A B} (f : A → B) (x : A) :
 Proof. by apply agree_eq. Qed.
 
 Section agree_map.
-  Context {A B : ofeT} (f : A → B) {Hf: NonExpansive f}.
+  Context {A B : ofe} (f : A → B) {Hf: NonExpansive f}.
 
   Local Instance agree_map_ne : NonExpansive (agree_map f).
   Proof using Type*.

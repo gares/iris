@@ -22,7 +22,7 @@ keep all the other proofs that do not need it conservative.  *)
 Definition inv_heapN: namespace := nroot .@ "inv_heap".
 Local Notation "l ↦ v" := (mapsto l (DfracOwn 1) v) (at level 20) : bi_scope.
 
-Definition inv_heap_mapUR (L V : Type) `{Countable L} : ucmraT := gmapUR L $ prodR
+Definition inv_heap_mapUR (L V : Type) `{Countable L} : ucmra := gmapUR L $ prodR
   (optionR $ exclR $ leibnizO V)
   (agreeR (V -d> PropO)).
 

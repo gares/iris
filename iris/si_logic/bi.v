@@ -180,7 +180,7 @@ Section restate.
 Lemma pure_soundness φ : (⊢@{siPropI} ⌜ φ ⌝) → φ.
 Proof. apply pure_soundness. Qed.
 
-Lemma internal_eq_soundness {A : ofeT} (x y : A) : (⊢@{siPropI} x ≡ y) → x ≡ y.
+Lemma internal_eq_soundness {A : ofe} (x y : A) : (⊢@{siPropI} x ≡ y) → x ≡ y.
 Proof. apply internal_eq_soundness. Qed.
 
 Lemma later_soundness (P : siProp) : (⊢ ▷ P) → ⊢ P.

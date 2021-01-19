@@ -18,7 +18,7 @@ Section nat.
     - intros x y. apply Nat.add_comm.
     - by exists 0.
   Qed.
-  Canonical Structure natR : cmraT := discreteR nat nat_ra_mixin.
+  Canonical Structure natR : cmra := discreteR nat nat_ra_mixin.
 
   Global Instance nat_cmra_discrete : CmraDiscrete natR.
   Proof. apply discrete_cmra_discrete. Qed.
@@ -26,7 +26,7 @@ Section nat.
   Local Instance nat_unit : Unit nat := 0.
   Lemma nat_ucmra_mixin : UcmraMixin nat.
   Proof. split; apply _ || done. Qed.
-  Canonical Structure natUR : ucmraT := UcmraT nat nat_ucmra_mixin.
+  Canonical Structure natUR : ucmra := Ucmra nat nat_ucmra_mixin.
 
   Global Instance nat_cancelable (x : nat) : Cancelable x.
   Proof. by intros ???? ?%Nat.add_cancel_l. Qed.
@@ -71,14 +71,14 @@ Section max_nat.
     - intros [x] [y]. by rewrite max_nat_op_max Nat.max_comm.
     - intros [x]. by rewrite max_nat_op_max Max.max_idempotent.
   Qed.
-  Canonical Structure max_natR : cmraT := discreteR max_nat max_nat_ra_mixin.
+  Canonical Structure max_natR : cmra := discreteR max_nat max_nat_ra_mixin.
 
   Global Instance max_nat_cmra_discrete : CmraDiscrete max_natR.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma max_nat_ucmra_mixin : UcmraMixin max_nat.
   Proof. split; try apply _ || done. intros [x]. done. Qed.
-  Canonical Structure max_natUR : ucmraT := UcmraT max_nat max_nat_ucmra_mixin.
+  Canonical Structure max_natUR : ucmra := Ucmra max_nat max_nat_ucmra_mixin.
 
   Global Instance max_nat_core_id (x : max_nat) : CoreId x.
   Proof. by constructor. Qed.
@@ -126,7 +126,7 @@ Section min_nat.
     - intros [x] [y]. by rewrite min_nat_op_min Nat.min_comm.
     - intros [x]. by rewrite min_nat_op_min Min.min_idempotent.
   Qed.
-  Canonical Structure min_natR : cmraT := discreteR min_nat min_nat_ra_mixin.
+  Canonical Structure min_natR : cmra := discreteR min_nat min_nat_ra_mixin.
 
   Global Instance min_nat_cmra_discrete : CmraDiscrete min_natR.
   Proof. apply discrete_cmra_discrete. Qed.
@@ -173,7 +173,7 @@ Section positive.
     - intros ???. apply Pos.add_assoc.
     - intros ??. apply Pos.add_comm.
   Qed.
-  Canonical Structure positiveR : cmraT := discreteR positive pos_ra_mixin.
+  Canonical Structure positiveR : cmra := discreteR positive pos_ra_mixin.
 
   Global Instance pos_cmra_discrete : CmraDiscrete positiveR.
   Proof. apply discrete_cmra_discrete. Qed.

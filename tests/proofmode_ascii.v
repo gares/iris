@@ -7,7 +7,7 @@ From iris.bi Require Import ascii.
 Set Default Proof Using "Type".
 
 Section base_logic_tests.
-  Context {M : ucmraT}.
+  Context {M : ucmra}.
   Implicit Types P Q R : uPred M.
 
   Lemma test_random_stuff (P1 P2 P3 : nat -> uPred M) :

@@ -27,7 +27,7 @@ Global Instance maybe_Cinr {A B} : Maybe (@Cinr A B) := λ x,
   match x with Cinr b => Some b | _ => None end.
 
 Section ofe.
-Context {A B : ofeT}.
+Context {A B : ofe}.
 Implicit Types a : A.
 Implicit Types b : B.
 
@@ -73,7 +73,7 @@ Proof.
     + destruct 1; inversion_clear 1; constructor; etrans; eauto.
   - by inversion_clear 1; constructor; apply dist_S.
 Qed.
-Canonical Structure csumO : ofeT := OfeT (csum A B) csum_ofe_mixin.
+Canonical Structure csumO : ofe := Ofe (csum A B) csum_ofe_mixin.
 
 Program Definition csum_chain_l (c : chain csumO) (a : A) : chain A :=
   {| chain_car n := match c n return _ with Cinl a' => a' | _ => a end |}.
@@ -128,10 +128,10 @@ Lemma csum_map_compose {A A' A'' B B' B''} (f : A → A') (f' : A' → A'')
                        (g : B → B') (g' : B' → B'') (x : csum A B) :
   csum_map (f' ∘ f) (g' ∘ g) x = csum_map f' g' (csum_map f g x).
 Proof. by destruct x. Qed.
-Lemma csum_map_ext {A A' B B' : ofeT} (f f' : A → A') (g g' : B → B') x :
+Lemma csum_map_ext {A A' B B' : ofe} (f f' : A → A') (g g' : B → B') x :
   (∀ x, f x ≡ f' x) → (∀ x, g x ≡ g' x) → csum_map f g x ≡ csum_map f' g' x.
 Proof. by destruct x; constructor. Qed.
-Global Instance csum_map_cmra_ne {A A' B B' : ofeT} n :
+Global Instance csum_map_cmra_ne {A A' B B' : ofe} n :
   Proper ((dist n ==> dist n) ==> (dist n ==> dist n) ==> dist n ==> dist n)
          (@csum_map A A' B B').
 Proof. intros f f' Hf g g' Hg []; destruct 1; constructor; by apply Hf || apply Hg. Qed.
@@ -143,7 +143,7 @@ Global Instance csumO_map_ne A A' B B' :
 Proof. by intros n f f' Hf g g' Hg []; constructor. Qed.
 
 Section cmra.
-Context {A B : cmraT}.
+Context {A B : cmra}.
 Implicit Types a : A.
 Implicit Types b : B.
 
@@ -257,7 +257,7 @@ Proof.
       exists (Cinr z1), (Cinr z2). by repeat constructor.
     + by exists CsumBot, CsumBot; destruct y1, y2; inversion_clear Hx'.
 Qed.
-Canonical Structure csumR := CmraT (csum A B) csum_cmra_mixin.
+Canonical Structure csumR := Cmra (csum A B) csum_cmra_mixin.
 
 Global Instance csum_cmra_discrete :
   CmraDiscrete A → CmraDiscrete B → CmraDiscrete csumR.
@@ -369,7 +369,7 @@ End cmra.
 Global Arguments csumR : clear implicits.
 
 (* Functor *)
-Global Instance csum_map_cmra_morphism {A A' B B' : cmraT} (f : A → A') (g : B → B') :
+Global Instance csum_map_cmra_morphism {A A' B B' : cmra} (f : A → A') (g : B → B') :
   CmraMorphism f → CmraMorphism g → CmraMorphism (csum_map f g).
 Proof.
   split; try apply _.

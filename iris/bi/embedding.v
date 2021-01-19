@@ -63,7 +63,7 @@ Global Hint Mode BiEmbedLater - ! - : typeclass_instances.
 
 Class BiEmbedInternalEq (PROP1 PROP2 : bi)
     `{!BiEmbed PROP1 PROP2, !BiInternalEq PROP1, !BiInternalEq PROP2} :=
-  embed_internal_eq_1 (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊢@{PROP2} x ≡ y.
+  embed_internal_eq_1 (A : ofe) (x y : A) : ⎡x ≡ y⎤ ⊢@{PROP2} x ≡ y.
 Global Hint Mode BiEmbedInternalEq ! - - - - : typeclass_instances.
 Global Hint Mode BiEmbedInternalEq - ! - - - : typeclass_instances.
 
@@ -291,7 +291,7 @@ Section embed.
   Section internal_eq.
     Context `{!BiInternalEq PROP1, !BiInternalEq PROP2, !BiEmbedInternalEq PROP1 PROP2}.
 
-    Lemma embed_internal_eq (A : ofeT) (x y : A) : ⎡x ≡ y⎤ ⊣⊢@{PROP2} x ≡ y.
+    Lemma embed_internal_eq (A : ofe) (x y : A) : ⎡x ≡ y⎤ ⊣⊢@{PROP2} x ≡ y.
     Proof.
       apply bi.equiv_spec; split; [apply embed_internal_eq_1|].
       etrans; [apply (internal_eq_rewrite x y (λ y, ⎡x ≡ y⎤%I)); solve_proper|].

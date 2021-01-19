@@ -1588,20 +1588,20 @@ Global Instance bi_persistently_sep_entails_homomorphism :
 Proof. split; [by apply _ ..|]. simpl. apply persistently_emp_intro. Qed.
 
 (* Limits *)
-Lemma limit_preserving_entails {A : ofeT} `{Cofe A} (Φ Ψ : A → PROP) :
+Lemma limit_preserving_entails {A : ofe} `{Cofe A} (Φ Ψ : A → PROP) :
   NonExpansive Φ → NonExpansive Ψ → LimitPreserving (λ x, Φ x ⊢ Ψ x).
 Proof.
   intros HΦ HΨ c Hc. apply entails_eq_True, equiv_dist=>n.
   rewrite conv_compl. apply equiv_dist, entails_eq_True. done.
 Qed.
-Lemma limit_preserving_equiv {A : ofeT} `{Cofe A} (Φ Ψ : A → PROP) :
+Lemma limit_preserving_equiv {A : ofe} `{Cofe A} (Φ Ψ : A → PROP) :
   NonExpansive Φ → NonExpansive Ψ → LimitPreserving (λ x, Φ x ⊣⊢ Ψ x).
 Proof.
   intros HΦ HΨ. eapply limit_preserving_ext.
   { intros x. symmetry; apply equiv_spec. }
   apply limit_preserving_and; by apply limit_preserving_entails.
 Qed.
-Global Instance limit_preserving_Persistent {A:ofeT} `{Cofe A} (Φ : A → PROP) :
+Global Instance limit_preserving_Persistent {A:ofe} `{Cofe A} (Φ : A → PROP) :
   NonExpansive Φ → LimitPreserving (λ x, Persistent (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 End derived.
