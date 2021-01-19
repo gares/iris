@@ -310,6 +310,7 @@ Section ectx_language.
 End ectx_language.
 
 Global Arguments ectx_lang : clear implicits.
+Global Arguments Ectx_step {Λ e1 σ1 κ e2 σ2 efs}.
 Coercion ectx_lang : ectxLanguage >-> language.
 
 (* This definition makes sure that the fields of the [language] record do not

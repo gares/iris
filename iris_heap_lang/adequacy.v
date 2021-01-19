@@ -20,7 +20,7 @@ Definition heap_adequacy Σ `{!heapPreG Σ} s e σ φ :
   (∀ `{!heapG Σ}, ⊢ inv_heap_inv -∗ WP e @ s; ⊤ {{ v, ⌜φ v⌝ }}) →
   adequate s e σ (λ v _, φ v).
 Proof.
-  intros Hwp; eapply (wp_adequacy _ _); iIntros (??) "".
+  intros Hwp; eapply (wp_adequacy _ _); iIntros (? κs) "".
   iMod (gen_heap_init σ.(heap)) as (?) "[Hh _]".
   iMod (inv_heap_init loc (option val)) as (?) ">Hi".
   iMod (proph_map_init κs σ.(used_proph_id)) as (?) "Hp".

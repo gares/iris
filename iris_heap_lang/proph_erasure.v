@@ -420,7 +420,8 @@ Proof.
     eapply Resolve_3_vals_head_stuck; eauto. }
   rewrite fill_app in Hrs.
   destruct Ki; simplify_eq/=.
-  - pose proof (fill_item_val Ki (fill K e1')) as Hnv.
+  - rename select ectx_item into Ki.
+    pose proof (fill_item_val Ki (fill K e1')) as Hnv.
     apply fill_val in Hnv as [? Hnv]; last by rewrite -Hrs; eauto.
     by erewrite val_head_stuck in Hnv.
   - edestruct Hvfill as [? Heq]; eauto.
@@ -629,7 +630,7 @@ Proof.
   rewrite app_length in IHm; simpl in *.
   rewrite fill_app /=; rewrite fill_app /= in He1.
   eapply prim_step_matched_by_erased_steps_ectx_item; eauto; [].
-  { intros; simpl in *; apply (IHm (length K')); auto with lia. }
+  { intros K' **; simpl in *. apply (IHm (length K')); auto with lia. }
 Qed.
 
 Lemma head_step_erased_prim_step_CmpXchg v1 v2 σ l vl:

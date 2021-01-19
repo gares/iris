@@ -1048,7 +1048,7 @@ Section tac_modal_intro.
         naive_solver. }
     assert (□ [∧] Γp ⊢ M (□ [∧] Γp'))%I as HMp.
     { remember (modality_intuitionistic_action M).
-      destruct HΓp as [?|M C Γp ?%TCForall_Forall|? M C Γp Γp' []|? M Γp|M Γp]; simpl.
+      destruct HΓp as [? M|M C Γp ?%TCForall_Forall|? M C Γp Γp' []|? M Γp|M Γp]; simpl.
       - rewrite {1}intuitionistically_elim_emp (modality_emp M)
           intuitionistically_True_emp //.
       - eauto using modality_intuitionistic_forall_big_and.
@@ -1059,7 +1059,7 @@ Section tac_modal_intro.
       - eauto using modality_intuitionistic_id. }
     move: HQ'; rewrite -HQ pure_True // left_id HMp=> HQ' {HQ Hwf HMp}.
     remember (modality_spatial_action M).
-    destruct HΓs as [?|M C Γs ?%TCForall_Forall|? M C Γs Γs' fi []|? M Γs|M Γs]; simpl.
+    destruct HΓs as [? M|M C Γs ?%TCForall_Forall|? M C Γs Γs' fi []|? M Γs|M Γs]; simpl.
     - by rewrite -HQ' /= !right_id.
     - rewrite -HQ' {1}(modality_spatial_forall_big_sep _ _ Γs) //.
       by rewrite modality_sep.
