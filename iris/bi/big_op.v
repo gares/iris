@@ -660,6 +660,12 @@ Section sep_list2.
   Proof.
     intros. rewrite -big_sepL_sep_zip // big_sepL2_alt pure_True // left_id //.
   Qed.
+  Lemma big_sepL_sepL2_2 (Φ1 : nat → A → PROP) (Φ2 : nat → B → PROP) l1 l2 :
+    length l1 = length l2 →
+    ([∗ list] k↦y1 ∈ l1, Φ1 k y1) -∗
+    ([∗ list] k↦y2 ∈ l2, Φ2 k y2) -∗
+    [∗ list] k↦y1;y2 ∈ l1;l2, Φ1 k y1 ∗ Φ2 k y2.
+  Proof. intros. apply wand_intro_r. by rewrite big_sepL_sepL2. Qed.
 
   Global Instance big_sepL2_nil_persistent Φ :
     Persistent ([∗ list] k↦y1;y2 ∈ []; [], Φ k y1 y2).
@@ -1552,6 +1558,12 @@ Section map2.
   Proof.
     intros. rewrite -big_sepM_sep_zip // big_sepM2_alt pure_True // left_id //.
   Qed.
+  Lemma big_sepM_sepM2_2 (Φ1 : K → A → PROP) (Φ2 : K → B → PROP) m1 m2 :
+    (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+    ([∗ map] k↦y1 ∈ m1, Φ1 k y1) -∗
+    ([∗ map] k↦y2 ∈ m2, Φ2 k y2) -∗
+    [∗ map] k↦y1;y2 ∈ m1;m2, Φ1 k y1 ∗ Φ2 k y2.
+  Proof. intros. apply wand_intro_r. by rewrite big_sepM_sepM2. Qed.
 
   Global Instance big_sepM2_empty_persistent Φ :
     Persistent ([∗ map] k↦y1;y2 ∈ ∅; ∅, Φ k y1 y2).
