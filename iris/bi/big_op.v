@@ -695,7 +695,10 @@ End sep_list2.
 Lemma big_sepL_sepL2_diag {A} (Φ : nat → A → A → PROP) (l : list A) :
   ([∗ list] k↦y ∈ l, Φ k y y) -∗
   ([∗ list] k↦y1;y2 ∈ l;l, Φ k y1 y2).
-Proof. revert Φ. induction l as [|x l IH]=> Φ /=; [done|]. by rewrite -IH. Qed.
+Proof.
+  rewrite big_sepL2_alt. rewrite pure_True // left_id.
+  rewrite zip_diag big_sepL_fmap /=. done.
+Qed.
 
 Lemma big_sepL2_ne_2 {A B : ofe}
     (Φ Ψ : nat → A → B → PROP) l1 l2 l1' l2' n :
@@ -1594,9 +1597,8 @@ Lemma big_sepM_sepM2_diag `{Countable K} {A} (Φ : K → A → A → PROP) (m : 
   ([∗ map] k↦y ∈ m, Φ k y y) -∗
   ([∗ map] k↦y1;y2 ∈ m;m, Φ k y1 y2).
 Proof.
-  revert Φ. induction m as [|x k l ? IH] using map_ind=> Φ /=.
-  { by rewrite big_sepM_empty big_sepM2_empty. }
-  by rewrite big_sepM_insert // big_sepM2_insert // -IH.
+  rewrite big_sepM2_alt. rewrite pure_True; last naive_solver. rewrite left_id.
+  rewrite map_zip_diag big_sepM_fmap. done.
 Qed.
 
 Lemma big_sepM2_ne_2 `{Countable K} (A B : ofe)
