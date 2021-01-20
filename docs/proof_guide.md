@@ -107,8 +107,8 @@ For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extension
 
 ### small letters
 
-* a : A = cmraT or ofeT
-* b : B = cmraT or ofeT
+* a : A = cmra or ofe
+* b : B = cmra or ofe
 * c
 * d
 * e : expr = expressions
@@ -137,8 +137,8 @@ For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extension
 
 ### capital letters
 
-* A : Type, cmraT or ofeT
-* B : Type, cmraT or ofeT
+* A : Type, cmra or ofe
+* B : Type, cmra or ofe
 * C
 * D
 * E : coPset = mask of fancy update or WP
@@ -187,5 +187,5 @@ For details, consult [the Coq manual](https://coq.inria.fr/refman/user-extension
 * G: global camera functor management (typeclass; see the [resource algebra docs](resource_algebras.md))
 * I: bunched implication logic (of type `bi`)
 * SI: step-indexed bunched implication logic (of type `sbi`)
-* T: canonical structures for algebraic classes (for example ofeT for OFEs, cmraT for cameras)
+* T: canonical structures for algebraic classes (for example ofe for OFEs, cmra for cameras)
 * Σ: global camera functor management (`gFunctors`; see the [resource algebra docs](resource_algebras.md))

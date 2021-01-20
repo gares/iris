@@ -228,7 +228,7 @@ contractive.
 
 To compose these functors, we provide a number of combinators, e.g.:
 
-- `constOF (A : ofeT) : cFunctor           := λ (B,B⁻), A `
+- `constOF (A : ofe) : cFunctor            := λ (B,B⁻), A `
 - `idOF : cFunctor                         := λ (B,B⁻), B`
 - `prodOF (F1 F2 : cFunctor) : cFunctor    := λ (B,B⁻), F1 (B,B⁻) * F2 (B,B⁻)`
 - `ofe_morOF (F1 F2 : cFunctor) : cFunctor := λ (B,B⁻), F1 (B⁻,B) -n> F2 (B,B⁻)`
