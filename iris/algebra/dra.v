@@ -118,7 +118,7 @@ Proof.
   - intros [x px ?] [y py ?] [z pz ?] [? Hxy] [? Hyz]; simpl in *.
     split; [|intros; trans y]; tauto.
 Qed.
-Canonical Structure validityO : ofeT := discreteO (validity A).
+Canonical Structure validityO : ofe := discreteO (validity A).
 
 Local Instance dra_valid_proper' : Proper ((≡) ==> iff) (valid : A → Prop).
 Proof. by split; apply: dra_valid_proper. Qed.
@@ -177,7 +177,7 @@ Proof.
     intros. rewrite Hy //. tauto.
   - by intros [x px ?] [y py ?] (?&?&?).
 Qed.
-Canonical Structure validityR : cmraT :=
+Canonical Structure validityR : cmra :=
   discreteR (validity A) validity_ra_mixin.
 
 Global Instance validity_disrete_cmra : CmraDiscrete validityR.

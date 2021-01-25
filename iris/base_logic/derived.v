@@ -9,7 +9,7 @@ Import bi.bi base_logic.bi.uPred.
 
 Module uPred.
 Section derived.
-Context {M : ucmraT}.
+Context {M : ucmra}.
 Implicit Types φ : Prop.
 Implicit Types P Q : uPred M.
 Implicit Types A : Type.
@@ -20,11 +20,11 @@ Notation "P ⊣⊢ Q" := (equiv (A:=uPredI M) P%I Q%I).
 
 (** Propers *)
 Global Instance ownM_proper: Proper ((≡) ==> (⊣⊢)) (@uPred_ownM M) := ne_proper _.
-Global Instance cmra_valid_proper {A : cmraT} :
+Global Instance cmra_valid_proper {A : cmra} :
   Proper ((≡) ==> (⊣⊢)) (@uPred_cmra_valid M A) := ne_proper _.
 
 (** Own and valid derived *)
-Lemma persistently_cmra_valid_1 {A : cmraT} (a : A) : ✓ a ⊢ <pers> (✓ a : uPred M).
+Lemma persistently_cmra_valid_1 {A : cmra} (a : A) : ✓ a ⊢ <pers> (✓ a : uPred M).
 Proof. by rewrite {1}plainly_cmra_valid_1 plainly_elim_persistently. Qed.
 Lemma intuitionistically_ownM (a : M) : CoreId a → □ uPred_ownM a ⊣⊢ uPred_ownM a.
 Proof.
@@ -38,9 +38,9 @@ Global Instance ownM_mono : Proper (flip (≼) ==> (⊢)) (@uPred_ownM M).
 Proof. intros a b [b' ->]. by rewrite ownM_op sep_elim_l. Qed.
 Lemma ownM_unit' : uPred_ownM ε ⊣⊢ True.
 Proof. apply (anti_symm _); first by apply pure_intro. apply ownM_unit. Qed.
-Lemma plainly_cmra_valid {A : cmraT} (a : A) : ■ ✓ a ⊣⊢ ✓ a.
+Lemma plainly_cmra_valid {A : cmra} (a : A) : ■ ✓ a ⊣⊢ ✓ a.
 Proof. apply (anti_symm _), plainly_cmra_valid_1. apply plainly_elim, _. Qed.
-Lemma intuitionistically_cmra_valid {A : cmraT} (a : A) : □ ✓ a ⊣⊢ ✓ a.
+Lemma intuitionistically_cmra_valid {A : cmra} (a : A) : □ ✓ a ⊣⊢ ✓ a.
 Proof.
   rewrite /bi_intuitionistically affine_affinely. intros; apply (anti_symm _);
     first by rewrite persistently_elim.
@@ -53,7 +53,7 @@ Proof.
 Qed.
 
 (** Timeless instances *)
-Global Instance valid_timeless {A : cmraT} `{!CmraDiscrete A} (a : A) :
+Global Instance valid_timeless {A : cmra} `{!CmraDiscrete A} (a : A) :
   Timeless (✓ a : uPred M)%I.
 Proof. rewrite /Timeless !discrete_valid. apply (timeless _). Qed.
 Global Instance ownM_timeless (a : M) : Discrete a → Timeless (uPred_ownM a).
@@ -66,12 +66,12 @@ Proof.
 Qed.
 
 (** Plainness *)
-Global Instance cmra_valid_plain {A : cmraT} (a : A) :
+Global Instance cmra_valid_plain {A : cmra} (a : A) :
   Plain (✓ a : uPred M)%I.
 Proof. rewrite /Persistent. apply plainly_cmra_valid_1. Qed.
 
 (** Persistence *)
-Global Instance cmra_valid_persistent {A : cmraT} (a : A) :
+Global Instance cmra_valid_persistent {A : cmra} (a : A) :
   Persistent (✓ a : uPred M)%I.
 Proof. rewrite /Persistent. apply persistently_cmra_valid_1. Qed.
 Global Instance ownM_persistent a : CoreId a → Persistent (@uPred_ownM M a).

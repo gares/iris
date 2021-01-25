@@ -3,17 +3,17 @@ From iris.algebra Require Export cmra.
 From iris.algebra Require Import updates.
 From iris.prelude Require Import options.
 
-Definition discrete_fun_insert `{EqDecision A} {B : A → ofeT}
+Definition discrete_fun_insert `{EqDecision A} {B : A → ofe}
     (x : A) (y : B x) (f : discrete_fun B) : discrete_fun B := λ x',
   match decide (x = x') with left H => eq_rect _ B y _ H | right _ => f x' end.
 Global Instance: Params (@discrete_fun_insert) 5 := {}.
 
-Definition discrete_fun_singleton `{EqDecision A} {B : A → ucmraT}
+Definition discrete_fun_singleton `{EqDecision A} {B : A → ucmra}
   (x : A) (y : B x) : discrete_fun B := discrete_fun_insert x y ε.
 Global Instance: Params (@discrete_fun_singleton) 5 := {}.
 
 Section ofe.
-  Context `{Heqdec : EqDecision A} {B : A → ofeT}.
+  Context `{Heqdec : EqDecision A} {B : A → ofe}.
   Implicit Types x : A.
   Implicit Types f g : discrete_fun B.
 
@@ -52,7 +52,7 @@ Section ofe.
 End ofe.
 
 Section cmra.
-  Context `{EqDecision A} {B : A → ucmraT}.
+  Context `{EqDecision A} {B : A → ucmra}.
   Implicit Types x : A.
   Implicit Types f g : discrete_fun B.
 

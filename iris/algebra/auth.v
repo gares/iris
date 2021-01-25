@@ -12,9 +12,9 @@ agreement, i.e., [✓ (●{p1} a1 ⋅ ●{p2} a2) → a1 ≡ a2]. *)
 
 (** * Definition of the view relation *)
 (** The authoritative camera is obtained by instantiating the view camera. *)
-Definition auth_view_rel_raw {A : ucmraT} (n : nat) (a b : A) : Prop :=
+Definition auth_view_rel_raw {A : ucmra} (n : nat) (a b : A) : Prop :=
   b ≼{n} a ∧ ✓{n} a.
-Lemma auth_view_rel_raw_mono (A : ucmraT) n1 n2 (a1 a2 b1 b2 : A) :
+Lemma auth_view_rel_raw_mono (A : ucmra) n1 n2 (a1 a2 b1 b2 : A) :
   auth_view_rel_raw n1 a1 b1 →
   a1 ≡{n2}≡ a2 →
   b2 ≼{n2} b1 →
@@ -25,26 +25,26 @@ Proof.
   - trans b1; [done|]. rewrite -Ha12. by apply cmra_includedN_le with n1.
   - rewrite -Ha12. by apply cmra_validN_le with n1.
 Qed.
-Lemma auth_view_rel_raw_valid (A : ucmraT) n (a b : A) :
+Lemma auth_view_rel_raw_valid (A : ucmra) n (a b : A) :
   auth_view_rel_raw n a b → ✓{n} b.
 Proof. intros [??]; eauto using cmra_validN_includedN. Qed.
-Lemma auth_view_rel_raw_unit (A : ucmraT) n :
+Lemma auth_view_rel_raw_unit (A : ucmra) n :
   ∃ a : A, auth_view_rel_raw n a ε.
 Proof. exists ε. split; [done|]. apply ucmra_unit_validN. Qed.
-Canonical Structure auth_view_rel {A : ucmraT} : view_rel A A :=
+Canonical Structure auth_view_rel {A : ucmra} : view_rel A A :=
   ViewRel auth_view_rel_raw (auth_view_rel_raw_mono A)
           (auth_view_rel_raw_valid A) (auth_view_rel_raw_unit A).
 
-Lemma auth_view_rel_unit {A : ucmraT} n (a : A) : auth_view_rel n a ε ↔ ✓{n} a.
+Lemma auth_view_rel_unit {A : ucmra} n (a : A) : auth_view_rel n a ε ↔ ✓{n} a.
 Proof. split; [by intros [??]|]. split; auto using ucmra_unit_leastN. Qed.
-Lemma auth_view_rel_exists {A : ucmraT} n (b : A) :
+Lemma auth_view_rel_exists {A : ucmra} n (b : A) :
   (∃ a, auth_view_rel n a b) ↔ ✓{n} b.
 Proof.
   split; [|intros; exists b; by split].
   intros [a Hrel]. eapply auth_view_rel_raw_valid, Hrel.
 Qed.
 
-Global Instance auth_view_rel_discrete {A : ucmraT} :
+Global Instance auth_view_rel_discrete {A : ucmra} :
   CmraDiscrete A → ViewRelDiscrete (auth_view_rel (A:=A)).
 Proof.
   intros ? n a b [??]; split.
@@ -54,15 +54,15 @@ Qed.
 
 (** * Definition and operations on the authoritative camera *)
 (** The type [auth] is not defined as a [Definition], but as a [Notation].
-This way, one can use [auth A] with [A : Type] instead of [A : ucmraT], and let
+This way, one can use [auth A] with [A : Type] instead of [A : ucmra], and let
 canonical structure search determine the corresponding camera instance. *)
 Notation auth A := (view (A:=A) (B:=A) auth_view_rel_raw).
-Definition authO (A : ucmraT) : ofeT := viewO (A:=A) (B:=A) auth_view_rel.
-Definition authR (A : ucmraT) : cmraT := viewR (A:=A) (B:=A) auth_view_rel.
-Definition authUR (A : ucmraT) : ucmraT := viewUR (A:=A) (B:=A) auth_view_rel.
+Definition authO (A : ucmra) : ofe := viewO (A:=A) (B:=A) auth_view_rel.
+Definition authR (A : ucmra) : cmra := viewR (A:=A) (B:=A) auth_view_rel.
+Definition authUR (A : ucmra) : ucmra := viewUR (A:=A) (B:=A) auth_view_rel.
 
-Definition auth_auth {A: ucmraT} : Qp → A → auth A := view_auth.
-Definition auth_frag {A: ucmraT} : A → auth A := view_frag.
+Definition auth_auth {A: ucmra} : Qp → A → auth A := view_auth.
+Definition auth_frag {A: ucmra} : A → auth A := view_frag.
 
 Typeclasses Opaque auth_auth auth_frag.
 
@@ -78,7 +78,7 @@ Notation "● a" := (auth_auth 1 a) (at level 20).
 general version in terms of [●] and [◯], and because such a lemma has never
 been needed in practice. *)
 Section auth.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types a b : A.
   Implicit Types x y : auth A.
 

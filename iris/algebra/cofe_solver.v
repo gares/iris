@@ -2,7 +2,7 @@ From iris.algebra Require Export ofe.
 From iris.prelude Require Import options.
 
 Record solution (F : oFunctor) := Solution {
-  solution_car :> ofeT;
+  solution_car :> ofe;
   solution_cofe : Cofe solution_car;
   solution_iso :> ofe_iso (oFunctor_apply F solution_car) solution_car;
 }.
@@ -10,11 +10,11 @@ Existing Instance solution_cofe.
 
 Module solver. Section solver.
 Context (F : oFunctor) `{Fcontr : oFunctorContractive F}.
-Context `{Fcofe : ∀ (T : ofeT) `{!Cofe T}, Cofe (oFunctor_apply F T)}.
+Context `{Fcofe : ∀ (T : ofe) `{!Cofe T}, Cofe (oFunctor_apply F T)}.
 Context `{Finh : Inhabited (oFunctor_apply F unitO)}.
 Notation map := (oFunctor_map F).
 
-Fixpoint A' (k : nat) : { C : ofeT & Cofe C } :=
+Fixpoint A' (k : nat) : { C : ofe & Cofe C } :=
   match k with
   | 0 => existT (P:=Cofe) unitO _
   | S k => existT (P:=Cofe) (@oFunctor_apply F (projT1 (A' k)) (projT2 (A' k))) _
@@ -64,7 +64,7 @@ Proof.
   - intros k X Y HXY n; apply dist_S.
     by rewrite -(g_tower X) (HXY (S n)) g_tower.
 Qed.
-Definition T : ofeT := OfeT tower tower_ofe_mixin.
+Definition T : ofe := Ofe tower tower_ofe_mixin.
 
 Program Definition tower_chain (c : chain T) (k : nat) : chain (A k) :=
   {| chain_car i := c i k |}.

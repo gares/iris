@@ -6,11 +6,11 @@ From iris.prelude Require Import options.
 Import uPred.
 
 (* The CMRA we need. *)
-Class authG Σ (A : ucmraT) := AuthG {
+Class authG Σ (A : ucmra) := AuthG {
   auth_inG :> inG Σ (authR A);
   auth_cmra_discrete :> CmraDiscrete A;
 }.
-Definition authΣ (A : ucmraT) : gFunctors := #[ GFunctor (authR A) ].
+Definition authΣ (A : ucmra) : gFunctors := #[ GFunctor (authR A) ].
 
 Global Instance subG_authΣ Σ A : subG (authΣ A) Σ → CmraDiscrete A → authG Σ A.
 Proof. solve_inG. Qed.

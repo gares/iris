@@ -4,7 +4,7 @@ From iris.algebra Require Import updates local_updates big_op.
 From iris.prelude Require Import options.
 
 Section ofe.
-Context {A : ofeT}.
+Context {A : ofe}.
 Implicit Types l : list A.
 
 Local Instance list_dist : Dist (list A) := λ n, Forall2 (dist n).
@@ -57,7 +57,7 @@ Proof.
   - apply _.
   - rewrite /dist /list_dist. eauto using Forall2_impl, dist_S.
 Qed.
-Canonical Structure listO := OfeT (list A) list_ofe_mixin.
+Canonical Structure listO := Ofe (list A) list_ofe_mixin.
 
 (** To define [compl : chain (list A) → list A] we make use of the fact that
 given a given chain [c0, c1, c2, ...] of lists, the list [c0] completely
@@ -98,32 +98,32 @@ End ofe.
 Global Arguments listO : clear implicits.
 
 (** Non-expansiveness of higher-order list functions and big-ops *)
-Global Instance list_fmap_ne {A B : ofeT} (f : A → B) n :
+Global Instance list_fmap_ne {A B : ofe} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=list) f).
 Proof. intros Hf l k ?; by eapply Forall2_fmap, Forall2_impl; eauto. Qed.
-Global Instance list_omap_ne {A B : ofeT} (f : A → option B) n :
+Global Instance list_omap_ne {A B : ofe} (f : A → option B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (omap (M:=list) f).
 Proof.
   intros Hf. induction 1 as [|x1 x2 l1 l2 Hx Hl]; csimpl; [constructor|].
   destruct (Hf _ _ Hx); [f_equiv|]; auto.
 Qed.
-Global Instance imap_ne {A B : ofeT} (f : nat → A → B) n :
+Global Instance imap_ne {A B : ofe} (f : nat → A → B) n :
   (∀ i, Proper (dist n ==> dist n) (f i)) → Proper (dist n ==> dist n) (imap f).
 Proof.
   intros Hf l1 l2 Hl. revert f Hf.
   induction Hl; intros f Hf; simpl; [constructor|f_equiv; naive_solver].
 Qed.
-Global Instance list_bind_ne {A B : ofeT} (f : A → list A) n :
+Global Instance list_bind_ne {A B : ofe} (f : A → list A) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (mbind f).
 Proof. induction 2; simpl; [constructor|solve_proper]. Qed.
-Global Instance list_join_ne {A : ofeT} : NonExpansive (mjoin (M:=list) (A:=A)).
+Global Instance list_join_ne {A : ofe} : NonExpansive (mjoin (M:=list) (A:=A)).
 Proof. induction 1; simpl; [constructor|solve_proper]. Qed.
-Global Instance zip_with_ne {A B C : ofeT} (f : A → B → C) n :
+Global Instance zip_with_ne {A B C : ofe} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
   Proper (dist n ==> dist n ==> dist n) (zip_with f).
 Proof. induction 2; destruct 1; simpl; [constructor..|f_equiv; [f_equiv|]; auto]. Qed.
 
-Lemma big_opL_ne_2 `{Monoid M o} {A : ofeT} (f g : nat → A → M) l1 l2 n :
+Lemma big_opL_ne_2 `{Monoid M o} {A : ofe} (f g : nat → A → M) l1 l2 n :
   l1 ≡{n}≡ l2 →
   (∀ k y1 y2,
     l1 !! k = Some y1 → l2 !! k = Some y2 → y1 ≡{n}≡ y2 → f k y1 ≡{n}≡ g k y2) →
@@ -136,7 +136,7 @@ Proof.
 Qed.
 
 (** Functor *)
-Lemma list_fmap_ext_ne {A} {B : ofeT} (f g : A → B) (l : list A) n :
+Lemma list_fmap_ext_ne {A} {B : ofe} (f g : A → B) (l : list A) n :
   (∀ x, f x ≡{n}≡ g x) → f <$> l ≡{n}≡ g <$> l.
 Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2, Forall_true. Qed.
 Definition listO_map {A B} (f : A -n> B) : listO A -n> listO B :=
@@ -168,7 +168,7 @@ Qed.
 
 (* CMRA. Only works if [A] has a unit! *)
 Section cmra.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types l : list A.
   Local Arguments op _ _ !_ !_ / : simpl nomatch.
 
@@ -265,7 +265,7 @@ Section cmra.
           [by inversion_clear Heq; inversion_clear Hl..|].
         exists (y1' :: l1'), (y2' :: l2'); repeat constructor; auto.
   Qed.
-  Canonical Structure listR := CmraT (list A) list_cmra_mixin.
+  Canonical Structure listR := Cmra (list A) list_cmra_mixin.
 
   Global Instance list_unit : Unit (list A) := [].
   Definition list_ucmra_mixin : UcmraMixin (list A).
@@ -275,7 +275,7 @@ Section cmra.
     - by intros l.
     - by constructor.
   Qed.
-  Canonical Structure listUR := UcmraT (list A) list_ucmra_mixin.
+  Canonical Structure listUR := Ucmra (list A) list_ucmra_mixin.
 
   Global Instance list_cmra_discrete : CmraDiscrete A → CmraDiscrete listR.
   Proof.
@@ -299,11 +299,11 @@ End cmra.
 Global Arguments listR : clear implicits.
 Global Arguments listUR : clear implicits.
 
-Global Instance list_singletonM {A : ucmraT} : SingletonM nat A (list A) := λ n x,
+Global Instance list_singletonM {A : ucmra} : SingletonM nat A (list A) := λ n x,
   replicate n ε ++ [x].
 
 Section properties.
-  Context {A : ucmraT}.
+  Context {A : ucmra}.
   Implicit Types l : list A.
   Implicit Types x y z : A.
   Local Arguments op _ _ !_ !_ / : simpl nomatch.
@@ -515,7 +515,7 @@ Section properties.
 End properties.
 
 (** Functor *)
-Global Instance list_fmap_cmra_morphism {A B : ucmraT} (f : A → B)
+Global Instance list_fmap_cmra_morphism {A B : ucmra} (f : A → B)
   `{!CmraMorphism f} : CmraMorphism (fmap f : list A → list B).
 Proof.
   split; try apply _.

@@ -66,6 +66,10 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Move `algebra.base` module to `prelude.prelude`.
 * Strengthen `cmra_op_discrete` to assume only `✓{0} (x1 ⋅ x2)` instead of `✓
   (x1 ⋅ x2)`.
+* Rename the types `ofeT`→`ofe`, `cmraT`→`cmra`, `ucmraT`→`ucmra`, and the
+  constructors `OfeT`→`Ofe`, and `CmraT`→`Cmra`, since the `T` suffix is not
+  needed. This change makes these names consistent with `bi` and `Ucmra`,
+  which also do not have a `T` suffix.
 
 **Changes in `bi`:**
 
@@ -215,6 +219,12 @@ s/\bgen_heap_ctx\b/gen_heap_interp/g
 s/\bproph_map_ctx\b/proph_map_interp/g
 # other gen_heap changes
 s/\bmapsto_mapsto_ne\b/mapsto_frac_ne/g
+# remove Ts in algebra
+s/\bofeT\b/ofe/g
+s/\bOfeT\b/Ofe/g
+s/\bcmraT\b/cmra/g
+s/\bCmraT\b/Cmra/g
+s/\bcmraT\b/ucmra/g
 EOF
 ```
 

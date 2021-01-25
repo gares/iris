@@ -51,7 +51,7 @@ Section gmultiset.
     split; [done | | done]. intros X.
     by rewrite gmultiset_op_disj_union left_id_L.
   Qed.
-  Canonical Structure gmultisetUR := UcmraT (gmultiset K) gmultiset_ucmra_mixin.
+  Canonical Structure gmultisetUR := Ucmra (gmultiset K) gmultiset_ucmra_mixin.
 
   Global Instance gmultiset_cancelable X : Cancelable X.
   Proof.

@@ -50,7 +50,7 @@ Section test_prod.
 End test_prod.
 
 (** Make sure the [auth]/[gmap_view] notation does not mix up its arguments. *)
-Definition auth_check {A : ucmraT} :
+Definition auth_check {A : ucmra} :
   auth A = authO A := eq_refl.
-Definition gmap_view_check {K : Type} `{Countable K} {V : ofeT} :
+Definition gmap_view_check {K : Type} `{Countable K} {V : ofe} :
   gmap_view K V = gmap_viewO K V := eq_refl.

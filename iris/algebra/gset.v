@@ -38,7 +38,7 @@ Section gset.
 
   Lemma gset_ucmra_mixin : UcmraMixin (gset K).
   Proof. split; [ done | | done ]. intros X. by rewrite gset_op_union left_id_L. Qed.
-  Canonical Structure gsetUR := UcmraT (gset K) gset_ucmra_mixin.
+  Canonical Structure gsetUR := Ucmra (gset K) gset_ucmra_mixin.
 
   Lemma gset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
   Proof. destruct mY; by rewrite /= ?right_id_L. Qed.
@@ -132,7 +132,7 @@ Section gset_disj.
 
   Lemma gset_disj_ucmra_mixin : UcmraMixin (gset_disj K).
   Proof. split; try apply _ || done. intros [X|]; gset_disj_solve. Qed.
-  Canonical Structure gset_disjUR := UcmraT (gset_disj K) gset_disj_ucmra_mixin.
+  Canonical Structure gset_disjUR := Ucmra (gset_disj K) gset_disj_ucmra_mixin.
 
   Local Arguments op _ _ _ _ : simpl never.
 

@@ -9,14 +9,14 @@ From iris.prelude Require Import options.
   split the authoritative part into fractions.
 *)
 
-Definition frac_authR (A : cmraT) : cmraT :=
+Definition frac_authR (A : cmra) : cmra :=
   authR (optionUR (prodR fracR A)).
-Definition frac_authUR (A : cmraT) : ucmraT :=
+Definition frac_authUR (A : cmra) : ucmra :=
   authUR (optionUR (prodR fracR A)).
 
-Definition frac_auth_auth {A : cmraT} (x : A) : frac_authR A :=
+Definition frac_auth_auth {A : cmra} (x : A) : frac_authR A :=
   ● (Some (1%Qp,x)).
-Definition frac_auth_frag {A : cmraT} (q : frac) (x : A) : frac_authR A :=
+Definition frac_auth_frag {A : cmra} (q : frac) (x : A) : frac_authR A :=
   ◯ (Some (q,x)).
 
 Typeclasses Opaque frac_auth_auth frac_auth_frag.
@@ -29,7 +29,7 @@ Notation "◯F{ q } a" := (frac_auth_frag q a) (at level 10, format "◯F{ q }  
 Notation "◯F a" := (frac_auth_frag 1 a) (at level 10).
 
 Section frac_auth.
-  Context {A : cmraT}.
+  Context {A : cmra}.
   Implicit Types a b : A.
 
   Global Instance frac_auth_auth_ne : NonExpansive (@frac_auth_auth A).

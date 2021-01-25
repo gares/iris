@@ -44,7 +44,7 @@ Section coPset.
 
   Lemma coPset_ucmra_mixin : UcmraMixin coPset.
   Proof. split; [done | | done]. intros X. by rewrite coPset_op_union left_id_L. Qed.
-  Canonical Structure coPsetUR := UcmraT coPset coPset_ucmra_mixin.
+  Canonical Structure coPsetUR := Ucmra coPset coPset_ucmra_mixin.
 
   Lemma coPset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
   Proof. destruct mY; by rewrite /= ?right_id_L. Qed.
@@ -117,5 +117,5 @@ Section coPset_disj.
 
   Lemma coPset_disj_ucmra_mixin : UcmraMixin coPset_disj.
   Proof. split; try apply _ || done. intros [X|]; coPset_disj_solve. Qed.
-  Canonical Structure coPset_disjUR := UcmraT coPset_disj coPset_disj_ucmra_mixin.
+  Canonical Structure coPset_disjUR := Ucmra coPset_disj coPset_disj_ucmra_mixin.
 End coPset_disj.

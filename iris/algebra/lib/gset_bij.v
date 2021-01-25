@@ -98,11 +98,11 @@ End gset_bij_view_rel.
 
 Definition gset_bij A B `{Countable A, Countable B} :=
   view (gset_bij_view_rel_raw (A:=A) (B:=B)).
-Definition gset_bijO A B `{Countable A, Countable B} : ofeT :=
+Definition gset_bijO A B `{Countable A, Countable B} : ofe :=
   viewO (gset_bij_view_rel (A:=A) (B:=B)).
-Definition gset_bijR A B `{Countable A, Countable B} : cmraT :=
+Definition gset_bijR A B `{Countable A, Countable B} : cmra :=
   viewR (gset_bij_view_rel (A:=A) (B:=B)).
-Definition gset_bijUR A B `{Countable A, Countable B} : ucmraT :=
+Definition gset_bijUR A B `{Countable A, Countable B} : ucmra :=
   viewUR (gset_bij_view_rel (A:=A) (B:=B)).
 
 Definition gset_bij_auth `{Countable A, Countable B}

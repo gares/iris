@@ -644,7 +644,7 @@ Section sep_list2.
   Proof. rewrite big_sepL2_alt. apply _. Qed.
 End sep_list2.
 
-Lemma big_sepL2_ne_2 {A B : ofeT}
+Lemma big_sepL2_ne_2 {A B : ofe}
     (Φ Ψ : nat → A → B → PROP) l1 l2 l1' l2' n :
   l1 ≡{n}≡ l1' → l2 ≡{n}≡ l2' →
   (∀ k y1 y1' y2 y2',
@@ -1499,7 +1499,7 @@ Section map2.
   Proof. intros. rewrite big_sepM2_eq /big_sepM2_def. apply _. Qed.
 End map2.
 
-Lemma big_sepM2_ne_2 `{Countable K} (A B : ofeT)
+Lemma big_sepM2_ne_2 `{Countable K} (A B : ofe)
     (Φ Ψ : K → A → B → PROP) m1 m2 m1' m2' n :
   m1 ≡{n}≡ m1' → m2 ≡{n}≡ m2' →
   (∀ k y1 y1' y2 y2',

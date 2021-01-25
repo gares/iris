@@ -6,14 +6,14 @@ From iris.prelude Require Import options.
 This is effectively a single "ghost variable" with two views, the frament [◯E a]
 and the authority [●E a]. *)
 
-Definition excl_authR (A : ofeT) : cmraT :=
+Definition excl_authR (A : ofe) : cmra :=
   authR (optionUR (exclR A)).
-Definition excl_authUR (A : ofeT) : ucmraT :=
+Definition excl_authUR (A : ofe) : ucmra :=
   authUR (optionUR (exclR A)).
 
-Definition excl_auth_auth {A : ofeT} (a : A) : excl_authR A :=
+Definition excl_auth_auth {A : ofe} (a : A) : excl_authR A :=
   ● (Some (Excl a)).
-Definition excl_auth_frag {A : ofeT} (a : A) : excl_authR A :=
+Definition excl_auth_frag {A : ofe} (a : A) : excl_authR A :=
   ◯ (Some (Excl a)).
 
 Typeclasses Opaque excl_auth_auth excl_auth_frag.
@@ -25,7 +25,7 @@ Notation "●E a" := (excl_auth_auth a) (at level 10).
 Notation "◯E a" := (excl_auth_frag a) (at level 10).
 
 Section excl_auth.
-  Context {A : ofeT}.
+  Context {A : ofe}.
   Implicit Types a b : A.
 
   Global Instance excl_auth_auth_ne : NonExpansive (@excl_auth_auth A).

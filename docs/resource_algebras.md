@@ -217,23 +217,23 @@ F (X,X⁻) := gmap K (agree (nat * ▶ X))
 To make it convenient to construct such functors and prove their contractivity,
 we provide a number of abstractions:
 
-- [`cFunctor`](iris/algebra/ofe.v): functors from COFEs to OFEs.
+- [`oFunctor`](iris/algebra/ofe.v): functors from COFEs to OFEs.
 - [`rFunctor`](iris/algebra/cmra.v): functors from COFEs to cameras.
 - [`urFunctor`](iris/algebra/cmra.v): functors from COFEs to unital
   cameras.
 
-Besides, there are the classes `cFunctorContractive`, `rFunctorContractive`, and
+Besides, there are the classes `oFunctorContractive`, `rFunctorContractive`, and
 `urFunctorContractive` which describe the subset of the above functors that are
 contractive.
 
 To compose these functors, we provide a number of combinators, e.g.:
 
-- `constOF (A : ofeT) : cFunctor           := λ (B,B⁻), A `
-- `idOF : cFunctor                         := λ (B,B⁻), B`
-- `prodOF (F1 F2 : cFunctor) : cFunctor    := λ (B,B⁻), F1 (B,B⁻) * F2 (B,B⁻)`
-- `ofe_morOF (F1 F2 : cFunctor) : cFunctor := λ (B,B⁻), F1 (B⁻,B) -n> F2 (B,B⁻)`
-- `laterOF (F : cFunctor) : cFunctor       := λ (B,B⁻), later (F (B,B⁻))`
-- `agreeRF (F : cFunctor) : rFunctor       := λ (B,B⁻), agree (F (B,B⁻))`
+- `constOF (A : ofe) : oFunctor            := λ (B,B⁻), A `
+- `idOF : oFunctor                         := λ (B,B⁻), B`
+- `prodOF (F1 F2 : oFunctor) : oFunctor    := λ (B,B⁻), F1 (B,B⁻) * F2 (B,B⁻)`
+- `ofe_morOF (F1 F2 : oFunctor) : oFunctor := λ (B,B⁻), F1 (B⁻,B) -n> F2 (B,B⁻)`
+- `laterOF (F : oFunctor) : oFunctor       := λ (B,B⁻), later (F (B,B⁻))`
+- `agreeRF (F : oFunctor) : rFunctor       := λ (B,B⁻), agree (F (B,B⁻))`
 - `gmapURF K (F : rFunctor) : urFunctor    := λ (B,B⁻), gmap K (F (B,B⁻))`
 
 Note in particular how the functor for the function space, `ofe_morOF`, swaps

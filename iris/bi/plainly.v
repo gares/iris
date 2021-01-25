@@ -381,7 +381,7 @@ Proof.
   - apply persistently_mono, wand_intro_l. by rewrite sep_and impl_elim_r.
 Qed.
 
-Global Instance limit_preserving_Plain {A:ofeT} `{Cofe A} (Φ : A → PROP) :
+Global Instance limit_preserving_Plain {A:ofe} `{Cofe A} (Φ : A → PROP) :
   NonExpansive Φ → LimitPreserving (λ x, Plain (Φ x)).
 Proof. intros. apply limit_preserving_entails; solve_proper. Qed.
 
@@ -558,7 +558,7 @@ Qed.
 Section internal_eq.
   Context `{!BiInternalEq PROP}.
 
-  Lemma plainly_internal_eq {A:ofeT} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.
+  Lemma plainly_internal_eq {A:ofe} (a b : A) : ■ (a ≡ b) ⊣⊢@{PROP} a ≡ b.
   Proof.
     apply (anti_symm (⊢)).
     { by rewrite plainly_elim. }
@@ -566,7 +566,7 @@ Section internal_eq.
     rewrite -(internal_eq_refl True%I a) plainly_pure; auto.
   Qed.
 
-  Global Instance internal_eq_plain {A : ofeT} (a b : A) :
+  Global Instance internal_eq_plain {A : ofe} (a b : A) :
     Plain (PROP:=PROP) (a ≡ b).
   Proof. by intros; rewrite /Plain plainly_internal_eq. Qed.
 End internal_eq.

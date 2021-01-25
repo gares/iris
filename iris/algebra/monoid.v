@@ -17,7 +17,7 @@ we do not have a canonical structure for setoids, we do not go that way.
 Note that we do not declare any of the projections as type class instances. That
 is because we only need them in the [big_op] file, and nowhere else. Hence, we
 declare these instances locally there to avoid them being used elsewhere. *)
-Class Monoid {M : ofeT} (o : M → M → M) := {
+Class Monoid {M : ofe} (o : M → M → M) := {
   monoid_unit : M;
   monoid_ne : NonExpansive2 o;
   monoid_assoc : Assoc (≡) o;
@@ -33,7 +33,7 @@ Proof. intros x. etrans; [apply monoid_comm|apply monoid_left_id]. Qed.
 commuting with each other. We also consider a [WeakMonoidHomomorphism] which
 does not necessarily commute with unit; an example is the [own] connective: we
 only have `True ==∗ own γ ∅`, not `True ↔ own γ ∅`. *)
-Class WeakMonoidHomomorphism {M1 M2 : ofeT}
+Class WeakMonoidHomomorphism {M1 M2 : ofe}
     (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{Monoid M1 o1, Monoid M2 o2}
     (R : relation M2) (f : M1 → M2) := {
   monoid_homomorphism_rel_po : PreOrder R;
@@ -43,7 +43,7 @@ Class WeakMonoidHomomorphism {M1 M2 : ofeT}
   monoid_homomorphism x y : R (f (o1 x y)) (o2 (f x) (f y))
 }.
 
-Class MonoidHomomorphism {M1 M2 : ofeT}
+Class MonoidHomomorphism {M1 M2 : ofe}
     (o1 : M1 → M1 → M1) (o2 : M2 → M2 → M2) `{Monoid M1 o1, Monoid M2 o2}
     (R : relation M2) (f : M1 → M2) := {
   monoid_homomorphism_weak :> WeakMonoidHomomorphism o1 o2 R f;

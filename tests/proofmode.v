@@ -68,7 +68,7 @@ Check "test_iStopProof".
 Lemma test_iStopProof Q : emp -∗ Q -∗ Q.
 Proof. iIntros "#H1 H2". Show. iStopProof. Show. by rewrite bi.sep_elim_r. Qed.
 
-Lemma test_iRewrite `{!BiInternalEq PROP} {A : ofeT} (x y : A) P :
+Lemma test_iRewrite `{!BiInternalEq PROP} {A : ofe} (x y : A) P :
   □ (∀ z, P -∗ <affine> (z ≡ y)) -∗ (P -∗ P ∧ (x,x) ≡ (y,x)).
 Proof.
   iIntros "#H1 H2".
@@ -478,7 +478,7 @@ Proof.
   unshelve iSpecialize ("H" $! ∅ {[ 1%positive ]} ∅); try apply _. done.
 Qed.
 
-Lemma test_iFrame_pure `{!BiInternalEq PROP} {A : ofeT} (φ : Prop) (y z : A) :
+Lemma test_iFrame_pure `{!BiInternalEq PROP} {A : ofe} (φ : Prop) (y z : A) :
   φ → <affine> ⌜y ≡ z⌝ -∗ (⌜ φ ⌝ ∧ ⌜ φ ⌝ ∧ y ≡ z : PROP).
 Proof. iIntros (Hv) "#Hxy". iFrame (Hv) "Hxy". Qed.
 
@@ -577,7 +577,7 @@ Lemma test_iNext_quantifier {A} (Φ : A → A → PROP) :
   (∀ y, ∃ x, ▷ Φ x y) -∗ ▷ (∀ y, ∃ x, Φ x y).
 Proof. iIntros "H". iNext. done. Qed.
 
-Lemma text_iNext_Next `{!BiInternalEq PROP} {A B : ofeT} (f : A -n> A) x y :
+Lemma text_iNext_Next `{!BiInternalEq PROP} {A B : ofe} (f : A -n> A) x y :
   Next x ≡ Next y -∗ (Next (f x) ≡ Next (f y) : PROP).
 Proof. iIntros "H". iNext. by iRewrite "H". Qed.
 

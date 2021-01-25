@@ -4,7 +4,7 @@ From iris.base_logic Require Import base_logic.
 From iris.base_logic.lib Require Import invariants cancelable_invariants na_invariants.
 
 Section base_logic_tests.
-  Context {M : ucmraT}.
+  Context {M : ucmra}.
   Implicit Types P Q R : uPred M.
 
   (* Test scopes for bupd *)

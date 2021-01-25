@@ -7,7 +7,7 @@ Internal equality is not part of the [bi] canonical structure as [internal_eq]
 can only be given a definition that satisfies [NonExpansive2 internal_eq] _and_
 [▷ (x ≡ y) ⊢ Next x ≡ Next y] if the BI is step-indexed. *)
 Class InternalEq (PROP : bi) :=
-  internal_eq : ∀ {A : ofeT}, A → A → PROP.
+  internal_eq : ∀ {A : ofe}, A → A → PROP.
 Global Arguments internal_eq {_ _ _} _ _ : simpl never.
 Global Hint Mode InternalEq ! : typeclass_instances.
 Global Instance: Params (@internal_eq) 3 := {}.
@@ -20,19 +20,19 @@ Notation "(≡@{ A } )" := (internal_eq (A:=A)) (only parsing) : bi_scope.
 
 (* Mixins allow us to create instances easily without having to use Program *)
 Record BiInternalEqMixin (PROP : bi) `(InternalEq PROP) := {
-  bi_internal_eq_mixin_internal_eq_ne (A : ofeT) : NonExpansive2 (@internal_eq PROP _ A);
-  bi_internal_eq_mixin_internal_eq_refl {A : ofeT} (P : PROP) (a : A) : P ⊢ a ≡ a;
-  bi_internal_eq_mixin_internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
+  bi_internal_eq_mixin_internal_eq_ne (A : ofe) : NonExpansive2 (@internal_eq PROP _ A);
+  bi_internal_eq_mixin_internal_eq_refl {A : ofe} (P : PROP) (a : A) : P ⊢ a ≡ a;
+  bi_internal_eq_mixin_internal_eq_rewrite {A : ofe} a b (Ψ : A → PROP) :
     NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b;
-  bi_internal_eq_mixin_fun_extI {A} {B : A → ofeT} (f g : discrete_fun B) :
+  bi_internal_eq_mixin_fun_extI {A} {B : A → ofe} (f g : discrete_fun B) :
     (∀ x, f x ≡ g x) ⊢@{PROP} f ≡ g;
-  bi_internal_eq_mixin_sig_equivI_1 {A : ofeT} (P : A → Prop) (x y : sig P) :
+  bi_internal_eq_mixin_sig_equivI_1 {A : ofe} (P : A → Prop) (x y : sig P) :
     `x ≡ `y ⊢@{PROP} x ≡ y;
-  bi_internal_eq_mixin_discrete_eq_1 {A : ofeT} (a b : A) :
+  bi_internal_eq_mixin_discrete_eq_1 {A : ofe} (a b : A) :
     Discrete a → a ≡ b ⊢@{PROP} ⌜a ≡ b⌝;
-  bi_internal_eq_mixin_later_equivI_1 {A : ofeT} (x y : A) :
+  bi_internal_eq_mixin_later_equivI_1 {A : ofe} (x y : A) :
     Next x ≡ Next y ⊢@{PROP} ▷ (x ≡ y);
-  bi_internal_eq_mixin_later_equivI_2 {A : ofeT} (x y : A) :
+  bi_internal_eq_mixin_later_equivI_2 {A : ofe} (x y : A) :
     ▷ (x ≡ y) ⊢@{PROP} Next x ≡ Next y;
 }.
 
@@ -47,28 +47,28 @@ Section internal_eq_laws.
   Context `{BiInternalEq PROP}.
   Implicit Types P Q : PROP.
 
-  Global Instance internal_eq_ne (A : ofeT) : NonExpansive2 (@internal_eq PROP _ A).
+  Global Instance internal_eq_ne (A : ofe) : NonExpansive2 (@internal_eq PROP _ A).
   Proof. eapply bi_internal_eq_mixin_internal_eq_ne, (bi_internal_eq_mixin). Qed.
 
-  Lemma internal_eq_refl {A : ofeT} P (a : A) : P ⊢ a ≡ a.
+  Lemma internal_eq_refl {A : ofe} P (a : A) : P ⊢ a ≡ a.
   Proof. eapply bi_internal_eq_mixin_internal_eq_refl, bi_internal_eq_mixin. Qed.
-  Lemma internal_eq_rewrite {A : ofeT} a b (Ψ : A → PROP) :
+  Lemma internal_eq_rewrite {A : ofe} a b (Ψ : A → PROP) :
     NonExpansive Ψ → a ≡ b ⊢ Ψ a → Ψ b.
   Proof. eapply bi_internal_eq_mixin_internal_eq_rewrite, bi_internal_eq_mixin. Qed.
 
-  Lemma fun_extI {A} {B : A → ofeT} (f g : discrete_fun B) :
+  Lemma fun_extI {A} {B : A → ofe} (f g : discrete_fun B) :
     (∀ x, f x ≡ g x) ⊢@{PROP} f ≡ g.
   Proof. eapply bi_internal_eq_mixin_fun_extI, bi_internal_eq_mixin. Qed.
-  Lemma sig_equivI_1 {A : ofeT} (P : A → Prop) (x y : sig P) :
+  Lemma sig_equivI_1 {A : ofe} (P : A → Prop) (x y : sig P) :
     `x ≡ `y ⊢@{PROP} x ≡ y.
   Proof. eapply bi_internal_eq_mixin_sig_equivI_1, bi_internal_eq_mixin. Qed.
-  Lemma discrete_eq_1 {A : ofeT} (a b : A) :
+  Lemma discrete_eq_1 {A : ofe} (a b : A) :
     Discrete a → a ≡ b ⊢@{PROP} ⌜a ≡ b⌝.
   Proof. eapply bi_internal_eq_mixin_discrete_eq_1, bi_internal_eq_mixin. Qed.
 
-  Lemma later_equivI_1 {A : ofeT} (x y : A) : Next x ≡ Next y ⊢@{PROP} ▷ (x ≡ y).
+  Lemma later_equivI_1 {A : ofe} (x y : A) : Next x ≡ Next y ⊢@{PROP} ▷ (x ≡ y).
   Proof. eapply bi_internal_eq_mixin_later_equivI_1, bi_internal_eq_mixin. Qed.
-  Lemma later_equivI_2 {A : ofeT} (x y : A) : ▷ (x ≡ y) ⊢@{PROP} Next x ≡ Next y.
+  Lemma later_equivI_2 {A : ofe} (x y : A) : ▷ (x ≡ y) ⊢@{PROP} Next x ≡ Next y.
   Proof. eapply bi_internal_eq_mixin_later_equivI_2, bi_internal_eq_mixin. Qed.
 End internal_eq_laws.
 
@@ -81,7 +81,7 @@ Implicit Types P : PROP.
 Notation "P ⊢ Q" := (P ⊢@{PROP} Q).
 Notation "P ⊣⊢ Q" := (P ⊣⊢@{PROP} Q).
 
-Global Instance internal_eq_proper (A : ofeT) :
+Global Instance internal_eq_proper (A : ofe) :
   Proper ((≡) ==> (≡) ==> (⊣⊢)) (@internal_eq PROP _ A) := ne_proper_2 _.
 
 (* Equality *)
@@ -90,31 +90,31 @@ Local Hint Resolve and_elim_l' and_elim_r' and_intro forall_intro : core.
 Local Hint Resolve internal_eq_refl : core.
 Local Hint Extern 100 (NonExpansive _) => solve_proper : core.
 
-Lemma equiv_internal_eq {A : ofeT} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
+Lemma equiv_internal_eq {A : ofe} P (a b : A) : a ≡ b → P ⊢ a ≡ b.
 Proof. intros ->. auto. Qed.
-Lemma internal_eq_rewrite' {A : ofeT} a b (Ψ : A → PROP) P
+Lemma internal_eq_rewrite' {A : ofe} a b (Ψ : A → PROP) P
   {HΨ : NonExpansive Ψ} : (P ⊢ a ≡ b) → (P ⊢ Ψ a) → P ⊢ Ψ b.
 Proof.
   intros Heq HΨa. rewrite -(idemp bi_and P) {1}Heq HΨa.
   apply impl_elim_l'. by apply internal_eq_rewrite.
 Qed.
 
-Lemma internal_eq_sym {A : ofeT} (a b : A) : a ≡ b ⊢ b ≡ a.
+Lemma internal_eq_sym {A : ofe} (a b : A) : a ≡ b ⊢ b ≡ a.
 Proof. apply (internal_eq_rewrite' a b (λ b, b ≡ a)%I); auto. Qed.
 Lemma internal_eq_iff P Q : P ≡ Q ⊢ P ↔ Q.
 Proof. apply (internal_eq_rewrite' P Q (λ Q, P ↔ Q))%I; auto using iff_refl. Qed.
 
-Lemma f_equivI {A B : ofeT} (f : A → B) `{!NonExpansive f} x y :
+Lemma f_equivI {A B : ofe} (f : A → B) `{!NonExpansive f} x y :
   x ≡ y ⊢ f x ≡ f y.
 Proof. apply (internal_eq_rewrite' x y (λ y, f x ≡ f y)%I); auto. Qed.
-Lemma f_equivI_contractive {A B : ofeT} (f : A → B) `{Hf : !Contractive f} x y :
+Lemma f_equivI_contractive {A B : ofe} (f : A → B) `{Hf : !Contractive f} x y :
   ▷ (x ≡ y) ⊢ f x ≡ f y.
 Proof.
   rewrite later_equivI_2. move: Hf=>/contractive_alt [g [? Hfg]]. rewrite !Hfg.
   by apply f_equivI.
 Qed.
 
-Lemma prod_equivI {A B : ofeT} (x y : A * B) : x ≡ y ⊣⊢ x.1 ≡ y.1 ∧ x.2 ≡ y.2.
+Lemma prod_equivI {A B : ofe} (x y : A * B) : x ≡ y ⊣⊢ x.1 ≡ y.1 ∧ x.2 ≡ y.2.
 Proof.
   apply (anti_symm _).
   - apply and_intro; apply f_equivI; apply _.
@@ -122,7 +122,7 @@ Proof.
     apply (internal_eq_rewrite' (x.1) (y.1) (λ a, (x.1,x.2) ≡ (a,y.2))%I); auto.
     apply (internal_eq_rewrite' (x.2) (y.2) (λ b, (x.1,x.2) ≡ (x.1,b))%I); auto.
 Qed.
-Lemma sum_equivI {A B : ofeT} (x y : A + B) :
+Lemma sum_equivI {A B : ofe} (x y : A + B) :
   x ≡ y ⊣⊢
     match x, y with
     | inl a, inl a' => a ≡ a' | inr b, inr b' => b ≡ b' | _, _ => False
@@ -136,7 +136,7 @@ Proof.
     destruct x; auto.
   - destruct x as [a|b], y as [a'|b']; auto; apply f_equivI, _.
 Qed.
-Lemma option_equivI {A : ofeT} (x y : option A) :
+Lemma option_equivI {A : ofe} (x y : option A) :
   x ≡ y ⊣⊢ match x, y with
            | Some a, Some a' => a ≡ a' | None, None => True | _, _ => False
            end.
@@ -150,7 +150,7 @@ Proof.
   - destruct x as [a|], y as [a'|]; auto. apply f_equivI, _.
 Qed.
 
-Lemma sig_equivI {A : ofeT} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
+Lemma sig_equivI {A : ofe} (P : A → Prop) (x y : sig P) : `x ≡ `y ⊣⊢ x ≡ y.
 Proof.
   apply (anti_symm _).
   - apply sig_equivI_1.
@@ -160,7 +160,7 @@ Qed.
 Section sigT_equivI.
 Import EqNotations.
 
-Lemma sigT_equivI {A : Type} {P : A → ofeT} (x y : sigT P) :
+Lemma sigT_equivI {A : Type} {P : A → ofe} (x y : sigT P) :
   x ≡ y ⊣⊢
   ∃ eq : projT1 x = projT1 y, rew eq in projT2 x ≡ projT2 y.
 Proof.
@@ -176,13 +176,13 @@ Proof.
 Qed.
 End sigT_equivI.
 
-Lemma discrete_fun_equivI {A} {B : A → ofeT} (f g : discrete_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
+Lemma discrete_fun_equivI {A} {B : A → ofe} (f g : discrete_fun B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
 Proof.
   apply (anti_symm _); auto using fun_extI.
   apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
   intros n h h' Hh; apply forall_ne=> x; apply internal_eq_ne; auto.
 Qed.
-Lemma ofe_morO_equivI {A B : ofeT} (f g : A -n> B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
+Lemma ofe_morO_equivI {A B : ofe} (f g : A -n> B) : f ≡ g ⊣⊢ ∀ x, f x ≡ g x.
 Proof.
   apply (anti_symm _).
   - apply (internal_eq_rewrite' f g (λ g, ∀ x : A, f x ≡ g x)%I); auto.
@@ -196,20 +196,20 @@ Proof.
     by rewrite -{2}[f]Hh -{2}[g]Hh -f_equivI -sig_equivI.
 Qed.
 
-Lemma pure_internal_eq {A : ofeT} (x y : A) : ⌜x ≡ y⌝ ⊢ x ≡ y.
+Lemma pure_internal_eq {A : ofe} (x y : A) : ⌜x ≡ y⌝ ⊢ x ≡ y.
 Proof. apply pure_elim'=> ->. apply internal_eq_refl. Qed.
-Lemma discrete_eq {A : ofeT} (a b : A) : Discrete a → a ≡ b ⊣⊢ ⌜a ≡ b⌝.
+Lemma discrete_eq {A : ofe} (a b : A) : Discrete a → a ≡ b ⊣⊢ ⌜a ≡ b⌝.
 Proof.
   intros. apply (anti_symm _); auto using discrete_eq_1, pure_internal_eq.
 Qed.
 
-Lemma absorbingly_internal_eq {A : ofeT} (x y : A) : <absorb> (x ≡ y) ⊣⊢ x ≡ y.
+Lemma absorbingly_internal_eq {A : ofe} (x y : A) : <absorb> (x ≡ y) ⊣⊢ x ≡ y.
 Proof.
   apply (anti_symm _), absorbingly_intro.
   apply wand_elim_r', (internal_eq_rewrite' x y (λ y, True -∗ x ≡ y)%I); auto.
   apply wand_intro_l, internal_eq_refl.
 Qed.
-Lemma persistently_internal_eq {A : ofeT} (a b : A) : <pers> (a ≡ b) ⊣⊢ a ≡ b.
+Lemma persistently_internal_eq {A : ofe} (a b : A) : <pers> (a ≡ b) ⊣⊢ a ≡ b.
 Proof.
   apply (anti_symm (⊢)).
   { by rewrite persistently_into_absorbingly absorbingly_internal_eq. }
@@ -217,33 +217,33 @@ Proof.
   rewrite -(internal_eq_refl emp%I a). apply persistently_emp_intro.
 Qed.
 
-Global Instance internal_eq_absorbing {A : ofeT} (x y : A) :
+Global Instance internal_eq_absorbing {A : ofe} (x y : A) :
   Absorbing (PROP:=PROP) (x ≡ y).
 Proof. by rewrite /Absorbing absorbingly_internal_eq. Qed.
-Global Instance internal_eq_persistent {A : ofeT} (a b : A) :
+Global Instance internal_eq_persistent {A : ofe} (a b : A) :
   Persistent (PROP:=PROP) (a ≡ b).
 Proof. by intros; rewrite /Persistent persistently_internal_eq. Qed.
 
 (* Equality under a later. *)
-Lemma internal_eq_rewrite_contractive {A : ofeT} a b (Ψ : A → PROP)
+Lemma internal_eq_rewrite_contractive {A : ofe} a b (Ψ : A → PROP)
   {HΨ : Contractive Ψ} : ▷ (a ≡ b) ⊢ Ψ a → Ψ b.
 Proof.
   rewrite f_equivI_contractive. apply (internal_eq_rewrite (Ψ a) (Ψ b) id _).
 Qed.
-Lemma internal_eq_rewrite_contractive' {A : ofeT} a b (Ψ : A → PROP) P
+Lemma internal_eq_rewrite_contractive' {A : ofe} a b (Ψ : A → PROP) P
   {HΨ : Contractive Ψ} : (P ⊢ ▷ (a ≡ b)) → (P ⊢ Ψ a) → P ⊢ Ψ b.
 Proof.
   rewrite later_equivI_2. move: HΨ=>/contractive_alt [g [? HΨ]]. rewrite !HΨ.
   by apply internal_eq_rewrite'.
 Qed.
 
-Lemma later_equivI {A : ofeT} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
+Lemma later_equivI {A : ofe} (x y : A) : Next x ≡ Next y ⊣⊢ ▷ (x ≡ y).
 Proof. apply (anti_symm _); auto using later_equivI_1, later_equivI_2. Qed.
 Lemma later_equivI_prop_2 `{!Contractive (bi_later (PROP:=PROP))} P Q :
   ▷ (P ≡ Q) ⊢ (▷ P) ≡ (▷ Q).
 Proof. apply (f_equivI_contractive _). Qed.
 
-Global Instance eq_timeless {A : ofeT} (a b : A) :
+Global Instance eq_timeless {A : ofe} (a b : A) :
   Discrete a → Timeless (PROP:=PROP) (a ≡ b).
 Proof. intros. rewrite /Discrete !discrete_eq. apply (timeless _). Qed.
 End internal_eq_derived.

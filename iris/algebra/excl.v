@@ -21,7 +21,7 @@ Global Instance maybe_Excl {A} : Maybe (@Excl A) := λ x,
   match x with Excl a => Some a | _ => None end.
 
 Section excl.
-Context {A : ofeT}.
+Context {A : ofe}.
 Implicit Types a b : A.
 Implicit Types x y : excl A.
 
@@ -50,7 +50,7 @@ Proof.
   - by intros [a|] [b|]; split; inversion_clear 1; constructor.
   - by intros n [a|] [b|]; split; inversion_clear 1; constructor.
 Qed.
-Canonical Structure exclO : ofeT := OfeT (excl A) excl_ofe_mixin.
+Canonical Structure exclO : ofe := Ofe (excl A) excl_ofe_mixin.
 
 Global Instance excl_cofe `{!Cofe A} : Cofe exclO.
 Proof.
@@ -89,7 +89,7 @@ Proof.
   - by intros n [?|] [?|].
   - intros n x [?|] [?|] ? Hx; eexists _, _; inversion_clear Hx; eauto.
 Qed.
-Canonical Structure exclR := CmraT (excl A) excl_cmra_mixin.
+Canonical Structure exclR := Cmra (excl A) excl_cmra_mixin.
 
 Global Instance excl_cmra_discrete : OfeDiscrete A → CmraDiscrete exclR.
 Proof. split; first apply _. by intros []. Qed.
@@ -125,13 +125,13 @@ Proof. by destruct x. Qed.
 Lemma excl_map_compose {A B C} (f : A → B) (g : B → C) (x : excl A) :
   excl_map (g ∘ f) x = excl_map g (excl_map f x).
 Proof. by destruct x. Qed.
-Lemma excl_map_ext {A B : ofeT} (f g : A → B) x :
+Lemma excl_map_ext {A B : ofe} (f g : A → B) x :
   (∀ x, f x ≡ g x) → excl_map f x ≡ excl_map g x.
 Proof. by destruct x; constructor. Qed.
-Global Instance excl_map_ne {A B : ofeT} n :
+Global Instance excl_map_ne {A B : ofe} n :
   Proper ((dist n ==> dist n) ==> dist n ==> dist n) (@excl_map A B).
 Proof. by intros f f' Hf; destruct 1; constructor; apply Hf. Qed.
-Global Instance excl_map_cmra_morphism {A B : ofeT} (f : A → B) :
+Global Instance excl_map_cmra_morphism {A B : ofe} (f : A → B) :
   NonExpansive f → CmraMorphism (excl_map f).
 Proof. split; try done; try apply _. by intros n [a|]. Qed.
 Definition exclO_map {A B} (f : A -n> B) : exclO A -n> exclO B :=

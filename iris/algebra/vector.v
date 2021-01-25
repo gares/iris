@@ -4,14 +4,14 @@ From iris.algebra Require Import list.
 From iris.prelude Require Import options.
 
 Section ofe.
-  Context {A : ofeT}.
+  Context {A : ofe}.
 
   Local Instance vec_equiv m : Equiv (vec A m) := equiv (A:=list A).
   Local Instance vec_dist m : Dist (vec A m) := dist (A:=list A).
 
   Definition vec_ofe_mixin m : OfeMixin (vec A m).
   Proof. by apply (iso_ofe_mixin vec_to_list). Qed.
-  Canonical Structure vecO m : ofeT := OfeT (vec A m) (vec_ofe_mixin m).
+  Canonical Structure vecO m : ofe := Ofe (vec A m) (vec_ofe_mixin m).
 
   Global Instance list_cofe `{Cofe A} m : Cofe (vecO m).
   Proof.
@@ -39,7 +39,7 @@ Global Arguments vecO : clear implicits.
 Typeclasses Opaque vec_dist.
 
 Section proper.
-  Context {A : ofeT}.
+  Context {A : ofe}.
 
   Global Instance vcons_ne n :
     Proper (dist n ==> forall_relation (λ x, dist n ==> dist n)) (@vcons A).
@@ -68,22 +68,22 @@ Section proper.
 End proper.
 
 (** Functor *)
-Definition vec_map {A B : ofeT} m (f : A → B) : vecO A m → vecO B m :=
+Definition vec_map {A B : ofe} m (f : A → B) : vecO A m → vecO B m :=
   @vmap A B f m.
-Lemma vec_map_ext_ne {A B : ofeT} m (f g : A → B) (v : vec A m) n :
+Lemma vec_map_ext_ne {A B : ofe} m (f g : A → B) (v : vec A m) n :
   (∀ x, f x ≡{n}≡ g x) → vec_map m f v ≡{n}≡ vec_map m g v.
 Proof.
   intros Hf. eapply (list_fmap_ext_ne f g v) in Hf.
   by rewrite -!vec_to_list_map in Hf.
 Qed.
-Global Instance vec_map_ne {A B : ofeT} m f n :
+Global Instance vec_map_ne {A B : ofe} m f n :
   Proper (dist n ==> dist n) f →
   Proper (dist n ==> dist n) (@vec_map A B m f).
 Proof.
   intros ? v v' H. eapply list_fmap_ne in H; last done.
   by rewrite -!vec_to_list_map in H.
 Qed.
-Definition vecO_map {A B : ofeT} m (f : A -n> B) : vecO A m -n> vecO B m :=
+Definition vecO_map {A B : ofe} m (f : A -n> B) : vecO A m -n> vecO B m :=
   OfeMor (vec_map m f).
 Global Instance vecO_map_ne {A A'} m :
   NonExpansive (@vecO_map A A' m).

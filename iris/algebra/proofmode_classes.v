@@ -15,36 +15,36 @@ From iris.prelude Require Import options.
   [own γ (q1 + q2)] where [q1] and [q2] are fractions, we actually get
   [own γ q1] and [own γ q2] instead of [own γ ((q1 + q2)/2)] twice.
 *)
-Class IsOp {A : cmraT} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
+Class IsOp {A : cmra} (a b1 b2 : A) := is_op : a ≡ b1 ⋅ b2.
 Global Arguments is_op {_} _ _ _ {_}.
 Global Hint Mode IsOp + - - - : typeclass_instances.
 
-Global Instance is_op_op {A : cmraT} (a b : A) : IsOp (a ⋅ b) a b | 100.
+Global Instance is_op_op {A : cmra} (a b : A) : IsOp (a ⋅ b) a b | 100.
 Proof. by rewrite /IsOp. Qed.
 
-Class IsOp' {A : cmraT} (a b1 b2 : A) := is_op' :> IsOp a b1 b2.
+Class IsOp' {A : cmra} (a b1 b2 : A) := is_op' :> IsOp a b1 b2.
 Global Hint Mode IsOp' + ! - - : typeclass_instances.
 Global Hint Mode IsOp' + - ! ! : typeclass_instances.
 
-Class IsOp'LR {A : cmraT} (a b1 b2 : A) := is_op_lr : IsOp a b1 b2.
+Class IsOp'LR {A : cmra} (a b1 b2 : A) := is_op_lr : IsOp a b1 b2.
 Existing Instance is_op_lr | 0.
 Global Hint Mode IsOp'LR + ! - - : typeclass_instances.
-Global Instance is_op_lr_op {A : cmraT} (a b : A) : IsOp'LR (a ⋅ b) a b | 0.
+Global Instance is_op_lr_op {A : cmra} (a b : A) : IsOp'LR (a ⋅ b) a b | 0.
 Proof. by rewrite /IsOp'LR /IsOp. Qed.
 
 (* FromOp *)
 (* TODO: Worst case there could be a lot of backtracking on these instances,
 try to refactor. *)
-Global Instance is_op_pair {A B : cmraT} (a b1 b2 : A) (a' b1' b2' : B) :
+Global Instance is_op_pair {A B : cmra} (a b1 b2 : A) (a' b1' b2' : B) :
   IsOp a b1 b2 → IsOp a' b1' b2' → IsOp' (a,a') (b1,b1') (b2,b2').
 Proof. by constructor. Qed.
-Global Instance is_op_pair_core_id_l {A B : cmraT} (a : A) (a' b1' b2' : B) :
+Global Instance is_op_pair_core_id_l {A B : cmra} (a : A) (a' b1' b2' : B) :
   CoreId a → IsOp a' b1' b2' → IsOp' (a,a') (a,b1') (a,b2').
 Proof. constructor=> //=. by rewrite -core_id_dup. Qed.
-Global Instance is_op_pair_core_id_r {A B : cmraT} (a b1 b2 : A) (a' : B) :
+Global Instance is_op_pair_core_id_r {A B : cmra} (a b1 b2 : A) (a' : B) :
   CoreId a' → IsOp a b1 b2 → IsOp' (a,a') (b1,a') (b2,a').
 Proof. constructor=> //=. by rewrite -core_id_dup. Qed.
 
-Global Instance is_op_Some {A : cmraT} (a : A) b1 b2 :
+Global Instance is_op_Some {A : cmra} (a : A) b1 b2 :
   IsOp a b1 b2 → IsOp' (Some a) (Some b1) (Some b2).
 Proof. by constructor. Qed.

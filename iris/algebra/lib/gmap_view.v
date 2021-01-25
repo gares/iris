@@ -20,12 +20,12 @@ NOTE: The API surface for [gmap_view] is experimental and subject to change.  We
 plan to add notations for authoritative elements and fragments, and hope to
 support arbitrary maps as fragments. *)
 
-Local Definition gmap_view_fragUR (K : Type) `{Countable K} (V : ofeT) : ucmraT :=
+Local Definition gmap_view_fragUR (K : Type) `{Countable K} (V : ofe) : ucmra :=
   gmapUR K (prodR dfracR (agreeR V)).
 
 (** View relation. *)
 Section rel.
-  Context (K : Type) `{Countable K} (V : ofeT).
+  Context (K : Type) `{Countable K} (V : ofe).
   Implicit Types (m : gmap K V) (k : K) (v : V) (n : nat).
   Implicit Types (f : gmap K (dfrac * agree V)).
 
@@ -127,15 +127,15 @@ Local Existing Instance gmap_view_rel_discrete.
 (** [gmap_view] is a notation to give canonical structure search the chance
 to infer the right instances (see [auth]). *)
 Notation gmap_view K V := (view (@gmap_view_rel_raw K _ _ V)).
-Definition gmap_viewO (K : Type) `{Countable K} (V : ofeT) : ofeT :=
+Definition gmap_viewO (K : Type) `{Countable K} (V : ofe) : ofe :=
   viewO (gmap_view_rel K V).
-Definition gmap_viewR (K : Type) `{Countable K} (V : ofeT) : cmraT :=
+Definition gmap_viewR (K : Type) `{Countable K} (V : ofe) : cmra :=
   viewR (gmap_view_rel K V).
-Definition gmap_viewUR (K : Type) `{Countable K} (V : ofeT) : ucmraT :=
+Definition gmap_viewUR (K : Type) `{Countable K} (V : ofe) : ucmra :=
   viewUR (gmap_view_rel K V).
 
 Section definitions.
-  Context {K : Type} `{Countable K} {V : ofeT}.
+  Context {K : Type} `{Countable K} {V : ofe}.
 
   Definition gmap_view_auth (q : frac) (m : gmap K V) : gmap_viewR K V :=
     ●V{q} m.
@@ -144,7 +144,7 @@ Section definitions.
 End definitions.
 
 Section lemmas.
-  Context {K : Type} `{Countable K} {V : ofeT}.
+  Context {K : Type} `{Countable K} {V : ofe}.
   Implicit Types (m : gmap K V) (k : K) (q : Qp) (dq : dfrac) (v : V).
 
   Global Instance : Params (@gmap_view_auth) 5 := {}.

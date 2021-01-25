@@ -40,7 +40,7 @@ not use type classes for this purpose because cameras themselves are represented
 using canonical structures. It has proven fragile for a canonical structure
 instance to take a type class as a parameter (in this case, [viewR] would need
 to take a class with the view relation laws). *)
-Structure view_rel (A : ofeT) (B : ucmraT) := ViewRel {
+Structure view_rel (A : ofe) (B : ucmra) := ViewRel {
   view_rel_holds :> nat → A → B → Prop;
   view_rel_mono n1 n2 a1 a2 b1 b2 :
     view_rel_holds n1 a1 b1 →
@@ -101,7 +101,7 @@ Notation "◯V a" := (view_frag a) (at level 20).
 general version in terms of [●V] and [◯V], and because such a lemma has never
 been needed in practice. *)
 Section ofe.
-  Context {A B : ofeT} (rel : nat → A → B → Prop).
+  Context {A B : ofe} (rel : nat → A → B → Prop).
   Implicit Types a : A.
   Implicit Types ag : option (frac * agree A).
   Implicit Types b : B.
@@ -130,7 +130,7 @@ Section ofe.
 
   Definition view_ofe_mixin : OfeMixin (view rel).
   Proof. by apply (iso_ofe_mixin (λ x, (view_auth_proj x, view_frag_proj x))). Qed.
-  Canonical Structure viewO := OfeT (view rel) view_ofe_mixin.
+  Canonical Structure viewO := Ofe (view rel) view_ofe_mixin.
 
   Global Instance View_discrete ag b :
     Discrete ag → Discrete b → Discrete (View ag b).
@@ -235,7 +235,7 @@ Section cmra.
       + intros [a ?]. exists a.
         apply view_rel_mono with n a (b1 ⋅ b2); eauto using cmra_includedN_l.
   Qed.
-  Canonical Structure viewR := CmraT (view rel) view_cmra_mixin.
+  Canonical Structure viewR := Cmra (view rel) view_cmra_mixin.
 
   Global Instance view_auth_discrete q a :
     Discrete a → Discrete (ε : B) → Discrete (●V{q} a : view rel).
@@ -261,7 +261,7 @@ Section cmra.
     - by intros x; constructor; rewrite /= left_id.
     - do 2 constructor; [done| apply (core_id_core _)].
   Qed.
-  Canonical Structure viewUR := UcmraT (view rel) view_ucmra_mixin.
+  Canonical Structure viewUR := Ucmra (view rel) view_ucmra_mixin.
 
   (** Operation *)
   Lemma view_auth_frac_op p1 p2 a : ●V{p1 + p2} a ≡ ●V{p1} a ⋅ ●V{p2} a.
@@ -546,7 +546,7 @@ Lemma view_map_compose {A A' A'' B B' B''}
   view_map (f2 ∘ f1) (g2 ∘ g1) x
   =@{view rel''} view_map f2 g2 (view_map (rel':=rel') f1 g1 x).
 Proof. destruct x as [[[]|] ];  by rewrite // /view_map /= agree_map_compose. Qed.
-Lemma view_map_ext  {A A' B B' : ofeT}
+Lemma view_map_ext  {A A' B B' : ofe}
     {rel : nat → A → B → Prop} {rel' : nat → A' → B' → Prop}
     (f1 f2 : A → A') (g1 g2 : B → B')
     `{!NonExpansive f1, !NonExpansive g1} (x : view rel) :
@@ -556,7 +556,7 @@ Proof.
   intros. constructor; simpl; [|by auto].
   apply option_fmap_equiv_ext=> a; by rewrite /prod_map /= agree_map_ext.
 Qed.
-Global Instance view_map_ne {A A' B B' : ofeT}
+Global Instance view_map_ne {A A' B B' : ofe}
     {rel : nat → A → B → Prop} {rel' : nat → A' → B' → Prop}
     (f : A → A') (g : B → B') `{Hf : !NonExpansive f, Hg : !NonExpansive g} :
   NonExpansive (view_map (rel':=rel') (rel:=rel) f g).
@@ -566,11 +566,11 @@ Proof.
   apply prod_map_ne; [done| |done]. by apply agree_map_ne.
 Qed.
 
-Definition viewO_map {A A' B B' : ofeT}
+Definition viewO_map {A A' B B' : ofe}
     {rel : nat → A → B → Prop} {rel' : nat → A' → B' → Prop}
     (f : A -n> A') (g : B -n> B') : viewO rel -n> viewO rel' :=
   OfeMor (view_map f g).
-Lemma viewO_map_ne {A A' B B' : ofeT}
+Lemma viewO_map_ne {A A' B B' : ofe}
     {rel : nat → A → B → Prop} {rel' : nat → A' → B' → Prop} :
   NonExpansive2 (viewO_map (rel:=rel) (rel':=rel')).
 Proof.

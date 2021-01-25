@@ -152,7 +152,7 @@ Proof. rewrite /FromModal /= =><-. by rewrite embed_plainly. Qed.
 
 Global Instance into_internal_eq_embed
     `{!BiInternalEq PROP, !BiInternalEq PROP', !BiEmbedInternalEq PROP PROP'}
-    {A : ofeT} (x y : A) (P : PROP) :
+    {A : ofe} (x y : A) (P : PROP) :
   IntoInternalEq P x y → IntoInternalEq (⎡P⎤ : PROP')%I x y.
 Proof. rewrite /IntoInternalEq=> ->. by rewrite embed_internal_eq. Qed.
 

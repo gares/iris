@@ -4,7 +4,7 @@ From iris.algebra Require Import updates local_updates proofmode_classes big_op.
 From iris.prelude Require Import options.
 
 Section ofe.
-Context `{Countable K} {A : ofeT}.
+Context `{Countable K} {A : ofe}.
 Implicit Types m : gmap K A.
 Implicit Types i : K.
 
@@ -22,7 +22,7 @@ Proof.
     + by intros m1 m2 m3 ?? k; trans (m2 !! k).
   - by intros n m1 m2 ? k; apply dist_S.
 Qed.
-Canonical Structure gmapO : ofeT := OfeT (gmap K A) gmap_ofe_mixin.
+Canonical Structure gmapO : ofe := Ofe (gmap K A) gmap_ofe_mixin.
 
 Program Definition gmap_chain (c : chain gmapO)
   (k : K) : chain (optionO A) := {| chain_car n := c n !! k |}.
@@ -100,22 +100,22 @@ End ofe.
 Global Arguments gmapO _ {_ _} _.
 
 (** Non-expansiveness of higher-order map functions and big-ops *)
-Lemma merge_ne `{Countable K} {A B C : ofeT} (f g : option A → option B → option C)
+Lemma merge_ne `{Countable K} {A B C : ofe} (f g : option A → option B → option C)
     `{!DiagNone f, !DiagNone g} n :
   ((dist n) ==> (dist n) ==> (dist n))%signature f g →
   ((dist n) ==> (dist n) ==> (dist n))%signature (merge (M:=gmap K) f) (merge g).
 Proof. by intros Hf ?? Hm1 ?? Hm2 i; rewrite !lookup_merge //; apply Hf. Qed.
-Global Instance union_with_proper `{Countable K} {A : ofeT} n :
+Global Instance union_with_proper `{Countable K} {A : ofe} n :
   Proper (((dist n) ==> (dist n) ==> (dist n)) ==>
           (dist n) ==> (dist n) ==>(dist n)) (union_with (M:=gmap K A)).
 Proof.
   intros ?? Hf ?? Hm1 ?? Hm2 i; apply (merge_ne _ _); auto.
   by do 2 destruct 1; first [apply Hf | constructor].
 Qed.
-Global Instance map_fmap_proper `{Countable K} {A B : ofeT} (f : A → B) n :
+Global Instance map_fmap_proper `{Countable K} {A B : ofe} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==> dist n) (fmap (M:=gmap K) f).
 Proof. intros ? m m' ? k; rewrite !lookup_fmap. by repeat f_equiv. Qed.
-Global Instance map_zip_with_proper `{Countable K} {A B C : ofeT} (f : A → B → C) n :
+Global Instance map_zip_with_proper `{Countable K} {A B C : ofe} (f : A → B → C) n :
   Proper (dist n ==> dist n ==> dist n) f →
   Proper (dist n ==> dist n ==> dist n) (map_zip_with (M:=gmap K) f).
 Proof.
@@ -123,7 +123,7 @@ Proof.
   destruct 1; destruct 1; repeat f_equiv; constructor || done.
 Qed.
 
-Lemma big_opM_ne_2 `{Monoid M o} `{Countable K} {A : ofeT} (f g : K → A → M) m1 m2 n :
+Lemma big_opM_ne_2 `{Monoid M o} `{Countable K} {A : ofe} (f g : K → A → M) m1 m2 n :
   m1 ≡{n}≡ m2 →
   (∀ k y1 y2,
     m1 !! k = Some y1 → m2 !! k = Some y2 → y1 ≡{n}≡ y2 → f k y1 ≡{n}≡ g k y2) →
@@ -138,7 +138,7 @@ Qed.
 
 (* CMRA *)
 Section cmra.
-Context `{Countable K} {A : cmraT}.
+Context `{Countable K} {A : cmra}.
 Implicit Types m : gmap K A.
 
 Local Instance gmap_unit : Unit (gmap K A) := (∅ : gmap K A).
@@ -216,7 +216,7 @@ Proof.
     + revert Hz1i. case: (y1!!i)=>[?|] //.
     + revert Hz2i. case: (y2!!i)=>[?|] //.
 Qed.
-Canonical Structure gmapR := CmraT (gmap K A) gmap_cmra_mixin.
+Canonical Structure gmapR := Cmra (gmap K A) gmap_cmra_mixin.
 
 Global Instance gmap_cmra_discrete : CmraDiscrete A → CmraDiscrete gmapR.
 Proof. split; [apply _|]. intros m ? i. by apply: cmra_discrete_valid. Qed.
@@ -228,7 +228,7 @@ Proof.
   - by intros m i; rewrite /= lookup_op lookup_empty (left_id_L None _).
   - constructor=> i. by rewrite lookup_omap lookup_empty.
 Qed.
-Canonical Structure gmapUR := UcmraT (gmap K A) gmap_ucmra_mixin.
+Canonical Structure gmapUR := Ucmra (gmap K A) gmap_ucmra_mixin.
 
 End cmra.
 
@@ -236,7 +236,7 @@ Global Arguments gmapR _ {_ _} _.
 Global Arguments gmapUR _ {_ _} _.
 
 Section properties.
-Context `{Countable K} {A : cmraT}.
+Context `{Countable K} {A : cmra}.
 Implicit Types m : gmap K A.
 Implicit Types i : K.
 Implicit Types x y : A.
@@ -594,7 +594,7 @@ Proof.
     [done|by rewrite lookup_singleton].
 Qed.
 
-Lemma gmap_fmap_mono {B : cmraT} (f : A → B) m1 m2 :
+Lemma gmap_fmap_mono {B : cmra} (f : A → B) m1 m2 :
   Proper ((≡) ==> (≡)) f →
   (∀ x y, x ≼ y → f x ≼ f y) → m1 ≼ m2 → fmap f m1 ≼ fmap f m2.
 Proof.
@@ -620,7 +620,7 @@ Qed.
 End properties.
 
 Section unital_properties.
-Context `{Countable K} {A : ucmraT}.
+Context `{Countable K} {A : ucmra}.
 Implicit Types m : gmap K A.
 Implicit Types i : K.
 Implicit Types x y : A.
@@ -643,10 +643,10 @@ Qed.
 End unital_properties.
 
 (** Functor *)
-Global Instance gmap_fmap_ne `{Countable K} {A B : ofeT} (f : A → B) n :
+Global Instance gmap_fmap_ne `{Countable K} {A B : ofe} (f : A → B) n :
   Proper (dist n ==> dist n) f → Proper (dist n ==>dist n) (fmap (M:=gmap K) f).
 Proof. by intros ? m m' Hm k; rewrite !lookup_fmap; apply option_fmap_ne. Qed.
-Global Instance gmap_fmap_cmra_morphism `{Countable K} {A B : cmraT} (f : A → B)
+Global Instance gmap_fmap_cmra_morphism `{Countable K} {A B : cmra} (f : A → B)
   `{!CmraMorphism f} : CmraMorphism (fmap f : gmap K A → gmap K B).
 Proof.
   split; try apply _.
