@@ -35,6 +35,14 @@ Section mono_nat.
     mono_nat_lb n1 ⋅ mono_nat_lb n2 = mono_nat_lb (n1 `max` n2).
   Proof. rewrite -auth_frag_op max_nat_op_max //. Qed.
 
+  Lemma mono_nat_auth_lb_op q n :
+    mono_nat_auth q n ≡ mono_nat_auth q n ⋅ mono_nat_lb n.
+  Proof.
+    rewrite /mono_nat_auth /mono_nat_lb.
+    rewrite -!assoc -auth_frag_op max_nat_op_max.
+    rewrite Nat.max_id //.
+  Qed.
+
   (** rephrasing of [mono_nat_lb_op] useful for weakening a fragment to a
   smaller lower-bound *)
   Lemma mono_nat_lb_op_le_l n n' :
