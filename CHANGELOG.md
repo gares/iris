@@ -67,9 +67,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Strengthen `cmra_op_discrete` to assume only `✓{0} (x1 ⋅ x2)` instead of `✓
   (x1 ⋅ x2)`.
 * Rename the types `ofeT`→`ofe`, `cmraT`→`cmra`, `ucmraT`→`ucmra`, and the
-  constructors `OfeT`→`Ofe`, and `CmraT`→`Cmra`, since the `T` suffix is not
-  needed. This change makes these names consistent with `bi` and `Ucmra`,
-  which also do not have a `T` suffix.
+  constructors `OfeT`→`Ofe`, `CmraT`→`Cmra`, and `UcmraT`→`Ucmra` since the `T`
+  suffix is not needed. This change makes these names consistent with `bi`,
+  which also does not have a `T` suffix.
 
 **Changes in `bi`:**
 
@@ -224,7 +224,8 @@ s/\bofeT\b/ofe/g
 s/\bOfeT\b/Ofe/g
 s/\bcmraT\b/cmra/g
 s/\bCmraT\b/Cmra/g
-s/\bcmraT\b/ucmra/g
+s/\bucmraT\b/ucmra/g
+s/\bUcmraT\b/Ucmra/g
 EOF
 ```
 
