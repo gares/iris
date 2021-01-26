@@ -245,11 +245,13 @@ Section sep_list.
     rewrite -decide_emp. by repeat case_decide.
   Qed.
 
-  Lemma big_sepL_lookup_acc_impl Φ l i x :
+  Lemma big_sepL_lookup_acc_impl {Φ l} i x :
     l !! i = Some x →
     ([∗ list] k↦y ∈ l, Φ k y) -∗
-    (* We obtain [Φ] for [x] *) Φ i x ∗
-    (* We reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* We obtain [Φ] for [x] *)
+    Φ i x ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ k y, ⌜ l !! k = Some y ⌝ → ⌜ k ≠ i ⌝ → Φ k y -∗ Ψ k y) -∗
       Ψ i x -∗
       [∗ list] k↦y ∈ l, Ψ k y.
@@ -668,12 +670,14 @@ Section sep_list2.
     rewrite -decide_emp. by repeat case_decide.
   Qed.
 
-  Lemma big_sepL2_lookup_acc_impl Φ l1 l2 i x1 x2 :
+  Lemma big_sepL2_lookup_acc_impl {Φ l1 l2} i x1 x2 :
     l1 !! i = Some x1 →
     l2 !! i = Some x2 →
     ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) -∗
-    (* We obtain [Φ] for the [x1] and [x2] *) Φ i x1 x2 ∗
-    (* We reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* We obtain [Φ] for the [x1] and [x2] *)
+    Φ i x1 x2 ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ k y1 y2,
         ⌜ l1 !! k = Some y1 ⌝ → ⌜ l2 !! k = Some y2 ⌝ → ⌜ k ≠ i ⌝ →
         Φ k y1 y2 -∗ Ψ k y1 y2) -∗
@@ -1197,11 +1201,13 @@ Section map.
     rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
-  Lemma big_sepM_lookup_acc_impl Φ m i x :
+  Lemma big_sepM_lookup_acc_impl {Φ m} i x :
     m !! i = Some x →
     ([∗ map] k↦y ∈ m, Φ k y) -∗
-    (* We obtain [Φ] for [x] *) Φ i x ∗
-    (* We reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* We obtain [Φ] for [x] *)
+    Φ i x ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ k y, ⌜ m !! k = Some y ⌝ → ⌜ k ≠ i ⌝ → Φ k y -∗ Ψ k y) -∗
       Ψ i x -∗
       [∗ map] k↦y ∈ m, Ψ k y.
@@ -1615,12 +1621,14 @@ Section map2.
     apply bi.wand_intro_l. rewrite -big_sepM2_sep. by setoid_rewrite wand_elim_l.
   Qed.
 
-  Lemma big_sepM2_lookup_acc_impl Φ m1 m2 i x1 x2 :
+  Lemma big_sepM2_lookup_acc_impl {Φ m1 m2} i x1 x2 :
     m1 !! i = Some x1 →
     m2 !! i = Some x2 →
     ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
-    (* We obtain [Φ] for [x1] and [x2] *) Φ i x1 x2 ∗
-    (* We reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* We obtain [Φ] for [x1] and [x2] *)
+    Φ i x1 x2 ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ k y1 y2,
         ⌜ m1 !! k = Some y1 ⌝ → ⌜ m2 !! k = Some y2 ⌝ → ⌜ k ≠ i ⌝ →
         Φ k y1 y2 -∗ Ψ k y1 y2) -∗
@@ -1889,11 +1897,13 @@ Section gset.
     by setoid_rewrite wand_elim_l.
   Qed.
 
-  Lemma big_sepS_elem_of_acc_impl Φ X x :
+  Lemma big_sepS_elem_of_acc_impl {Φ X} x :
     x ∈ X →
     ([∗ set] y ∈ X, Φ y) -∗
-    (* we get [Φ] for the element [x] *) Φ x ∗
-    (* we reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* we get [Φ] for the element [x] *)
+    Φ x ∗
+    (* we reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ y, ⌜ y ∈ X ⌝ → ⌜ x ≠ y ⌝ → Φ y -∗ Ψ y) -∗
       Ψ x -∗
       [∗ set] y ∈ X, Ψ y.
@@ -2085,11 +2095,13 @@ Section gmultiset.
     rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
-  Lemma big_sepMS_elem_of_acc_impl Φ X x :
+  Lemma big_sepMS_elem_of_acc_impl {Φ X} x :
     x ∈ X →
     ([∗ mset] y ∈ X, Φ y) -∗
-    (* we get [Φ] for [x] *) Φ x ∗
-    (* we reobtain the bigop for a predicate [Ψ] selected by the user *) ∀ Ψ,
+    (* we get [Φ] for [x] *)
+    Φ x ∗
+    (* we reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
       □ (∀ y, ⌜ y ∈ X ∖ {[ x ]} ⌝ → Φ y -∗ Ψ y) -∗
       Ψ x -∗
       [∗ mset] y ∈ X, Ψ y.
