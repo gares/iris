@@ -83,6 +83,11 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   duplicate of `fupd_plain_laterN`.
 * Strengthen `big_sepL2_app_inv` by weakening a premise (it is sufficient for
   one of the two pairs of lists to have equal length).
+* Add lemmas to big-ops that provide ownership of a single element and permit
+  changing the quantified-over predicate when re-assembling the big-op:
+  `big_sepL_lookup_acc_impl`, `big_sepL2_lookup_acc_impl`,
+  `big_sepM_lookup_acc_impl`, `big_sepM2_lookup_acc_impl`,
+  `big_sepS_elem_of_acc_impl`, `big_sepMS_elem_of_acc_impl`.
 
 **Changes in `proofmode`:**
 

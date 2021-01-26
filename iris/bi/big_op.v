@@ -226,8 +226,8 @@ Section sep_list.
 
   Lemma big_sepL_delete Φ l i x :
     l !! i = Some x →
-    ([∗ list] k↦y ∈ l, Φ k y)
-    ⊣⊢ Φ i x ∗ [∗ list] k↦y ∈ l, if decide (k = i) then emp else Φ k y.
+    ([∗ list] k↦y ∈ l, Φ k y) ⊣⊢
+    Φ i x ∗ [∗ list] k↦y ∈ l, if decide (k = i) then emp else Φ k y.
   Proof.
     intros. rewrite -(take_drop_middle l i x) // !big_sepL_app /= Nat.add_0_r.
     rewrite take_length_le; last eauto using lookup_lt_Some, Nat.lt_le_incl.
@@ -237,13 +237,34 @@ Section sep_list.
       rewrite take_length in Hk. by rewrite decide_False; last lia.
     - apply big_sepL_proper=> k y _. by rewrite decide_False; last lia.
   Qed.
-
   Lemma big_sepL_delete' `{!BiAffine PROP} Φ l i x :
     l !! i = Some x →
     ([∗ list] k↦y ∈ l, Φ k y) ⊣⊢ Φ i x ∗ [∗ list] k↦y ∈ l, ⌜ k ≠ i ⌝ → Φ k y.
   Proof.
     intros. rewrite big_sepL_delete //. (do 2 f_equiv)=> k y.
     rewrite -decide_emp. by repeat case_decide.
+  Qed.
+
+  Lemma big_sepL_lookup_acc_impl {Φ l} i x :
+    l !! i = Some x →
+    ([∗ list] k↦y ∈ l, Φ k y) -∗
+    (* We obtain [Φ] for [x] *)
+    Φ i x ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ k y, ⌜ l !! k = Some y ⌝ → ⌜ k ≠ i ⌝ → Φ k y -∗ Ψ k y) -∗
+      Ψ i x -∗
+      [∗ list] k↦y ∈ l, Ψ k y.
+  Proof.
+    intros. rewrite big_sepL_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepL_delete Ψ l i x) //. apply sep_mono_r.
+    eapply wand_apply; [apply big_sepL_impl|apply sep_mono_r].
+    apply intuitionistically_intro', forall_intro=> k; apply forall_intro=> y.
+    apply impl_intro_l, pure_elim_l=> ?; apply wand_intro_r.
+    rewrite (forall_elim ) (forall_elim y) pure_True // left_id.
+    destruct (decide _) as [->|]; [by apply: affine|].
+    by rewrite pure_True //left_id intuitionistically_elim wand_elim_l.
   Qed.
 
   Lemma big_sepL_replicate l P :
@@ -623,6 +644,57 @@ Section sep_list2.
     rewrite -(idemp bi_and (big_sepL2 _ _ _)) {1}big_sepL2_length.
     apply pure_elim_l=> ?. rewrite big_sepL2_intuitionistically_forall //.
     apply bi.wand_intro_l. rewrite -big_sepL2_sep. by setoid_rewrite wand_elim_l.
+  Qed.
+
+  Lemma big_sepL2_delete Φ l1 l2 i x1 x2 :
+    l1 !! i = Some x1 → l2 !! i = Some x2 →
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊣⊢
+    Φ i x1 x2 ∗ [∗ list] k↦y1;y2 ∈ l1;l2, if decide (k = i) then emp else Φ k y1 y2.
+  Proof.
+    intros. rewrite -(take_drop_middle l1 i x1) // -(take_drop_middle l2 i x2) //.
+    assert (i < length l1 ∧ i < length l2) as [??] by eauto using lookup_lt_Some.
+    rewrite !big_sepL2_app_same_length /=; [|rewrite ?take_length; lia..].
+    rewrite Nat.add_0_r take_length_le; [|lia].
+    rewrite decide_True // left_id.
+    rewrite assoc -!(comm _ (Φ _ _ _)) -assoc. do 2 f_equiv.
+    - apply big_sepL2_proper=> k y1 y2 Hk. apply lookup_lt_Some in Hk.
+      rewrite take_length in Hk. by rewrite decide_False; last lia.
+    - apply big_sepL2_proper=> k y1 y2 _. by rewrite decide_False; last lia.
+  Qed.
+  Lemma big_sepL2_delete' `{!BiAffine PROP} Φ l1 l2 i x1 x2 :
+    l1 !! i = Some x1 → l2 !! i = Some x2 →
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) ⊣⊢
+    Φ i x1 x2 ∗ [∗ list] k↦y1;y2 ∈ l1;l2, ⌜ k ≠ i ⌝ → Φ k y1 y2.
+  Proof.
+    intros. rewrite big_sepL2_delete //. (do 2 f_equiv)=> k y1 y2.
+    rewrite -decide_emp. by repeat case_decide.
+  Qed.
+
+  Lemma big_sepL2_lookup_acc_impl {Φ l1 l2} i x1 x2 :
+    l1 !! i = Some x1 →
+    l2 !! i = Some x2 →
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) -∗
+    (* We obtain [Φ] for the [x1] and [x2] *)
+    Φ i x1 x2 ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ k y1 y2,
+        ⌜ l1 !! k = Some y1 ⌝ → ⌜ l2 !! k = Some y2 ⌝ → ⌜ k ≠ i ⌝ →
+        Φ k y1 y2 -∗ Ψ k y1 y2) -∗
+      Ψ i x1 x2 -∗
+      [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
+  Proof.
+    intros. rewrite big_sepL2_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepL2_delete Ψ l1 l2 i) //. apply sep_mono_r.
+    eapply wand_apply; [apply big_sepL2_impl|apply sep_mono_r].
+    apply intuitionistically_intro', forall_intro=> k;
+      apply forall_intro=> y1; apply forall_intro=> y2.
+    do 2 (apply impl_intro_l, pure_elim_l=> ?); apply wand_intro_r.
+    rewrite (forall_elim k) (forall_elim y1) (forall_elim y2).
+    rewrite !(pure_True (_ = Some _)) // !left_id.
+    destruct (decide _) as [->|]; [by apply: affine|].
+    by rewrite pure_True //left_id intuitionistically_elim wand_elim_l.
   Qed.
 
   Lemma big_sepL2_later_1 `{BiAffine PROP} Φ l1 l2 :
@@ -1129,6 +1201,26 @@ Section map.
     rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
   Qed.
 
+  Lemma big_sepM_lookup_acc_impl {Φ m} i x :
+    m !! i = Some x →
+    ([∗ map] k↦y ∈ m, Φ k y) -∗
+    (* We obtain [Φ] for [x] *)
+    Φ i x ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ k y, ⌜ m !! k = Some y ⌝ → ⌜ k ≠ i ⌝ → Φ k y -∗ Ψ k y) -∗
+      Ψ i x -∗
+      [∗ map] k↦y ∈ m, Ψ k y.
+  Proof.
+    intros. rewrite big_sepM_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepM_delete Ψ m i x) //. apply sep_mono_r.
+    eapply wand_apply; [apply big_sepM_impl|apply sep_mono_r].
+    f_equiv; f_equiv=> k; f_equiv=> y.
+    rewrite impl_curry -pure_and lookup_delete_Some.
+    do 2 f_equiv. intros ?; naive_solver.
+  Qed.
+
   Lemma big_sepM_later `{BiAffine PROP} Φ m :
     ▷ ([∗ map] k↦x ∈ m, Φ k x) ⊣⊢ ([∗ map] k↦x ∈ m, ▷ Φ k x).
   Proof. apply (big_opM_commute _). Qed.
@@ -1529,6 +1621,29 @@ Section map2.
     apply bi.wand_intro_l. rewrite -big_sepM2_sep. by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepM2_lookup_acc_impl {Φ m1 m2} i x1 x2 :
+    m1 !! i = Some x1 →
+    m2 !! i = Some x2 →
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
+    (* We obtain [Φ] for [x1] and [x2] *)
+    Φ i x1 x2 ∗
+    (* We reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ k y1 y2,
+        ⌜ m1 !! k = Some y1 ⌝ → ⌜ m2 !! k = Some y2 ⌝ → ⌜ k ≠ i ⌝ →
+        Φ k y1 y2 -∗ Ψ k y1 y2) -∗
+      Ψ i x1 x2 -∗
+      [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
+  Proof.
+    intros. rewrite big_sepM2_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepM2_delete Ψ m1 m2 i) //. apply sep_mono_r.
+    eapply wand_apply; [apply big_sepM2_impl|apply sep_mono_r].
+    f_equiv; f_equiv=> k; f_equiv=> y1; f_equiv=> y2.
+    rewrite !impl_curry -!pure_and !lookup_delete_Some.
+    do 2 f_equiv. intros ?; naive_solver.
+  Qed.
+
   Lemma big_sepM2_later_1 `{BiAffine PROP} Φ m1 m2 :
     (▷ [∗ map] k↦x1;x2 ∈ m1;m2, Φ k x1 x2)
     ⊢ ◇ ([∗ map] k↦x1;x2 ∈ m1;m2, ▷ Φ k x1 x2).
@@ -1782,6 +1897,25 @@ Section gset.
     by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepS_elem_of_acc_impl {Φ X} x :
+    x ∈ X →
+    ([∗ set] y ∈ X, Φ y) -∗
+    (* we get [Φ] for the element [x] *)
+    Φ x ∗
+    (* we reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ y, ⌜ y ∈ X ⌝ → ⌜ x ≠ y ⌝ → Φ y -∗ Ψ y) -∗
+      Ψ x -∗
+      [∗ set] y ∈ X, Ψ y.
+  Proof.
+    intros. rewrite big_sepS_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepS_delete Ψ X x) //. apply sep_mono_r.
+    eapply wand_apply; [apply big_sepS_impl|apply sep_mono_r].
+    f_equiv; f_equiv=> y. rewrite impl_curry -pure_and.
+    do 2 f_equiv. intros ?; set_solver.
+  Qed.
+
   Lemma big_sepS_dup P `{!Affine P} X :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ set] x ∈ X, P.
   Proof.
@@ -1959,6 +2093,23 @@ Section gmultiset.
     rewrite !big_sepMS_disj_union big_sepMS_singleton.
     rewrite intuitionistically_sep_dup {1}intuitionistically_elim.
     rewrite assoc wand_elim_r -assoc. apply sep_mono; done.
+  Qed.
+
+  Lemma big_sepMS_elem_of_acc_impl {Φ X} x :
+    x ∈ X →
+    ([∗ mset] y ∈ X, Φ y) -∗
+    (* we get [Φ] for [x] *)
+    Φ x ∗
+    (* we reobtain the bigop for a predicate [Ψ] selected by the user *)
+    ∀ Ψ,
+      □ (∀ y, ⌜ y ∈ X ∖ {[ x ]} ⌝ → Φ y -∗ Ψ y) -∗
+      Ψ x -∗
+      [∗ mset] y ∈ X, Ψ y.
+  Proof.
+    intros. rewrite big_sepMS_delete //. apply sep_mono_r, forall_intro=> Ψ.
+    apply wand_intro_r, wand_intro_l.
+    rewrite (big_sepMS_delete Ψ X x) //. apply sep_mono_r.
+    apply wand_elim_l', big_sepMS_impl.
   Qed.
 
   Global Instance big_sepMS_empty_persistent Φ :
