@@ -512,30 +512,40 @@ Proof.
 Qed.
 End heap.
 
-(** Evaluate [lem] to a hypothesis [H] that can be applied, and then run
-[wp_bind K; tac H] for every possible evaluation context.  [tac] can do
-[iApplyHyp H] to actually apply the hypothesis.  TC resolution of [lem] premises
-happens *after* [tac H] got executed. *)
-Tactic Notation "wp_apply_core" open_constr(lem) tactic3(tac) :=
-  wp_pures;
-  iPoseProofCore lem as false (fun H =>
-    lazymatch goal with
-    | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
-      reshape_expr e ltac:(fun K e' =>
-        wp_bind_core K; tac H) ||
-      lazymatch iTypeOf H with
-      | Some (_,?P) => fail "wp_apply: cannot apply" P
-      end
-    | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
-      reshape_expr e ltac:(fun K e' =>
-        twp_bind_core K; tac H) ||
-      lazymatch iTypeOf H with
-      | Some (_,?P) => fail "wp_apply: cannot apply" P
-      end
-    | _ => fail "wp_apply: not a 'wp'"
-    end).
+(** The tactic [wp_apply_core lem tac_suc tac_fail] evaluates [lem] to a
+hypothesis [H] that can be applied, and then runs [wp_bind_core K; tac_suc H]
+for every possible evaluation context [K].
+
+- The tactic [tac_suc] should do [iApplyHyp H] to actually apply the hypothesis,
+  but can perform other operations in addition (see [wp_apply] and [awp_apply]
+  below).
+- The tactic [tac_fail cont] is called when [tac_suc H] fails for all evaluation
+  contexts [K], and can perform further operations before invoking [cont] to
+  try again.
+
+TC resolution of [lem] premises happens *after* [tac_suc H] got executed. *)
+Ltac wp_apply_core lem tac_suc tac_fail := first
+  [iPoseProofCore lem as false (fun H =>
+     lazymatch goal with
+     | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
+       reshape_expr e ltac:(fun K e' =>
+         wp_bind_core K; tac_suc H)
+     | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
+       reshape_expr e ltac:(fun K e' =>
+         twp_bind_core K; tac_suc H)
+     | _ => fail 1 "wp_apply: not a 'wp'"
+     end)
+  |tac_fail ltac:(fun _ => wp_apply_core lem tac_suc tac_fail)
+  |let P := type of lem in
+   fail "wp_apply: cannot apply" lem ":" P ].
+
 Tactic Notation "wp_apply" open_constr(lem) :=
-  wp_apply_core lem (fun H => iApplyHyp H; try iNext; try wp_expr_simpl).
+  wp_apply_core lem ltac:(fun H => iApplyHyp H; try iNext; try wp_expr_simpl)
+                    ltac:(fun cont => fail).
+Tactic Notation "wp_smart_apply" open_constr(lem) :=
+  wp_apply_core lem ltac:(fun H => iApplyHyp H; try iNext; try wp_expr_simpl)
+                    ltac:(fun cont => wp_pure _; []; cont ()).
+
 (** Tactic tailored for atomic triples: the first, simple one just runs
 [iAuIntro] on the goal, as atomic triples always have an atomic update as their
 premise.  The second one additionaly does some framing: it gets rid of [Hs] from
@@ -543,10 +553,13 @@ the context, which is intended to be the non-laterable assertions that iAuIntro
 would choke on.  You get them all back in the continuation of the atomic
 operation. *)
 Tactic Notation "awp_apply" open_constr(lem) :=
-  wp_apply_core lem (fun H => iApplyHyp H);
+  wp_apply_core lem ltac:(fun H => iApplyHyp H) ltac:(fun cont => fail);
   last iAuIntro.
 Tactic Notation "awp_apply" open_constr(lem) "without" constr(Hs) :=
-  wp_apply_core lem (fun H => iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H]);
+  wp_apply_core lem
+    ltac:(fun H =>
+      iApply wp_frame_wand_l; iSplitL Hs; [iAccu|iApplyHyp H]) 
+    ltac:(fun cont => fail);
   last iAuIntro.
 
 Tactic Notation "wp_alloc" ident(l) "as" constr(H) :=

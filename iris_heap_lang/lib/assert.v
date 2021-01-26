@@ -15,7 +15,7 @@ Lemma twp_assert `{!heapG Σ} E (Φ : val → iProp Σ) e :
   WP (assert: e)%V @ E [{ Φ }].
 Proof.
   iIntros "HΦ". wp_lam.
-  wp_apply (twp_wand with "HΦ"). iIntros (v) "[% ?]"; subst. by wp_if.
+  wp_smart_apply (twp_wand with "HΦ"). iIntros (v) "[% ?]"; subst. by wp_if.
 Qed.
 
 Lemma wp_assert `{!heapG Σ} E (Φ : val → iProp Σ) e :
@@ -23,5 +23,5 @@ Lemma wp_assert `{!heapG Σ} E (Φ : val → iProp Σ) e :
   WP (assert: e)%V @ E {{ Φ }}.
 Proof.
   iIntros "HΦ". wp_lam.
-  wp_apply (wp_wand with "HΦ"). iIntros (v) "[% ?]"; subst. by wp_if.
+  wp_smart_apply (wp_wand with "HΦ"). iIntros (v) "[% ?]"; subst. by wp_if.
 Qed.

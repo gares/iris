@@ -57,7 +57,7 @@ Lemma sum_wp `{!heapG Σ} v t :
 Proof.
   iIntros (Φ) "Ht HΦ". rewrite /sum' /=.
   wp_lam. wp_alloc l as "Hl".
-  wp_apply (sum_loop_wp with "[$Hl $Ht]").
+  wp_smart_apply (sum_loop_wp with "[$Hl $Ht]").
   rewrite Z.add_0_r.
   iIntros "[Hl Ht]". wp_load. by iApply "HΦ".
 Qed.

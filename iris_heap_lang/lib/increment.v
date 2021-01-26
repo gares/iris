@@ -63,7 +63,7 @@ Section increment.
     { (* abort case *) done. }
     iIntros "Hl". iMod ("Hclose" with "Hl") as "AU". iModIntro.
     (* Now go on *)
-    awp_apply cas_spec; first done.
+    wp_pures. awp_apply cas_spec; first done.
     (* Prove the atomic update for CAS *)
     rewrite /atomic_acc /=. iMod "AU" as (w) "[Hl Hclose]".
     iModIntro. iExists _. iFrame "Hl". iSplit.
@@ -87,7 +87,7 @@ Section increment.
     iIntros (x) "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
     iIntros "$ !> AU !>".
     (* Now go on *)
-    awp_apply cas_spec; first done.
+    wp_pures. awp_apply cas_spec; first done.
     (* Prove the atomic update for CAS *)
     iApply (aacc_aupd with "AU"); first done.
     iIntros (x') "H↦". iAaccIntro with "H↦"; first by eauto with iFrame.
@@ -118,7 +118,7 @@ Section increment.
   Proof.
     iIntros "Hl" (Φ) "AU". wp_lam.
     wp_apply (atomic_wp_seq $! (load_spec _) with "Hl").
-    iIntros "Hl". awp_apply store_spec.
+    iIntros "Hl". wp_pures. awp_apply store_spec.
     (* Prove the atomic update for store *)
     iApply (aacc_aupd_commit with "AU"); first done.
     iIntros (x) "H↦".
@@ -155,7 +155,7 @@ Section increment_client.
       (* The continuation: From after the atomic triple to the postcondition of the WP *)
       done.
     }
-    wp_apply wp_par.
+    wp_smart_apply wp_par.
     - iAssumption.
     - iAssumption.
     - iIntros (??) "_ !>". done.

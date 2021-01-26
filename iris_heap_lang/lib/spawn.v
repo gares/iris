@@ -52,7 +52,7 @@ Proof.
   iMod (own_alloc (Excl ())) as (γ) "Hγ"; first done.
   iMod (inv_alloc N _ (spawn_inv γ l Ψ) with "[Hl]") as "#?".
   { iNext. iExists NONEV. iFrame; eauto. }
-  wp_apply (wp_fork with "[Hf]").
+  wp_smart_apply (wp_fork with "[Hf]").
   - iNext. wp_bind (f _). iApply (wp_wand with "Hf"); iIntros (v) "Hv".
     wp_inj. iInv N as (v') "[Hl _]".
     wp_store. iSplitL; last done. iIntros "!> !>". iExists (SOMEV v). iFrame. eauto.
@@ -66,7 +66,7 @@ Proof.
   iLöb as "IH". wp_rec. wp_bind (! _)%E. iInv N as (v) "[Hl Hinv]".
   wp_load. iDestruct "Hinv" as "[%|Hinv]"; subst.
   - iModIntro. iSplitL "Hl"; [iNext; iExists _; iFrame; eauto|].
-    wp_apply ("IH" with "Hγ [HΦ]"). auto.
+    wp_smart_apply ("IH" with "Hγ [HΦ]"). auto.
   - iDestruct "Hinv" as (v' ->) "[HΨ|Hγ']".
     + iModIntro. iSplitL "Hl Hγ"; [iNext; iExists _; iFrame; eauto|].
       wp_pures. by iApply "HΦ".
