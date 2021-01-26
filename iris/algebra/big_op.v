@@ -97,6 +97,9 @@ Section list.
     revert f. induction l1 as [|x l1 IH]=> f /=; first by rewrite left_id.
     by rewrite IH assoc.
   Qed.
+  Lemma big_opL_snoc f l x :
+    ([^o list] k↦y ∈ l ++ [x], f k y) ≡ ([^o list] k↦y ∈ l, f k y) `o` f (length l) x.
+  Proof. rewrite big_opL_app big_opL_singleton Nat.add_0_r //. Qed.
 
   Lemma big_opL_unit l : ([^o list] k↦y ∈ l, monoid_unit) ≡ (monoid_unit : M).
   Proof. induction l; rewrite /= ?left_id //. Qed.
@@ -213,6 +216,26 @@ Lemma big_opL_bind {A B} (h : A → list B) (f : B → M) l :
 Proof.
   revert f. induction l as [|x l IH]=> f; csimpl=> //. by rewrite big_opL_app IH.
 Qed.
+
+Lemma big_opL_sep_zip_with {A B C} (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (h1 : nat → A → M) (h2 : nat → B → M) l1 l2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
+  length l1 = length l2 →
+  ([^o list] k↦xy ∈ zip_with f l1 l2, h1 k (g1 xy) `o` h2 k (g2 xy)) ≡
+  ([^o list] k↦x ∈ l1, h1 k x) `o` ([^o list] k↦y ∈ l2, h2 k y).
+Proof.
+  intros Hlen Hg1 Hg2. rewrite big_opL_op.
+  rewrite -(big_opL_fmap g1) -(big_opL_fmap g2).
+  rewrite fmap_zip_with_r; [|auto with lia..].
+  by rewrite fmap_zip_with_l; [|auto with lia..].
+Qed.
+
+Lemma big_opL_sep_zip {A B} (h1 : nat → A → M) (h2 : nat → B → M) l1 l2 :
+  length l1 = length l2 →
+  ([^o list] k↦xy ∈ zip l1 l2, h1 k xy.1 `o` h2 k xy.2) ≡
+  ([^o list] k↦x ∈ l1, h1 k x) `o` ([^o list] k↦y ∈ l2, h2 k y).
+Proof. by apply big_opL_sep_zip_with. Qed.
 
 (** ** Big ops over finite maps *)
 
@@ -393,6 +416,29 @@ Section gmap.
     rewrite big_opM_eq /big_opM_def -big_opL_op. by apply big_opL_proper=> ? [??].
   Qed.
 End gmap.
+
+Lemma big_opM_sep_zip_with `{Countable K} {A B C}
+    (f : A → B → C) (g1 : C → A) (g2 : C → B)
+    (h1 : K → A → M) (h2 : K → B → M) m1 m2 :
+  (∀ x y, g1 (f x y) = x) →
+  (∀ x y, g2 (f x y) = y) →
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([^o map] k↦xy ∈ map_zip_with f m1 m2, h1 k (g1 xy) `o` h2 k (g2 xy)) ≡
+  ([^o map] k↦x ∈ m1, h1 k x) `o` ([^o map] k↦y ∈ m2, h2 k y).
+Proof.
+  intros Hdom Hg1 Hg2. rewrite big_opM_op.
+  rewrite -(big_opM_fmap g1) -(big_opM_fmap g2).
+  rewrite map_fmap_zip_with_r; [|naive_solver..].
+  by rewrite map_fmap_zip_with_l; [|naive_solver..].
+Qed.
+
+Lemma big_opM_sep_zip `{Countable K} {A B}
+    (h1 : K → A → M) (h2 : K → B → M) m1 m2 :
+  (∀ k, is_Some (m1 !! k) ↔ is_Some (m2 !! k)) →
+  ([^o map] k↦xy ∈ map_zip m1 m2, h1 k xy.1 `o` h2 k xy.2) ≡
+  ([^o map] k↦x ∈ m1, h1 k x) `o` ([^o map] k↦y ∈ m2, h2 k y).
+Proof. intros. by apply big_opM_sep_zip_with. Qed.
+
 
 (** ** Big ops over finite sets *)
 Section gset.

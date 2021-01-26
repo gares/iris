@@ -81,6 +81,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   and either affine or absorbing.
 * Fix the statement of the lemma `fupd_plainly_laterN`; the old lemma was a
   duplicate of `fupd_plain_laterN`.
+* Strengthen `big_sepL2_app_inv` by weakening a premise (it is sufficient for
+  one of the two pairs of lists to have equal length).
 
 **Changes in `proofmode`:**
 
