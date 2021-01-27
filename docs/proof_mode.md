@@ -66,11 +66,18 @@ Context management
   mode [introduction patterns][ipat] `ipat1 ... ipatn`.
 - `iClear (x1 ... xn) "selpat"` : clear the hypotheses given by the [selection
   pattern][selpat] `selpat` and the Coq level hypotheses/variables `x1 ... xn`.
+- `iClear select (pat)%I` : clear the last hypothesis of the intuitionistic
+  or spatial context that matches pattern `pat`.
 - `iRevert (x1 ... xn) "selpat"` : revert the hypotheses given by the [selection
   pattern][selpat] `selpat` into wands, and the Coq level hypotheses/variables
   `x1 ... xn` into universal quantifiers. Intuitionistic hypotheses are wrapped
   into the intuitionistic modality.
+- `iRevert select (pat)%I` : revert the last hypothesis of the intuitionistic
+  or spatial context that matches pattern `pat`.
 - `iRename "H1" into "H2"` : rename the hypothesis `H1` into `H2`.
+- `iRename select (pat)%I into "H"` : rename the last hypothesis of the
+  intuitionistic or spatial context that matches pattern `pat` into `H`. This
+  is particularly useful to give a name to an anonymous hypothesis.
 - `iSpecialize pm_trm` : instantiate universal quantifiers and eliminate
   implications/wands of a hypothesis `pm_trm`. See [proof mode terms][pm-trm] below.
 - `iSpecialize pm_trm as #` : instantiate universal quantifiers and eliminate
@@ -81,19 +88,23 @@ Context management
   destruct it using the [introduction pattern][ipat] `ipat`. This tactic is
   essentially the same as `iDestruct` with the difference that `pm_trm` is not
   thrown away if possible.
-- `iAssert P with "spat" as "H"` : generate a new subgoal `P` and add the
+- `iAssert (P)%I with "spat" as "H"` : generate a new subgoal `P` and add the
   hypothesis `P` to the current goal as `H`. The [specialization pattern][spat] `spat`
   specifies which hypotheses will be consumed by proving `P`.
-  + `iAssert P with "spat" as "ipat"` : like the above, but immediately destruct
+  + `iAssert (P)%I with "spat" as "ipat"` : like the above, but immediately destruct
     the generated hypothesis using the [introduction pattern][ipat] `ipat`. If `ipat`
     is "intuitionistic" (most commonly, it starts with `#` or `%`), then all spatial
     hypotheses are available in both the subgoal for `P` as well as the current
     goal. An `ipat` is considered intuitionistic if all branches start with a
     `#` (which causes `P` to be moved to the intuitionistic context) or with a
     `%` (which causes `P` to be moved to the pure Coq context).
-  + `iAssert P as %cpat` : assert `P` and destruct it using the Coq introduction
+  + `iAssert (P)%I as %cpat` : assert `P` and destruct it using the Coq introduction
     pattern `cpat`. All hypotheses can be used for proving `P` as well as for
     proving the current goal.
+- `iSelect (pat)%I tac` : run the tactic `tac H`, where `H` is the name of the
+  last hypothesis in the intuitionistic or spatial hypothesis context that
+  matches pattern `pat`. There is no backtracking to select the next hypothesis
+  in case `tac H` fails.
 
 Introduction of logical connectives
 -----------------------------------
@@ -146,6 +157,9 @@ Elimination of logical connectives
     for proving the resulting goal.
   + `iDestruct num as (x1 ... xn) "ipat"` / `iDestruct num as %cpat` :
     introduce `num : nat` hypotheses and destruct the last introduced hypothesis.
+  + `iDestruct select (pat)%I as ...` is the same as `iDestruct "H" as ...`,
+    where `H` is the name of the last hypothesis of the intuitionistic or
+    spatial context matching pattern `pat`.
 
   In case all branches of `ipat` start with a `#` (which causes the hypothesis
   to be moved to the intuitionistic context) or with an `%` (which causes the
@@ -167,6 +181,8 @@ Separation logic-specific tactics
   Notice that framing spatial hypotheses makes them disappear, but framing Coq
   or intuitionistic hypotheses does not make them disappear.
   This tactic solves the goal if everything in the conclusion has been framed.
+- `iFrame select (pat)%I` : cancel the last hypothesis of the intuitionistic
+  of spatial context that matches pattern `pat`.
 - `iCombine "H1 H2" as "ipat"` : combine `H1 : P1` and `H2 : P2` into `H: P1 ∗
   P2` or something simplified but equivalent, then destruct the combined
   hypthesis using `ipat`. Some examples of simplifications `iCombine` knows

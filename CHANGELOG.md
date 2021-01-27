@@ -116,6 +116,14 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Add notation `¬ P` for `P → False` to `bi_scope`.
 * Add Coq side-condition `φ` to class `ElimAcc` (similar to what we already had
   for `ElimInv` and `ElimModal`).
+* Add a tactic `iSelect pat tac` (similar to `select` in std++) which runs the
+  tactic `tac H` with the name `H` of the last hypothesis of the intuitionistic
+  or spatial context matching `pat`. `iSelect` is used to implement:
+  + `iRename select (pat)%I into name` which renames the matching hypothesis,
+  + `iDestruct select (pat)%I as ...` which destructs the matching hypothesis,
+  + `iClear select (pat)%I` which clears the matching hypothesis,
+  + `iRevert select (pat)%I` which reverts the matching hypothesis,
+  + `iFrame select (pat)%I` which cancels the matching hypothesis.
 
 **Changes in `base_logic`:**
 
