@@ -1386,3 +1386,115 @@ Proof.
 Abort.
 
 End pure_name_tests.
+
+Section tactic_tests.
+Context {PROP : bi}.
+Implicit Types P Q R : PROP.
+Implicit Types φ : nat → PROP.
+Implicit Types Ψ : nat → nat → PROP.
+
+Check "test_iRename_select1".
+Lemma test_iRename_select1 P Q :
+  □ (P -∗ Q) -∗ □ P -∗ □ Q.
+Proof.
+  iIntros "#? #?".
+  iRename select P into "H1".
+  (* The following fails since there are no matching hypotheses. *)
+  Fail iRename select (_ ∗ _)%I into "?".
+  iRename select (_ -∗ _)%I into "H2".
+  iDestruct ("H2" with "H1") as "$".
+Qed.
+
+Lemma test_iRename_select2 P Q :
+  (P -∗ Q) -∗ P -∗ Q.
+Proof.
+  iIntros "??".
+  iRename select P into "H1".
+  iRename select (_ -∗ _)%I into "H2".
+  by iApply "H2".
+Qed.
+
+Lemma test_iDestruct_select1 P Q :
+  (P ∗ Q) -∗ Q ∗ P.
+Proof.
+  iIntros "?".
+  iDestruct select (_ ∗ _)%I as "[$ $]".
+Qed.
+
+Check "test_iDestruct_select2".
+Lemma test_iDestruct_select2 φ P :
+  (∃ x, P ∗ φ x) -∗ ∃ x, φ x ∗ P.
+Proof.
+  iIntros "?".
+  (* The following fails since [Φ n] is not pure. *)
+  Fail iDestruct select (∃ _, _)%I as (n) "[H1 %]".
+  iDestruct select (∃ _, _)%I as (n) "[H1 H2]".
+  iExists n. iFrame.
+Qed.
+
+Lemma test_iDestruct_select3 Ψ P :
+  (∃ x y, P ∗ Ψ x y) -∗ ∃ x y, Ψ x y ∗ P.
+Proof.
+  iIntros "?".
+  iDestruct select (∃ _, _)%I as (n m) "[H1 H2]".
+  iExists n, m. iFrame.
+Qed.
+
+Lemma test_iDestruct_select4 φ :
+  □ (∃ x, φ x) -∗ □ (∃ x, φ x).
+Proof.
+  iIntros "#?".
+  iDestruct select (∃ _, _)%I as (n) "H".
+  by iExists n.
+Qed.
+
+Lemma test_iDestruct_select5 (φ : nat → Prop) P :
+  P -∗ ⌜∃ n, φ n⌝ -∗ ∃ n, P ∗ ⌜φ n⌝ ∗ ⌜φ n⌝.
+Proof.
+  iIntros "??".
+  iDestruct select ⌜_⌝%I as %[n H].
+  iExists n. iFrame. by iSplit.
+Qed.
+
+Check "test_iDestruct_select_no_backtracking".
+Lemma test_iDestruct_select_no_backtracking P Q :
+  □ P -∗ Q -∗ Q.
+Proof.
+  iIntros "??".
+  (* The following must fail since the pattern will match [Q], which cannot be
+     introduced in the intuitionistic context. This demonstrates that tactics
+     based on [iSelect] only act on the last hypothesis of the intuitionistic
+     or spatial context that matches the pattern, and they do not backtrack if
+     the requested action fails on the hypothesis. *)
+  Fail iDestruct select _ as "#X".
+  done.
+Qed.
+
+Lemma test_iDestruct_select_several_match P Q R :
+  □ P -∗ □ Q -∗ □ R -∗ □ R.
+Proof.
+  iIntros "???".
+  (* This demonstrates that the last matching hypothesis is used for all the
+     tactics based on [iSelect]. *)
+  iDestruct select (□ _)%I as "$".
+Qed.
+
+Lemma test_iRevert_select_iClear_select P Q R :
+  □ P -∗ □ Q -∗ □ R -∗ □ R.
+Proof.
+  iIntros "???".
+  iClear select (□ P)%I.
+  iRevert select _.
+  iClear select _.
+  iIntros "$".
+Qed.
+
+Lemma test_iFrame_select P Q R :
+  P -∗ (Q ∗ R) -∗ P ∗ Q ∗ R.
+Proof.
+  iIntros "??".
+  iFrame select (_ ∗ _)%I.
+  iFrame select _.
+Qed.
+
+End tactic_tests.

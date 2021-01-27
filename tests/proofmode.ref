@@ -725,3 +725,15 @@ Tactic failure: iLöb: no 'BiLöb' instance found.
      : string
 The command has indeed failed with message:
 H is already used.
+"test_iRename_select1"
+     : string
+The command has indeed failed with message:
+No matching clauses for match.
+"test_iDestruct_select2"
+     : string
+The command has indeed failed with message:
+Tactic failure: iPure: (φ n) not pure.
+"test_iDestruct_select_no_backtracking"
+     : string
+The command has indeed failed with message:
+Tactic failure: iIntuitionistic: Q not persistent.

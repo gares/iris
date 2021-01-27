@@ -64,6 +64,19 @@ Tactic Notation "iMatchHyp" tactic1(tac) :=
   | |- context[ environments.Esnoc _ ?x ?P ] => tac x P
   end.
 
+Tactic Notation "iSelect" open_constr(pat) tactic1(tac) :=
+  lazymatch goal with
+  | |- context[ environments.Esnoc _ ?x pat ] =>
+    (* Before runnig [tac] on the hypothesis name [x] we must first unify the
+       pattern [pat] with the term it matched against. This forces every evar
+       coming from [pat] (and in particular from the [_] it contains and from
+       the implicit arguments it uses) to be instantiated. If we do not do so
+       then shelved goals are produced for every such evar. *)
+    lazymatch iTypeOf x with
+    | Some (_,?T) => unify T pat; tac x
+    end
+  end.
+
 (** * Start a proof *)
 Tactic Notation "iStartProof" :=
   lazymatch goal with
@@ -141,6 +154,9 @@ Tactic Notation "iRename" constr(H1) "into" constr(H2) :=
        | _ => idtac (* subgoal *)
      end].
 
+Tactic Notation "iRename" "select" open_constr(pat) "into" constr(n) :=
+  iSelect pat ltac:(fun H => iRename H into n).
+
 (** Elaborated selection patterns, unlike the type [sel_pat], contains
 only specific identifiers, and no wildcards like `#` (with the
 exception of the pure selection pattern `%`) *)
@@ -198,6 +214,9 @@ Tactic Notation "iClear" constr(Hs) :=
 
 Tactic Notation "iClear" "(" ident_list(xs) ")" constr(Hs) :=
   iClear Hs; clear xs.
+
+Tactic Notation "iClear" "select" open_constr(pat) :=
+  iSelect pat ltac:(fun H => iClear H).
 
 (** ** Simplification *)
 Tactic Notation "iEval" tactic3(t) :=
@@ -453,6 +472,9 @@ Tactic Notation "iFrame" "(" constr(t1) constr(t2) constr(t3) constr(t4)
 Tactic Notation "iFrame" "(" constr(t1) constr(t2) constr(t3) constr(t4)
     constr(t5) constr(t6) constr(t7) constr(t8)")" constr(Hs) :=
   iFramePure t1; iFrame ( t2 t3 t4 t5 t6 t7 t8 ) Hs.
+
+Tactic Notation "iFrame" "select" open_constr(pat) :=
+  iSelect pat ltac:(fun H => iFrame H).
 
 (** * Basic introduction tactics *)
 Local Tactic Notation "iIntro" "(" simple_intropattern(x) ")" :=
@@ -736,6 +758,9 @@ Tactic Notation "iRevert" "(" ident(x1) ident(x2) ident(x3) ident(x4)
     ident(x5) ident(x6) ident(x7) ident(x8) ident(x9) ident(x10)
     ident(x11) ident(x12) ident(x13) ident(x14) ident(x15) ")" constr(Hs) :=
   iRevert Hs; iRevert ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 ).
+
+Tactic Notation "iRevert" "select" open_constr(pat) :=
+  iSelect pat ltac:(fun H => iRevert H).
 
 (** * The specialize and pose proof tactics *)
 Record iTrm {X As S} :=
@@ -2082,6 +2107,62 @@ Tactic Notation "iDestruct" open_constr(lem) "as" "(" simple_intropattern(x1)
 
 Tactic Notation "iDestruct" open_constr(lem) "as" "%" simple_intropattern(pat) :=
   iDestructCore lem as true (fun H => iPure H as pat).
+
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    simple_intropattern(x7) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 x7 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    simple_intropattern(x7) simple_intropattern(x7) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 x7 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    simple_intropattern(x7) simple_intropattern(x7) simple_intropattern(x8)
+    ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 x7 x8 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    simple_intropattern(x7) simple_intropattern(x7) simple_intropattern(x8)
+    simple_intropattern(x9) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "("
+    simple_intropattern(x1) simple_intropattern(x2) simple_intropattern(x3)
+    simple_intropattern(x4) simple_intropattern(x5) simple_intropattern(x6)
+    simple_intropattern(x7) simple_intropattern(x7) simple_intropattern(x8)
+    simple_intropattern(x9) simple_intropattern(x10) ")" constr(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as ( x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 ) ipat).
+Tactic Notation "iDestruct" "select" open_constr(pat) "as" "%" simple_intropattern(ipat) :=
+  iSelect pat ltac:(fun H => iDestruct H as % ipat).
 
 Tactic Notation "iPoseProof" open_constr(lem) "as" constr(pat) :=
   iPoseProofCore lem as pat (fun H => iDestructHyp H as pat).
