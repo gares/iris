@@ -1137,6 +1137,27 @@ Section map.
     ([∗ map] k↦y ∈ <[i:=x]> m, <[i:=P]> Φ k) ⊣⊢ (P ∗ [∗ map] k↦y ∈ m, Φ k).
   Proof. apply big_opM_fn_insert'. Qed.
 
+  Lemma big_sepM_filter' Φ (P : K * A → Prop) `{∀ k, Decision (P k)} m :
+    ([∗ map] k ↦ x ∈ filter P m, Φ k x) ⊣⊢
+    ([∗ map] k ↦ x ∈ m, if decide (P (k, x)) then Φ k x else emp).
+  Proof.
+    induction m as [|k v m ? IH] using map_ind.
+    { by rewrite map_filter_empty !big_sepM_empty. }
+    destruct (decide (P (k, v))).
+    - rewrite map_filter_insert //.
+      rewrite !big_sepM_insert //.
+      * by rewrite decide_True // IH.
+      * apply map_filter_lookup_None; eauto.
+    - rewrite map_filter_insert_not' //; last by congruence.
+      rewrite !big_sepM_insert // decide_False // IH. rewrite left_id. eauto.
+  Qed.
+
+  Lemma big_sepM_filter `{BiAffine PROP}
+      Φ (P : K * A → Prop) `{∀ k, Decision (P k)} m :
+    ([∗ map] k ↦ x ∈ filter P m, Φ k x) ⊣⊢
+    ([∗ map] k ↦ x ∈ m, ⌜P (k, x)⌝ → Φ k x).
+  Proof. setoid_rewrite <-decide_emp. apply big_sepM_filter'. Qed.
+
   Lemma big_sepM_union Φ m1 m2 :
     m1 ##ₘ m2 →
     ([∗ map] k↦y ∈ m1 ∪ m2, Φ k y)
