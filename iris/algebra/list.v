@@ -138,7 +138,7 @@ Qed.
 (** Functor *)
 Lemma list_fmap_ext_ne {A} {B : ofe} (f g : A → B) (l : list A) n :
   (∀ x, f x ≡{n}≡ g x) → f <$> l ≡{n}≡ g <$> l.
-Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2, Forall_true. Qed.
+Proof. intros Hf. by apply Forall2_fmap, Forall_Forall2_diag, Forall_true. Qed.
 Definition listO_map {A B} (f : A -n> B) : listO A -n> listO B :=
   OfeMor (fmap f : listO A → listO B).
 Global Instance listO_map_ne A B : NonExpansive (@listO_map A B).
