@@ -1137,25 +1137,14 @@ Section map.
     ([∗ map] k↦y ∈ <[i:=x]> m, <[i:=P]> Φ k) ⊣⊢ (P ∗ [∗ map] k↦y ∈ m, Φ k).
   Proof. apply big_opM_fn_insert'. Qed.
 
-  Lemma big_sepM_filter' Φ (P : K * A → Prop) `{∀ k, Decision (P k)} m :
-    ([∗ map] k ↦ x ∈ filter P m, Φ k x) ⊣⊢
-    ([∗ map] k ↦ x ∈ m, if decide (P (k, x)) then Φ k x else emp).
-  Proof.
-    induction m as [|k v m ? IH] using map_ind.
-    { by rewrite map_filter_empty !big_sepM_empty. }
-    destruct (decide (P (k, v))).
-    - rewrite map_filter_insert //.
-      rewrite !big_sepM_insert //.
-      * by rewrite decide_True // IH.
-      * apply map_filter_lookup_None; eauto.
-    - rewrite map_filter_insert_not' //; last by congruence.
-      rewrite !big_sepM_insert // decide_False // IH. rewrite left_id. eauto.
-  Qed.
-
+  Lemma big_sepM_filter' Φ (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} m :
+    ([∗ map] k ↦ x ∈ filter φ m, Φ k x) ⊣⊢
+    ([∗ map] k ↦ x ∈ m, if decide (φ (k, x)) then Φ k x else emp).
+  Proof. apply: big_opM_filter'. Qed.
   Lemma big_sepM_filter `{BiAffine PROP}
-      Φ (P : K * A → Prop) `{∀ k, Decision (P k)} m :
-    ([∗ map] k ↦ x ∈ filter P m, Φ k x) ⊣⊢
-    ([∗ map] k ↦ x ∈ m, ⌜P (k, x)⌝ → Φ k x).
+      Φ (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} m :
+    ([∗ map] k ↦ x ∈ filter φ m, Φ k x) ⊣⊢
+    ([∗ map] k ↦ x ∈ m, ⌜φ (k, x)⌝ → Φ k x).
   Proof. setoid_rewrite <-decide_emp. apply big_sepM_filter'. Qed.
 
   Lemma big_sepM_union Φ m1 m2 :
@@ -1830,19 +1819,14 @@ Section gset.
   Lemma big_sepS_singleton Φ x : ([∗ set] y ∈ {[ x ]}, Φ y) ⊣⊢ Φ x.
   Proof. apply big_opS_singleton. Qed.
 
-  Lemma big_sepS_filter' (P : A → Prop) `{∀ x, Decision (P x)} Φ X :
-    ([∗ set] y ∈ filter P X, Φ y)
-    ⊣⊢ ([∗ set] y ∈ X, if decide (P y) then Φ y else emp).
-  Proof.
-    induction X as [|x X ? IH] using set_ind_L.
-    { by rewrite filter_empty_L !big_sepS_empty. }
-    destruct (decide (P x)).
-    - rewrite filter_union_L filter_singleton_L //.
-      rewrite !big_sepS_insert //; last set_solver.
-      by rewrite decide_True // IH.
-    - rewrite filter_union_L filter_singleton_not_L // left_id_L.
-      by rewrite !big_sepS_insert // decide_False // IH left_id.
-  Qed.
+  Lemma big_sepS_filter' Φ (φ : A → Prop) `{∀ x, Decision (φ x)} X :
+    ([∗ set] y ∈ filter φ X, Φ y)
+    ⊣⊢ ([∗ set] y ∈ X, if decide (φ y) then Φ y else emp).
+  Proof. apply: big_opS_filter'. Qed.
+  Lemma big_sepS_filter `{BiAffine PROP}
+      (φ : A → Prop) `{∀ x, Decision (φ x)} Φ X :
+    ([∗ set] y ∈ filter φ X, Φ y) ⊣⊢ ([∗ set] y ∈ X, ⌜φ y⌝ → Φ y).
+  Proof. setoid_rewrite <-decide_emp. apply big_sepS_filter'. Qed.
 
   Lemma big_sepS_filter_acc' (P : A → Prop) `{∀ y, Decision (P y)} Φ X Y :
     (∀ y, y ∈ Y → P y → y ∈ X) →
@@ -1855,12 +1839,6 @@ Section gset.
     rewrite big_sepS_union // big_sepS_filter'.
     by apply sep_mono_r, wand_intro_l.
   Qed.
-
-  Lemma big_sepS_filter `{BiAffine PROP}
-      (P : A → Prop) `{∀ x, Decision (P x)} Φ X :
-    ([∗ set] y ∈ filter P X, Φ y) ⊣⊢ ([∗ set] y ∈ X, ⌜P y⌝ → Φ y).
-  Proof. setoid_rewrite <-decide_emp. apply big_sepS_filter'. Qed.
-
   Lemma big_sepS_filter_acc `{BiAffine PROP}
       (P : A → Prop) `{∀ y, Decision (P y)} Φ X Y :
     (∀ y, y ∈ Y → P y → y ∈ X) →
