@@ -91,7 +91,7 @@ Proof. intros. apply NamespaceMap_discrete; apply _. Qed.
 Global Instance namespace_map_token_discrete E : Discrete (@namespace_map_token A E).
 Proof. intros. apply NamespaceMap_discrete; apply _. Qed.
 
-Local Instance namespace_map_valid : Valid (namespace_map A) := λ x,
+Local Instance namespace_map_valid_instance : Valid (namespace_map A) := λ x,
   match namespace_map_token_proj x with
   | CoPset E =>
      ✓ (namespace_map_data_proj x) ∧
@@ -100,7 +100,7 @@ Local Instance namespace_map_valid : Valid (namespace_map A) := λ x,
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_valid !_ /.
-Local Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
+Local Instance namespace_map_validN_instance : ValidN (namespace_map A) := λ n x,
   match namespace_map_token_proj x with
   | CoPset E =>
      ✓{n} (namespace_map_data_proj x) ∧
@@ -109,9 +109,9 @@ Local Instance namespace_map_validN : ValidN (namespace_map A) := λ n x,
   | CoPsetBot => False
   end.
 Global Arguments namespace_map_validN !_ /.
-Local Instance namespace_map_pcore : PCore (namespace_map A) := λ x,
+Local Instance namespace_map_pcore_instance : PCore (namespace_map A) := λ x,
   Some (NamespaceMap (core (namespace_map_data_proj x)) ε).
-Local Instance namespace_map_op : Op (namespace_map A) := λ x y,
+Local Instance namespace_map_op_instance : Op (namespace_map A) := λ x y,
   NamespaceMap (namespace_map_data_proj x ⋅ namespace_map_data_proj y)
                (namespace_map_token_proj x ⋅ namespace_map_token_proj y).
 
@@ -193,7 +193,7 @@ Proof.
   by intros [?%cmra_discrete_valid ?].
 Qed.
 
-Local Instance namespace_map_empty : Unit (namespace_map A) := NamespaceMap ε ε.
+Local Instance namespace_map_empty_instance : Unit (namespace_map A) := NamespaceMap ε ε.
 Lemma namespace_map_ucmra_mixin : UcmraMixin (namespace_map A).
 Proof.
   split; simpl.

@@ -79,17 +79,17 @@ Canonical Structure agreeO := Ofe (agree A) agree_ofe_mixin.
 (* CMRA *)
 (* agree_validN is carefully written such that, when applied to a singleton, it
 is convertible to True. This makes working with agreement much more pleasant. *)
-Local Instance agree_validN : ValidN (agree A) := λ n x,
+Local Instance agree_validN_instance : ValidN (agree A) := λ n x,
   match agree_car x with
   | [a] => True
   | _ => ∀ a b, a ∈ agree_car x → b ∈ agree_car x → a ≡{n}≡ b
   end.
-Local Instance agree_valid : Valid (agree A) := λ x, ∀ n, ✓{n} x.
+Local Instance agree_valid_instance : Valid (agree A) := λ x, ∀ n, ✓{n} x.
 
-Program Instance agree_op : Op (agree A) := λ x y,
+Program Instance agree_op_instance : Op (agree A) := λ x y,
   {| agree_car := agree_car x ++ agree_car y |}.
 Next Obligation. by intros [[|??]] y. Qed.
-Local Instance agree_pcore : PCore (agree A) := Some.
+Local Instance agree_pcore_instance : PCore (agree A) := Some.
 
 Lemma agree_validN_def n x :
   ✓{n} x ↔ ∀ a b, a ∈ agree_car x → b ∈ agree_car x → a ≡{n}≡ b.

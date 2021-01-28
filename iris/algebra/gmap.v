@@ -141,11 +141,11 @@ Section cmra.
 Context `{Countable K} {A : cmra}.
 Implicit Types m : gmap K A.
 
-Local Instance gmap_unit : Unit (gmap K A) := (∅ : gmap K A).
-Local Instance gmap_op : Op (gmap K A) := merge op.
-Local Instance gmap_pcore : PCore (gmap K A) := λ m, Some (omap pcore m).
-Local Instance gmap_valid : Valid (gmap K A) := λ m, ∀ i, ✓ (m !! i).
-Local Instance gmap_validN : ValidN (gmap K A) := λ n m, ∀ i, ✓{n} (m !! i).
+Local Instance gmap_unit_instance : Unit (gmap K A) := (∅ : gmap K A).
+Local Instance gmap_op_instance : Op (gmap K A) := merge op.
+Local Instance gmap_pcore_instance : PCore (gmap K A) := λ m, Some (omap pcore m).
+Local Instance gmap_valid_instance : Valid (gmap K A) := λ m, ∀ i, ✓ (m !! i).
+Local Instance gmap_validN_instance : ValidN (gmap K A) := λ n m, ∀ i, ✓{n} (m !! i).
 
 Lemma lookup_op m1 m2 i : (m1 ⋅ m2) !! i = m1 !! i ⋅ m2 !! i.
 Proof. by apply lookup_merge. Qed.

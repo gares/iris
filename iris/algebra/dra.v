@@ -107,7 +107,7 @@ Implicit Types a b : A.
 Implicit Types x y z : validity A.
 Local Arguments valid _ _ !_ /.
 
-Local Instance validity_valid : Valid (validity A) := validity_is_valid.
+Local Instance validity_valid_instance : Valid (validity A) := validity_is_valid.
 Local Instance validity_equiv : Equiv (validity A) := λ x y,
   (valid x ↔ valid y) ∧ (valid x → validity_car x ≡ validity_car y).
 Local Instance validity_equivalence : Equivalence (@equiv (validity A) _).
@@ -146,10 +146,10 @@ Local Hint Immediate dra_disjoint_move_l dra_disjoint_move_r : core.
 Lemma validity_valid_car_valid z : ✓ z → ✓ validity_car z.
 Proof. apply validity_prf. Qed.
 Local Hint Resolve validity_valid_car_valid : core.
-Program Instance validity_pcore : PCore (validity A) := λ x,
+Program Instance validity_pcore_instance : PCore (validity A) := λ x,
   Some (Validity (core (validity_car x)) (✓ x) _).
 Solve Obligations with naive_solver eauto using dra_core_valid.
-Program Instance validity_op : Op (validity A) := λ x y,
+Program Instance validity_op_instance : Op (validity A) := λ x y,
   Validity (validity_car x ⋅ validity_car y)
            (✓ x ∧ ✓ y ∧ validity_car x ## validity_car y) _.
 Solve Obligations with naive_solver eauto using dra_op_valid.

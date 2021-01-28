@@ -10,11 +10,11 @@ Section gmultiset.
 
   Canonical Structure gmultisetO := discreteO (gmultiset K).
 
-  Local Instance gmultiset_valid : Valid (gmultiset K) := λ _, True.
-  Local Instance gmultiset_validN : ValidN (gmultiset K) := λ _ _, True.
-  Local Instance gmultiset_unit : Unit (gmultiset K) := (∅ : gmultiset K).
-  Local Instance gmultiset_op : Op (gmultiset K) := disj_union.
-  Local Instance gmultiset_pcore : PCore (gmultiset K) := λ X, Some ∅.
+  Local Instance gmultiset_valid_instance : Valid (gmultiset K) := λ _, True.
+  Local Instance gmultiset_validN_instance : ValidN (gmultiset K) := λ _ _, True.
+  Local Instance gmultiset_unit_instance : Unit (gmultiset K) := (∅ : gmultiset K).
+  Local Instance gmultiset_op_instance : Op (gmultiset K) := disj_union.
+  Local Instance gmultiset_pcore_instance : PCore (gmultiset K) := λ X, Some ∅.
 
   Lemma gmultiset_op_disj_union X Y : X ⋅ Y = X ⊎ Y.
   Proof. done. Qed.

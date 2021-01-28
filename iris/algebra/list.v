@@ -172,17 +172,17 @@ Section cmra.
   Implicit Types l : list A.
   Local Arguments op _ _ !_ !_ / : simpl nomatch.
 
-  Local Instance list_op : Op (list A) :=
+  Local Instance list_op_instance : Op (list A) :=
     fix go l1 l2 := let _ : Op _ := @go in
     match l1, l2 with
     | [], _ => l2
     | _, [] => l1
     | x :: l1, y :: l2 => x ⋅ y :: l1 ⋅ l2
     end.
-  Local Instance list_pcore : PCore (list A) := λ l, Some (core <$> l).
+  Local Instance list_pcore_instance : PCore (list A) := λ l, Some (core <$> l).
 
-  Local Instance list_valid : Valid (list A) := Forall (λ x, ✓ x).
-  Local Instance list_validN : ValidN (list A) := λ n, Forall (λ x, ✓{n} x).
+  Local Instance list_valid_instance : Valid (list A) := Forall (λ x, ✓ x).
+  Local Instance list_validN_instance : ValidN (list A) := λ n, Forall (λ x, ✓{n} x).
 
   Lemma cons_valid l x : ✓ (x :: l) ↔ ✓ x ∧ ✓ l.
   Proof. apply Forall_cons. Qed.
@@ -267,7 +267,7 @@ Section cmra.
   Qed.
   Canonical Structure listR := Cmra (list A) list_cmra_mixin.
 
-  Global Instance list_unit : Unit (list A) := [].
+  Global Instance list_unit_instance : Unit (list A) := [].
   Definition list_ucmra_mixin : UcmraMixin (list A).
   Proof.
     split.

@@ -173,21 +173,21 @@ Section cmra.
   Global Instance view_frag_inj : Inj (≡) (≡) (@view_frag A B rel).
   Proof. by intros ?? [??]. Qed.
 
-  Local Instance view_valid : Valid (view rel) := λ x,
+  Local Instance view_valid_instance : Valid (view rel) := λ x,
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓ q ∧ (∀ n, ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x))
     | None => ∀ n, ∃ a, rel n a (view_frag_proj x)
     end.
-  Local Instance view_validN : ValidN (view rel) := λ n x,
+  Local Instance view_validN_instance : ValidN (view rel) := λ n x,
     match view_auth_proj x with
     | Some (q, ag) =>
        ✓{n} q ∧ ∃ a, ag ≡{n}≡ to_agree a ∧ rel n a (view_frag_proj x)
     | None => ∃ a, rel n a (view_frag_proj x)
     end.
-  Local Instance view_pcore : PCore (view rel) := λ x,
+  Local Instance view_pcore_instance : PCore (view rel) := λ x,
     Some (View (core (view_auth_proj x)) (core (view_frag_proj x))).
-  Local Instance view_op : Op (view rel) := λ x y,
+  Local Instance view_op_instance : Op (view rel) := λ x y,
     View (view_auth_proj x ⋅ view_auth_proj y) (view_frag_proj x ⋅ view_frag_proj y).
 
   Local Definition view_valid_eq :
@@ -253,7 +253,7 @@ Section cmra.
     - naive_solver.
   Qed.
 
-  Local Instance view_empty : Unit (view rel) := View ε ε.
+  Local Instance view_empty_instance : Unit (view rel) := View ε ε.
   Lemma view_ucmra_mixin : UcmraMixin (view rel).
   Proof.
     split; simpl.
