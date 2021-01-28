@@ -99,7 +99,7 @@ Local Instance namespace_map_valid_instance : Valid (namespace_map A) := λ x,
      ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
   | CoPsetBot => False
   end.
-Global Arguments namespace_map_valid !_ /.
+Global Arguments namespace_map_valid_instance !_ /.
 Local Instance namespace_map_validN_instance : ValidN (namespace_map A) := λ n x,
   match namespace_map_token_proj x with
   | CoPset E =>
@@ -108,7 +108,7 @@ Local Instance namespace_map_validN_instance : ValidN (namespace_map A) := λ n 
      ∀ i, namespace_map_data_proj x !! i = None ∨ i ∉ E
   | CoPsetBot => False
   end.
-Global Arguments namespace_map_validN !_ /.
+Global Arguments namespace_map_validN_instance !_ /.
 Local Instance namespace_map_pcore_instance : PCore (namespace_map A) := λ x,
   Some (NamespaceMap (core (namespace_map_data_proj x)) ε).
 Local Instance namespace_map_op_instance : Op (namespace_map A) := λ x y,
@@ -215,7 +215,7 @@ Proof. rewrite namespace_map_valid_eq /=. split; first done. by left. Qed.
 Lemma namespace_map_data_op N a b :
   namespace_map_data N (a ⋅ b) = namespace_map_data N a ⋅ namespace_map_data N b.
 Proof.
-  by rewrite {2}/op /namespace_map_op /namespace_map_data /= singleton_op left_id_L.
+  by rewrite {2}/op /namespace_map_op_instance /namespace_map_data /= singleton_op left_id_L.
 Qed.
 Lemma namespace_map_data_mono N a b :
   a ≼ b → namespace_map_data N a ≼ namespace_map_data N b.
@@ -229,7 +229,7 @@ Lemma namespace_map_token_union E1 E2 :
   E1 ## E2 →
   namespace_map_token (E1 ∪ E2) = namespace_map_token E1 ⋅ namespace_map_token E2.
 Proof.
-  intros. by rewrite /op /namespace_map_op
+  intros. by rewrite /op /namespace_map_op_instance
     /namespace_map_token /= coPset_disj_union // left_id_L.
 Qed.
 Lemma namespace_map_token_difference E1 E2 :

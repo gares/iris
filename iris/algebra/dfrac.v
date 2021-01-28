@@ -104,7 +104,7 @@ Section dfrac.
   Lemma dfrac_own_included q p : DfracOwn q ≼ DfracOwn p ↔ (q < p)%Qp.
   Proof.
     rewrite Qp_lt_sum. split.
-    - rewrite /included /op /dfrac_op. intros [[o| |?] [= ->]]. by exists o.
+    - rewrite /included /op /dfrac_op_instance. intros [[o| |?] [= ->]]. by exists o.
     - intros [o ->]. exists (DfracOwn o). by rewrite dfrac_op_own.
   Qed.
 
@@ -118,15 +118,15 @@ Section dfrac.
     split; try apply _.
     - intros [?| |?] ? dq <-; intros [= <-]; eexists _; done.
     - intros [?| |?] [?| |?] [?| |?];
-        rewrite /op /dfrac_op 1?assoc_L 1?assoc_L; done.
+        rewrite /op /dfrac_op_instance 1?assoc_L 1?assoc_L; done.
     - intros [?| |?] [?| |?];
-        rewrite /op /dfrac_op 1?(comm_L Qp_add); done.
-    - intros [?| |?] dq; rewrite /pcore /dfrac_pcore; intros [= <-];
-        rewrite /op /dfrac_op; done.
+        rewrite /op /dfrac_op_instance 1?(comm_L Qp_add); done.
+    - intros [?| |?] dq; rewrite /pcore /dfrac_pcore_instance; intros [= <-];
+        rewrite /op /dfrac_op_instance; done.
     - intros [?| |?] ? [= <-]; done.
     - intros [?| |?] [?| |?] ? [[?| |?] [=]] [= <-]; eexists _; split; try done;
         apply dfrac_discarded_included.
-    - intros [q| |q] [q'| |q']; rewrite /op /dfrac_op /valid /dfrac_valid //.
+    - intros [q| |q] [q'| |q']; rewrite /op /dfrac_op_instance /valid /dfrac_valid_instance //.
       + intros. trans (q + q')%Qp; [|done]. apply Qp_le_add_l.
       + apply Qp_lt_le_incl.
       + intros. trans (q + q')%Qp; [|by apply Qp_lt_le_incl]. apply Qp_le_add_l.

@@ -305,7 +305,7 @@ Section cmra.
   Lemma view_auth_frac_op_invN n p1 a1 p2 a2 :
     ✓{n} (●V{p1} a1 ⋅ ●V{p2} a2) → a1 ≡{n}≡ a2.
   Proof.
-    rewrite /op /view_op /= left_id -Some_op -pair_op view_validN_eq /=.
+    rewrite /op /view_op_instance /= left_id -Some_op -pair_op view_validN_eq /=.
     intros (?&?& Eq &?). apply (inj to_agree), agree_op_invN. by rewrite Eq.
   Qed.
   Lemma view_auth_frac_op_inv p1 a1 p2 a2 : ✓ (●V{p1} a1 ⋅ ●V{p2} a2) → a1 ≡ a2.

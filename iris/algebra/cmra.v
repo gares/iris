@@ -1110,7 +1110,7 @@ Section prod.
   Local Instance prod_op_instance : Op (A * B) := λ x y, (x.1 ⋅ y.1, x.2 ⋅ y.2).
   Local Instance prod_pcore_instance : PCore (A * B) := λ x,
     c1 ← pcore (x.1); c2 ← pcore (x.2); Some (c1, c2).
-  Local Arguments prod_pcore !_ /.
+  Local Arguments prod_pcore_instance !_ /.
   Local Instance prod_valid_instance : Valid (A * B) := λ x, ✓ x.1 ∧ ✓ x.2.
   Local Instance prod_validN_instance : ValidN (A * B) := λ n x, ✓{n} x.1 ∧ ✓{n} x.2.
 
@@ -1121,7 +1121,7 @@ Section prod.
     pcore x ≡ Some cx ↔ pcore (x.1) ≡ Some (cx.1) ∧ pcore (x.2) ≡ Some (cx.2).
   Proof.
     split; [by intros (cx'&[-> ->]%prod_pcore_Some&->)%equiv_Some_inv_r'|].
-    rewrite {3}/pcore /prod_pcore. (* TODO: use setoid rewrite *)
+    rewrite {3}/pcore /prod_pcore_instance. (* TODO: use setoid rewrite *)
     intros [Hx1 Hx2]; inversion_clear Hx1; simpl; inversion_clear Hx2.
     by constructor.
   Qed.
@@ -1338,7 +1338,7 @@ Section option.
   Local Instance option_validN_instance : ValidN (option A) := λ n ma,
     match ma with Some a => ✓{n} a | None => True end.
   Local Instance option_pcore_instance : PCore (option A) := λ ma, Some (ma ≫= pcore).
-  Local Arguments option_pcore !_ /.
+  Local Arguments option_pcore_instance !_ /.
   Local Instance option_op_instance : Op (option A) := union_with (λ a b, Some (a ⋅ b)).
 
   Definition Some_valid a : ✓ Some a ↔ ✓ a := reflexivity _.
@@ -1399,9 +1399,9 @@ Section option.
     - eauto.
     - by intros [a|] n; destruct 1; constructor; ofe_subst.
     - destruct 1; by ofe_subst.
-    - by destruct 1; rewrite /validN /option_validN //=; ofe_subst.
+    - by destruct 1; rewrite /validN /option_validN_instance //=; ofe_subst.
     - intros [a|]; [apply cmra_valid_validN|done].
-    - intros n [a|]; unfold validN, option_validN; eauto using cmra_validN_S.
+    - intros n [a|]; unfold validN, option_validN_instance; eauto using cmra_validN_S.
     - intros [a|] [b|] [c|]; constructor; rewrite ?assoc; auto.
     - intros [a|] [b|]; constructor; rewrite 1?comm; auto.
     - intros [a|]; simpl; auto.
@@ -1414,7 +1414,7 @@ Section option.
         destruct (cmra_pcore_proper a b ca) as (?&?&?); eauto 10.
       + destruct (pcore a) as [ca|] eqn:?; eauto.
         destruct (cmra_pcore_mono a b ca) as (?&?&?); eauto 10.
-    - intros n [a|] [b|]; rewrite /validN /option_validN /=;
+    - intros n [a|] [b|]; rewrite /validN /option_validN_instance /=;
         eauto using cmra_validN_op_l.
     - intros n ma mb1 mb2.
       destruct ma as [a|], mb1 as [b1|], mb2 as [b2|]; intros Hx Hx';
@@ -1606,7 +1606,7 @@ Section discrete_fun_cmra.
   Definition discrete_fun_lookup_core f x : (core f) x = core (f x) := eq_refl.
 
   Lemma discrete_fun_included_spec_1 (f g : discrete_fun B) x : f ≼ g → f x ≼ g x.
-  Proof. by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op (Hh x). Qed.
+  Proof. by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op_instance (Hh x). Qed.
 
   Lemma discrete_fun_included_spec `{Hfin : Finite A} (f g : discrete_fun B) : f ≼ g ↔ ∀ x, f x ≼ g x.
   Proof.

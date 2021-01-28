@@ -94,7 +94,7 @@ Local Instance agree_pcore_instance : PCore (agree A) := Some.
 Lemma agree_validN_def n x :
   ✓{n} x ↔ ∀ a b, a ∈ agree_car x → b ∈ agree_car x → a ≡{n}≡ b.
 Proof.
-  rewrite /validN /agree_validN. destruct (agree_car _) as [|? [|??]]; auto.
+  rewrite /validN /agree_validN_instance. destruct (agree_car _) as [|? [|??]]; auto.
   setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.
 
@@ -194,7 +194,7 @@ Qed.
 
 Lemma to_agree_uninj x : ✓ x → ∃ a, to_agree a ≡ x.
 Proof.
-  rewrite /valid /agree_valid; setoid_rewrite agree_validN_def.
+  rewrite /valid /agree_valid_instance; setoid_rewrite agree_validN_def.
   destruct (elem_of_agree x) as [a ?].
   exists a; split=> b /=; setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.

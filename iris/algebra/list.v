@@ -195,13 +195,13 @@ Section cmra.
 
   Lemma list_lookup_valid l : ✓ l ↔ ∀ i, ✓ (l !! i).
   Proof.
-    rewrite {1}/valid /list_valid Forall_lookup; split.
+    rewrite {1}/valid /list_valid_instance Forall_lookup; split.
     - intros Hl i. by destruct (l !! i) as [x|] eqn:?; [apply (Hl i)|].
     - intros Hl i x Hi. move: (Hl i); by rewrite Hi.
   Qed.
   Lemma list_lookup_validN n l : ✓{n} l ↔ ∀ i, ✓{n} (l !! i).
   Proof.
-    rewrite {1}/validN /list_validN Forall_lookup; split.
+    rewrite {1}/validN /list_validN_instance Forall_lookup; split.
     - intros Hl i. by destruct (l !! i) as [x|] eqn:?; [apply (Hl i)|].
     - intros Hl i x Hi. move: (Hl i); by rewrite Hi.
   Qed.

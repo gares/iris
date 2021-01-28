@@ -62,7 +62,7 @@ Section max_nat.
   Proof.
     split.
     - intros [z ->]. simpl. lia.
-    - exists y. rewrite /op /max_nat_op. rewrite Nat.max_r; last lia. by destruct y.
+    - exists y. rewrite /op /max_nat_op_instance. rewrite Nat.max_r; last lia. by destruct y.
   Qed.
   Lemma max_nat_ra_mixin : RAMixin max_nat.
   Proof.
@@ -117,7 +117,7 @@ Section min_nat.
   Proof.
     split.
     - intros [z ->]. simpl. lia.
-    - exists y. rewrite /op /min_nat_op. rewrite Nat.min_r; last lia. by destruct y.
+    - exists y. rewrite /op /min_nat_op_instance. rewrite Nat.min_r; last lia. by destruct y.
   Qed.
   Lemma min_nat_ra_mixin : RAMixin min_nat.
   Proof.
