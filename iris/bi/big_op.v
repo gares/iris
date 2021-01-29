@@ -215,6 +215,15 @@ Section sep_list.
     by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepL_wand Φ Ψ l :
+    ([∗ list] k↦x ∈ l, Φ k x) -∗
+    ([∗ list] k↦x ∈ l, Φ k x -∗ Ψ k x) -∗
+    [∗ list] k↦x ∈ l, Ψ k x.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepL_sep.
+    setoid_rewrite wand_elim_r. done.
+  Qed.
+
   Lemma big_sepL_dup P `{!Affine P} l :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ list] k↦x ∈ l, P.
   Proof.
@@ -644,6 +653,15 @@ Section sep_list2.
     rewrite -(idemp bi_and (big_sepL2 _ _ _)) {1}big_sepL2_length.
     apply pure_elim_l=> ?. rewrite big_sepL2_intuitionistically_forall //.
     apply bi.wand_intro_l. rewrite -big_sepL2_sep. by setoid_rewrite wand_elim_l.
+  Qed.
+
+  Lemma big_sepL2_wand Φ Ψ l1 l2 :
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2) -∗
+    ([∗ list] k↦y1;y2 ∈ l1;l2, Φ k y1 y2 -∗ Ψ k y1 y2) -∗
+    [∗ list] k↦y1;y2 ∈ l1;l2, Ψ k y1 y2.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepL2_sep.
+    setoid_rewrite wand_elim_r. done.
   Qed.
 
   Lemma big_sepL2_delete Φ l1 l2 i x1 x2 :
@@ -1201,6 +1219,15 @@ Section map.
     by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepM_wand Φ Ψ m :
+    ([∗ map] k↦x ∈ m, Φ k x) -∗
+    ([∗ map] k↦x ∈ m, Φ k x -∗ Ψ k x) -∗
+    [∗ map] k↦x ∈ m, Ψ k x.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepM_sep.
+    setoid_rewrite wand_elim_r. done.
+  Qed.
+
   Lemma big_sepM_dup P `{!Affine P} m :
     □ (P -∗ P ∗ P) -∗ P -∗ [∗ map] k↦x ∈ m, P.
   Proof.
@@ -1631,6 +1658,15 @@ Section map2.
     apply bi.wand_intro_l. rewrite -big_sepM2_sep. by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepM2_wand Φ Ψ m1 m2 :
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2) -∗
+    ([∗ map] k↦y1;y2 ∈ m1;m2, Φ k y1 y2 -∗ Ψ k y1 y2) -∗
+    [∗ map] k↦y1;y2 ∈ m1;m2, Ψ k y1 y2.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepM2_sep.
+    setoid_rewrite wand_elim_r. done.
+  Qed.
+
   Lemma big_sepM2_lookup_acc_impl {Φ m1 m2} i x1 x2 :
     m1 !! i = Some x1 →
     m2 !! i = Some x2 →
@@ -1896,6 +1932,15 @@ Section gset.
     by setoid_rewrite wand_elim_l.
   Qed.
 
+  Lemma big_sepS_wand Φ Ψ X :
+    ([∗ set] x ∈ X, Φ x) -∗
+    ([∗ set] x ∈ X, Φ x -∗ Ψ x) -∗
+    [∗ set] x ∈ X, Ψ x.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepS_sep.
+    setoid_rewrite wand_elim_r. done.
+  Qed.
+
   Lemma big_sepS_elem_of_acc_impl {Φ X} x :
     x ∈ X →
     ([∗ set] y ∈ X, Φ y) -∗
@@ -2082,6 +2127,15 @@ Section gmultiset.
   Proof.
     apply wand_intro_l. rewrite big_sepMS_intuitionistically_forall -big_sepMS_sep.
     by setoid_rewrite wand_elim_l.
+  Qed.
+
+  Lemma big_sepMS_wand Φ Ψ X :
+    ([∗ mset] x ∈ X, Φ x) -∗
+    ([∗ mset] x ∈ X, Φ x -∗ Ψ x) -∗
+    [∗ mset] x ∈ X, Ψ x.
+  Proof.
+    apply wand_intro_r. rewrite -big_sepMS_sep.
+    setoid_rewrite wand_elim_r. done.
   Qed.
 
   Lemma big_sepMS_dup P `{!Affine P} X :
