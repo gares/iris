@@ -6,9 +6,10 @@ From iris.prelude Require Import options.
 define the usual connectives of higher-order logic, and prove that these satisfy
 the usual laws of higher-order logic. *)
 Record siProp := SiProp {
-  siProp_holds :> nat → Prop;
+  siProp_holds : nat → Prop;
   siProp_closed n1 n2 : siProp_holds n1 → n2 ≤ n1 → siProp_holds n2
 }.
+Local Coercion siProp_holds : siProp >-> Funclass.
 Global Arguments siProp_holds : simpl never.
 Add Printing Constructor siProp.
 
