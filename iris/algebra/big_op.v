@@ -396,7 +396,7 @@ Section gmap.
     ([^o map] k↦y ∈ <[i:=x]> m, <[i:=P]> f k) ≡ (P `o` [^o map] k↦y ∈ m, f k).
   Proof. apply (big_opM_fn_insert (λ _ _, id)). Qed.
 
-  Lemma big_opM_filter' f (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} m :
+  Lemma big_opM_filter' (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} f m :
     ([^o map] k ↦ x ∈ filter φ m, f k x)
     ≡ ([^o map] k ↦ x ∈ m, if decide (φ (k, x)) then f k x else monoid_unit).
   Proof.
@@ -536,7 +536,7 @@ Section gset.
     by induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id // big_opS_eq.
   Qed.
 
-  Lemma big_opS_filter' f (φ : A → Prop) `{∀ x, Decision (φ x)} X :
+  Lemma big_opS_filter' (φ : A → Prop) `{∀ x, Decision (φ x)} f X :
     ([^o set] y ∈ filter φ X, f y)
     ≡ ([^o set] y ∈ X, if decide (φ y) then f y else monoid_unit).
   Proof.
