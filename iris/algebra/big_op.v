@@ -396,6 +396,20 @@ Section gmap.
     ([^o map] k↦y ∈ <[i:=x]> m, <[i:=P]> f k) ≡ (P `o` [^o map] k↦y ∈ m, f k).
   Proof. apply (big_opM_fn_insert (λ _ _, id)). Qed.
 
+  Lemma big_opM_filter' (φ : K * A → Prop) `{∀ kx, Decision (φ kx)} f m :
+    ([^o map] k ↦ x ∈ filter φ m, f k x)
+    ≡ ([^o map] k ↦ x ∈ m, if decide (φ (k, x)) then f k x else monoid_unit).
+  Proof.
+    induction m as [|k v m ? IH] using map_ind.
+    { by rewrite map_filter_empty !big_opM_empty. }
+    destruct (decide (φ (k, v))).
+    - rewrite map_filter_insert //.
+      assert (filter φ m !! k = None) by (apply map_filter_lookup_None; eauto).
+      by rewrite !big_opM_insert // decide_True // IH.
+    - rewrite map_filter_insert_not' //; last by congruence.
+      rewrite !big_opM_insert // decide_False // IH. by rewrite left_id.
+  Qed.
+
   Lemma big_opM_union f m1 m2 :
     m1 ##ₘ m2 →
     ([^o map] k↦y ∈ m1 ∪ m2, f k y)
@@ -520,6 +534,20 @@ Section gset.
   Lemma big_opS_unit X : ([^o set] y ∈ X, monoid_unit) ≡ (monoid_unit : M).
   Proof.
     by induction X using set_ind_L; rewrite /= ?big_opS_insert ?left_id // big_opS_eq.
+  Qed.
+
+  Lemma big_opS_filter' (φ : A → Prop) `{∀ x, Decision (φ x)} f X :
+    ([^o set] y ∈ filter φ X, f y)
+    ≡ ([^o set] y ∈ X, if decide (φ y) then f y else monoid_unit).
+  Proof.
+    induction X as [|x X ? IH] using set_ind_L.
+    { by rewrite filter_empty_L !big_opS_empty. }
+    destruct (decide (φ x)).
+    - rewrite filter_union_L filter_singleton_L //.
+      rewrite !big_opS_insert //; last set_solver.
+      by rewrite decide_True // IH.
+    - rewrite filter_union_L filter_singleton_not_L // left_id_L.
+      by rewrite !big_opS_insert // decide_False // IH left_id.
   Qed.
 
   Lemma big_opS_op f g X :

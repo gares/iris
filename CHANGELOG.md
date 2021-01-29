@@ -88,6 +88,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   `big_sepL_lookup_acc_impl`, `big_sepL2_lookup_acc_impl`,
   `big_sepM_lookup_acc_impl`, `big_sepM2_lookup_acc_impl`,
   `big_sepS_elem_of_acc_impl`, `big_sepMS_elem_of_acc_impl`.
+* Add lemmas `big_sepM_filter'` and `big_sepM_filter` matching the corresponding
+  `big_sepS` lemmas.
 
 **Changes in `proofmode`:**
 
