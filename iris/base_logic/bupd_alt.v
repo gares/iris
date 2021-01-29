@@ -25,6 +25,8 @@ We show that:
 
 The first two points are shown for any BI with a plain modality. *)
 
+Local Coercion uPred_holds : uPred >-> Funclass.
+
 Section bupd_alt.
   Context `{BiPlainly PROP}.
   Implicit Types P Q R : PROP.

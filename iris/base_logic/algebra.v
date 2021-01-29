@@ -4,6 +4,7 @@ From iris.base_logic Require Import bi derived.
 From iris.prelude Require Import options.
 
 (** Internalized properties of our CMRA constructions. *)
+Local Coercion uPred_holds : uPred >-> Funclass.
 
 Section upred.
 Context {M : ucmra}.

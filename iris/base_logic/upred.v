@@ -105,11 +105,15 @@ This completes the proof.
 *)
 
 Record uPred (M : ucmra) : Type := UPred {
-  uPred_holds :> nat → M → Prop;
+  uPred_holds : nat → M → Prop;
 
   uPred_mono n1 n2 x1 x2 :
     uPred_holds n1 x1 → x1 ≼{n2} x2 → n2 ≤ n1 → uPred_holds n2 x2
 }.
+(** When working in the model, it is convenient to be able to treat [uPred] as
+[nat → M → Prop].  But we only want to locally break the [uPred] abstraction
+this way. *)
+Local Coercion uPred_holds : uPred >-> Funclass.
 Bind Scope bi_scope with uPred.
 Global Arguments uPred_holds {_} _%I _ _ : simpl never.
 Add Printing Constructor uPred.
