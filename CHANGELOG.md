@@ -73,6 +73,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
 * Rename typeclass instances of CMRA operational typeclasses (`Op`, `Core`,
   `PCore`, `Valid`, `ValidN`, `Unit`) to have a `_instance` suffix, so that
   their original names are available to use as lemma names.
+* Rename `frac_valid'`→`frac_valid`, `frac_op'`→`frac_op`,
+  `ufrac_op'`→`ufrac_op`. Those names were previously blocked by typeclass
+  instances.
 
 **Changes in `bi`:**
 
@@ -253,6 +256,8 @@ s/\bcmraT\b/cmra/g
 s/\bCmraT\b/Cmra/g
 s/\bucmraT\b/ucmra/g
 s/\bUcmraT\b/Ucmra/g
+# u?frac_op/valid lemmas
+s/\b(u?frac_(op|valid))'/\1/g
 EOF
 ```
 

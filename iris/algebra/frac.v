@@ -19,9 +19,9 @@ Section frac.
   Local Instance frac_pcore_instance : PCore frac := λ _, None.
   Local Instance frac_op_instance : Op frac := λ x y, (x + y)%Qp.
 
-  Lemma frac_valid' p : ✓ p ↔ (p ≤ 1)%Qp.
+  Lemma frac_valid p : ✓ p ↔ (p ≤ 1)%Qp.
   Proof. done. Qed.
-  Lemma frac_op' p q : p ⋅ q = (p + q)%Qp.
+  Lemma frac_op p q : p ⋅ q = (p + q)%Qp.
   Proof. done. Qed.
   Lemma frac_included p q : p ≼ q ↔ (p < q)%Qp.
   Proof. by rewrite Qp_lt_sum. Qed.
@@ -32,7 +32,7 @@ Section frac.
   Definition frac_ra_mixin : RAMixin frac.
   Proof.
     split; try apply _; try done.
-    intros p q. rewrite !frac_valid' frac_op'=> ?.
+    intros p q. rewrite !frac_valid frac_op=> ?.
     trans (p + q)%Qp; last done. apply Qp_le_add_l.
   Qed.
   Canonical Structure fracR := discreteR frac frac_ra_mixin.
@@ -51,5 +51,5 @@ Section frac.
   Global Instance frac_is_op q1 q2 : IsOp (q1 + q2)%Qp q1 q2 | 10.
   Proof. done. Qed.
   Global Instance is_op_frac q : IsOp' q (q/2)%Qp (q/2)%Qp.
-  Proof. by rewrite /IsOp' /IsOp frac_op' Qp_div_2. Qed.
+  Proof. by rewrite /IsOp' /IsOp frac_op Qp_div_2. Qed.
 End frac.
