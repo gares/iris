@@ -409,7 +409,7 @@ Qed.
 
 Lemma dom_op m1 m2 : dom (gset K) (m1 ⋅ m2) = dom _ m1 ∪ dom _ m2.
 Proof.
-  apply elem_of_equiv_L=> i; rewrite elem_of_union !elem_of_dom.
+  apply set_eq=> i; rewrite elem_of_union !elem_of_dom.
   unfold is_Some; setoid_rewrite lookup_op.
   destruct (m1 !! i), (m2 !! i); naive_solver.
 Qed.

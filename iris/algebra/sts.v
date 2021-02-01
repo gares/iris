@@ -68,7 +68,7 @@ Proof.
     eauto with sts; set_solver.
 Qed.
 Global Instance frame_step_proper : Proper ((≡) ==> (=) ==> (=) ==> iff) frame_step.
-Proof. move=> ?? /set_equiv_spec [??]; split; by apply frame_step_mono. Qed.
+Proof. move=> ?? /set_equiv_subseteq [??]; split; by apply frame_step_mono. Qed.
 Local Instance closed_proper' : Proper ((≡) ==> (≡) ==> impl) closed.
 Proof. destruct 3; constructor; intros; setoid_subst; eauto. Qed.
 Global Instance closed_proper : Proper ((≡) ==> (≡) ==> iff) closed.
@@ -81,7 +81,7 @@ Proof.
 Qed.
 Global Instance up_proper : Proper ((=) ==> (≡) ==> (≡)) up.
 Proof.
-  by move=> ??? ?? /set_equiv_spec [??]; split; apply up_preserving.
+  by move=> ??? ?? /set_equiv_subseteq [??]; split; apply up_preserving.
 Qed.
 Global Instance up_set_preserving : Proper ((⊆) ==> flip (⊆) ==> (⊆)) up_set.
 Proof.
@@ -90,7 +90,7 @@ Proof.
 Qed.
 Global Instance up_set_proper : Proper ((≡) ==> (≡) ==> (≡)) up_set.
 Proof.
-  move=> S1 S2 /set_equiv_spec [??] T1 T2 /set_equiv_spec [??];
+  move=> S1 S2 /set_equiv_subseteq [??] T1 T2 /set_equiv_subseteq [??];
     split; by apply up_set_preserving.
 Qed.
 
@@ -155,7 +155,7 @@ Lemma closed_up_empty s : closed (up s ∅) ∅.
 Proof. eauto using closed_up with sts. Qed.
 Lemma up_closed S T : closed S T → up_set S T ≡ S.
 Proof.
-  intros ?; apply set_equiv_spec; split; auto using subseteq_up_set.
+  intros ?; apply set_equiv_subseteq; split; auto using subseteq_up_set.
   intros s; unfold up_set; rewrite elem_of_bind; intros (s'&Hstep&?).
   induction Hstep; eauto using closed_step.
 Qed.

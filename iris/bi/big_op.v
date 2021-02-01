@@ -1333,7 +1333,7 @@ Section map2.
     ⌜ dom (gset K) m1 = dom (gset K) m2 ⌝.
   Proof.
     rewrite big_sepM2_lookup_iff. apply pure_mono=>Hm.
-    apply elem_of_equiv_L=> k. by rewrite !elem_of_dom.
+    apply set_eq=> k. by rewrite !elem_of_dom.
   Qed.
 
   Lemma big_sepM2_flip Φ m1 m2 :
