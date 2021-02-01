@@ -1,3 +1,7 @@
+(** This logic-level wrapper on top of the [auth] RA turns out to be much harder
+to use than just directly using the RA, hence it is deprecated and will be
+removed entirely after some grace period. *)
+
 From iris.algebra Require Export auth.
 From iris.algebra Require Import gmap.
 From iris.proofmode Require Import tactics.

@@ -1,5 +1,11 @@
+(** Hoare triples are rarely ever useful in Coq.  This module only exists to
+verify that the proof rules we give on paper hold true.  Use Texan triples or
+[WP] instead.
+This file will be removed when we find a good way to have a [Definition] with
+telescopes for Texan triples. *)
+
 From iris.proofmode Require Import tactics.
-From iris.base_logic.lib Require Export viewshifts.
+From iris.deprecated.base_logic Require Export viewshifts.
 From iris.program_logic Require Export weakestpre.
 From iris.prelude Require Import options.
 

@@ -15,8 +15,10 @@ test: $(TESTFILES:.v=.vo)
 # Make sure everything imports the options, and all Instance/Argument/Hint are qualified.
 	$(HIDE)for FILE in $(VFILES); do \
 	  if ! fgrep -q 'From iris.prelude Require Import options.' "$$FILE"; then echo "ERROR: $$FILE does not import 'options'."; echo; exit 1; fi ; \
-	  if egrep '^\s*(Instance|Arguments|Remove|Hint (Extern|Constructors|Resolve|Immediate|Mode|Opaque|Transparent|Unfold))\s' "$$FILE"; then echo "ERROR: $$FILE contains unqualified 'Instance'/'Arguments'/'Hint'."; echo; exit 1; fi \
+	  if egrep '^\s*(Instance|Arguments|Remove|Hint (Extern|Constructors|Resolve|Immediate|Mode|Opaque|Transparent|Unfold))\s' "$$FILE"; then echo "ERROR: $$FILE contains unqualified 'Instance'/'Arguments'/'Hint' (see above)."; echo; exit 1; fi \
 	done
+# Make sure main Iris does not import other Iris packages.
+	$(HIDE)if egrep 'iris\.(heap_lang|deprecated|staging)' --include "*.v" -R iris; then echo "ERROR: Iris may not import modules from other Iris packages (see above for violations)."; echo; exit 1; fi
 .PHONY: test
 
 COQ_TEST=$(COQTOP) $(COQDEBUG) -batch -test-mode
