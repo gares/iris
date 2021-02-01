@@ -70,6 +70,9 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   constructors `OfeT`→`Ofe`, `CmraT`→`Cmra`, and `UcmraT`→`Ucmra` since the `T`
   suffix is not needed. This change makes these names consistent with `bi`,
   which also does not have a `T` suffix.
+* Rename typeclass instances of CMRA operational typeclasses (`Op`, `Core`,
+  `PCore`, `Valid`, `ValidN`, `Unit`) to have a `_instance` suffix, so that
+  their original names are available to use as lemma names.
 
 **Changes in `bi`:**
 

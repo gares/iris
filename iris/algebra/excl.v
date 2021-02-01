@@ -70,12 +70,12 @@ Global Instance ExclBot_discrete : Discrete (@ExclBot A).
 Proof. by inversion_clear 1; constructor. Qed.
 
 (* CMRA *)
-Local Instance excl_valid : Valid (excl A) := λ x,
+Local Instance excl_valid_instance : Valid (excl A) := λ x,
   match x with Excl _ => True | ExclBot => False end.
-Local Instance excl_validN : ValidN (excl A) := λ n x,
+Local Instance excl_validN_instance : ValidN (excl A) := λ n x,
   match x with Excl _ => True | ExclBot => False end.
-Local Instance excl_pcore : PCore (excl A) := λ _, None.
-Local Instance excl_op : Op (excl A) := λ x y, ExclBot.
+Local Instance excl_pcore_instance : PCore (excl A) := λ _, None.
+Local Instance excl_op_instance : Op (excl A) := λ x y, ExclBot.
 
 Lemma excl_cmra_mixin : CmraMixin (excl A).
 Proof.

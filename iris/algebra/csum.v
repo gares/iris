@@ -148,25 +148,25 @@ Implicit Types a : A.
 Implicit Types b : B.
 
 (* CMRA *)
-Local Instance csum_valid : Valid (csum A B) := λ x,
+Local Instance csum_valid_instance : Valid (csum A B) := λ x,
   match x with
   | Cinl a => ✓ a
   | Cinr b => ✓ b
   | CsumBot => False
   end.
-Local Instance csum_validN : ValidN (csum A B) := λ n x,
+Local Instance csum_validN_instance : ValidN (csum A B) := λ n x,
   match x with
   | Cinl a => ✓{n} a
   | Cinr b => ✓{n} b
   | CsumBot => False
   end.
-Local Instance csum_pcore : PCore (csum A B) := λ x,
+Local Instance csum_pcore_instance : PCore (csum A B) := λ x,
   match x with
   | Cinl a => Cinl <$> pcore a
   | Cinr b => Cinr <$> pcore b
   | CsumBot => Some CsumBot
   end.
-Local Instance csum_op : Op (csum A B) := λ x y,
+Local Instance csum_op_instance : Op (csum A B) := λ x y,
   match x, y with
   | Cinl a, Cinl a' => Cinl (a ⋅ a')
   | Cinr b, Cinr b' => Cinr (b ⋅ b')

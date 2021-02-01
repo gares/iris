@@ -1014,7 +1014,7 @@ Section discrete.
   Context (ra_mix : RAMixin A).
   Existing Instances discrete_dist.
 
-  Local Instance discrete_validN : ValidN A := λ n x, ✓ x.
+  Local Instance discrete_validN_instance : ValidN A := λ n x, ✓ x.
   Definition discrete_cmra_mixin : CmraMixin A.
   Proof.
     destruct ra_mix; split; try done.
@@ -1062,15 +1062,15 @@ End ra_total.
 
 (** ** CMRA for the unit type *)
 Section unit.
-  Local Instance unit_valid : Valid () := λ x, True.
-  Local Instance unit_validN : ValidN () := λ n x, True.
-  Local Instance unit_pcore : PCore () := λ x, Some x.
-  Local Instance unit_op : Op () := λ x y, ().
+  Local Instance unit_valid_instance : Valid () := λ x, True.
+  Local Instance unit_validN_instance : ValidN () := λ n x, True.
+  Local Instance unit_pcore_instance : PCore () := λ x, Some x.
+  Local Instance unit_op_instance : Op () := λ x y, ().
   Lemma unit_cmra_mixin : CmraMixin ().
   Proof. apply discrete_cmra_mixin, ra_total_mixin; by eauto. Qed.
   Canonical Structure unitR : cmra := Cmra unit unit_cmra_mixin.
 
-  Local Instance unit_unit : Unit () := ().
+  Local Instance unit_unit_instance : Unit () := ().
   Lemma unit_ucmra_mixin : UcmraMixin ().
   Proof. done. Qed.
   Canonical Structure unitUR : ucmra := Ucmra unit unit_ucmra_mixin.
@@ -1085,10 +1085,10 @@ End unit.
 
 (** ** CMRA for the empty type *)
 Section empty.
-  Local Instance Empty_set_valid : Valid Empty_set := λ x, False.
-  Local Instance Empty_set_validN : ValidN Empty_set := λ n x, False.
-  Local Instance Empty_set_pcore : PCore Empty_set := λ x, Some x.
-  Local Instance Empty_set_op : Op Empty_set := λ x y, x.
+  Local Instance Empty_set_valid_instance : Valid Empty_set := λ x, False.
+  Local Instance Empty_set_validN_instance : ValidN Empty_set := λ n x, False.
+  Local Instance Empty_set_pcore_instance : PCore Empty_set := λ x, Some x.
+  Local Instance Empty_set_op_instance : Op Empty_set := λ x y, x.
   Lemma Empty_set_cmra_mixin : CmraMixin Empty_set.
   Proof. apply discrete_cmra_mixin, ra_total_mixin; by (intros [] || done). Qed.
   Canonical Structure Empty_setR : cmra := Cmra Empty_set Empty_set_cmra_mixin.
@@ -1107,12 +1107,12 @@ Section prod.
   Local Arguments pcore _ _ !_ /.
   Local Arguments cmra_pcore _ !_/.
 
-  Local Instance prod_op : Op (A * B) := λ x y, (x.1 ⋅ y.1, x.2 ⋅ y.2).
-  Local Instance prod_pcore : PCore (A * B) := λ x,
+  Local Instance prod_op_instance : Op (A * B) := λ x y, (x.1 ⋅ y.1, x.2 ⋅ y.2).
+  Local Instance prod_pcore_instance : PCore (A * B) := λ x,
     c1 ← pcore (x.1); c2 ← pcore (x.2); Some (c1, c2).
-  Local Arguments prod_pcore !_ /.
-  Local Instance prod_valid : Valid (A * B) := λ x, ✓ x.1 ∧ ✓ x.2.
-  Local Instance prod_validN : ValidN (A * B) := λ n x, ✓{n} x.1 ∧ ✓{n} x.2.
+  Local Arguments prod_pcore_instance !_ /.
+  Local Instance prod_valid_instance : Valid (A * B) := λ x, ✓ x.1 ∧ ✓ x.2.
+  Local Instance prod_validN_instance : ValidN (A * B) := λ n x, ✓{n} x.1 ∧ ✓{n} x.2.
 
   Lemma prod_pcore_Some (x cx : A * B) :
     pcore x = Some cx ↔ pcore (x.1) = Some (cx.1) ∧ pcore (x.2) = Some (cx.2).
@@ -1121,7 +1121,7 @@ Section prod.
     pcore x ≡ Some cx ↔ pcore (x.1) ≡ Some (cx.1) ∧ pcore (x.2) ≡ Some (cx.2).
   Proof.
     split; [by intros (cx'&[-> ->]%prod_pcore_Some&->)%equiv_Some_inv_r'|].
-    rewrite {3}/pcore /prod_pcore. (* TODO: use setoid rewrite *)
+    rewrite {3}/pcore /prod_pcore_instance. (* TODO: use setoid rewrite *)
     intros [Hx1 Hx2]; inversion_clear Hx1; simpl; inversion_clear Hx2.
     by constructor.
   Qed.
@@ -1230,7 +1230,7 @@ Global Arguments prodR : clear implicits.
 Section prod_unit.
   Context {A B : ucmra}.
 
-  Local Instance prod_unit `{Unit A, Unit B} : Unit (A * B) := (ε, ε).
+  Local Instance prod_unit_instance `{Unit A, Unit B} : Unit (A * B) := (ε, ε).
   Lemma prod_ucmra_mixin : UcmraMixin (A * B).
   Proof.
     split.
@@ -1333,13 +1333,13 @@ Section option.
   Local Arguments core _ _ !_ /.
   Local Arguments pcore _ _ !_ /.
 
-  Local Instance option_valid : Valid (option A) := λ ma,
+  Local Instance option_valid_instance : Valid (option A) := λ ma,
     match ma with Some a => ✓ a | None => True end.
-  Local Instance option_validN : ValidN (option A) := λ n ma,
+  Local Instance option_validN_instance : ValidN (option A) := λ n ma,
     match ma with Some a => ✓{n} a | None => True end.
-  Local Instance option_pcore : PCore (option A) := λ ma, Some (ma ≫= pcore).
-  Local Arguments option_pcore !_ /.
-  Local Instance option_op : Op (option A) := union_with (λ a b, Some (a ⋅ b)).
+  Local Instance option_pcore_instance : PCore (option A) := λ ma, Some (ma ≫= pcore).
+  Local Arguments option_pcore_instance !_ /.
+  Local Instance option_op_instance : Op (option A) := union_with (λ a b, Some (a ⋅ b)).
 
   Definition Some_valid a : ✓ Some a ↔ ✓ a := reflexivity _.
   Definition Some_validN a n : ✓{n} Some a ↔ ✓{n} a := reflexivity _.
@@ -1399,9 +1399,9 @@ Section option.
     - eauto.
     - by intros [a|] n; destruct 1; constructor; ofe_subst.
     - destruct 1; by ofe_subst.
-    - by destruct 1; rewrite /validN /option_validN //=; ofe_subst.
+    - by destruct 1; rewrite /validN /option_validN_instance //=; ofe_subst.
     - intros [a|]; [apply cmra_valid_validN|done].
-    - intros n [a|]; unfold validN, option_validN; eauto using cmra_validN_S.
+    - intros n [a|]; unfold validN, option_validN_instance; eauto using cmra_validN_S.
     - intros [a|] [b|] [c|]; constructor; rewrite ?assoc; auto.
     - intros [a|] [b|]; constructor; rewrite 1?comm; auto.
     - intros [a|]; simpl; auto.
@@ -1414,7 +1414,7 @@ Section option.
         destruct (cmra_pcore_proper a b ca) as (?&?&?); eauto 10.
       + destruct (pcore a) as [ca|] eqn:?; eauto.
         destruct (cmra_pcore_mono a b ca) as (?&?&?); eauto 10.
-    - intros n [a|] [b|]; rewrite /validN /option_validN /=;
+    - intros n [a|] [b|]; rewrite /validN /option_validN_instance /=;
         eauto using cmra_validN_op_l.
     - intros n ma mb1 mb2.
       destruct ma as [a|], mb1 as [b1|], mb2 as [b2|]; intros Hx Hx';
@@ -1430,7 +1430,7 @@ Section option.
   Global Instance option_cmra_discrete : CmraDiscrete A → CmraDiscrete optionR.
   Proof. split; [apply _|]. by intros [a|]; [apply (cmra_discrete_valid a)|]. Qed.
 
-  Local Instance option_unit : Unit (option A) := None.
+  Local Instance option_unit_instance : Unit (option A) := None.
   Lemma option_ucmra_mixin : UcmraMixin optionR.
   Proof. split; [done|  |done]. by intros []. Qed.
   Canonical Structure optionUR := Ucmra (option A) option_ucmra_mixin.
@@ -1597,16 +1597,16 @@ Section discrete_fun_cmra.
   Context `{B : A → ucmra}.
   Implicit Types f g : discrete_fun B.
 
-  Local Instance discrete_fun_op : Op (discrete_fun B) := λ f g x, f x ⋅ g x.
-  Local Instance discrete_fun_pcore : PCore (discrete_fun B) := λ f, Some (λ x, core (f x)).
-  Local Instance discrete_fun_valid : Valid (discrete_fun B) := λ f, ∀ x, ✓ f x.
-  Local Instance discrete_fun_validN : ValidN (discrete_fun B) := λ n f, ∀ x, ✓{n} f x.
+  Local Instance discrete_fun_op_instance : Op (discrete_fun B) := λ f g x, f x ⋅ g x.
+  Local Instance discrete_fun_pcore_instance : PCore (discrete_fun B) := λ f, Some (λ x, core (f x)).
+  Local Instance discrete_fun_valid_instance : Valid (discrete_fun B) := λ f, ∀ x, ✓ f x.
+  Local Instance discrete_fun_validN_instance : ValidN (discrete_fun B) := λ n f, ∀ x, ✓{n} f x.
 
   Definition discrete_fun_lookup_op f g x : (f ⋅ g) x = f x ⋅ g x := eq_refl.
   Definition discrete_fun_lookup_core f x : (core f) x = core (f x) := eq_refl.
 
   Lemma discrete_fun_included_spec_1 (f g : discrete_fun B) x : f ≼ g → f x ≼ g x.
-  Proof. by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op (Hh x). Qed.
+  Proof. by intros [h Hh]; exists (h x); rewrite /op /discrete_fun_op_instance (Hh x). Qed.
 
   Lemma discrete_fun_included_spec `{Hfin : Finite A} (f g : discrete_fun B) : f ≼ g ↔ ∀ x, f x ≼ g x.
   Proof.
@@ -1642,7 +1642,7 @@ Section discrete_fun_cmra.
   Qed.
   Canonical Structure discrete_funR := Cmra (discrete_fun B) discrete_fun_cmra_mixin.
 
-  Local Instance discrete_fun_unit : Unit (discrete_fun B) := λ x, ε.
+  Local Instance discrete_fun_unit_instance : Unit (discrete_fun B) := λ x, ε.
   Definition discrete_fun_lookup_empty x : ε x = ε := eq_refl.
 
   Lemma discrete_fun_ucmra_mixin : UcmraMixin (discrete_fun B).

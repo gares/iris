@@ -10,10 +10,10 @@ Section gset.
 
   Canonical Structure gsetO := discreteO (gset K).
 
-  Local Instance gset_valid : Valid (gset K) := λ _, True.
-  Local Instance gset_unit : Unit (gset K) := (∅ : gset K).
-  Local Instance gset_op : Op (gset K) := union.
-  Local Instance gset_pcore : PCore (gset K) := λ X, Some X.
+  Local Instance gset_valid_instance : Valid (gset K) := λ _, True.
+  Local Instance gset_unit_instance : Unit (gset K) := (∅ : gset K).
+  Local Instance gset_op_instance : Op (gset K) := union.
+  Local Instance gset_pcore_instance : PCore (gset K) := λ X, Some X.
 
   Lemma gset_op_union X Y : X ⋅ Y = X ∪ Y.
   Proof. done. Qed.
@@ -85,15 +85,15 @@ Section gset_disj.
 
   Canonical Structure gset_disjO := leibnizO (gset_disj K).
 
-  Local Instance gset_disj_valid : Valid (gset_disj K) := λ X,
+  Local Instance gset_disj_valid_instance : Valid (gset_disj K) := λ X,
     match X with GSet _ => True | GSetBot => False end.
-  Local Instance gset_disj_unit : Unit (gset_disj K) := GSet ∅.
-  Local Instance gset_disj_op : Op (gset_disj K) := λ X Y,
+  Local Instance gset_disj_unit_instance : Unit (gset_disj K) := GSet ∅.
+  Local Instance gset_disj_op_instance : Op (gset_disj K) := λ X Y,
     match X, Y with
     | GSet X, GSet Y => if decide (X ## Y) then GSet (X ∪ Y) else GSetBot
     | _, _ => GSetBot
     end.
-  Local Instance gset_disj_pcore : PCore (gset_disj K) := λ _, Some ε.
+  Local Instance gset_disj_pcore_instance : PCore (gset_disj K) := λ _, Some ε.
 
   Ltac gset_disj_solve :=
     repeat (simpl || case_decide);

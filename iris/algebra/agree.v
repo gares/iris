@@ -79,22 +79,22 @@ Canonical Structure agreeO := Ofe (agree A) agree_ofe_mixin.
 (* CMRA *)
 (* agree_validN is carefully written such that, when applied to a singleton, it
 is convertible to True. This makes working with agreement much more pleasant. *)
-Local Instance agree_validN : ValidN (agree A) := λ n x,
+Local Instance agree_validN_instance : ValidN (agree A) := λ n x,
   match agree_car x with
   | [a] => True
   | _ => ∀ a b, a ∈ agree_car x → b ∈ agree_car x → a ≡{n}≡ b
   end.
-Local Instance agree_valid : Valid (agree A) := λ x, ∀ n, ✓{n} x.
+Local Instance agree_valid_instance : Valid (agree A) := λ x, ∀ n, ✓{n} x.
 
-Program Instance agree_op : Op (agree A) := λ x y,
+Program Instance agree_op_instance : Op (agree A) := λ x y,
   {| agree_car := agree_car x ++ agree_car y |}.
 Next Obligation. by intros [[|??]] y. Qed.
-Local Instance agree_pcore : PCore (agree A) := Some.
+Local Instance agree_pcore_instance : PCore (agree A) := Some.
 
 Lemma agree_validN_def n x :
   ✓{n} x ↔ ∀ a b, a ∈ agree_car x → b ∈ agree_car x → a ≡{n}≡ b.
 Proof.
-  rewrite /validN /agree_validN. destruct (agree_car _) as [|? [|??]]; auto.
+  rewrite /validN /agree_validN_instance. destruct (agree_car _) as [|? [|??]]; auto.
   setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.
 
@@ -194,7 +194,7 @@ Qed.
 
 Lemma to_agree_uninj x : ✓ x → ∃ a, to_agree a ≡ x.
 Proof.
-  rewrite /valid /agree_valid; setoid_rewrite agree_validN_def.
+  rewrite /valid /agree_valid_instance; setoid_rewrite agree_validN_def.
   destruct (elem_of_agree x) as [a ?].
   exists a; split=> b /=; setoid_rewrite elem_of_list_singleton; naive_solver.
 Qed.
