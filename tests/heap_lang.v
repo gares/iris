@@ -151,10 +151,10 @@ Section tests.
 
   Check "wp_load_fail".
   Lemma wp_load_fail :
-    ⊢ WP Fork Skip {{ _, True }}.
+    ⊢ WP Fork #() {{ _, True }}.
   Proof. Fail wp_load. Abort.
   Lemma twp_load_fail :
-    ⊢ WP Fork Skip [{ _, True }].
+    ⊢ WP Fork #() [{ _, True }].
   Proof. Fail wp_load. Abort.
   Check "wp_load_no_ptsto".
   Lemma wp_load_fail_no_ptsto (l : loc) :
@@ -163,10 +163,10 @@ Section tests.
 
   Check "wp_store_fail".
   Lemma wp_store_fail :
-    ⊢ WP Fork Skip {{ _, True }}.
+    ⊢ WP Fork #() {{ _, True }}.
   Proof. Fail wp_store. Abort.
   Lemma twp_store_fail :
-    ⊢ WP Fork Skip [{ _, True }].
+    ⊢ WP Fork #() [{ _, True }].
   Proof. Fail wp_store. Abort.
   Check "wp_store_no_ptsto".
   Lemma wp_store_fail_no_ptsto (l : loc) :
