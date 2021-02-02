@@ -88,6 +88,12 @@ Tactic failure: wp_store: cannot find 'Store' in (Fork #()).
      : string
 The command has indeed failed with message:
 Tactic failure: wp_store: cannot find l ↦ ?.
+"(t)wp_bind_fail"
+     : string
+The command has indeed failed with message:
+Tactic failure: wp_bind: cannot find (! ?e)%E in (Val #()).
+The command has indeed failed with message:
+Tactic failure: wp_bind: cannot find (! ?e)%E in (Val #()).
 1 goal
   
   Σ : gFunctors
