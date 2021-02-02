@@ -68,6 +68,26 @@
   --------------------------------------∗
   |={⊤}=> l ↦ #1
   
+"wp_load_fail"
+     : string
+The command has indeed failed with message:
+Tactic failure: wp_load: cannot find 'Load' in (Fork Skip).
+The command has indeed failed with message:
+Tactic failure: wp_load: cannot find 'Load' in (Fork Skip).
+"wp_load_no_ptsto"
+     : string
+The command has indeed failed with message:
+Tactic failure: wp_load: cannot find l ↦ ?.
+"wp_store_fail"
+     : string
+The command has indeed failed with message:
+Tactic failure: wp_store: cannot find 'Store' in (Fork Skip).
+The command has indeed failed with message:
+Tactic failure: wp_store: cannot find 'Store' in (Fork Skip).
+"wp_store_no_ptsto"
+     : string
+The command has indeed failed with message:
+Tactic failure: wp_store: cannot find l ↦ ?.
 1 goal
   
   Σ : gFunctors
