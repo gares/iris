@@ -197,10 +197,10 @@ Tactic Notation "wp_bind" open_constr(efoc) :=
   lazymatch goal with
   | |- envs_entails _ (wp ?s ?E ?e ?Q) =>
     first [ reshape_expr e ltac:(fun K e' => unify e' efoc; wp_bind_core K)
-          | fail "wp_bind: cannot find" efoc "in" e ]
+          | fail 1 "wp_bind: cannot find" efoc "in" e ]
   | |- envs_entails _ (twp ?s ?E ?e ?Q) =>
     first [ reshape_expr e ltac:(fun K e' => unify e' efoc; twp_bind_core K)
-          | fail "wp_bind: cannot find" efoc "in" e ]
+          | fail 1 "wp_bind: cannot find" efoc "in" e ]
   | _ => fail "wp_bind: not a 'wp'"
   end.
 

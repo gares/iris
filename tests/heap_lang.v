@@ -173,6 +173,12 @@ Section tests.
     ⊢ WP #l <- #0 {{ _, True }}.
   Proof. Fail wp_store. Abort.
 
+  Check "(t)wp_bind_fail".
+  Lemma wp_bind_fail : ⊢ WP #() {{ v, True }}.
+  Proof. Fail wp_bind (!_)%E. Abort.
+  Lemma twp_bind_fail : ⊢ WP #() [{ v, True }].
+  Proof. Fail wp_bind (!_)%E. Abort.
+
   Lemma wp_apply_evar e P :
     P -∗ (∀ Q Φ, Q -∗ WP e {{ Φ }}) -∗ WP e {{ _, True }}.
   Proof. iIntros "HP HW". wp_apply "HW". iExact "HP". Qed.
