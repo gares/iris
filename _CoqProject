@@ -8,6 +8,8 @@
 -Q iris/base_logic iris.base_logic
 -Q iris/program_logic iris.program_logic
 -Q iris_heap_lang iris.heap_lang
+-Q iris_staging iris.staging
+-Q iris_deprecated iris.deprecated
 # We sometimes want to locally override notation, and there is no good way to do that with scopes.
 -arg -w -arg -notation-overridden
 # Cannot use non-canonical projections as it causes massive unification failures
@@ -88,9 +90,6 @@ iris/base_logic/lib/saved_prop.v
 iris/base_logic/lib/wsat.v
 iris/base_logic/lib/invariants.v
 iris/base_logic/lib/fancy_updates.v
-iris/base_logic/lib/viewshifts.v
-iris/base_logic/lib/auth.v
-iris/base_logic/lib/sts.v
 iris/base_logic/lib/boxes.v
 iris/base_logic/lib/na_invariants.v
 iris/base_logic/lib/cancelable_invariants.v
@@ -106,7 +105,6 @@ iris/program_logic/lifting.v
 iris/program_logic/weakestpre.v
 iris/program_logic/total_weakestpre.v
 iris/program_logic/total_adequacy.v
-iris/program_logic/hoare.v
 iris/program_logic/language.v
 iris/program_logic/ectx_language.v
 iris/program_logic/ectxi_language.v
@@ -166,3 +164,8 @@ iris_heap_lang/lib/increment.v
 iris_heap_lang/lib/diverge.v
 iris_heap_lang/lib/arith.v
 iris_heap_lang/lib/array.v
+
+iris_deprecated/base_logic/auth.v
+iris_deprecated/base_logic/sts.v
+iris_deprecated/base_logic/viewshifts.v
+iris_deprecated/program_logic/hoare.v
