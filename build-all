@@ -25,12 +25,11 @@ PROJECTS = [
     { 'name': 'examples', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'iron', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'reloc', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'c', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'spygame', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'time-credits', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
     { 'name': 'actris', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'ora', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
-    { 'name': 'tutorial-popl18', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'tutorial-popl20', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
+    { 'name': 'tutorial-popl21', 'branch': 'master', 'vars': ['STDPP_REV', 'IRIS_REV'] },
 ]
 
 for project in PROJECTS:
