@@ -797,5 +797,5 @@ Proof.
         apply to_val_fill_some in HEq; destruct HEq as [-> ->]; inversion step
       end).
     eapply (H κs (fill_item _ (foldl (flip fill_item) e2' Ks)) σ' efs).
-    eapply (Ectx_step _ _ _ _ _ _ (Ks ++ [_])); last done; simpl; by rewrite fill_app.
+    eapply (Ectx_step (Ks ++ [_])); last done; simpl; by rewrite fill_app.
 Qed.

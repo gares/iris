@@ -67,7 +67,7 @@ Proof.
   apply app_eq_inv in Ht as [(t&?&?)|(t&?&?)]; subst.
   - destruct t as [|e1' ?]; simplify_eq/=.
     + iMod ("IH2" with "[%] Hσ1") as (n2) "($ & Hσ & IH2 & _)".
-      { by eapply step_atomic with (t1:=[]). }
+      { by eapply (step_atomic _ _ _ _ _ []). }
       iModIntro. iExists n2. iFrame "Hσ".
       rewrite -{2}(left_id_L [] (++) (e2 :: _)). iApply "IH2".
       by setoid_rewrite (right_id_L [] (++)).

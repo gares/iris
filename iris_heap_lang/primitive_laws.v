@@ -224,7 +224,7 @@ Proof.
   iIntros (Hn Φ) "_ HΦ". iApply twp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 κs k) "[Hσ Hκs] !>"; iSplit; first by destruct n; auto with lia head_step.
   iIntros (κ v2 σ2 efs Hstep); inv_head_step.
-  iMod (gen_heap_alloc_big _ (heap_array l (replicate (Z.to_nat n) v)) with "Hσ")
+  iMod (gen_heap_alloc_big _ (heap_array _ (replicate (Z.to_nat n) v)) with "Hσ")
     as "(Hσ & Hl & Hm)".
   { apply heap_array_map_disjoint.
     rewrite replicate_length Z2Nat.id; auto with lia. }
@@ -380,6 +380,7 @@ Proof.
   iIntros (Φ) "_ HΦ". iApply wp_lift_atomic_head_step_no_fork; first done.
   iIntros (σ1 κ κs n) "[Hσ HR] !>". iSplit; first by eauto with head_step.
   iIntros "!>" (v2 σ2 efs Hstep). inv_head_step.
+  rename select proph_id into p.
   iMod (proph_map_new_proph p with "HR") as "[HR Hp]"; first done.
   iModIntro; iSplit; first done. iFrame. by iApply "HΦ".
 Qed.
@@ -393,7 +394,7 @@ Lemma resolve_reducible e σ (p : proph_id) v :
 Proof.
   intros A (κ & e' & σ' & efs & H).
   exists (κ ++ [(p, (default v (to_val e'), v))]), e', σ', efs.
-  eapply Ectx_step with (K:=[]); try done.
+  eapply (Ectx_step []); try done.
   assert (∃w, Val w = e') as [w <-].
   { unfold Atomic in A. apply (A σ e' κ σ' efs) in H. unfold is_Some in H.
     destruct H as [w H]. exists w. simpl in H. by apply (of_to_val _ _ H). }
@@ -409,18 +410,21 @@ Proof.
   induction Ks as [|K Ks _] using rev_ind.
   + simpl in *. subst. inv_head_step. by constructor.
   + rewrite fill_app /= in Hfill. destruct K; inversion Hfill; subst; clear Hfill.
-    - assert (fill_item K (fill Ks e1') = fill (Ks ++ [K]) e1') as Eq1;
+    - rename select ectx_item into Ki.
+      assert (fill_item Ki (fill Ks e1') = fill (Ks ++ [Ki]) e1') as Eq1;
         first by rewrite fill_app.
-      assert (fill_item K (fill Ks e2') = fill (Ks ++ [K]) e2') as Eq2;
+      assert (fill_item Ki (fill Ks e2') = fill (Ks ++ [Ki]) e2') as Eq2;
         first by rewrite fill_app.
       rewrite fill_app /=. rewrite Eq1 in A.
-      assert (is_Some (to_val (fill (Ks ++ [K]) e2'))) as H.
-      { apply (A σ1 _ κ σ2 efs). eapply Ectx_step with (K0 := Ks ++ [K]); done. }
+      assert (is_Some (to_val (fill (Ks ++ [Ki]) e2'))) as H.
+      { apply (A σ1 _ κ σ2 efs). eapply (Ectx_step (Ks ++ [Ki])); done. }
       destruct H as [v H]. apply to_val_fill_some in H. by destruct H, Ks.
-    - assert (to_val (fill Ks e1') = Some vp); first by rewrite -H1 //.
-      apply to_val_fill_some in H as [-> ->]. inv_head_step.
-    - assert (to_val (fill Ks e1') = Some vt); first by rewrite -H2 //.
-      apply to_val_fill_some in H as [-> ->]. inv_head_step.
+    - rename select (of_val vp = _) into Hvp.
+      assert (to_val (fill Ks e1') = Some vp) as Hfillvp by rewrite -Hvp //.
+      apply to_val_fill_some in Hfillvp as [-> ->]. inv_head_step.
+    - rename select (of_val vt = _) into Hvt.
+      assert (to_val (fill Ks e1') = Some vt) as Hfillvt by rewrite -Hvt //.
+      apply to_val_fill_some in Hfillvt as [-> ->]. inv_head_step.
 Qed.
 
 Lemma wp_resolve s E e Φ (p : proph_id) v (pvs : list (val * val)) :

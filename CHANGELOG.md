@@ -210,6 +210,8 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   non-atomic weakest precondition creates a side-condition `Atomic ...`.
   Before, this would fail with the unspecific error "iMod: cannot eliminate
   modality (|={E1,E2}=> ...) in (WP ...)".
+* In `Ectx_step` and `step_atomic`, mark the parameters that are determined by
+  the goal as implicit.
 
 **Changes in `heap_lang`:**
 
