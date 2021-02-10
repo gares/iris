@@ -518,7 +518,7 @@ Section cmra.
   Proof.
     rewrite !local_update_unital.
     move=> Hup Hrel n [[[q ag]|] bf] /view_both_validN Hrel' [/=].
-    - rewrite right_id -Some_op -pair_op frac_op'=> /Some_dist_inj [/= H1q _].
+    - rewrite right_id -Some_op -pair_op frac_op=> /Some_dist_inj [/= H1q _].
       by destruct (Qp_add_id_free 1 q).
     - rewrite !left_id=> _ Hb0.
       destruct (Hup n bf) as [? Hb0']; [by eauto using view_rel_validN..|].

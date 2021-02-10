@@ -7,7 +7,7 @@ Section nat.
   Local Instance nat_validN_instance : ValidN nat := λ n x, True.
   Local Instance nat_pcore_instance : PCore nat := λ x, Some 0.
   Local Instance nat_op_instance : Op nat := plus.
-  Definition nat_op_plus x y : x ⋅ y = x + y := eq_refl.
+  Definition nat_op x y : x ⋅ y = x + y := eq_refl.
   Lemma nat_included (x y : nat) : x ≼ y ↔ x ≤ y.
   Proof. by rewrite nat_le_sum. Qed.
   Lemma nat_ra_mixin : RAMixin nat.
@@ -56,7 +56,7 @@ Section max_nat.
   Local Instance max_nat_validN_instance : ValidN max_nat := λ n x, True.
   Local Instance max_nat_pcore_instance : PCore max_nat := Some.
   Local Instance max_nat_op_instance : Op max_nat := λ n m, MaxNat (max_nat_car n `max` max_nat_car m).
-  Definition max_nat_op_max x y : MaxNat x ⋅ MaxNat y = MaxNat (x `max` y) := eq_refl.
+  Definition max_nat_op x y : MaxNat x ⋅ MaxNat y = MaxNat (x `max` y) := eq_refl.
 
   Lemma max_nat_included x y : x ≼ y ↔ max_nat_car x ≤ max_nat_car y.
   Proof.
@@ -67,9 +67,9 @@ Section max_nat.
   Lemma max_nat_ra_mixin : RAMixin max_nat.
   Proof.
     apply ra_total_mixin; apply _ || eauto.
-    - intros [x] [y] [z]. repeat rewrite max_nat_op_max. by rewrite Nat.max_assoc.
-    - intros [x] [y]. by rewrite max_nat_op_max Nat.max_comm.
-    - intros [x]. by rewrite max_nat_op_max Max.max_idempotent.
+    - intros [x] [y] [z]. repeat rewrite max_nat_op. by rewrite Nat.max_assoc.
+    - intros [x] [y]. by rewrite max_nat_op Nat.max_comm.
+    - intros [x]. by rewrite max_nat_op Max.max_idempotent.
   Qed.
   Canonical Structure max_natR : cmra := discreteR max_nat max_nat_ra_mixin.
 
@@ -88,12 +88,12 @@ Section max_nat.
   Proof.
     move: x y x' => [x] [y] [y'] /= ?.
     rewrite local_update_unital_discrete=> [[z]] _.
-    rewrite 2!max_nat_op_max. intros [= ?].
+    rewrite 2!max_nat_op. intros [= ?].
     split; first done. apply f_equal. lia.
   Qed.
 
   Global Instance : IdemP (=@{max_nat}) (⋅).
-  Proof. intros [x]. rewrite max_nat_op_max. apply f_equal. lia. Qed.
+  Proof. intros [x]. rewrite max_nat_op. apply f_equal. lia. Qed.
 
   Global Instance max_nat_is_op (x y : nat) :
     IsOp (MaxNat (x `max` y)) (MaxNat x) (MaxNat y).

@@ -18,7 +18,7 @@ Section ufrac.
   Local Instance ufrac_pcore_instance : PCore ufrac := λ _, None.
   Local Instance ufrac_op_instance : Op ufrac := λ x y, (x + y)%Qp.
 
-  Lemma ufrac_op' p q : p ⋅ q = (p + q)%Qp.
+  Lemma ufrac_op p q : p ⋅ q = (p + q)%Qp.
   Proof. done. Qed.
   Lemma ufrac_included p q : p ≼ q ↔ (p < q)%Qp.
   Proof. by rewrite Qp_lt_sum. Qed.
@@ -39,5 +39,5 @@ Section ufrac.
   Proof. intros p _. apply Qp_add_id_free. Qed.
 
   Global Instance is_op_ufrac q : IsOp' q (q/2)%Qp (q/2)%Qp.
-  Proof. by rewrite /IsOp' /IsOp ufrac_op' Qp_div_2. Qed.
+  Proof. by rewrite /IsOp' /IsOp ufrac_op Qp_div_2. Qed.
 End ufrac.

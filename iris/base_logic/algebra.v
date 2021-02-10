@@ -23,7 +23,7 @@ Lemma discrete_fun_validI {A} {B : A → ucmra} (g : discrete_fun B) :
 Proof. by uPred.unseal. Qed.
 
 Lemma frac_validI (q : Qp) : ✓ q ⊣⊢ ⌜q ≤ 1⌝%Qp.
-Proof. rewrite uPred.discrete_valid frac_valid' //. Qed.
+Proof. rewrite uPred.discrete_valid frac_valid //. Qed.
 
 Section gmap_ofe.
   Context `{Countable K} {A : ofe}.

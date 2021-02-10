@@ -147,6 +147,8 @@ Local Instance gmap_pcore_instance : PCore (gmap K A) := λ m, Some (omap pcore 
 Local Instance gmap_valid_instance : Valid (gmap K A) := λ m, ∀ i, ✓ (m !! i).
 Local Instance gmap_validN_instance : ValidN (gmap K A) := λ n m, ∀ i, ✓{n} (m !! i).
 
+Lemma gmap_op m1 m2 : m1 ⋅ m2 = merge op m1 m2.
+Proof. done. Qed.
 Lemma lookup_op m1 m2 i : (m1 ⋅ m2) !! i = m1 !! i ⋅ m2 !! i.
 Proof. by apply lookup_merge. Qed.
 Lemma lookup_core m i : core m !! i = core (m !! i).
