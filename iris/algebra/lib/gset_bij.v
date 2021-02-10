@@ -171,7 +171,7 @@ Section gset_bij.
   Lemma gset_bij_elem_agree a1 b1 a2 b2 :
     ✓ (gset_bij_elem a1 b1 ⋅ gset_bij_elem a2 b2) → (a1 = a2 ↔ b1 = b2).
   Proof.
-    rewrite /gset_bij_elem -view_frag_op gset_op_union view_frag_valid.
+    rewrite /gset_bij_elem -view_frag_op gset_op view_frag_valid.
     setoid_rewrite gset_bij_view_rel_iff. intros. apply gset_bijective_pair.
     naive_solver eauto using subseteq_gset_bijective, O.
   Qed.
@@ -188,7 +188,7 @@ Section gset_bij.
     gset_bij_auth 1 L ~~> gset_bij_auth 1 ({[(a, b)]} ∪ L).
   Proof.
     intros. apply view_update=> n bijL.
-    rewrite !gset_bij_view_rel_iff gset_op_union.
+    rewrite !gset_bij_view_rel_iff gset_op.
     set_solver by eauto using gset_bijective_extend.
   Qed.
 End gset_bij.

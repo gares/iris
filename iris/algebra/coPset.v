@@ -16,14 +16,14 @@ Section coPset.
   Local Instance coPset_op_instance : Op coPset := union.
   Local Instance coPset_pcore_instance : PCore coPset := Some.
 
-  Lemma coPset_op_union X Y : X ⋅ Y = X ∪ Y.
+  Lemma coPset_op X Y : X ⋅ Y = X ∪ Y.
   Proof. done. Qed.
-  Lemma coPset_core_self X : core X = X.
+  Lemma coPset_core X : core X = X.
   Proof. done. Qed.
   Lemma coPset_included X Y : X ≼ Y ↔ X ⊆ Y.
   Proof.
     split.
-    - intros [Z ->]. rewrite coPset_op_union. set_solver.
+    - intros [Z ->]. rewrite coPset_op. set_solver.
     - intros (Z&->&?)%subseteq_disjoint_union_L. by exists Z.
   Qed.
 
@@ -33,9 +33,9 @@ Section coPset.
     - solve_proper.
     - solve_proper.
     - solve_proper.
-    - intros X1 X2 X3. by rewrite !coPset_op_union assoc_L.
-    - intros X1 X2. by rewrite !coPset_op_union comm_L.
-    - intros X. by rewrite coPset_core_self idemp_L.
+    - intros X1 X2 X3. by rewrite !coPset_op assoc_L.
+    - intros X1 X2. by rewrite !coPset_op comm_L.
+    - intros X. by rewrite coPset_core idemp_L.
   Qed.
   Canonical Structure coPsetR := discreteR coPset coPset_ra_mixin.
 
@@ -43,7 +43,7 @@ Section coPset.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma coPset_ucmra_mixin : UcmraMixin coPset.
-  Proof. split; [done | | done]. intros X. by rewrite coPset_op_union left_id_L. Qed.
+  Proof. split; [done | | done]. intros X. by rewrite coPset_op left_id_L. Qed.
   Canonical Structure coPsetUR := Ucmra coPset coPset_ucmra_mixin.
 
   Lemma coPset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
@@ -56,7 +56,7 @@ Section coPset.
   Proof.
     intros (Z&->&?)%subseteq_disjoint_union_L.
     rewrite local_update_unital_discrete=> Z' _ /leibniz_equiv_iff->.
-    split; first done. rewrite coPset_op_union. set_solver.
+    split; first done. rewrite coPset_op. set_solver.
   Qed.
 End coPset.
 

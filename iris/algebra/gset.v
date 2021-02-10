@@ -15,21 +15,21 @@ Section gset.
   Local Instance gset_op_instance : Op (gset K) := union.
   Local Instance gset_pcore_instance : PCore (gset K) := λ X, Some X.
 
-  Lemma gset_op_union X Y : X ⋅ Y = X ∪ Y.
+  Lemma gset_op X Y : X ⋅ Y = X ∪ Y.
   Proof. done. Qed.
-  Lemma gset_core_self X : core X = X.
+  Lemma gset_core X : core X = X.
   Proof. done. Qed.
   Lemma gset_included X Y : X ≼ Y ↔ X ⊆ Y.
   Proof.
     split.
-    - intros [Z ->]. rewrite gset_op_union. set_solver.
+    - intros [Z ->]. rewrite gset_op. set_solver.
     - intros (Z&->&?)%subseteq_disjoint_union_L. by exists Z.
   Qed.
 
   Lemma gset_ra_mixin : RAMixin (gset K).
   Proof.
     apply ra_total_mixin; apply _ || eauto; [].
-    intros X. by rewrite gset_core_self idemp_L.
+    intros X. by rewrite gset_core idemp_L.
   Qed.
   Canonical Structure gsetR := discreteR (gset K) gset_ra_mixin.
 
@@ -37,7 +37,7 @@ Section gset.
   Proof. apply discrete_cmra_discrete. Qed.
 
   Lemma gset_ucmra_mixin : UcmraMixin (gset K).
-  Proof. split; [ done | | done ]. intros X. by rewrite gset_op_union left_id_L. Qed.
+  Proof. split; [ done | | done ]. intros X. by rewrite gset_op left_id_L. Qed.
   Canonical Structure gsetUR := Ucmra (gset K) gset_ucmra_mixin.
 
   Lemma gset_opM X mY : X ⋅? mY = X ∪ default ∅ mY.
@@ -50,11 +50,11 @@ Section gset.
   Proof.
     intros (Z&->&?)%subseteq_disjoint_union_L.
     rewrite local_update_unital_discrete=> Z' _ /leibniz_equiv_iff->.
-    split; [done|]. rewrite gset_op_union. set_solver.
+    split; [done|]. rewrite gset_op. set_solver.
   Qed.
 
   Global Instance gset_core_id X : CoreId X.
-  Proof. by apply core_id_total; rewrite gset_core_self. Qed.
+  Proof. by apply core_id_total; rewrite gset_core. Qed.
 
   Lemma big_opS_singletons X :
     ([^op set] x ∈ X, {[ x ]}) = X.

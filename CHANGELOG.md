@@ -74,8 +74,11 @@ HeapLang, which is now in a separate package `coq-iris-heap-lang`.
   `PCore`, `Valid`, `ValidN`, `Unit`) to have a `_instance` suffix, so that
   their original names are available to use as lemma names.
 * Rename `frac_valid'`→`frac_valid`, `frac_op'`→`frac_op`,
-  `ufrac_op'`→`ufrac_op`. Those names were previously blocked by typeclass
-  instances.
+  `ufrac_op'`→`ufrac_op`, `coPset_op_union` → `coPset_op`, `coPset_core_self` →
+  `coPset_core`, `gset_op_union` → `gset_op`, `gset_core_self` → `gset_core`,
+  `gmultiset_op_disj_union` → `gmultiset_op`, `gmultiset_core_empty` →
+  `gmultiset_core`, `nat_op_plus` → `nat_op`, `max_nat_op_max` →
+  `max_nat_op`. Those names were previously blocked by typeclass instances.
 
 **Changes in `bi`:**
 
@@ -256,8 +259,14 @@ s/\bcmraT\b/cmra/g
 s/\bCmraT\b/Cmra/g
 s/\bucmraT\b/ucmra/g
 s/\bUcmraT\b/Ucmra/g
-# u?frac_op/valid lemmas
+# _op/valid/core lemmas
 s/\b(u?frac_(op|valid))'/\1/g
+s/\b((coPset|gset)_op)_union\b/\1/g
+s/\b((coPset|gset)_core)_self\b/\1/g
+s/\b(gmultiset_op)_disj_union\b/\1/g
+s/\b(gmultiset_core)_empty\b/\1/g
+s/\b(nat_op)_plus\b/\1/g
+s/\b(max_nat_op)_max\b/\1/g
 EOF
 ```
 

@@ -16,15 +16,15 @@ Section gmultiset.
   Local Instance gmultiset_op_instance : Op (gmultiset K) := disj_union.
   Local Instance gmultiset_pcore_instance : PCore (gmultiset K) := λ X, Some ∅.
 
-  Lemma gmultiset_op_disj_union X Y : X ⋅ Y = X ⊎ Y.
+  Lemma gmultiset_op X Y : X ⋅ Y = X ⊎ Y.
   Proof. done. Qed.
-  Lemma gmultiset_core_empty X : core X = ∅.
+  Lemma gmultiset_core X : core X = ∅.
   Proof. done. Qed.
   Lemma gmultiset_included X Y : X ≼ Y ↔ X ⊆ Y.
   Proof.
     split.
     - intros [Z ->%leibniz_equiv].
-      rewrite gmultiset_op_disj_union. apply gmultiset_disj_union_subseteq_l.
+      rewrite gmultiset_op. apply gmultiset_disj_union_subseteq_l.
     - intros ->%gmultiset_disj_union_difference. by exists (Y ∖ X).
   Qed.
 
@@ -34,10 +34,10 @@ Section gmultiset.
     - by intros X Y Z ->%leibniz_equiv.
     - by intros X Y ->%leibniz_equiv.
     - solve_proper.
-    - intros X1 X2 X3. by rewrite !gmultiset_op_disj_union assoc_L.
-    - intros X1 X2. by rewrite !gmultiset_op_disj_union comm_L.
-    - intros X. by rewrite gmultiset_core_empty left_id.
-    - intros X1 X2 HX. rewrite !gmultiset_core_empty. exists ∅.
+    - intros X1 X2 X3. by rewrite !gmultiset_op assoc_L.
+    - intros X1 X2. by rewrite !gmultiset_op comm_L.
+    - intros X. by rewrite gmultiset_core left_id.
+    - intros X1 X2 HX. rewrite !gmultiset_core. exists ∅.
       by rewrite left_id.
   Qed.
 
@@ -49,7 +49,7 @@ Section gmultiset.
   Lemma gmultiset_ucmra_mixin : UcmraMixin (gmultiset K).
   Proof.
     split; [done | | done]. intros X.
-    by rewrite gmultiset_op_disj_union left_id_L.
+    by rewrite gmultiset_op left_id_L.
   Qed.
   Canonical Structure gmultisetUR := Ucmra (gmultiset K) gmultiset_ucmra_mixin.
 
@@ -68,7 +68,7 @@ Section gmultiset.
   Proof.
     intros HXY. rewrite local_update_unital_discrete=> Z' _. intros ->%leibniz_equiv.
     split; first done. apply leibniz_equiv_iff, (inj (.⊎ Y)).
-    rewrite -HXY !gmultiset_op_disj_union.
+    rewrite -HXY !gmultiset_op.
     by rewrite -(comm_L _ Y) (comm_L _ Y') assoc_L.
   Qed.
 
